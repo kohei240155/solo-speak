@@ -14,18 +14,18 @@ datasource db {
 // ユーザーモデル
 model User {
   id                        String    @id @default(cuid())
-  username                  String    @unique @db.VarChar(50)
-  icon_url                  String?   @db.Text
+  username                  String    @unique
+  icon_url                  String?
   native_language_id        String
   default_learning_language_id String
-  birthdate                 DateTime? @db.Date
+  birthdate                 DateTime?
   gender                    Gender?
-  email                     String    @unique @db.VarChar(255)
+  email                     String    @unique
   default_quiz_count        Int       @default(10)
   stripe_customer_id        String?
   remaining_phrase_generations Int    @default(100)
   consecutive_reading_days  Int       @default(0)
-  last_reading_date         DateTime? @db.Date
+  last_reading_date         DateTime?
   created_at                DateTime  @default(now())
   updated_at                DateTime  @updatedAt
   deleted_at                DateTime?
@@ -34,8 +34,6 @@ model User {
   native_language           Language @relation("UserNativeLanguage", fields: [native_language_id], references: [id])
   default_learning_language Language @relation("UserLearningLanguage", fields: [default_learning_language_id], references: [id])
   phrases                   Phrase[]
-  quiz_results              QuizResult[]
-  speak_logs                SpeakLog[]
 
   @@map("users")
 }
@@ -43,8 +41,8 @@ model User {
 // 言語モデル
 model Language {
   id         String    @id @default(cuid())
-  name       String    @db.VarChar(50)
-  code       String    @unique @db.VarChar(10)
+  name       String
+  code       String    @unique
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
@@ -60,7 +58,7 @@ model Language {
 // フレーズレベルモデル
 model PhraseLevel {
   id         String    @id @default(cuid())
-  name       String    @db.VarChar(50)
+  name       String
   score      Int
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -77,8 +75,8 @@ model Phrase {
   id                   String    @id @default(cuid())
   user_id              String
   language_id          String
-  text                 String    @db.Text
-  translation          String    @db.Text
+  text                 String
+  translation          String
   total_read_count     Int       @default(0)
   daily_read_count     Int       @default(0)
   correct_quiz_count   Int       @default(0)
@@ -102,7 +100,7 @@ model Phrase {
 model QuizResult {
   id         String    @id @default(cuid())
   phrase_id  String
-  date       DateTime  @db.Date
+  date       DateTime
   correct    Boolean
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -118,7 +116,7 @@ model QuizResult {
 model SpeakLog {
   id         String    @id @default(cuid())
   phrase_id  String
-  date       DateTime  @db.Date
+  date       DateTime
   count      Int       @default(0)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
