@@ -10,3 +10,129 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+// ユーザーモデル
+model User {
+  id                        String    @id @default(cuid())
+  username                  String    @unique @db.VarChar(50)
+  icon_url                  String?   @db.Text
+  native_language_id        String
+  default_learning_language_id String
+  birthdate                 DateTime? @db.Date
+  gender                    Gender?
+  email                     String    @unique @db.VarChar(255)
+  default_quiz_count        Int       @default(10)
+  stripe_customer_id        String?
+  remaining_phrase_generations Int    @default(100)
+  consecutive_reading_days  Int       @default(0)
+  last_reading_date         DateTime? @db.Date
+  created_at                DateTime  @default(now())
+  updated_at                DateTime  @updatedAt
+  deleted_at                DateTime?
+
+  // リレーション
+  native_language           Language @relation("UserNativeLanguage", fields: [native_language_id], references: [id])
+  default_learning_language Language @relation("UserLearningLanguage", fields: [default_learning_language_id], references: [id])
+  phrases                   Phrase[]
+  quiz_results              QuizResult[]
+  speak_logs                SpeakLog[]
+
+  @@map("users")
+}
+
+// 言語モデル
+model Language {
+  id         String    @id @default(cuid())
+  name       String    @db.VarChar(50)
+  code       String    @unique @db.VarChar(10)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  // リレーション
+  native_users   User[]   @relation("UserNativeLanguage")
+  learning_users User[]   @relation("UserLearningLanguage")
+  phrases        Phrase[]
+
+  @@map("languages")
+}
+
+// フレーズレベルモデル
+model PhraseLevel {
+  id         String    @id @default(cuid())
+  name       String    @db.VarChar(50)
+  score      Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  // リレーション
+  phrases Phrase[]
+
+  @@map("phrase_levels")
+}
+
+// フレーズモデル
+model Phrase {
+  id                   String    @id @default(cuid())
+  user_id              String
+  language_id          String
+  text                 String    @db.Text
+  translation          String    @db.Text
+  total_read_count     Int       @default(0)
+  daily_read_count     Int       @default(0)
+  correct_quiz_count   Int       @default(0)
+  incorrect_quiz_count Int       @default(0)
+  phrase_level_id      String
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+  deleted_at           DateTime?
+
+  // リレーション
+  user         User        @relation(fields: [user_id], references: [id])
+  language     Language    @relation(fields: [language_id], references: [id])
+  phrase_level PhraseLevel @relation(fields: [phrase_level_id], references: [id])
+  quiz_results QuizResult[]
+  speak_logs   SpeakLog[]
+
+  @@map("phrases")
+}
+
+// クイズ結果モデル
+model QuizResult {
+  id         String    @id @default(cuid())
+  phrase_id  String
+  date       DateTime  @db.Date
+  correct    Boolean
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  // リレーション
+  phrase Phrase @relation(fields: [phrase_id], references: [id])
+
+  @@map("quiz_results")
+}
+
+// スピークログモデル
+model SpeakLog {
+  id         String    @id @default(cuid())
+  phrase_id  String
+  date       DateTime  @db.Date
+  count      Int       @default(0)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  // リレーション
+  phrase Phrase @relation(fields: [phrase_id], references: [id])
+
+  @@map("speak_logs")
+}
+
+// 列挙型
+enum Gender {
+  male
+  female
+  unspecified
+}
