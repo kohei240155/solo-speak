@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ユーザーモデル
@@ -117,7 +118,7 @@ model SpeakLog {
   id         String    @id @default(cuid())
   phrase_id  String
   date       DateTime
-  count      Int       @default(0)
+  count      Int       @default(1)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
