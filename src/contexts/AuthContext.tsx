@@ -55,10 +55,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
+    // 現在のドメインを動的に取得してリダイレクトURLを設定
+    const currentOrigin = window.location.origin
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: `${currentOrigin}/auth/callback`
       }
     })
     return { error }
