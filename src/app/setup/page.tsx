@@ -33,7 +33,7 @@ export default function UserSetupPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth/login')
+      router.push('/')
       return
     }
 

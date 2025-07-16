@@ -15,7 +15,7 @@ export default function AuthCallback() {
         
         if (error) {
           console.error('認証エラー:', error)
-          router.push('/auth/login?error=callback_error')
+          router.push('/?error=callback_error')
           return
         }
 
@@ -47,19 +47,19 @@ export default function AuthCallback() {
           
           if (authError) {
             console.error('ユーザー取得エラー:', authError)
-            router.push('/auth/login?error=user_not_found')
+            router.push('/?error=user_not_found')
             return
           }
 
           if (authData.user) {
             router.push('/dashboard')
           } else {
-            router.push('/auth/login')
+            router.push('/')
           }
         }
       } catch (error) {
         console.error('コールバック処理エラー:', error)
-        router.push('/auth/login?error=callback_error')
+        router.push('/?error=callback_error')
       }
     }
 

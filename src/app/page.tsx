@@ -1,29 +1,19 @@
 'use client'
 
-import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import LoginModal from '@/components/LoginModal'
+import Header from '@/components/Header'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard')
     }
   }, [user, loading, router])
-
-  const handleLoginClick = () => {
-    setIsLoginModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsLoginModalOpen(false)
-  }
 
   if (loading) {
     return (
@@ -38,6 +28,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Header />
+      
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <p className="text-xl md:text-2xl text-gray-600 mb-8">
@@ -47,13 +39,10 @@ export default function Home() {
             フレーズを覚えて、クイズに挑戦し、スピーキング練習で語学力を向上させましょう。
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={handleLoginClick}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
-            >
-              ログイン
-            </button>
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              始めるには、右上のログインボタンをクリックしてください
+            </p>
           </div>
         </div>
 
@@ -86,9 +75,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* ログインモーダル */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
     </div>
   )
 }
