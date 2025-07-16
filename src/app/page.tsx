@@ -1,19 +1,29 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import Link from 'next/link'
+import LoginModal from '@/components/LoginModal'
 
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard')
     }
   }, [user, loading, router])
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsLoginModalOpen(false)
+  }
 
   if (loading) {
     return (
@@ -38,12 +48,12 @@ export default function Home() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/auth/login"
+            <button
+              onClick={handleLoginClick}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
             >
               ログイン
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -76,6 +86,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* ログインモーダル */}
+      <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
     </div>
   )
 }

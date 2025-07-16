@@ -1,14 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
+import LoginModal from './LoginModal'
 
 export default function Header() {
   const { user, signOut } = useAuth()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
+  }
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsLoginModalOpen(false)
   }
 
   return (
@@ -47,12 +58,12 @@ export default function Header() {
                 </button>
               </>
             ) : (
-              <Link
-                href="/auth/login"
+              <button
+                onClick={handleLoginClick}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 ログイン
-              </Link>
+              </button>
             )}
           </nav>
 
@@ -66,16 +77,19 @@ export default function Header() {
                 ログアウト
               </button>
             ) : (
-              <Link
-                href="/auth/login"
+              <button
+                onClick={handleLoginClick}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium"
               >
                 ログイン
-              </Link>
+              </button>
             )}
           </div>
         </div>
       </div>
+
+      {/* ログインモーダル */}
+      <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
     </header>
   )
 }
