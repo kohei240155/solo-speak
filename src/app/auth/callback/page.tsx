@@ -22,7 +22,25 @@ export default function AuthCallback() {
         if (data.session) {
           // 認証成功時の処理
           console.log('認証成功:', data.session.user.email)
-          router.push('/dashboard')
+          
+          // ユーザーが既に設定済みかチェック
+          const userCheckResponse = await fetch('/api/user/settings', {
+            headers: {
+              'Authorization': `Bearer ${data.session.access_token}`
+            }
+          })
+          
+          if (userCheckResponse.status === 404) {
+            // ユーザーが未設定の場合は設定画面へ
+            router.push('/setup')
+          } else if (userCheckResponse.ok) {
+            // ユーザーが設定済みの場合はダッシュボードへ
+            router.push('/dashboard')
+          } else {
+            // その他のエラー
+            console.error('ユーザー情報の取得に失敗しました')
+            router.push('/dashboard')
+          }
         } else {
           // セッション情報がない場合は再度認証を試行
           const { data: authData, error: authError } = await supabase.auth.getUser()
