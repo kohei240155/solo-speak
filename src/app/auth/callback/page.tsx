@@ -9,19 +9,39 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      const { data, error } = await supabase.auth.getSession()
-      
-      if (error) {
-        console.error('認証エラー:', error)
-        router.push('/auth/login?error=callback_error')
-        return
-      }
+      try {
+        // URLのハッシュからセッション情報を取得
+        const { data, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('認証エラー:', error)
+          router.push('/auth/login?error=callback_error')
+          return
+        }
 
-      if (data.session) {
-        // 認証成功時の処理
-        router.push('/dashboard')
-      } else {
-        router.push('/auth/login')
+        if (data.session) {
+          // 認証成功時の処理
+          console.log('認証成功:', data.session.user.email)
+          router.push('/dashboard')
+        } else {
+          // セッション情報がない場合は再度認証を試行
+          const { data: authData, error: authError } = await supabase.auth.getUser()
+          
+          if (authError) {
+            console.error('ユーザー取得エラー:', authError)
+            router.push('/auth/login?error=user_not_found')
+            return
+          }
+
+          if (authData.user) {
+            router.push('/dashboard')
+          } else {
+            router.push('/auth/login')
+          }
+        }
+      } catch (error) {
+        console.error('コールバック処理エラー:', error)
+        router.push('/auth/login?error=callback_error')
       }
     }
 
