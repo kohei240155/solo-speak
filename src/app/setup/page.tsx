@@ -111,7 +111,7 @@ export default function UserSetupPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#D9D9D9' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#DFDFDF' }}>
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h1 className="text-gray-900 mb-6" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>Settings</h1>
