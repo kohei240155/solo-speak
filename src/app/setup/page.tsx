@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import ImageUpload from '@/components/ImageUpload'
+import ImageUpload, { ImageUploadRef } from '@/components/ImageUpload'
 
 interface Language {
   id: string
@@ -32,6 +32,7 @@ type UserSetupFormData = z.infer<typeof userSetupSchema>
 export default function UserSetupPage() {
   const { user, updateUserMetadata } = useAuth()
   const router = useRouter()
+  const imageUploadRef = useRef<ImageUploadRef>(null)
   const [loading, setLoading] = useState(false)
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
@@ -109,6 +110,16 @@ export default function UserSetupPage() {
       return
     }
 
+    // バケットは手動で作成済みなので、この処理はコメントアウト
+    // const initStorage = async () => {
+    //   try {
+    //     await createStorageBucket()
+    //   } catch (error) {
+    //     console.error('Storage bucket initialization failed:', error)
+    //   }
+    // }
+    // initStorage()
+
     // 言語一覧を取得
     fetchLanguages()
     
@@ -158,6 +169,36 @@ export default function UserSetupPage() {
         return
       }
 
+      const finalData = { ...data }
+
+      // 画像がアップロードされている場合、Supabase Storageにアップロード
+      if (imageUploadRef.current && user) {
+        try {
+          console.log('Starting image upload for user:', user.id)
+          const uploadedUrl = await imageUploadRef.current.uploadImage(user.id)
+          if (uploadedUrl) {
+            finalData.iconUrl = uploadedUrl
+            console.log('Image uploaded successfully:', uploadedUrl)
+          }
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError)
+          
+          // RLSエラーの場合はより詳細なエラーメッセージを提供
+          if (uploadError instanceof Error) {
+            if (uploadError.message.includes('row-level security') || uploadError.message.includes('policy')) {
+              setError(`画像のアップロード権限がありません。\n解決方法：\n1. Supabase Dashboard > Storage > Settings でRLSを一時的に無効化\n2. または適切なポリシーを設定してください。\n\n詳細: ${uploadError.message}`)
+            } else {
+              setError(`画像のアップロードに失敗しました: ${uploadError.message}`)
+            }
+          } else {
+            setError('画像のアップロードに失敗しました。')
+          }
+          
+          setLoading(false)
+          return
+        }
+      }
+
       console.log('Session found, making API call...')
       const response = await fetch('/api/user/settings', {
         method: 'POST',
@@ -165,7 +206,7 @@ export default function UserSetupPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(finalData)
       })
 
       console.log('API response status:', response.status)
@@ -176,8 +217,8 @@ export default function UserSetupPage() {
         console.log('API response data:', responseData)
         
         // Supabaseのユーザーメタデータも更新
-        if (data.iconUrl) {
-          await updateUserMetadata({ icon_url: data.iconUrl })
+        if (finalData.iconUrl) {
+          await updateUserMetadata({ icon_url: finalData.iconUrl })
         }
         console.log('User setup completed successfully')
         
@@ -185,15 +226,24 @@ export default function UserSetupPage() {
         setError('')
         router.push('/dashboard')
       } else {
+        console.log('API response not ok, status:', response.status)
+        console.log('Response headers:', response.headers)
+        
         let errorData
         try {
-          errorData = await response.json()
+          const responseText = await response.text()
+          console.log('Raw response text:', responseText)
+          
+          if (responseText) {
+            errorData = JSON.parse(responseText)
+          } else {
+            errorData = { error: 'Empty response from server' }
+          }
         } catch (parseError) {
-          console.error('Failed to parse error response as JSON:', parseError)
-          const errorText = await response.text()
-          console.error('Error response text:', errorText)
-          errorData = { error: 'APIエラーが発生しました' }
+          console.error('Failed to parse error response:', parseError)
+          errorData = { error: 'Invalid response format from server' }
         }
+        
         console.error('API Error:', errorData)
         setError(errorData.error || 'ユーザー設定の保存に失敗しました')
       }
@@ -242,6 +292,7 @@ export default function UserSetupPage() {
                 User Icon
               </label>
               <ImageUpload
+                ref={imageUploadRef}
                 currentImage={watchIconUrl}
                 onImageChange={(imageUrl) => setValue('iconUrl', imageUrl)}
                 onImageRemove={() => setValue('iconUrl', '')}

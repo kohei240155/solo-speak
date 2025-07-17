@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/utils/spabase'
 import { PrismaClient } from '@/generated/prisma/client'
 
-const prisma = new PrismaClient()
+// Prismaクライアントの初期化を改善
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+})
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
@@ -42,6 +45,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     console.log('POST /api/user/settings called')
+    
+    // データベース接続テスト
+    try {
+      await prisma.$connect()
+      console.log('Database connection successful')
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError)
+      return NextResponse.json({ 
+        error: 'Database connection failed',
+        details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+      }, { status: 500 })
+    }
     
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
@@ -131,8 +146,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result, { status: existingUser ? 200 : 201 })
   } catch (error) {
-    console.error('Error creating user:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in POST /api/user/settings:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    })
+    
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
 

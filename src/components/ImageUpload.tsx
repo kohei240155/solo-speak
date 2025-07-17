@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useImperativeHandle, forwardRef } from 'react'
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
+import { deleteUserIcon, uploadUserIcon } from '@/utils/storage'
 
 interface ImageUploadProps {
   currentImage?: string
@@ -10,14 +11,46 @@ interface ImageUploadProps {
   onImageRemove: () => void
 }
 
-export default function ImageUpload({ currentImage, onImageChange, onImageRemove }: ImageUploadProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<Crop>()
-  const [showCrop, setShowCrop] = useState(false)
-  const imgRef = useRef<HTMLImageElement>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
-  const blobUrlRef = useRef('')
+export interface ImageUploadRef {
+  uploadImage: (userId: string) => Promise<string | null>
+}
+
+const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
+  ({ currentImage, onImageChange, onImageRemove }, ref) => {
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [crop, setCrop] = useState<Crop>()
+    const [completedCrop, setCompletedCrop] = useState<Crop>()
+    const [showCrop, setShowCrop] = useState(false)
+    const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null)
+    const imgRef = useRef<HTMLImageElement>(null)
+    const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+    const blobUrlRef = useRef('')
+
+    // 親コンポーネントが呼び出せるuploadImage関数を公開
+    useImperativeHandle(ref, () => ({
+      uploadImage: async (userId: string) => {
+        console.log('ImageUpload: uploadImage called with userId:', userId)
+        console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
+        
+        if (!croppedImageBlob) {
+          console.log('ImageUpload: No cropped image blob available')
+          return null
+        }
+        
+        try {
+          const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
+          console.log('ImageUpload: Created file:', file)
+          console.log('ImageUpload: Calling uploadUserIcon...')
+          
+          const publicUrl = await uploadUserIcon(file, userId)
+          console.log('ImageUpload: Upload successful, publicUrl:', publicUrl)
+          return publicUrl
+        } catch (error) {
+          console.error('ImageUpload: Upload error:', error)
+          throw error
+        }
+      }
+    }), [croppedImageBlob])
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -90,31 +123,18 @@ export default function ImageUpload({ currentImage, onImageChange, onImageRemove
     const canvas = previewCanvasRef.current
     generateCroppedImage(canvas, completedCrop)
 
-    canvas.toBlob(async (blob) => {
+    canvas.toBlob((blob) => {
       if (blob) {
-        try {
-          // サーバーにアップロード
-          const formData = new FormData()
-          formData.append('file', blob, 'avatar.png')
-          
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-          })
-          
-          if (response.ok) {
-            const result = await response.json()
-            onImageChange(result.url)
-          } else {
-            console.error('Upload failed')
-          }
-        } catch (error) {
-          console.error('Upload error:', error)
-        }
+        // 画像のBlobを保存して、プレビュー用のURLを作成
+        setCroppedImageBlob(blob)
+        const previewUrl = URL.createObjectURL(blob)
+        console.log('ImageUpload: Created preview URL:', previewUrl)
+        onImageChange(previewUrl)
         
         if (blobUrlRef.current) {
           URL.revokeObjectURL(blobUrlRef.current)
         }
+        blobUrlRef.current = previewUrl
         setShowCrop(false)
         setSelectedImage(null)
       }
@@ -128,7 +148,16 @@ export default function ImageUpload({ currentImage, onImageChange, onImageRemove
     setCompletedCrop(undefined)
   }
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
+    if (currentImage) {
+      try {
+        // Supabase Storageから画像を削除
+        await deleteUserIcon(currentImage)
+      } catch (error) {
+        console.error('Failed to delete image from storage:', error)
+      }
+    }
+    
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current)
       blobUrlRef.current = ''
@@ -232,4 +261,8 @@ export default function ImageUpload({ currentImage, onImageChange, onImageRemove
       />
     </div>
   )
-}
+})
+
+ImageUpload.displayName = 'ImageUpload'
+
+export default ImageUpload
