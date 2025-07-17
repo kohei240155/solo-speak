@@ -604,11 +604,14 @@ export default function UserSetupPage() {
                   <h3 className="text-gray-900 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '24px' }}>
                     Basic
                   </h3>
-                  <p className="text-gray-700 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
-                    JP ¥ 500 / Month
-                  </p>
+                  <div className="mb-4">
+                    <p className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
+                      JP ¥ 500 / Month
+                    </p>
+                    <hr className="mt-2 border-gray-300" />
+                  </div>
                   
-                  <div className="space-y-2 mb-6">
+                  <div className="space-y-2" style={{ marginBottom: '180px' }}>
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-700">•</span>
                       <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
@@ -631,7 +634,7 @@ export default function UserSetupPage() {
 
                   <button
                     type="button"
-                    className="w-full text-white py-3 px-4 rounded-md"
+                    className="w-full text-white py-2 px-4 rounded-md"
                     style={{ backgroundColor: '#616161' }}
                   >
                     Get Started
