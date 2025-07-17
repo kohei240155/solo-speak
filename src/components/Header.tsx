@@ -13,7 +13,6 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
-  const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -34,7 +33,6 @@ export default function Header() {
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
-      setSetupCheckLoading(false)
       return
     }
 
@@ -43,7 +41,6 @@ export default function Header() {
       
       if (!session) {
         setIsUserSetupComplete(false)
-        setSetupCheckLoading(false)
         return
       }
 
@@ -66,8 +63,6 @@ export default function Header() {
     } catch (error) {
       console.error('Error checking user setup:', error)
       setIsUserSetupComplete(false)
-    } finally {
-      setSetupCheckLoading(false)
     }
   }, [user])
 
@@ -123,8 +118,6 @@ export default function Header() {
   useEffect(() => {
     if (user) {
       checkUserSetupComplete()
-    } else {
-      setSetupCheckLoading(false)
     }
   }, [user, checkUserSetupComplete])
 
