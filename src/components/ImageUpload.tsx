@@ -116,7 +116,10 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
   )
 
   const handleCropComplete = useCallback(async () => {
+    console.log('ImageUpload: handleCropComplete called')
+    
     if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
+      console.log('ImageUpload: Missing required elements for crop completion')
       return
     }
 
@@ -125,10 +128,13 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
 
     canvas.toBlob((blob) => {
       if (blob) {
+        console.log('ImageUpload: Generated blob:', blob)
+        
         // 画像のBlobを保存して、プレビュー用のURLを作成
         setCroppedImageBlob(blob)
         const previewUrl = URL.createObjectURL(blob)
         console.log('ImageUpload: Created preview URL:', previewUrl)
+        console.log('ImageUpload: Calling onImageChange with previewUrl')
         onImageChange(previewUrl)
         
         if (blobUrlRef.current) {
@@ -137,6 +143,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
         blobUrlRef.current = previewUrl
         setShowCrop(false)
         setSelectedImage(null)
+        console.log('ImageUpload: Apply completed - image is ready for upload on Save')
       }
     })
   }, [completedCrop, generateCroppedImage, onImageChange])
@@ -238,12 +245,14 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             </div>
             <div className="flex justify-end space-x-2">
               <button
+                type="button"
                 onClick={handleCropCancel}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleCropComplete}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >

@@ -154,10 +154,11 @@ export default function UserSetupPage() {
   }
 
   const onSubmit = async (data: UserSetupFormData) => {
+    console.log('Setup: Form submit started')
     setLoading(true)
     setError('')
     
-    console.log('Form submitted with data:', data)
+    console.log('Setup: Form submitted with data:', data)
 
     try {
       // 現在のセッションから認証トークンを取得
@@ -174,14 +175,16 @@ export default function UserSetupPage() {
       // 画像がアップロードされている場合、Supabase Storageにアップロード
       if (imageUploadRef.current && user) {
         try {
-          console.log('Starting image upload for user:', user.id)
+          console.log('Setup: Starting image upload for user:', user.id)
           const uploadedUrl = await imageUploadRef.current.uploadImage(user.id)
           if (uploadedUrl) {
             finalData.iconUrl = uploadedUrl
-            console.log('Image uploaded successfully:', uploadedUrl)
+            console.log('Setup: Image uploaded successfully:', uploadedUrl)
+          } else {
+            console.log('Setup: No image to upload')
           }
         } catch (uploadError) {
-          console.error('Image upload failed:', uploadError)
+          console.error('Setup: Image upload failed:', uploadError)
           
           // RLSエラーの場合はより詳細なエラーメッセージを提供
           if (uploadError instanceof Error) {
@@ -294,8 +297,14 @@ export default function UserSetupPage() {
               <ImageUpload
                 ref={imageUploadRef}
                 currentImage={watchIconUrl}
-                onImageChange={(imageUrl) => setValue('iconUrl', imageUrl)}
-                onImageRemove={() => setValue('iconUrl', '')}
+                onImageChange={(imageUrl) => {
+                  console.log('Setup: onImageChange called with:', imageUrl)
+                  setValue('iconUrl', imageUrl)
+                }}
+                onImageRemove={() => {
+                  console.log('Setup: onImageRemove called')
+                  setValue('iconUrl', '')
+                }}
               />
               {errors.iconUrl && (
                 <p className="mt-1 text-sm text-red-600">{errors.iconUrl.message}</p>
