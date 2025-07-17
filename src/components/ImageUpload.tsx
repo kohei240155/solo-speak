@@ -176,7 +176,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     <div className="space-y-4">
       {/* 現在のアイコン表示 */}
       <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300">
           {currentImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -199,8 +199,8 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               className="hidden"
             />
             <span
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-xs font-bold inline-block"
-              style={{ fontFamily: 'Inter, sans-serif' }}
+              className="px-4 py-2 text-white rounded-md hover:opacity-80 text-sm inline-block"
+              style={{ backgroundColor: '#616161', fontFamily: 'Inter, sans-serif' }}
             >
               Select
             </span>
@@ -209,7 +209,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-xs font-bold"
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Delete
