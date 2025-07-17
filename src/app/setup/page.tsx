@@ -36,6 +36,7 @@ export default function UserSetupPage() {
   const [loading, setLoading] = useState(false)
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
 
   // 言語データの変化を監視
   useEffect(() => {
@@ -260,35 +261,67 @@ export default function UserSetupPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#DFDFDF' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto py-8 px-4">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-gray-900 mb-6" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>Settings</h1>
-          
-          {/* タブメニュー */}
-          <div className="flex mb-6">
-            <button className="flex-1 py-2 bg-gray-200 text-gray-700" style={{ borderRadius: '20px 0 0 20px', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
-              User
-            </button>
-            <button className="flex-1 py-2 bg-white text-gray-700 border border-l-0 border-gray-300" style={{ borderRadius: '0 20px 20px 0', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', fontSize: '15px' }}>
-              Subscription
-            </button>
-          </div>
+        {/* Settings タイトル */}
+        <h1 className="text-gray-900 mb-6" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+          Settings
+        </h1>
+        
+        {/* タブメニュー */}
+        <div className="flex mb-6">
+          <button 
+            onClick={() => setActiveTab('user')}
+            className={`flex-1 py-2 ${
+              activeTab === 'user' 
+                ? 'bg-gray-200 text-gray-700' 
+                : 'bg-white text-gray-700 border border-gray-300'
+            }`} 
+            style={{ 
+              borderRadius: '20px 0 0 20px', 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: activeTab === 'user' ? 'bold' : 'normal', 
+              fontSize: '15px' 
+            }}
+          >
+            User
+          </button>
+          <button 
+            onClick={() => setActiveTab('subscription')}
+            className={`flex-1 py-2 ${
+              activeTab === 'subscription' 
+                ? 'bg-gray-200 text-gray-700' 
+                : 'bg-white text-gray-700 border border-l-0 border-gray-300'
+            }`} 
+            style={{ 
+              borderRadius: '0 20px 20px 0', 
+              fontFamily: 'Inter, sans-serif', 
+              fontWeight: activeTab === 'subscription' ? 'bold' : 'normal', 
+              fontSize: '15px' 
+            }}
+          >
+            Subscription
+          </button>
+        </div>
 
+        {/* コンテンツエリア */}
+        <div className="bg-white rounded-lg shadow-md p-6">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
               <p className="text-red-600">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* User Tab Content */}
+          {activeTab === 'user' && (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* User Icon */}
             <div>
               <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
@@ -501,6 +534,80 @@ export default function UserSetupPage() {
               </button>
             </div>
           </form>
+          )}
+
+          {/* Subscription Tab Content */}
+          {activeTab === 'subscription' && (
+            <div className="space-y-6">
+              {/* Current Status */}
+              <div>
+                <h2 className="text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+                  Current Status
+                </h2>
+                <div className="flex space-x-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value="No Subscribe"
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="px-6 py-2 text-white rounded-md"
+                    style={{ backgroundColor: '#616161' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              {/* Plans */}
+              <div>
+                <h2 className="text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+                  Plans
+                </h2>
+                <div className="border border-gray-300 rounded-lg p-6">
+                  <h3 className="text-gray-900 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '24px' }}>
+                    Basic
+                  </h3>
+                  <p className="text-gray-700 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
+                    JP ¥ 500 / Month
+                  </p>
+                  
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-700">•</span>
+                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                        1日5回までAIがフレーズを生成
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-700">•</span>
+                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                        音読回数をカウントする機能の提供
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-700">•</span>
+                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                        フレーズの暗記を助けるクイズ機能の提供
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="w-full text-white py-3 px-4 rounded-md"
+                    style={{ backgroundColor: '#616161' }}
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

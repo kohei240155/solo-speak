@@ -16,7 +16,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-2 text-gray-600">読み込み中...</p>
@@ -26,7 +26,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <p className="text-xl md:text-2xl text-gray-600 mb-8">
