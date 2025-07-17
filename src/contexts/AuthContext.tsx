@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
-import { supabase } from '@/utils/spabase'
+import { supabase, getAuthRedirectUrl } from '@/utils/spabase'
 
 type AuthContextType = {
   user: User | null
@@ -56,9 +56,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
-    // 環境変数または現在のドメインを使用してリダイレクトURLを設定
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-    const redirectUrl = `${siteUrl}/auth/callback`
+    // 環境設定からリダイレクトURLを取得
+    const redirectUrl = getAuthRedirectUrl()
     
     console.log('リダイレクトURL:', redirectUrl) // デバッグ用
     console.log('現在のorigin:', window.location.origin) // デバッグ用
