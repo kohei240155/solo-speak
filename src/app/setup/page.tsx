@@ -30,13 +30,21 @@ const userSetupSchema = z.object({
 type UserSetupFormData = z.infer<typeof userSetupSchema>
 
 export default function UserSetupPage() {
-  const { user, updateUserMetadata } = useAuth()
+  const { user, loading, updateUserMetadata } = useAuth()
   const router = useRouter()
   const imageUploadRef = useRef<ImageUploadRef>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
+
+  // 認証チェック: ログインしていない場合はログインページにリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      console.log('User not authenticated, redirecting to login')
+      router.push('/auth/login')
+    }
+  }, [user, loading, router])
 
   // 言語データの変化を監視
   useEffect(() => {
@@ -105,35 +113,7 @@ export default function UserSetupPage() {
     }
   }, [setValue])
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/')
-      return
-    }
-
-    // バケットは手動で作成済みなので、この処理はコメントアウト
-    // const initStorage = async () => {
-    //   try {
-    //     await createStorageBucket()
-    //   } catch (error) {
-    //     console.error('Storage bucket initialization failed:', error)
-    //   }
-    // }
-    // initStorage()
-
-    // 言語一覧を取得
-    fetchLanguages()
-    
-    // 既存ユーザー情報を取得
-    fetchUserSettings()
-    
-    // ユーザーのメールアドレスを初期値として設定
-    if (user.email) {
-      setValue('email', user.email)
-    }
-  }, [user, router, setValue, fetchUserSettings])
-
-  const fetchLanguages = async () => {
+  const fetchLanguages = useCallback(async () => {
     try {
       console.log('Fetching languages...')
       const response = await fetch('/api/languages')
@@ -152,11 +132,24 @@ export default function UserSetupPage() {
       console.error('Error fetching languages:', error)
       setError('言語データの取得に失敗しました')
     }
-  }
+  }, [])
+
+  // ユーザー設定とデータの初期化
+  useEffect(() => {
+    if (user) {
+      fetchUserSettings()
+      fetchLanguages()
+      
+      // ユーザーのメールアドレスを初期値として設定
+      if (user.email) {
+        setValue('email', user.email)
+      }
+    }
+  }, [user, fetchUserSettings, fetchLanguages, setValue])
 
   const onSubmit = async (data: UserSetupFormData) => {
     console.log('Setup: Form submit started')
-    setLoading(true)
+    setSubmitting(true)
     setError('')
     
     console.log('Setup: Form submitted with data:', data)
@@ -167,7 +160,7 @@ export default function UserSetupPage() {
       
       if (!session) {
         setError('認証情報が見つかりません。再度ログインしてください。')
-        setLoading(false)
+        setSubmitting(false)
         return
       }
 
@@ -198,7 +191,7 @@ export default function UserSetupPage() {
             setError('画像のアップロードに失敗しました。')
           }
           
-          setLoading(false)
+          setSubmitting(false)
           return
         }
       }
@@ -255,16 +248,20 @@ export default function UserSetupPage() {
       console.error('Error saving user settings:', error)
       setError('ユーザー設定の保存に失敗しました')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
-  if (!user) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     )
+  }
+
+  if (!user) {
+    return null // 認証チェックのuseEffectでリダイレクトされるので、何も表示しない
   }
 
   return (
@@ -526,11 +523,11 @@ export default function UserSetupPage() {
             <div className="pt-4">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={submitting}
                 className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 style={{ backgroundColor: '#616161' }}
               >
-                {loading ? 'Saving...' : 'Save'}
+                {submitting ? 'Saving...' : 'Save'}
               </button>
             </div>
           </form>

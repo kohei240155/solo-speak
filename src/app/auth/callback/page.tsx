@@ -10,6 +10,11 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // 現在のURLがauth/callbackではない場合は処理をスキップ
+        if (!window.location.pathname.includes('/auth/callback')) {
+          return
+        }
+        
         // URLのハッシュからセッション情報を取得
         const { data, error } = await supabase.auth.getSession()
         
