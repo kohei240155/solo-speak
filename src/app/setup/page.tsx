@@ -17,14 +17,49 @@ interface Language {
 
 // バリデーションスキーマ
 const userSetupSchema = z.object({
-  username: z.string().min(1, 'Display Name is required').max(50, 'Display Name must be less than 50 characters'),
+  username: z
+    .string()
+    .min(1, 'Display Name is required')
+    .max(100, 'Display Name must be less than 100 characters')
+    .trim(),
   iconUrl: z.string().optional(),
   nativeLanguageId: z.string().min(1, 'Native Language is required'),
   defaultLearningLanguageId: z.string().min(1, 'Default Learning Language is required'),
-  birthdate: z.string().optional(),
-  gender: z.enum(['male', 'female', 'unspecified', '']).optional(),
-  email: z.string().email('Please enter a valid email address').optional(),
-  defaultQuizCount: z.number().min(5).max(25)
+  birthdate: z
+    .string()
+    .min(1, 'Date of Birth is required')
+    .refine((date) => {
+      // 空文字列チェック
+      if (!date || date.trim() === '') {
+        return false
+      }
+      
+      // 日付形式のチェック（YYYY-MM-DD）
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+      if (!dateRegex.test(date)) {
+        return false
+      }
+      
+      // 有効な日付かチェック
+      const parsedDate = new Date(date)
+      const isValidDate = !isNaN(parsedDate.getTime())
+      
+      return isValidDate
+    }, 'Please enter a valid date'),
+  gender: z
+    .string()
+    .min(1, 'Gender is required')
+    .refine((val) => ['male', 'female', 'unspecified'].includes(val), {
+      message: 'Please select a valid gender option'
+    }),
+  email: z
+    .string()
+    .min(1, 'Contact Email is required')
+    .email('Please enter a valid email address'),
+  defaultQuizCount: z
+    .number()
+    .min(5, 'Default Quiz Length must be at least 5')
+    .max(25, 'Default Quiz Length must be at most 25')
 })
 
 type UserSetupFormData = z.infer<typeof userSetupSchema>
@@ -466,7 +501,7 @@ export default function UserSetupPage() {
                     {...register('gender')}
                     className="mr-2"
                   />
-                  Prefer not to say
+                  Unspecified
                 </label>
               </div>
               {errors.gender && (
