@@ -2,11 +2,54 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { supabase } from '@/utils/spabase'
 
 export default function DashboardPage() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
+  const [setupCheckLoading, setSetupCheckLoading] = useState(true)
+
+  // ユーザー設定の完了状態をチェック
+  const checkUserSetupComplete = useCallback(async () => {
+    if (!user) {
+      setSetupCheckLoading(false)
+      return
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        router.push('/auth/login')
+        return
+      }
+
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (response.status === 404) {
+        // ユーザー設定が存在しない場合は設定ページにリダイレクト
+        router.push('/setup')
+        return
+      } else if (!response.ok) {
+        console.error('Failed to check user settings:', response.status)
+        // エラーの場合も設定ページにリダイレクト
+        router.push('/setup')
+        return
+      }
+      
+      // ユーザー設定が存在する場合はそのまま継続
+      setSetupCheckLoading(false)
+    } catch (error) {
+      console.error('Error checking user setup:', error)
+      router.push('/setup')
+    }
+  }, [user, router])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -14,9 +57,15 @@ export default function DashboardPage() {
     }
   }, [user, loading, router])
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      checkUserSetupComplete()
+    }
+  }, [user, checkUserSetupComplete])
+
+  if (loading || setupCheckLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-2 text-gray-600">読み込み中...</p>
@@ -29,36 +78,8 @@ export default function DashboardPage() {
     return null
   }
 
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/auth/login')
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">
-                Solo Speak
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
-                {user.email}
-              </span>
-              <button
-                onClick={handleSignOut}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                ログアウト
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">

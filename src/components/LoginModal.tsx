@@ -23,13 +23,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       
       if (error) {
         setError(error.message)
-      } else {
-        // 認証成功時は直接ダッシュボードにリダイレクト
-        window.location.href = '/dashboard'
+        setLoading(false)
       }
+      // 認証成功時は直接リダイレクトせず、コールバックページに処理を委ねる
     } catch {
       setError('認証に失敗しました。再度お試しください。')
-    } finally {
       setLoading(false)
     }
   }

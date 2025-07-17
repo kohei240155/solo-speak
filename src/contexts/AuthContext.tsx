@@ -10,6 +10,7 @@ type AuthContextType = {
   loading: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
+  updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -55,13 +56,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
+    // 環境変数または現在のドメインを使用してリダイレクトURLを設定
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+    const redirectUrl = `${siteUrl}/auth/callback`
+    
+    console.log('リダイレクトURL:', redirectUrl) // デバッグ用
+    console.log('現在のorigin:', window.location.origin) // デバッグ用
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: redirectUrl
       }
     })
     return { error }
+  }
+
+  const updateUserMetadata = async (metadata: Record<string, string>) => {
+    if (!user) return
+
+    const { error } = await supabase.auth.updateUser({
+      data: metadata
+    })
+
+    if (error) {
+      console.error('Failed to update user metadata:', error)
+    }
   }
 
   const value = {
@@ -70,6 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loading,
     signOut,
     signInWithGoogle,
+    updateUserMetadata,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
