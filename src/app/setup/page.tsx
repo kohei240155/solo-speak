@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import ImageUpload from '@/components/ImageUpload'
 
 interface Language {
   id: string
@@ -11,23 +15,48 @@ interface Language {
   code: string
 }
 
+// バリデーションスキーマ
+const userSetupSchema = z.object({
+  username: z.string().min(1, 'Display Name is required').max(50, 'Display Name must be less than 50 characters'),
+  iconUrl: z.string().optional(),
+  nativeLanguageId: z.string().min(1, 'Native Language is required'),
+  defaultLearningLanguageId: z.string().min(1, 'Default Learning Language is required'),
+  birthdate: z.string().optional(),
+  gender: z.enum(['MALE', 'FEMALE', 'OTHER', '']).optional(),
+  email: z.string().email('Please enter a valid email address').optional(),
+  defaultQuizCount: z.number().min(5).max(25)
+})
+
+type UserSetupFormData = z.infer<typeof userSetupSchema>
+
 export default function UserSetupPage() {
-  const { user } = useAuth()
+  const { user, updateUserMetadata } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
 
-  const [formData, setFormData] = useState({
-    username: '',
-    iconUrl: '',
-    nativeLanguageId: '',
-    defaultLearningLanguageId: '',
-    birthdate: '',
-    gender: '',
-    email: '',
-    defaultQuizCount: 10
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch
+  } = useForm<UserSetupFormData>({
+    resolver: zodResolver(userSetupSchema),
+    defaultValues: {
+      username: '',
+      iconUrl: '',
+      nativeLanguageId: '',
+      defaultLearningLanguageId: '',
+      birthdate: '',
+      gender: '',
+      email: '',
+      defaultQuizCount: 10
+    }
   })
+
+  const watchIconUrl = watch('iconUrl')
 
   useEffect(() => {
     if (!user) {
@@ -40,9 +69,9 @@ export default function UserSetupPage() {
     
     // ユーザーのメールアドレスを初期値として設定
     if (user.email) {
-      setFormData(prev => ({ ...prev, email: user.email || '' }))
+      setValue('email', user.email)
     }
-  }, [user, router])
+  }, [user, router, setValue])
 
   const fetchLanguages = async () => {
     try {
@@ -56,8 +85,7 @@ export default function UserSetupPage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: UserSetupFormData) => {
     setLoading(true)
     setError('')
 
@@ -77,10 +105,14 @@ export default function UserSetupPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       })
 
       if (response.ok) {
+        // Supabaseのユーザーメタデータも更新
+        if (data.iconUrl) {
+          await updateUserMetadata({ icon_url: data.iconUrl })
+        }
         router.push('/dashboard')
       } else {
         const errorData = await response.json()
@@ -92,14 +124,6 @@ export default function UserSetupPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
   }
 
   if (!user) {
@@ -132,33 +156,20 @@ export default function UserSetupPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* User Icon */}
             <div>
               <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
                 User Icon
               </label>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '10px' }}
-                >
-                  Select
-                </button>
-                <button
-                  type="button"
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '10px' }}
-                >
-                  Delete
-                </button>
-              </div>
+              <ImageUpload
+                currentImage={watchIconUrl}
+                onImageChange={(imageUrl) => setValue('iconUrl', imageUrl)}
+                onImageRemove={() => setValue('iconUrl', '')}
+              />
+              {errors.iconUrl && (
+                <p className="mt-1 text-sm text-red-600">{errors.iconUrl.message}</p>
+              )}
             </div>
 
             {/* Display Name */}
@@ -169,13 +180,13 @@ export default function UserSetupPage() {
               <input
                 type="text"
                 id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                required
+                {...register('username')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Solo Ichiro"
               />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+              )}
             </div>
 
             {/* Native Language */}
@@ -186,10 +197,7 @@ export default function UserSetupPage() {
               <div className="relative">
                 <select
                   id="nativeLanguageId"
-                  name="nativeLanguageId"
-                  value={formData.nativeLanguageId}
-                  onChange={handleInputChange}
-                  required
+                  {...register('nativeLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
                 >
                   <option value="">Select a language</option>
@@ -203,6 +211,9 @@ export default function UserSetupPage() {
                   </svg>
                 </div>
               </div>
+              {errors.nativeLanguageId && (
+                <p className="mt-1 text-sm text-red-600">{errors.nativeLanguageId.message}</p>
+              )}
             </div>
 
             {/* Default Learning Language */}
@@ -213,10 +224,7 @@ export default function UserSetupPage() {
               <div className="relative">
                 <select
                   id="defaultLearningLanguageId"
-                  name="defaultLearningLanguageId"
-                  value={formData.defaultLearningLanguageId}
-                  onChange={handleInputChange}
-                  required
+                  {...register('defaultLearningLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
                 >
                   <option value="">Select a language</option>
@@ -230,6 +238,9 @@ export default function UserSetupPage() {
                   </svg>
                 </div>
               </div>
+              {errors.defaultLearningLanguageId && (
+                <p className="mt-1 text-sm text-red-600">{errors.defaultLearningLanguageId.message}</p>
+              )}
             </div>
 
             {/* Date of Birth */}
@@ -241,9 +252,7 @@ export default function UserSetupPage() {
                 <input
                   type="date"
                   id="birthdate"
-                  name="birthdate"
-                  value={formData.birthdate}
-                  onChange={handleInputChange}
+                  {...register('birthdate')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -252,6 +261,9 @@ export default function UserSetupPage() {
                   </svg>
                 </div>
               </div>
+              {errors.birthdate && (
+                <p className="mt-1 text-sm text-red-600">{errors.birthdate.message}</p>
+              )}
             </div>
 
             {/* Gender */}
@@ -263,10 +275,8 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="gender"
                     value="MALE"
-                    checked={formData.gender === 'MALE'}
-                    onChange={handleInputChange}
+                    {...register('gender')}
                     className="mr-2"
                   />
                   Male
@@ -274,10 +284,8 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="gender"
                     value="FEMALE"
-                    checked={formData.gender === 'FEMALE'}
-                    onChange={handleInputChange}
+                    {...register('gender')}
                     className="mr-2"
                   />
                   Female
@@ -285,15 +293,16 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    name="gender"
                     value="OTHER"
-                    checked={formData.gender === 'OTHER'}
-                    onChange={handleInputChange}
+                    {...register('gender')}
                     className="mr-2"
                   />
                   Prefer not to say
                 </label>
               </div>
+              {errors.gender && (
+                <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
+              )}
             </div>
 
             {/* Contact Email */}
@@ -304,12 +313,13 @@ export default function UserSetupPage() {
               <input
                 type="email"
                 id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
+                {...register('email')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="solospeak@gmail.com"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Default Quiz Length */}
@@ -320,9 +330,7 @@ export default function UserSetupPage() {
               <div className="relative">
                 <select
                   id="defaultQuizCount"
-                  name="defaultQuizCount"
-                  value={formData.defaultQuizCount}
-                  onChange={handleInputChange}
+                  {...register('defaultQuizCount', { valueAsNumber: true })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
                 >
                   <option value="5">5</option>
@@ -337,6 +345,9 @@ export default function UserSetupPage() {
                   </svg>
                 </div>
               </div>
+              {errors.defaultQuizCount && (
+                <p className="mt-1 text-sm text-red-600">{errors.defaultQuizCount.message}</p>
+              )}
             </div>
 
             {/* Save Button */}

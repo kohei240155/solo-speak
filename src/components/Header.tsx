@@ -87,9 +87,9 @@ export default function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {user.user_metadata?.avatar_url ? (
+                  {user.user_metadata?.avatar_url || user.user_metadata?.icon_url ? (
                     <Image
-                      src={user.user_metadata.avatar_url}
+                      src={user.user_metadata?.icon_url || user.user_metadata?.avatar_url}
                       alt="User Avatar"
                       width={32}
                       height={32}
@@ -146,9 +146,9 @@ export default function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {user.user_metadata?.avatar_url ? (
+                  {user.user_metadata?.avatar_url || user.user_metadata?.icon_url ? (
                     <Image
-                      src={user.user_metadata.avatar_url}
+                      src={user.user_metadata?.icon_url || user.user_metadata?.avatar_url}
                       alt="User Avatar"
                       width={32}
                       height={32}

@@ -10,6 +10,7 @@ type AuthContextType = {
   loading: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
+  updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -71,12 +72,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error }
   }
 
+  const updateUserMetadata = async (metadata: Record<string, string>) => {
+    if (!user) return
+
+    const { error } = await supabase.auth.updateUser({
+      data: metadata
+    })
+
+    if (error) {
+      console.error('Failed to update user metadata:', error)
+    }
+  }
+
   const value = {
     user,
     session,
     loading,
     signOut,
     signInWithGoogle,
+    updateUserMetadata,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

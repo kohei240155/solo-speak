@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
         pathname: '/a/**',
       },
     ],
+    domains: ['localhost'],
   },
 };
 
