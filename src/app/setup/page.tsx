@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import ImageUpload, { ImageUploadRef } from '@/components/ImageUpload'
+import toast, { Toaster } from 'react-hot-toast'
 
 interface Language {
   id: string
@@ -72,6 +73,7 @@ export default function UserSetupPage() {
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
+  const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
 
   // 認証チェック: ログインしていない場合はログインページにリダイレクト
   useEffect(() => {
@@ -128,6 +130,9 @@ export default function UserSetupPage() {
         const userData = await response.json()
         console.log('Existing user data:', userData)
         
+        // 既存ユーザーの場合は設定完了とみなす
+        setIsUserSetupComplete(true)
+        
         // フォームに既存データを設定
         setValue('username', userData.username || '')
         setValue('iconUrl', userData.iconUrl || '')
@@ -138,15 +143,28 @@ export default function UserSetupPage() {
         setValue('email', userData.email || '')
         setValue('defaultQuizCount', userData.defaultQuizCount || 10)
       } else if (response.status === 404) {
-        console.log('User not found, this is a new user')
-        // 新規ユーザーの場合は何もしない
+        console.log('User not found, this is a new user - setting Google account defaults')
+        // 新規ユーザーの場合は設定未完了
+        setIsUserSetupComplete(false)
+        // Googleアカウントの情報を初期値として設定
+        if (user?.user_metadata?.avatar_url) {
+          setValue('iconUrl', user.user_metadata.avatar_url)
+        }
+        if (user?.user_metadata?.full_name) {
+          setValue('username', user.user_metadata.full_name)
+        }
+        if (user?.email) {
+          setValue('email', user.email)
+        }
       } else {
         console.error('Failed to fetch user settings:', response.status)
+        setIsUserSetupComplete(false)
       }
     } catch (error) {
       console.error('Error fetching user settings:', error)
+      setIsUserSetupComplete(false)
     }
-  }, [setValue])
+  }, [setValue, user, setIsUserSetupComplete])
 
   const fetchLanguages = useCallback(async () => {
     try {
@@ -174,13 +192,8 @@ export default function UserSetupPage() {
     if (user) {
       fetchUserSettings()
       fetchLanguages()
-      
-      // ユーザーのメールアドレスを初期値として設定
-      if (user.email) {
-        setValue('email', user.email)
-      }
     }
-  }, [user, fetchUserSettings, fetchLanguages, setValue])
+  }, [user, fetchUserSettings, fetchLanguages])
 
   const onSubmit = async (data: UserSetupFormData) => {
     console.log('Setup: Form submit started')
@@ -254,9 +267,17 @@ export default function UserSetupPage() {
         }
         console.log('User setup completed successfully')
         
-        // 成功メッセージを表示してからダッシュボードへリダイレクト
+        // 設定完了状態を更新
+        setIsUserSetupComplete(true)
+        
+        // 成功メッセージを表示
         setError('')
-        router.push('/dashboard')
+        toast.success('Settings saved successfully!', {
+          duration: 3000,
+          position: 'top-center',
+        })
+        
+        // Settings画面に留まる（ダッシュボードへのリダイレクトを削除）
       } else {
         console.log('API response not ok, status:', response.status)
         console.log('Response headers:', response.headers)
@@ -301,6 +322,7 @@ export default function UserSetupPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <Toaster />
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-4">
         {/* Settings タイトル */}
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
@@ -320,12 +342,17 @@ export default function UserSetupPage() {
             User
           </button>
           <button 
-            onClick={() => setActiveTab('subscription')}
+            onClick={() => {
+              // ユーザー設定が完了していない場合はSubscriptionタブに切り替えできない
+              if (!isUserSetupComplete) return
+              setActiveTab('subscription')
+            }}
             className={`flex-1 py-2 text-sm md:text-base rounded-r-[20px] ${
               activeTab === 'subscription' 
                 ? 'bg-gray-200 text-gray-700 font-bold' 
                 : 'bg-white text-gray-700 border border-l-0 border-gray-300 font-normal'
             }`}
+            disabled={!isUserSetupComplete}
           >
             Subscription
           </button>

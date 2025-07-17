@@ -2,11 +2,54 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { supabase } from '@/utils/spabase'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [setupCheckLoading, setSetupCheckLoading] = useState(true)
+
+  // ユーザー設定の完了状態をチェック
+  const checkUserSetupComplete = useCallback(async () => {
+    if (!user) {
+      setSetupCheckLoading(false)
+      return
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        router.push('/auth/login')
+        return
+      }
+
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (response.status === 404) {
+        // ユーザー設定が存在しない場合は設定ページにリダイレクト
+        router.push('/setup')
+        return
+      } else if (!response.ok) {
+        console.error('Failed to check user settings:', response.status)
+        // エラーの場合も設定ページにリダイレクト
+        router.push('/setup')
+        return
+      }
+      
+      // ユーザー設定が存在する場合はそのまま継続
+      setSetupCheckLoading(false)
+    } catch (error) {
+      console.error('Error checking user setup:', error)
+      router.push('/setup')
+    }
+  }, [user, router])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -14,7 +57,13 @@ export default function DashboardPage() {
     }
   }, [user, loading, router])
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      checkUserSetupComplete()
+    }
+  }, [user, checkUserSetupComplete])
+
+  if (loading || setupCheckLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="text-center">

@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoginModal from './LoginModal'
+import { supabase } from '@/utils/spabase'
 
 export default function Header() {
   const { user, signOut } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
+  const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
+  const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -28,6 +31,46 @@ export default function Header() {
     setIsLoginModalOpen(false)
   }
 
+  // ユーザー設定の完了状態をチェック
+  const checkUserSetupComplete = useCallback(async () => {
+    if (!user) {
+      setSetupCheckLoading(false)
+      return
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        setIsUserSetupComplete(false)
+        setSetupCheckLoading(false)
+        return
+      }
+
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (response.ok) {
+        // ユーザー設定が存在する場合は完了とみなす
+        setIsUserSetupComplete(true)
+      } else if (response.status === 404) {
+        // ユーザー設定が存在しない場合は未完了
+        setIsUserSetupComplete(false)
+      } else {
+        setIsUserSetupComplete(false)
+      }
+    } catch (error) {
+      console.error('Error checking user setup:', error)
+      setIsUserSetupComplete(false)
+    } finally {
+      setSetupCheckLoading(false)
+    }
+  }, [user])
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
@@ -44,6 +87,16 @@ export default function Header() {
   const closeMobileDropdown = () => {
     console.log('Mobile dropdown close')
     setIsMobileDropdownOpen(false)
+  }
+
+  // ロゴクリック時の処理
+  const handleLogoClick = async (e: React.MouseEvent) => {
+    // ユーザー設定が未完了の場合は自動ログアウト
+    if (!isUserSetupComplete) {
+      e.preventDefault()
+      await signOut()
+    }
+    // 設定完了済みの場合は通常のリンク動作
   }
 
   // クリック外でドロップダウンを閉じる
@@ -66,6 +119,15 @@ export default function Header() {
     }
   }, [isDropdownOpen, isMobileDropdownOpen])
 
+  // ユーザー設定完了状態のチェック
+  useEffect(() => {
+    if (user) {
+      checkUserSetupComplete()
+    } else {
+      setSetupCheckLoading(false)
+    }
+  }, [user, checkUserSetupComplete])
+
   // デフォルトのGoogleアイコン（グレーの円形）を生成
   const getDefaultUserIcon = () => {
     return (
@@ -83,7 +145,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2" onClick={handleLogoClick}>
               <Image
                 src="/images/logo/Solo Speak Logo.png"
                 alt="Solo Speak"
@@ -120,32 +182,36 @@ export default function Header() {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                     <div className="py-1">
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onClick={closeDropdown}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ダッシュボード
-                      </Link>
-                      <Link
-                        href="/setup"
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onClick={closeDropdown}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ユーザー設定
-                      </Link>
+                      {isUserSetupComplete && (
+                        <>
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
+                            onClick={closeDropdown}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#F3F4F6'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
+                          >
+                            ダッシュボード
+                          </Link>
+                          <Link
+                            href="/setup"
+                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
+                            onClick={closeDropdown}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#F3F4F6'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
+                          >
+                            ユーザー設定
+                          </Link>
+                        </>
+                      )}
                       <button
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors"
@@ -197,32 +263,36 @@ export default function Header() {
                 {isMobileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                     <div className="py-1">
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onClick={closeMobileDropdown}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ダッシュボード
-                      </Link>
-                      <Link
-                        href="/setup"
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onClick={closeMobileDropdown}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ユーザー設定
-                      </Link>
+                      {isUserSetupComplete && (
+                        <>
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
+                            onClick={closeMobileDropdown}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#F3F4F6'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
+                          >
+                            ダッシュボード
+                          </Link>
+                          <Link
+                            href="/setup"
+                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
+                            onClick={closeMobileDropdown}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#F3F4F6'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
+                          >
+                            ユーザー設定
+                          </Link>
+                        </>
+                      )}
                       <button
                         onClick={handleSignOut}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors"
