@@ -269,14 +269,14 @@ export default function UserSetupPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-      <div className="max-w-2xl mx-auto py-8 px-4">
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-4">
         {/* Settings タイトル */}
-        <h1 className="text-gray-900 mb-6" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+        <h1 className="text-gray-900 mb-[18px]" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
           Settings
         </h1>
         
         {/* タブメニュー */}
-        <div className="flex mb-6">
+        <div className="flex mb-[18px]">
           <button 
             onClick={() => setActiveTab('user')}
             className={`flex-1 py-2 ${
