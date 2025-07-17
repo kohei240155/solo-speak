@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
@@ -63,6 +63,46 @@ export default function UserSetupPage() {
 
   const watchIconUrl = watch('iconUrl')
 
+  const fetchUserSettings = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        console.log('No session found for fetching user settings')
+        return
+      }
+
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        console.log('Existing user data:', userData)
+        
+        // フォームに既存データを設定
+        setValue('username', userData.username || '')
+        setValue('iconUrl', userData.iconUrl || '')
+        setValue('nativeLanguageId', userData.nativeLanguageId || '')
+        setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
+        setValue('birthdate', userData.birthdate ? userData.birthdate.split('T')[0] : '')
+        setValue('gender', userData.gender || '')
+        setValue('email', userData.email || '')
+        setValue('defaultQuizCount', userData.defaultQuizCount || 10)
+      } else if (response.status === 404) {
+        console.log('User not found, this is a new user')
+        // 新規ユーザーの場合は何もしない
+      } else {
+        console.error('Failed to fetch user settings:', response.status)
+      }
+    } catch (error) {
+      console.error('Error fetching user settings:', error)
+    }
+  }, [setValue])
+
   useEffect(() => {
     if (!user) {
       router.push('/')
@@ -72,11 +112,14 @@ export default function UserSetupPage() {
     // 言語一覧を取得
     fetchLanguages()
     
+    // 既存ユーザー情報を取得
+    fetchUserSettings()
+    
     // ユーザーのメールアドレスを初期値として設定
     if (user.email) {
       setValue('email', user.email)
     }
-  }, [user, router, setValue])
+  }, [user, router, setValue, fetchUserSettings])
 
   const fetchLanguages = async () => {
     try {
@@ -129,11 +172,17 @@ export default function UserSetupPage() {
       console.log('API response ok:', response.ok)
 
       if (response.ok) {
+        const responseData = await response.json()
+        console.log('API response data:', responseData)
+        
         // Supabaseのユーザーメタデータも更新
         if (data.iconUrl) {
           await updateUserMetadata({ icon_url: data.iconUrl })
         }
         console.log('User setup completed successfully')
+        
+        // 成功メッセージを表示してからダッシュボードへリダイレクト
+        setError('')
         router.push('/dashboard')
       } else {
         let errorData

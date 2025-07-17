@@ -84,33 +84,52 @@ export async function POST(request: NextRequest) {
       where: { id: user.id }
     })
 
+    let result
     if (existingUser) {
-      console.log('User already exists')
-      return NextResponse.json({ error: 'User already exists' }, { status: 409 })
+      console.log('User already exists, updating...')
+      // 既存ユーザーの場合は更新
+      result = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          username,
+          iconUrl,
+          nativeLanguageId,
+          defaultLearningLanguageId,
+          birthdate: birthdate ? new Date(birthdate) : null,
+          gender,
+          email: user.email || email,
+          defaultQuizCount: defaultQuizCount || 10,
+        },
+        include: {
+          nativeLanguage: true,
+          defaultLearningLanguage: true,
+        }
+      })
+      console.log('User updated successfully')
+    } else {
+      console.log('Creating new user...')
+      // 新規ユーザーの場合は作成
+      result = await prisma.user.create({
+        data: {
+          id: user.id,
+          email: user.email || email,
+          username,
+          iconUrl,
+          nativeLanguageId,
+          defaultLearningLanguageId,
+          birthdate: birthdate ? new Date(birthdate) : null,
+          gender,
+          defaultQuizCount: defaultQuizCount || 10,
+        },
+        include: {
+          nativeLanguage: true,
+          defaultLearningLanguage: true,
+        }
+      })
+      console.log('User created successfully')
     }
 
-    console.log('Creating new user...')
-    // ユーザーを作成
-    const newUser = await prisma.user.create({
-      data: {
-        id: user.id,
-        email: user.email || email,
-        username,
-        iconUrl,
-        nativeLanguageId,
-        defaultLearningLanguageId,
-        birthdate: birthdate ? new Date(birthdate) : null,
-        gender,
-        defaultQuizCount: defaultQuizCount || 10,
-      },
-      include: {
-        nativeLanguage: true,
-        defaultLearningLanguage: true,
-      }
-    })
-
-    console.log('User created successfully')
-    return NextResponse.json(newUser, { status: 201 })
+    return NextResponse.json(result, { status: existingUser ? 200 : 201 })
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
