@@ -171,19 +171,45 @@ export default function UserSetupPage() {
       console.log('Fetching languages...')
       const response = await fetch('/api/languages')
       console.log('Response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
         console.log('Languages received:', data)
-        setLanguages(data)
+        
+        // フォールバックデータが使用されているかチェック
+        const isFallbackData = response.headers.get('X-Fallback-Data') === 'true'
+        if (isFallbackData) {
+          console.warn('フォールバックデータが使用されています')
+          setError('データベースに接続できないため、制限された言語リストを表示しています。')
+        }
+        
+        if (Array.isArray(data) && data.length > 0) {
+          setLanguages(data)
+          if (!isFallbackData) {
+            setError('') // エラーをクリア（フォールバックでない場合のみ）
+          }
+        } else {
+          console.warn('No languages data received:', data)
+          setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
+        }
       } else {
         console.error('Failed to fetch languages:', response.status, response.statusText)
-        const errorText = await response.text()
-        console.error('Error response:', errorText)
-        setError('言語データの取得に失敗しました')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Error response:', errorData)
+        
+        const errorMessage = errorData.details 
+          ? `言語データの取得に失敗しました: ${errorData.details}`
+          : '言語データの取得に失敗しました。データベース接続を確認してください。'
+        
+        setError(errorMessage)
       }
     } catch (error) {
       console.error('Error fetching languages:', error)
-      setError('言語データの取得に失敗しました')
+      const errorMessage = error instanceof Error 
+        ? `言語データの取得に失敗しました: ${error.message}`
+        : '言語データの取得に失敗しました。ネットワーク接続を確認してください。'
+      
+      setError(errorMessage)
     }
   }, [])
 

@@ -24,7 +24,9 @@
     "db:seed:local": "cp .env.local .env && tsx prisma/seed.ts",
     "db:seed:production": "cp .env.production .env && tsx prisma/seed.ts",
     "generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "diagnose:db": "tsx scripts/diagnose-production-db.ts",
+    "insert:languages": "tsx scripts/insert-production-languages.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
