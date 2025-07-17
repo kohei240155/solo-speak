@@ -114,14 +114,14 @@ export default function UserSetupPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#D9D9D9' }}>
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+          <h1 className="text-gray-900 mb-6" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>Settings</h1>
           
           {/* タブメニュー */}
           <div className="flex mb-6">
-            <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-l-md font-medium">
+            <button className="flex-1 py-2 bg-gray-200 text-gray-700" style={{ borderRadius: '20px 0 0 20px', fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
               User
             </button>
-            <button className="px-4 py-2 bg-white text-gray-700 border border-l-0 border-gray-300 rounded-r-md font-medium">
+            <button className="flex-1 py-2 bg-white text-gray-700 border border-l-0 border-gray-300" style={{ borderRadius: '0 20px 20px 0', fontFamily: 'Inter, sans-serif', fontWeight: 'normal', fontSize: '15px' }}>
               Subscription
             </button>
           </div>
@@ -135,7 +135,7 @@ export default function UserSetupPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* User Icon */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
                 User Icon
               </label>
               <div className="flex items-center space-x-4">
@@ -146,13 +146,15 @@ export default function UserSetupPage() {
                 </div>
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '10px' }}
                 >
                   Select
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '10px' }}
                 >
                   Delete
                 </button>
@@ -161,7 +163,7 @@ export default function UserSetupPage() {
 
             {/* Display Name */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Display Name
               </label>
               <input
@@ -178,7 +180,7 @@ export default function UserSetupPage() {
 
             {/* Native Language */}
             <div>
-              <label htmlFor="nativeLanguageId" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Native Language
               </label>
               <div className="relative">
@@ -205,7 +207,7 @@ export default function UserSetupPage() {
 
             {/* Default Learning Language */}
             <div>
-              <label htmlFor="defaultLearningLanguageId" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Default Learning Language
               </label>
               <div className="relative">
@@ -232,7 +234,7 @@ export default function UserSetupPage() {
 
             {/* Date of Birth */}
             <div>
-              <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="birthdate" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Date of Birth
               </label>
               <div className="relative">
@@ -254,7 +256,7 @@ export default function UserSetupPage() {
 
             {/* Gender */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Gender
               </label>
               <div className="flex space-x-6">
@@ -296,7 +298,7 @@ export default function UserSetupPage() {
 
             {/* Contact Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Contact Email
               </label>
               <input
@@ -312,7 +314,7 @@ export default function UserSetupPage() {
 
             {/* Default Quiz Length */}
             <div>
-              <label htmlFor="defaultQuizCount" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="defaultQuizCount" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
                 Default Quiz Length
               </label>
               <div className="relative">
