@@ -3,7 +3,6 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import Header from '@/components/Header'
 
 export default function Home() {
   const { user, loading } = useAuth()
@@ -28,8 +27,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Header />
-      
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <p className="text-xl md:text-2xl text-gray-600 mb-8">

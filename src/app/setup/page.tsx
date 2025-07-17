@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
-import Header from '@/components/Header'
-import Image from 'next/image'
 
 interface Language {
   id: string
@@ -113,15 +111,20 @@ export default function UserSetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      
+    <div className="min-h-screen" style={{ backgroundColor: '#D9D9D9' }}>
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">アカウント設定</h1>
-          <p className="text-gray-600 mb-8">
-            Solo Speakへようこそ！学習を始める前に、プロフィールを設定しましょう。
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+          
+          {/* タブメニュー */}
+          <div className="flex mb-6">
+            <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-l-md font-medium">
+              User
+            </button>
+            <button className="px-4 py-2 bg-white text-gray-700 border border-l-0 border-gray-300 rounded-r-md font-medium">
+              Subscription
+            </button>
+          </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
@@ -130,10 +133,36 @@ export default function UserSetupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* ユーザー名 */}
+            {/* User Icon */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                User Icon
+              </label>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700"
+                >
+                  Select
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            {/* Display Name */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                ユーザー名 <span className="text-red-500">*</span>
+                Display Name
               </label>
               <input
                 type="text"
@@ -143,115 +172,132 @@ export default function UserSetupPage() {
                 onChange={handleInputChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="例：太郎"
+                placeholder="Solo Ichiro"
               />
             </div>
 
-            {/* プロフィール画像URL */}
-            <div>
-              <label htmlFor="iconUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                プロフィール画像URL
-              </label>
-              <input
-                type="url"
-                id="iconUrl"
-                name="iconUrl"
-                value={formData.iconUrl}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/avatar.jpg"
-              />
-              {formData.iconUrl && (
-                <div className="mt-2">
-                  <Image
-                    src={formData.iconUrl}
-                    alt="プロフィール画像プレビュー"
-                    width={64}
-                    height={64}
-                    className="rounded-full"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* 母国語 */}
+            {/* Native Language */}
             <div>
               <label htmlFor="nativeLanguageId" className="block text-sm font-medium text-gray-700 mb-2">
-                母国語 <span className="text-red-500">*</span>
+                Native Language
               </label>
-              <select
-                id="nativeLanguageId"
-                name="nativeLanguageId"
-                value={formData.nativeLanguageId}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">言語を選択してください</option>
-                {languages.map(lang => (
-                  <option key={lang.id} value={lang.id}>{lang.name}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="nativeLanguageId"
+                  name="nativeLanguageId"
+                  value={formData.nativeLanguageId}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                >
+                  <option value="">Select a language</option>
+                  {languages.map(lang => (
+                    <option key={lang.id} value={lang.id}>{lang.name}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* 学習言語 */}
+            {/* Default Learning Language */}
             <div>
               <label htmlFor="defaultLearningLanguageId" className="block text-sm font-medium text-gray-700 mb-2">
-                学習言語 <span className="text-red-500">*</span>
+                Default Learning Language
               </label>
-              <select
-                id="defaultLearningLanguageId"
-                name="defaultLearningLanguageId"
-                value={formData.defaultLearningLanguageId}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">言語を選択してください</option>
-                {languages.map(lang => (
-                  <option key={lang.id} value={lang.id}>{lang.name}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  id="defaultLearningLanguageId"
+                  name="defaultLearningLanguageId"
+                  value={formData.defaultLearningLanguageId}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                >
+                  <option value="">Select a language</option>
+                  {languages.map(lang => (
+                    <option key={lang.id} value={lang.id}>{lang.name}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* 誕生日 */}
+            {/* Date of Birth */}
             <div>
               <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700 mb-2">
-                誕生日
+                Date of Birth
               </label>
-              <input
-                type="date"
-                id="birthdate"
-                name="birthdate"
-                value={formData.birthdate}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+              <div className="relative">
+                <input
+                  type="date"
+                  id="birthdate"
+                  name="birthdate"
+                  value={formData.birthdate}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* 性別 */}
+            {/* Gender */}
             <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
-                性別
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gender
               </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">選択してください</option>
-                <option value="MALE">男性</option>
-                <option value="FEMALE">女性</option>
-                <option value="OTHER">その他</option>
-              </select>
+              <div className="flex space-x-6">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="MALE"
+                    checked={formData.gender === 'MALE'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  Male
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="FEMALE"
+                    checked={formData.gender === 'FEMALE'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  Female
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="OTHER"
+                    checked={formData.gender === 'OTHER'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  Prefer not to say
+                </label>
+              </div>
             </div>
 
-            {/* メールアドレス */}
+            {/* Contact Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                メールアドレス
+                Contact Email
               </label>
               <input
                 type="email"
@@ -260,52 +306,51 @@ export default function UserSetupPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="例：user@example.com"
+                placeholder="solospeak@gmail.com"
               />
             </div>
 
-            {/* デフォルトクイズ数 */}
+            {/* Default Quiz Length */}
             <div>
               <label htmlFor="defaultQuizCount" className="block text-sm font-medium text-gray-700 mb-2">
-                デフォルトクイズ出題数
+                Default Quiz Length
               </label>
-              <select
-                id="defaultQuizCount"
-                name="defaultQuizCount"
-                value={formData.defaultQuizCount}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="5">5問</option>
-                <option value="10">10問</option>
-                <option value="15">15問</option>
-                <option value="20">20問</option>
-                <option value="25">25問</option>
-              </select>
+              <div className="relative">
+                <select
+                  id="defaultQuizCount"
+                  name="defaultQuizCount"
+                  value={formData.defaultQuizCount}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                  <option value="25">25</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            {/* 送信ボタン */}
+            {/* Save Button */}
             <div className="pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#616161' }}
               >
-                {loading ? '保存中...' : '設定を保存'}
+                {loading ? 'Saving...' : 'Save'}
               </button>
             </div>
           </form>
         </div>
       </div>
-
-      {/* フッター */}
-      <footer className="bg-gray-800 text-white py-8 mt-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center">
-            <p className="text-gray-400">© 2024 Solo Speak. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
