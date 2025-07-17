@@ -303,7 +303,7 @@ export default function UserSetupPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-4">
         {/* Settings タイトル */}
-        <h1 className="text-gray-900 mb-[18px]" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+        <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
           Settings
         </h1>
         
@@ -311,33 +311,21 @@ export default function UserSetupPage() {
         <div className="flex mb-[18px]">
           <button 
             onClick={() => setActiveTab('user')}
-            className={`flex-1 py-2 ${
+            className={`flex-1 py-2 text-sm md:text-base rounded-l-[20px] ${
               activeTab === 'user' 
-                ? 'bg-gray-200 text-gray-700' 
-                : 'bg-white text-gray-700 border border-gray-300'
-            }`} 
-            style={{ 
-              borderRadius: '20px 0 0 20px', 
-              fontFamily: 'Inter, sans-serif', 
-              fontWeight: activeTab === 'user' ? 'bold' : 'normal', 
-              fontSize: '15px' 
-            }}
+                ? 'bg-gray-200 text-gray-700 font-bold' 
+                : 'bg-white text-gray-700 border border-gray-300 font-normal'
+            }`}
           >
             User
           </button>
           <button 
             onClick={() => setActiveTab('subscription')}
-            className={`flex-1 py-2 ${
+            className={`flex-1 py-2 text-sm md:text-base rounded-r-[20px] ${
               activeTab === 'subscription' 
-                ? 'bg-gray-200 text-gray-700' 
-                : 'bg-white text-gray-700 border border-l-0 border-gray-300'
-            }`} 
-            style={{ 
-              borderRadius: '0 20px 20px 0', 
-              fontFamily: 'Inter, sans-serif', 
-              fontWeight: activeTab === 'subscription' ? 'bold' : 'normal', 
-              fontSize: '15px' 
-            }}
+                ? 'bg-gray-200 text-gray-700 font-bold' 
+                : 'bg-white text-gray-700 border border-l-0 border-gray-300 font-normal'
+            }`}
           >
             Subscription
           </button>
@@ -356,7 +344,7 @@ export default function UserSetupPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* User Icon */}
             <div>
-              <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
+              <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 User Icon
               </label>
               <ImageUpload
@@ -378,7 +366,7 @@ export default function UserSetupPage() {
 
             {/* Display Name */}
             <div>
-              <label htmlFor="username" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="username" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Display Name
               </label>
               <input
@@ -395,7 +383,7 @@ export default function UserSetupPage() {
 
             {/* Native Language */}
             <div>
-              <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Native Language
               </label>
               <div className="relative">
@@ -422,7 +410,7 @@ export default function UserSetupPage() {
 
             {/* Default Learning Language */}
             <div>
-              <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Default Learning Language
               </label>
               <div className="relative">
@@ -449,7 +437,7 @@ export default function UserSetupPage() {
 
             {/* Date of Birth */}
             <div>
-              <label htmlFor="birthdate" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="birthdate" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Date of Birth
               </label>
               <div className="relative">
@@ -472,7 +460,7 @@ export default function UserSetupPage() {
 
             {/* Gender */}
             <div>
-              <label className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Gender
               </label>
               <div className="flex space-x-6">
@@ -511,7 +499,7 @@ export default function UserSetupPage() {
 
             {/* Contact Email */}
             <div>
-              <label htmlFor="email" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="email" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Contact Email
               </label>
               <input
@@ -528,7 +516,7 @@ export default function UserSetupPage() {
 
             {/* Default Quiz Length */}
             <div>
-              <label htmlFor="defaultQuizCount" className="block text-gray-700 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '15px' }}>
+              <label htmlFor="defaultQuizCount" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
                 Default Quiz Length
               </label>
               <div className="relative">
@@ -573,7 +561,7 @@ export default function UserSetupPage() {
             <div className="space-y-6">
               {/* Current Status */}
               <div>
-                <h2 className="text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+                <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
                   Current Status
                 </h2>
                 <div className="flex space-x-4">
@@ -597,15 +585,15 @@ export default function UserSetupPage() {
 
               {/* Plans */}
               <div>
-                <h2 className="text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '18px' }}>
+                <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
                   Plans
                 </h2>
                 <div className="border border-gray-300 rounded-lg p-6">
-                  <h3 className="text-gray-900 mb-2" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '24px' }}>
+                  <h3 className="text-gray-900 mb-2 text-xl md:text-2xl font-bold">
                     Basic
                   </h3>
                   <div className="mb-4">
-                    <p className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontWeight: 'bold', fontSize: '16px' }}>
+                    <p className="text-gray-700 text-sm md:text-base font-bold">
                       JP ¥ 500 / Month
                     </p>
                     <hr className="mt-2 border-gray-300" />
@@ -614,19 +602,19 @@ export default function UserSetupPage() {
                   <div className="space-y-2" style={{ marginBottom: '180px' }}>
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-700">•</span>
-                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                      <span className="text-gray-700 text-xs md:text-sm">
                         1日5回までAIがフレーズを生成
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-700">•</span>
-                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                      <span className="text-gray-700 text-xs md:text-sm">
                         音読回数をカウントする機能の提供
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-700">•</span>
-                      <span className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px' }}>
+                      <span className="text-gray-700 text-xs md:text-sm">
                         フレーズの暗記を助けるクイズ機能の提供
                       </span>
                     </div>
