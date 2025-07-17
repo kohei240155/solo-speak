@@ -10,11 +10,14 @@ export default function Header() {
   const { user, signOut } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = async () => {
     await signOut()
     setIsDropdownOpen(false)
+    setIsMobileDropdownOpen(false)
   }
 
   const handleLoginClick = () => {
@@ -33,22 +36,35 @@ export default function Header() {
     setIsDropdownOpen(false)
   }
 
+  const toggleMobileDropdown = () => {
+    console.log('Mobile dropdown toggle clicked')
+    setIsMobileDropdownOpen(!isMobileDropdownOpen)
+  }
+
+  const closeMobileDropdown = () => {
+    console.log('Mobile dropdown close')
+    setIsMobileDropdownOpen(false)
+  }
+
   // クリック外でドロップダウンを閉じる
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false)
       }
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node)) {
+        setIsMobileDropdownOpen(false)
+      }
     }
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen || isMobileDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen])
+  }, [isDropdownOpen, isMobileDropdownOpen])
 
   // デフォルトのGoogleアイコン（グレーの円形）を生成
   const getDefaultUserIcon = () => {
@@ -79,8 +95,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* ナビゲーション */}
-          <nav className="flex items-center">
+          {/* デスクトップナビゲーション */}
+          <nav className="hidden md:flex items-center">
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -141,10 +157,10 @@ export default function Header() {
           {/* モバイルメニュー */}
           <div className="md:hidden">
             {user ? (
-              <div className="relative">
+              <div className="relative" ref={mobileDropdownRef}>
                 <button
-                  onClick={toggleDropdown}
-                  className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                  onClick={toggleMobileDropdown}
+                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
                   {user.user_metadata?.avatar_url || user.user_metadata?.icon_url ? (
                     <Image
@@ -160,20 +176,20 @@ export default function Header() {
                 </button>
 
                 {/* モバイル用ドロップダウンメニュー */}
-                {isDropdownOpen && (
+                {isMobileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                     <div className="py-1">
                       <Link
                         href="/dashboard"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                        onClick={closeDropdown}
+                        onClick={closeMobileDropdown}
                       >
                         ダッシュボード
                       </Link>
                       <Link
                         href="/setup"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                        onClick={closeDropdown}
+                        onClick={closeMobileDropdown}
                       >
                         ユーザー設定
                       </Link>
