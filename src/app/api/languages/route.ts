@@ -5,6 +5,7 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
+    console.log('Fetching languages from database...')
     const languages = await prisma.language.findMany({
       where: {
         deletedAt: null
@@ -14,9 +15,23 @@ export async function GET() {
       }
     })
 
-    return NextResponse.json(languages)
+    console.log('Languages fetched:', languages.length)
+    return new NextResponse(JSON.stringify(languages), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    })
   } catch (error) {
     console.error('Error fetching languages:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return new NextResponse(
+      JSON.stringify({ error: 'Internal server error' }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+      }
+    )
   }
 }

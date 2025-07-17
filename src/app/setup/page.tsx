@@ -22,7 +22,7 @@ const userSetupSchema = z.object({
   nativeLanguageId: z.string().min(1, 'Native Language is required'),
   defaultLearningLanguageId: z.string().min(1, 'Default Learning Language is required'),
   birthdate: z.string().optional(),
-  gender: z.enum(['MALE', 'FEMALE', 'OTHER', '']).optional(),
+  gender: z.enum(['male', 'female', 'unspecified', '']).optional(),
   email: z.string().email('Please enter a valid email address').optional(),
   defaultQuizCount: z.number().min(5).max(25)
 })
@@ -35,6 +35,11 @@ export default function UserSetupPage() {
   const [loading, setLoading] = useState(false)
   const [languages, setLanguages] = useState<Language[]>([])
   const [error, setError] = useState('')
+
+  // 言語データの変化を監視
+  useEffect(() => {
+    console.log('Languages state updated:', languages)
+  }, [languages])
 
   const {
     register,
@@ -75,19 +80,30 @@ export default function UserSetupPage() {
 
   const fetchLanguages = async () => {
     try {
+      console.log('Fetching languages...')
       const response = await fetch('/api/languages')
+      console.log('Response status:', response.status)
       if (response.ok) {
         const data = await response.json()
+        console.log('Languages received:', data)
         setLanguages(data)
+      } else {
+        console.error('Failed to fetch languages:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('Error response:', errorText)
+        setError('言語データの取得に失敗しました')
       }
     } catch (error) {
       console.error('Error fetching languages:', error)
+      setError('言語データの取得に失敗しました')
     }
   }
 
   const onSubmit = async (data: UserSetupFormData) => {
     setLoading(true)
     setError('')
+    
+    console.log('Form submitted with data:', data)
 
     try {
       // 現在のセッションから認証トークンを取得
@@ -99,6 +115,7 @@ export default function UserSetupPage() {
         return
       }
 
+      console.log('Session found, making API call...')
       const response = await fetch('/api/user/settings', {
         method: 'POST',
         headers: {
@@ -108,14 +125,27 @@ export default function UserSetupPage() {
         body: JSON.stringify(data)
       })
 
+      console.log('API response status:', response.status)
+      console.log('API response ok:', response.ok)
+
       if (response.ok) {
         // Supabaseのユーザーメタデータも更新
         if (data.iconUrl) {
           await updateUserMetadata({ icon_url: data.iconUrl })
         }
+        console.log('User setup completed successfully')
         router.push('/dashboard')
       } else {
-        const errorData = await response.json()
+        let errorData
+        try {
+          errorData = await response.json()
+        } catch (parseError) {
+          console.error('Failed to parse error response as JSON:', parseError)
+          const errorText = await response.text()
+          console.error('Error response text:', errorText)
+          errorData = { error: 'APIエラーが発生しました' }
+        }
+        console.error('API Error:', errorData)
         setError(errorData.error || 'ユーザー設定の保存に失敗しました')
       }
     } catch (error) {
@@ -275,7 +305,7 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    value="MALE"
+                    value="male"
                     {...register('gender')}
                     className="mr-2"
                   />
@@ -284,7 +314,7 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    value="FEMALE"
+                    value="female"
                     {...register('gender')}
                     className="mr-2"
                   />
@@ -293,7 +323,7 @@ export default function UserSetupPage() {
                 <label className="flex items-center">
                   <input
                     type="radio"
-                    value="OTHER"
+                    value="unspecified"
                     {...register('gender')}
                     className="mr-2"
                   />

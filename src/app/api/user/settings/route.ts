@@ -41,8 +41,11 @@ export async function GET(request: NextRequest) {
 // ユーザー設定登録
 export async function POST(request: NextRequest) {
   try {
+    console.log('POST /api/user/settings called')
+    
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
+      console.log('No authorization header')
       return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
     }
 
@@ -50,10 +53,13 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error } = await supabase.auth.getUser(token)
 
     if (error || !user) {
+      console.log('Invalid token or user:', error)
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
     const body = await request.json()
+    console.log('Request body:', body)
+    
     const {
       username,
       iconUrl,
@@ -67,6 +73,7 @@ export async function POST(request: NextRequest) {
 
     // 必須フィールドのバリデーション
     if (!username || !nativeLanguageId || !defaultLearningLanguageId) {
+      console.log('Missing required fields')
       return NextResponse.json({ 
         error: 'Required fields: username, nativeLanguageId, defaultLearningLanguageId' 
       }, { status: 400 })
@@ -78,9 +85,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
+      console.log('User already exists')
       return NextResponse.json({ error: 'User already exists' }, { status: 409 })
     }
 
+    console.log('Creating new user...')
     // ユーザーを作成
     const newUser = await prisma.user.create({
       data: {
@@ -100,6 +109,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('User created successfully')
     return NextResponse.json(newUser, { status: 201 })
   } catch (error) {
     console.error('Error creating user:', error)
