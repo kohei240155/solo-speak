@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
+import { logEnvironmentInfo } from '@/utils/environment'
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -10,13 +11,29 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // 環境情報をログ出力
+        logEnvironmentInfo()
+        
         // 現在のURLがauth/callbackではない場合は処理をスキップ
         if (!window.location.pathname.includes('/auth/callback')) {
           return
         }
         
-        // URLのハッシュからセッション情報を取得
+        console.log('Auth callback処理開始')
+        console.log('- URL:', window.location.href)
+        console.log('- Origin:', window.location.origin)
+        console.log('- Pathname:', window.location.pathname)
+        console.log('- Search params:', window.location.search)
+        
+        // URLからcode/tokenを取得してセッションを確立
         const { data, error } = await supabase.auth.getSession()
+        
+        console.log('セッション取得結果:', {
+          hasSession: !!data.session,
+          hasError: !!error,
+          userId: data.session?.user?.id,
+          email: data.session?.user?.email
+        })
         
         if (error) {
           console.error('認証エラー:', error)
@@ -28,22 +45,30 @@ export default function AuthCallback() {
           // 認証成功時の処理
           console.log('認証成功:', data.session.user.email)
           
-          // ユーザーが既に設定済みかチェック
-          const userCheckResponse = await fetch('/api/user/settings', {
-            headers: {
-              'Authorization': `Bearer ${data.session.access_token}`
+          try {
+            // ユーザーが既に設定済みかチェック
+            const userCheckResponse = await fetch('/api/user/settings', {
+              headers: {
+                'Authorization': `Bearer ${data.session.access_token}`
+              }
+            })
+            
+            if (userCheckResponse.status === 404) {
+              // ユーザーが未設定の場合は設定画面へ
+              console.log('ユーザー未設定、設定画面へリダイレクト')
+              router.push('/setup')
+            } else if (userCheckResponse.ok) {
+              // ユーザーが設定済みの場合はダッシュボードへ
+              console.log('ユーザー設定済み、ダッシュボードへリダイレクト')
+              router.push('/dashboard')
+            } else {
+              // その他のエラー - とりあえずダッシュボードへ
+              console.warn('ユーザー情報の取得に失敗、ダッシュボードへリダイレクト')
+              router.push('/dashboard')
             }
-          })
-          
-          if (userCheckResponse.status === 404) {
-            // ユーザーが未設定の場合は設定画面へ
-            router.push('/setup')
-          } else if (userCheckResponse.ok) {
-            // ユーザーが設定済みの場合はダッシュボードへ
-            router.push('/dashboard')
-          } else {
-            // その他のエラー
-            console.error('ユーザー情報の取得に失敗しました')
+          } catch (apiError) {
+            console.error('API呼び出しエラー:', apiError)
+            // APIエラーの場合もダッシュボードへリダイレクト
             router.push('/dashboard')
           }
         } else {
