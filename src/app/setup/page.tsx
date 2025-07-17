@@ -547,8 +547,18 @@ export default function UserSetupPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
                 style={{ backgroundColor: '#616161' }}
+                onMouseEnter={(e) => {
+                  if (!submitting) {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!submitting) {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }
+                }}
               >
                 {submitting ? 'Saving...' : 'Save'}
               </button>
@@ -575,8 +585,14 @@ export default function UserSetupPage() {
                   </div>
                   <button
                     type="button"
-                    className="px-6 py-2 text-white rounded-md"
+                    className="px-6 py-2 text-white rounded-md transition-colors duration-200"
                     style={{ backgroundColor: '#616161' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#525252'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#616161'
+                    }}
                   >
                     Cancel
                   </button>
@@ -622,8 +638,14 @@ export default function UserSetupPage() {
 
                   <button
                     type="button"
-                    className="w-full text-white py-2 px-4 rounded-md"
+                    className="w-full text-white py-2 px-4 rounded-md transition-colors duration-200"
                     style={{ backgroundColor: '#616161' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#525252'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#616161'
+                    }}
                   >
                     Get Started
                   </button>

@@ -176,16 +176,42 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     <div className="space-y-4">
       {/* 現在のアイコン表示 */}
       <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300">
+        <div 
+          className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300 cursor-pointer transition-all duration-200"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#9CA3AF'
+            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = '#D1D5DB'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
+        >
           {currentImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={currentImage}
               alt="User Icon"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-200"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
             />
           ) : (
-            <svg className="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+            <svg 
+              className="w-6 h-6 text-gray-500 transition-colors duration-200" 
+              fill="currentColor" 
+              viewBox="0 0 20 20"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#6B7280'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = '#9CA3AF'
+              }}
+            >
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
             </svg>
           )}
@@ -199,8 +225,14 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               className="hidden"
             />
             <span
-              className="px-4 py-2 text-white rounded-md hover:opacity-80 text-sm inline-block"
-              style={{ backgroundColor: '#616161', fontFamily: 'Inter, sans-serif' }}
+              className="px-4 py-2 text-white rounded-md text-sm inline-block transition-colors duration-200"
+              style={{ backgroundColor: '#616161' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#525252'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#616161'
+              }}
             >
               Select
             </span>
@@ -209,8 +241,15 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
-              style={{ fontFamily: 'Inter, sans-serif' }}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm transition-colors duration-200"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F3F4F6'
+                e.currentTarget.style.borderColor = '#9CA3AF'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.borderColor = '#D1D5DB'
+              }}
             >
               Delete
             </button>
@@ -247,14 +286,14 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               <button
                 type="button"
                 onClick={handleCropCancel}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleCropComplete}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
               >
                 Apply
               </button>
