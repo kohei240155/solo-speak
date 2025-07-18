@@ -75,21 +75,13 @@ export default function UserSetupPage() {
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
-  const [userDataLoaded, setUserDataLoaded] = useState(false)
-  const [languagesLoaded, setLanguagesLoaded] = useState(false)
 
   // 認証チェック: ログインしていない場合はログインページにリダイレクト
   useEffect(() => {
     if (!loading && !user) {
-      console.log('User not authenticated, redirecting to login')
       router.push('/auth/login')
     }
   }, [user, loading, router])
-
-  // 言語データの変化を監視
-  useEffect(() => {
-    console.log('Languages state updated:', languages)
-  }, [languages])
 
   const {
     register,
@@ -118,8 +110,6 @@ export default function UserSetupPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        console.log('No session found for fetching user settings')
-        setUserDataLoaded(true)
         return
       }
 
@@ -132,7 +122,6 @@ export default function UserSetupPage() {
 
       if (response.ok) {
         const userData = await response.json()
-        console.log('Existing user data:', userData)
         
         // 既存ユーザーの場合は設定完了とみなす
         setIsUserSetupComplete(true)
@@ -147,7 +136,6 @@ export default function UserSetupPage() {
         setValue('email', userData.email || '')
         setValue('defaultQuizCount', userData.defaultQuizCount || 10)
       } else if (response.status === 404) {
-        console.log('User not found, this is a new user - setting Google account defaults')
         // 新規ユーザーの場合は設定未完了
         setIsUserSetupComplete(false)
         // Googleアカウントの情報を初期値として設定
@@ -167,25 +155,19 @@ export default function UserSetupPage() {
     } catch (error) {
       console.error('Error fetching user settings:', error)
       setIsUserSetupComplete(false)
-    } finally {
-      setUserDataLoaded(true)
     }
   }, [setValue, user, setIsUserSetupComplete])
 
   const fetchLanguages = useCallback(async () => {
     try {
-      console.log('Fetching languages...')
       const response = await fetch('/api/languages')
-      console.log('Response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('Languages received:', data)
         
         // フォールバックデータが使用されているかチェック
         const isFallbackData = response.headers.get('X-Fallback-Data') === 'true'
         if (isFallbackData) {
-          console.warn('フォールバックデータが使用されています')
           setError('データベースに接続できないため、制限された言語リストを表示しています。')
         }
         
@@ -195,51 +177,36 @@ export default function UserSetupPage() {
             setError('') // エラーをクリア（フォールバックでない場合のみ）
           }
         } else {
-          console.warn('No languages data received:', data)
           setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
         }
       } else {
-        console.error('Failed to fetch languages:', response.status, response.statusText)
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Error response:', errorData)
-        
-        const errorMessage = errorData.details 
-          ? `言語データの取得に失敗しました: ${errorData.details}`
-          : '言語データの取得に失敗しました。データベース接続を確認してください。'
-        
-        setError(errorMessage)
+        setError('言語データの取得に失敗しました。データベース接続を確認してください。')
       }
     } catch (error) {
       console.error('Error fetching languages:', error)
-      const errorMessage = error instanceof Error 
-        ? `言語データの取得に失敗しました: ${error.message}`
-        : '言語データの取得に失敗しました。ネットワーク接続を確認してください。'
-      
-      setError(errorMessage)
-    } finally {
-      setLanguagesLoaded(true)
+      setError('言語データの取得に失敗しました。ネットワーク接続を確認してください。')
     }
   }, [])
 
-  // ユーザー設定とデータの初期化
+  // ユーザー設定とデータの並列初期化
   useEffect(() => {
     if (user) {
-      fetchUserSettings()
-      fetchLanguages()
+      // データ取得を並列実行
+      Promise.all([
+        fetchUserSettings(),
+        fetchLanguages()
+      ]).then(() => {
+        setDataLoading(false)
+      }).catch(error => {
+        console.error('Error loading initial data:', error)
+        setDataLoading(false)
+      })
     }
   }, [user, fetchUserSettings, fetchLanguages])
 
-  // データ読み込み完了状態を管理
-  useEffect(() => {
-    setDataLoading(!(userDataLoaded && languagesLoaded))
-  }, [userDataLoaded, languagesLoaded])
-
   const onSubmit = async (data: UserSetupFormData) => {
-    console.log('Setup: Form submit started')
     setSubmitting(true)
     setError('')
-    
-    console.log('Setup: Form submitted with data:', data)
 
     try {
       // 現在のセッションから認証トークンを取得
@@ -256,16 +223,12 @@ export default function UserSetupPage() {
       // 画像がアップロードされている場合、Supabase Storageにアップロード
       if (imageUploadRef.current && user) {
         try {
-          console.log('Setup: Starting image upload for user:', user.id)
           const uploadedUrl = await imageUploadRef.current.uploadImage(user.id)
           if (uploadedUrl) {
             finalData.iconUrl = uploadedUrl
-            console.log('Setup: Image uploaded successfully:', uploadedUrl)
-          } else {
-            console.log('Setup: No image to upload')
           }
         } catch (uploadError) {
-          console.error('Setup: Image upload failed:', uploadError)
+          console.error('Image upload failed:', uploadError)
           
           // RLSエラーの場合はより詳細なエラーメッセージを提供
           if (uploadError instanceof Error) {
@@ -283,7 +246,6 @@ export default function UserSetupPage() {
         }
       }
 
-      console.log('Session found, making API call...')
       const response = await fetch('/api/user/settings', {
         method: 'POST',
         headers: {
@@ -293,21 +255,17 @@ export default function UserSetupPage() {
         body: JSON.stringify(finalData)
       })
 
-      console.log('API response status:', response.status)
-      console.log('API response ok:', response.ok)
-
       if (response.ok) {
-        const responseData = await response.json()
-        console.log('API response data:', responseData)
-        
         // Supabaseのユーザーメタデータも更新
         if (finalData.iconUrl) {
           await updateUserMetadata({ icon_url: finalData.iconUrl })
         }
-        console.log('User setup completed successfully')
         
         // 設定完了状態を更新
         setIsUserSetupComplete(true)
+        
+        // ヘッダーに設定更新を通知するカスタムイベントを発行
+        window.dispatchEvent(new Event('userSettingsUpdated'))
         
         // 成功メッセージを表示
         setError('')
@@ -318,25 +276,19 @@ export default function UserSetupPage() {
         
         // Settings画面に留まる（ダッシュボードへのリダイレクトを削除）
       } else {
-        console.log('API response not ok, status:', response.status)
-        console.log('Response headers:', response.headers)
-        
         let errorData
         try {
           const responseText = await response.text()
-          console.log('Raw response text:', responseText)
           
           if (responseText) {
             errorData = JSON.parse(responseText)
           } else {
             errorData = { error: 'Empty response from server' }
           }
-        } catch (parseError) {
-          console.error('Failed to parse error response:', parseError)
+        } catch {
           errorData = { error: 'Invalid response format from server' }
         }
         
-        console.error('API Error:', errorData)
         setError(errorData.error || 'ユーザー設定の保存に失敗しました')
       }
     } catch (error) {
@@ -417,11 +369,9 @@ export default function UserSetupPage() {
                 ref={imageUploadRef}
                 currentImage={watchIconUrl}
                 onImageChange={(imageUrl) => {
-                  console.log('Setup: onImageChange called with:', imageUrl)
                   setValue('iconUrl', imageUrl)
                 }}
                 onImageRemove={() => {
-                  console.log('Setup: onImageRemove called')
                   setValue('iconUrl', '')
                 }}
               />
@@ -457,17 +407,17 @@ export default function UserSetupPage() {
                   id="nativeLanguageId"
                   {...register('nativeLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-                  disabled={!languagesLoaded}
+                  disabled={dataLoading}
                 >
                   <option value="">
-                    {!languagesLoaded ? 'Loading languages...' : 'Select a language'}
+                    {dataLoading ? 'Loading languages...' : 'Select a language'}
                   </option>
                   {languages.map(lang => (
                     <option key={lang.id} value={lang.id}>{lang.name}</option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  {!languagesLoaded ? (
+                  {dataLoading ? (
                     <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
                   ) : (
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -491,17 +441,17 @@ export default function UserSetupPage() {
                   id="defaultLearningLanguageId"
                   {...register('defaultLearningLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-                  disabled={!languagesLoaded}
+                  disabled={dataLoading}
                 >
                   <option value="">
-                    {!languagesLoaded ? 'Loading languages...' : 'Select a language'}
+                    {dataLoading ? 'Loading languages...' : 'Select a language'}
                   </option>
                   {languages.map(lang => (
                     <option key={lang.id} value={lang.id}>{lang.name}</option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  {!languagesLoaded ? (
+                  {dataLoading ? (
                     <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
                   ) : (
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
