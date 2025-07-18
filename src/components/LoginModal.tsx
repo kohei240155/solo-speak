@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import Modal from './Modal'
 
@@ -35,15 +36,18 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="p-8">
-        {/* ロゴ */}
-        <div className="text-center mb-6">
+        {/* ロゴとタイトル */}
+        <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-yellow-400 text-black px-2 py-1 rounded font-bold text-xl">
-              ⚡
-            </div>
-            <h1 className="text-2xl font-bold ml-2">Solo Speak</h1>
+            <Image
+              src="/images/logo/Solo Speak Logo.png"
+              alt="Solo Speak Logo"
+              width={200}
+              height={60}
+              className="h-10 w-auto"
+            />
           </div>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-sm leading-relaxed">
             Solo Speakでは言えなかったフレーズを言え<br />
             るようにする地道な練習をサポートします。
           </p>
@@ -51,7 +55,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         {/* エラーメッセージ */}
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
             {error}
           </div>
         )}
@@ -60,11 +64,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
         >
           {loading ? (
             <div className="flex items-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-700 mr-2"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-700 mr-3"></div>
               認証中...
             </div>
           ) : (
