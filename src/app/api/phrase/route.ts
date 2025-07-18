@@ -9,13 +9,14 @@ const createPhraseSchema = z.object({
   languageId: z.string().min(1),
   text: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
+  level: z.enum(['common', 'polite', 'casual']).optional(),
   phraseLevelId: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, languageId, text, translation, phraseLevelId } = createPhraseSchema.parse(body)
+    const { userId, languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
 
     // ユーザーが存在するかチェック
     const user = await prisma.user.findUnique({
@@ -41,8 +42,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // デフォルトのフレーズレベルを取得（指定されていない場合）
+    // フレーズレベルIDを決定
     let finalPhraseLevelId = phraseLevelId
+    
+    if (!finalPhraseLevelId && level) {
+      // levelが指定されている場合、対応するphraseLevelIdを取得
+      const phraseLevel = await prisma.phraseLevel.findFirst({
+        where: { name: level }
+      })
+      
+      if (phraseLevel) {
+        finalPhraseLevelId = phraseLevel.id
+      }
+    }
+    
+    // それでもphraseLevelIdが決まらない場合、デフォルトのフレーズレベルを取得
     if (!finalPhraseLevelId) {
       const defaultLevel = await prisma.phraseLevel.findFirst({
         orderBy: { score: 'asc' }
@@ -68,7 +82,13 @@ export async function POST(request: NextRequest) {
         phraseLevelId: finalPhraseLevelId,
       },
       include: {
-        language: true,
+        language: {
+          select: {
+            id: true,
+            name: true,
+            code: true
+          }
+        },
         phraseLevel: true,
         user: {
           select: {
@@ -79,7 +99,24 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(phrase, { status: 201 })
+    // フロントエンドの期待する形式に変換
+    const transformedPhrase = {
+      id: phrase.id,
+      text: phrase.text,
+      translation: phrase.translation,
+      createdAt: phrase.createdAt,
+      practiceCount: phrase.totalReadCount,
+      correctAnswers: phrase.correctQuizCount,
+      language: {
+        name: phrase.language.name,
+        code: phrase.language.code
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      phrase: transformedPhrase
+    }, { status: 201 })
 
   } catch (error) {
     console.error('Error creating phrase:', error)
@@ -103,8 +140,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
     const languageId = searchParams.get('languageId')
-    const limit = parseInt(searchParams.get('limit') || '50')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const languageCode = searchParams.get('languageCode')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const offset = (page - 1) * limit
 
     const where: {
       userId?: string
@@ -117,12 +156,26 @@ export async function GET(request: NextRequest) {
     
     if (languageId) {
       where.languageId = languageId
+    } else if (languageCode) {
+      // languageCodeが指定されている場合、対応するlanguageIdを取得
+      const language = await prisma.language.findUnique({
+        where: { code: languageCode }
+      })
+      if (language) {
+        where.languageId = language.id
+      }
     }
 
     const phrases = await prisma.phrase.findMany({
       where,
       include: {
-        language: true,
+        language: {
+          select: {
+            id: true,
+            name: true,
+            code: true
+          }
+        },
         phraseLevel: true,
         user: {
           select: {
@@ -140,12 +193,27 @@ export async function GET(request: NextRequest) {
 
     const total = await prisma.phrase.count({ where })
 
+    // フロントエンドの期待する形式に変換
+    const transformedPhrases = phrases.map(phrase => ({
+      id: phrase.id,
+      text: phrase.text,
+      translation: phrase.translation,
+      createdAt: phrase.createdAt,
+      practiceCount: phrase.totalReadCount,
+      correctAnswers: phrase.correctQuizCount,
+      language: {
+        name: phrase.language.name,
+        code: phrase.language.code
+      }
+    }))
+
     return NextResponse.json({
-      phrases,
+      success: true,
+      phrases: transformedPhrases,
       pagination: {
         total,
         limit,
-        offset,
+        page,
         hasMore: offset + limit < total
       }
     })
