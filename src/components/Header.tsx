@@ -14,6 +14,7 @@ const Header = memo(function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
+  const [imageError, setImageError] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -31,9 +32,16 @@ const Header = memo(function Header() {
     setIsLoginModalOpen(false)
   }
 
+  // 画像読み込みエラーハンドラー
+  const handleImageError = () => {
+    setImageError(true)
+    setUserIconUrl(null)
+  }
+
   // ユーザー設定の完了状態をチェック（キャッシュ機能付き）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user?.id) {
+      setIsUserSetupComplete(false)
       setUserIconUrl(null)
       return
     }
@@ -43,7 +51,8 @@ const Header = memo(function Header() {
       
       if (!session) {
         setIsUserSetupComplete(false)
-        setUserIconUrl(null)
+        // セッションがない場合でも、Googleアカウントの初期アイコンを表示
+        setUserIconUrl(user.user_metadata?.avatar_url || null)
         return
       }
 
@@ -60,25 +69,32 @@ const Header = memo(function Header() {
       if (response.ok) {
         const userData = await response.json()
         setIsUserSetupComplete(true)
+        setImageError(false) // 新しいURLを設定する際にエラー状態をリセット
         
         // 画像URLの有効性をチェック
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
-          setUserIconUrl(null)
+          // カスタムアイコンがない場合はGoogleアカウントの初期アイコンを使用
+          setUserIconUrl(user.user_metadata?.avatar_url || null)
         }
       } else if (response.status === 404) {
         setIsUserSetupComplete(false)
+        setImageError(false)
         // Googleアカウントの初期アイコンを使用
         setUserIconUrl(user.user_metadata?.avatar_url || null)
       } else {
         setIsUserSetupComplete(false)
-        setUserIconUrl(null)
+        setImageError(false)
+        // エラーの場合でもGoogleアカウントの初期アイコンを表示
+        setUserIconUrl(user.user_metadata?.avatar_url || null)
       }
     } catch (error) {
       console.error('Header: Error checking user setup:', error)
       setIsUserSetupComplete(false)
-      setUserIconUrl(null)
+      setImageError(false)
+      // エラーの場合でもGoogleアカウントの初期アイコンを表示
+      setUserIconUrl(user.user_metadata?.avatar_url || null)
     }
   }, [user?.id, user?.user_metadata?.avatar_url]) // 必要な依存関係のみ
 
@@ -189,7 +205,7 @@ const Header = memo(function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {userIconUrl ? (
+                  {userIconUrl && !imageError ? (
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"
@@ -197,6 +213,7 @@ const Header = memo(function Header() {
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
+                      onError={handleImageError}
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -278,7 +295,7 @@ const Header = memo(function Header() {
                   onClick={toggleMobileDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
-                  {userIconUrl ? (
+                  {userIconUrl && !imageError ? (
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"
@@ -286,6 +303,7 @@ const Header = memo(function Header() {
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
+                      onError={handleImageError}
                     />
                   ) : (
                     getDefaultUserIcon()
