@@ -3,9 +3,9 @@ import { supabase } from '@/utils/spabase'
 import { createServerSupabaseClient } from '@/utils/supabase-server'
 import { PrismaClient } from '@/generated/prisma/client'
 
-// Prismaクライアントの初期化を改善
+// Prismaクライアントの初期化（本番環境ではログを最小化）
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
 })
 
 // ユーザー設定取得
@@ -49,18 +49,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     console.log('POST /api/user/settings called')
-    
-    // データベース接続テスト
-    try {
-      await prisma.$connect()
-      console.log('Database connection successful')
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError)
-      return NextResponse.json({ 
-        error: 'Database connection failed',
-        details: dbError instanceof Error ? dbError.message : 'Unknown database error'
-      }, { status: 500 })
-    }
     
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {

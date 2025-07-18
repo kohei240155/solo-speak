@@ -13,6 +13,7 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
+  const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -33,6 +34,7 @@ export default function Header() {
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
+      setUserIconUrl(null)
       return
     }
 
@@ -41,6 +43,7 @@ export default function Header() {
       
       if (!session) {
         setIsUserSetupComplete(false)
+        setUserIconUrl(null)
         return
       }
 
@@ -53,16 +56,22 @@ export default function Header() {
 
       if (response.ok) {
         // ユーザー設定が存在する場合は完了とみなす
+        const userData = await response.json()
         setIsUserSetupComplete(true)
+        setUserIconUrl(userData.iconUrl || null)
       } else if (response.status === 404) {
         // ユーザー設定が存在しない場合は未完了
         setIsUserSetupComplete(false)
+        // Googleアカウントの初期アイコンを使用
+        setUserIconUrl(user.user_metadata?.avatar_url || null)
       } else {
         setIsUserSetupComplete(false)
+        setUserIconUrl(null)
       }
     } catch (error) {
       console.error('Error checking user setup:', error)
       setIsUserSetupComplete(false)
+      setUserIconUrl(null)
     }
   }, [user])
 
@@ -121,11 +130,26 @@ export default function Header() {
     }
   }, [user, checkUserSetupComplete])
 
-  // デフォルトのGoogleアイコン（グレーの円形）を生成
+  // カスタムイベントでユーザー設定の更新を監視
+  useEffect(() => {
+    const handleUserSettingsUpdate = () => {
+      if (user) {
+        checkUserSetupComplete()
+      }
+    }
+
+    window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    
+    return () => {
+      window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    }
+  }, [user, checkUserSetupComplete])
+
+  // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = () => {
     return (
-      <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center border border-gray-300">
-        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
+        <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
       </div>
@@ -158,9 +182,9 @@ export default function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {user.user_metadata?.avatar_url || user.user_metadata?.icon_url ? (
+                  {userIconUrl ? (
                     <Image
-                      src={user.user_metadata?.icon_url || user.user_metadata?.avatar_url}
+                      src={userIconUrl}
                       alt="User Avatar"
                       width={32}
                       height={32}
@@ -239,9 +263,9 @@ export default function Header() {
                   onClick={toggleMobileDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
-                  {user.user_metadata?.avatar_url || user.user_metadata?.icon_url ? (
+                  {userIconUrl ? (
                     <Image
-                      src={user.user_metadata?.icon_url || user.user_metadata?.avatar_url}
+                      src={userIconUrl}
                       alt="User Avatar"
                       width={32}
                       height={32}

@@ -11,6 +11,7 @@ type AuthContextType = {
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -87,6 +88,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const refreshUser = async () => {
+    try {
+      const { data: { user: refreshedUser }, error } = await supabase.auth.getUser()
+      if (refreshedUser && !error) {
+        setUser(refreshedUser)
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error)
+    }
+  }
+
   const value = {
     user,
     session,
@@ -94,6 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut,
     signInWithGoogle,
     updateUserMetadata,
+    refreshUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
