@@ -166,7 +166,18 @@ export default function UserSetupPage() {
 
   const fetchLanguages = useCallback(async () => {
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        setError('認証情報が見つかりません。再度ログインしてください。')
+        return
+      }
+
       const response = await fetch('/api/languages', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
         // キャッシュを活用してパフォーマンス改善
         next: { revalidate: 3600 }
       })
