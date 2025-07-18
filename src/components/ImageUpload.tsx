@@ -9,6 +9,7 @@ interface ImageUploadProps {
   currentImage?: string
   onImageChange: (imageUrl: string) => void
   onImageRemove: () => void
+  disabled?: boolean
 }
 
 export interface ImageUploadRef {
@@ -16,7 +17,7 @@ export interface ImageUploadRef {
 }
 
 const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
-  ({ currentImage, onImageChange, onImageRemove }, ref) => {
+  ({ currentImage, onImageChange, onImageRemove, disabled = false }, ref) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [crop, setCrop] = useState<Crop>()
     const [completedCrop, setCompletedCrop] = useState<Crop>()
@@ -223,15 +224,20 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               accept="image/*"
               onChange={onSelectFile}
               className="hidden"
+              disabled={disabled}
             />
             <span
-              className="px-4 py-2 text-white rounded-md text-sm inline-block transition-colors duration-200"
-              style={{ backgroundColor: '#616161' }}
+              className={`px-4 py-2 text-white rounded-md text-sm inline-block transition-colors duration-200 ${disabled ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+              style={{ backgroundColor: disabled ? '#9CA3AF' : '#616161' }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#525252'
+                if (!disabled) {
+                  e.currentTarget.style.backgroundColor = '#525252'
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#616161'
+                if (!disabled) {
+                  e.currentTarget.style.backgroundColor = '#616161'
+                }
               }}
             >
               Select
@@ -241,14 +247,19 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm transition-colors duration-200"
+              disabled={disabled}
+              className={`px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm transition-colors duration-200 ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#F3F4F6'
-                e.currentTarget.style.borderColor = '#9CA3AF'
+                if (!disabled) {
+                  e.currentTarget.style.backgroundColor = '#F3F4F6'
+                  e.currentTarget.style.borderColor = '#9CA3AF'
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-                e.currentTarget.style.borderColor = '#D1D5DB'
+                if (!disabled) {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.borderColor = '#D1D5DB'
+                }
               }}
             >
               Delete

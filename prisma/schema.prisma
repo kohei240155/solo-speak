@@ -1,18 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-// ユーザーモデル
 model User {
   id                         String    @id @default(cuid())
   username                   String    @unique
@@ -30,33 +26,27 @@ model User {
   createdAt                  DateTime  @default(now()) @map("created_at")
   updatedAt                  DateTime  @updatedAt @map("updated_at")
   deletedAt                  DateTime? @map("deleted_at")
-
-  // リレーション
-  nativeLanguage           Language @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
-  defaultLearningLanguage  Language @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
-  phrases                  Phrase[]
+  phrases                    Phrase[]
+  defaultLearningLanguage    Language  @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
+  nativeLanguage             Language  @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
 
   @@map("users")
 }
 
-// 言語モデル
 model Language {
-  id        String    @id @default(cuid())
-  name      String
-  code      String    @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-
-  // リレーション
-  nativeUsers   User[]   @relation("UserNativeLanguage")
-  learningUsers User[]   @relation("UserLearningLanguage")
+  id            String    @id @default(cuid())
+  name          String
+  code          String    @unique
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
   phrases       Phrase[]
+  learningUsers User[]    @relation("UserLearningLanguage")
+  nativeUsers   User[]    @relation("UserNativeLanguage")
 
   @@map("languages")
 }
 
-// フレーズレベルモデル
 model PhraseLevel {
   id        String    @id @default(cuid())
   name      String
@@ -64,40 +54,34 @@ model PhraseLevel {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
-
-  // リレーション
-  phrases Phrase[]
+  phrases   Phrase[]
 
   @@map("phrase_levels")
 }
 
-// フレーズモデル
 model Phrase {
-  id                  String    @id @default(cuid())
-  userId              String    @map("user_id")
-  languageId          String    @map("language_id")
-  text                String
-  translation         String
-  totalReadCount      Int       @default(0) @map("total_read_count")
-  dailyReadCount      Int       @default(0) @map("daily_read_count")
-  correctQuizCount    Int       @default(0) @map("correct_quiz_count")
-  incorrectQuizCount  Int       @default(0) @map("incorrect_quiz_count")
-  phraseLevelId       String    @map("phrase_level_id")
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
-  deletedAt           DateTime? @map("deleted_at")
-
-  // リレーション
-  user         User        @relation(fields: [userId], references: [id])
-  language     Language    @relation(fields: [languageId], references: [id])
-  phraseLevel  PhraseLevel @relation(fields: [phraseLevelId], references: [id])
-  quizResults  QuizResult[]
-  speakLogs    SpeakLog[]
+  id                 String       @id @default(cuid())
+  userId             String       @map("user_id")
+  languageId         String       @map("language_id")
+  text               String
+  translation        String
+  totalReadCount     Int          @default(0) @map("total_read_count")
+  dailyReadCount     Int          @default(0) @map("daily_read_count")
+  correctQuizCount   Int          @default(0) @map("correct_quiz_count")
+  incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")
+  phraseLevelId      String       @map("phrase_level_id")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+  deletedAt          DateTime?    @map("deleted_at")
+  language           Language     @relation(fields: [languageId], references: [id])
+  phraseLevel        PhraseLevel  @relation(fields: [phraseLevelId], references: [id])
+  user               User         @relation(fields: [userId], references: [id])
+  quizResults        QuizResult[]
+  speakLogs          SpeakLog[]
 
   @@map("phrases")
 }
 
-// クイズ結果モデル
 model QuizResult {
   id        String    @id @default(cuid())
   phraseId  String    @map("phrase_id")
@@ -106,14 +90,11 @@ model QuizResult {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
-
-  // リレーション
-  phrase Phrase @relation(fields: [phraseId], references: [id])
+  phrase    Phrase    @relation(fields: [phraseId], references: [id])
 
   @@map("quiz_results")
 }
 
-// スピークログモデル
 model SpeakLog {
   id        String    @id @default(cuid())
   phraseId  String    @map("phrase_id")
@@ -122,14 +103,11 @@ model SpeakLog {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
-
-  // リレーション
-  phrase Phrase @relation(fields: [phraseId], references: [id])
+  phrase    Phrase    @relation(fields: [phraseId], references: [id])
 
   @@map("speak_logs")
 }
 
-// 列挙型
 enum Gender {
   male
   female

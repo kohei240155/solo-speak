@@ -34,12 +34,12 @@ export default function DashboardPage() {
 
       if (response.status === 404) {
         // ユーザー設定が存在しない場合は設定ページにリダイレクト
-        router.push('/setup')
+        router.push('/settings')
         return
       } else if (!response.ok) {
         console.error('Failed to check user settings:', response.status)
         // エラーの場合も設定ページにリダイレクト
-        router.push('/setup')
+        router.push('/settings')
         return
       }
       
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       setSetupCheckLoading(false)
     } catch (error) {
       console.error('Error checking user setup:', error)
-      router.push('/setup')
+      router.push('/settings')
     }
   }, [user, router])
 
