@@ -2,6 +2,13 @@ import { supabase } from './spabase'
 
 export async function uploadUserIcon(file: File, userId: string): Promise<string> {
   try {
+    // 環境情報をログ出力
+    console.log('Storage environment info:', {
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      nodeEnv: process.env.NODE_ENV,
+      vercelEnv: process.env.VERCEL_ENV
+    })
+
     // 認証状態を確認
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
@@ -28,12 +35,25 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
       userId
     })
 
-    // バケットの存在確認
+    // バケットの存在確認と公開設定確認
     const { data: buckets, error: bucketError } = await supabase.storage.listBuckets()
     if (bucketError) {
       console.error('Error listing buckets:', bucketError)
     } else {
-      console.log('Available buckets:', buckets?.map(b => b.name))
+      console.log('Available buckets:', buckets?.map(b => ({ name: b.name, public: b.public })))
+      const imagesBucket = buckets?.find(b => b.name === 'images')
+      if (imagesBucket) {
+        console.log('Images bucket info:', {
+          name: imagesBucket.name,
+          public: imagesBucket.public,
+          createdAt: imagesBucket.created_at
+        })
+        if (!imagesBucket.public) {
+          console.warn('WARNING: Images bucket is not public! This may cause access issues.')
+        }
+      } else {
+        console.warn('WARNING: Images bucket not found!')
+      }
     }
 
     // Supabase Storageにアップロード
@@ -67,7 +87,43 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
       .from('images')
       .getPublicUrl(filePath)
 
-    console.log('Public URL generated:', publicUrlData.publicUrl)
+    console.log('Public URL generated:', {
+      publicUrl: publicUrlData.publicUrl,
+      filePath: filePath,
+      urlStructure: {
+        protocol: new URL(publicUrlData.publicUrl).protocol,
+        hostname: new URL(publicUrlData.publicUrl).hostname,
+        pathname: new URL(publicUrlData.publicUrl).pathname
+      }
+    })
+
+    // URL の有効性をテスト（オプション）
+    try {
+      const testResponse = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
+      console.log('URL accessibility test:', {
+        status: testResponse.status,
+        ok: testResponse.ok,
+        headers: Object.fromEntries(testResponse.headers.entries())
+      })
+      
+      // 公開URLでアクセスできない場合は、認証付きURLを試す
+      if (!testResponse.ok) {
+        console.log('Public URL failed, trying signed URL...')
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+          .from('images')
+          .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
+        
+        if (signedUrlError) {
+          console.error('Error creating signed URL:', signedUrlError)
+        } else {
+          console.log('Signed URL created:', signedUrlData.signedUrl)
+          return signedUrlData.signedUrl
+        }
+      }
+    } catch (urlError) {
+      console.error('URL accessibility test failed:', urlError)
+    }
+
     return publicUrlData.publicUrl
   } catch (error) {
     console.error('Error uploading user icon:', error)

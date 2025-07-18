@@ -129,6 +129,12 @@ export default function UserSetupPage() {
         // フォームに既存データを設定
         setValue('username', userData.username || '')
         setValue('iconUrl', userData.iconUrl || '')
+        console.log('Setup: Setting iconUrl in form:', {
+          iconUrl: userData.iconUrl,
+          type: typeof userData.iconUrl,
+          length: userData.iconUrl?.length,
+          timestamp: new Date().toISOString()
+        })
         setValue('nativeLanguageId', userData.nativeLanguageId || '')
         setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
         setValue('birthdate', userData.birthdate ? userData.birthdate.split('T')[0] : '')
