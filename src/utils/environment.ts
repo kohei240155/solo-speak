@@ -9,11 +9,11 @@ export const getEnvironmentConfig = () => {
   
   if (isVercel) {
     if (vercelEnv === 'production') {
-      // 本番環境 - 実際のVercelドメインを使用
-      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` || 'https://solo-speak.vercel.app'
+      // 本番環境 - 明示的に設定されたサイトURLを優先使用
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
     } else if (vercelEnv === 'preview') {
-      // プレビュー環境
-      baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : baseUrl
+      // プレビュー環境 - 本番URLを使用（プレビューでも本番認証を使用するため）
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
     }
   } else {
     // ローカル開発環境

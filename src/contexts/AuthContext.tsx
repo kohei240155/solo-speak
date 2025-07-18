@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
-import { supabase, getAuthRedirectUrl } from '@/utils/spabase'
+import { supabase } from '@/utils/spabase'
 
 type AuthContextType = {
   user: User | null
@@ -56,11 +56,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
-    // 環境設定からリダイレクトURLを取得
-    const redirectUrl = getAuthRedirectUrl()
+    // 本番環境では明示的に設定されたドメインを使用
+    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+    const redirectUrl = `${productionUrl}/auth/callback`
     
-    console.log('リダイレクトURL:', redirectUrl) // デバッグ用
-    console.log('現在のorigin:', window.location.origin) // デバッグ用
+    console.log('Google認証設定:')
+    console.log('- リダイレクトURL:', redirectUrl)
+    console.log('- 現在のorigin:', window.location.origin)
+    console.log('- NODE_ENV:', process.env.NODE_ENV)
+    console.log('- VERCEL_ENV:', process.env.VERCEL_ENV)
     
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
