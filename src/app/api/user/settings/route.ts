@@ -1,38 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/utils/spabase'
-import { createServerSupabaseClient } from '@/utils/supabase-server'
-import { PrismaClient } from '@/generated/prisma/client'
-
-// Prismaクライアントの初期化（本番環境ではログを最小化）
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
-})
+import { 
+  authenticateRequest, 
+  validateUsername, 
+  validateEmail, 
+  validateBirthdate, 
+  validateRequiredFields, 
+  createErrorResponse 
+} from '@/utils/api-helpers'
+import { 
+  getUserSettings, 
+  createUserSettings, 
+  updateUserSettings, 
+  checkUserExists, 
+  checkUsernameConflict 
+} from '@/utils/database-helpers'
+import { Gender } from '@/generated/prisma/client'
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
     }
 
-    const token = authHeader.replace('Bearer ', '')
-    // サーバーサイドクライアントを使用してより確実な認証を実行
-    const serverSupabase = createServerSupabaseClient()
-    const { data: { user }, error } = await serverSupabase.auth.getUser(token)
-
-    if (error || !user) {
-      console.log('認証エラー:', error)
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    const userSettings = await prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        nativeLanguage: true,
-        defaultLearningLanguage: true,
-      }
-    })
+    const userSettings = await getUserSettings(authResult.user.id)
 
     if (!userSettings) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -43,8 +35,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'public, max-age=300') // 5分間キャッシュ
     return response
   } catch (error) {
-    console.error('Error getting user settings:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return createErrorResponse(error, 'GET /api/user/settings')
   }
 }
 
@@ -53,18 +44,9 @@ export async function POST(request: NextRequest) {
   try {
     console.log('POST /api/user/settings called')
     
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      console.log('No authorization header')
-      return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-
-    if (error || !user) {
-      console.log('Invalid token or user:', error)
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
     }
 
     const body = await request.json()
@@ -82,92 +64,56 @@ export async function POST(request: NextRequest) {
     } = body
 
     // 必須フィールドのバリデーション
-    if (!username || !nativeLanguageId || !defaultLearningLanguageId) {
+    const requiredValidation = validateRequiredFields(body, ['username', 'nativeLanguageId', 'defaultLearningLanguageId'])
+    if (!requiredValidation.isValid) {
       console.log('Missing required fields')
-      return NextResponse.json({ 
-        error: 'Required fields: username, nativeLanguageId, defaultLearningLanguageId' 
-      }, { status: 400 })
+      return NextResponse.json({ error: requiredValidation.error }, { status: 400 })
     }
 
     // ユーザーが既に存在するかチェック
-    const existingUser = await prisma.user.findUnique({
-      where: { id: user.id }
-    })
+    const existingUser = await checkUserExists(authResult.user.id)
 
     let result
     if (existingUser) {
       console.log('User already exists, updating...')
-      // 既存ユーザーの場合は更新
-      result = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          username,
-          iconUrl,
-          nativeLanguageId,
-          defaultLearningLanguageId,
-          birthdate: birthdate ? new Date(birthdate) : null,
-          gender,
-          email: user.email || email,
-          defaultQuizCount: defaultQuizCount || 10,
-        },
-        include: {
-          nativeLanguage: true,
-          defaultLearningLanguage: true,
-        }
+      result = await updateUserSettings(authResult.user.id, {
+        username,
+        iconUrl,
+        nativeLanguageId,
+        defaultLearningLanguageId,
+        birthdate,
+        gender: gender as Gender,
+        email: authResult.user.email || email,
+        defaultQuizCount: defaultQuizCount || 10,
       })
       console.log('User updated successfully')
     } else {
       console.log('Creating new user...')
-      // 新規ユーザーの場合は作成
-      result = await prisma.user.create({
-        data: {
-          id: user.id,
-          email: user.email || email,
-          username,
-          iconUrl,
-          nativeLanguageId,
-          defaultLearningLanguageId,
-          birthdate: birthdate ? new Date(birthdate) : null,
-          gender,
-          defaultQuizCount: defaultQuizCount || 10,
-        },
-        include: {
-          nativeLanguage: true,
-          defaultLearningLanguage: true,
-        }
+      result = await createUserSettings(authResult.user, {
+        username,
+        iconUrl,
+        nativeLanguageId,
+        defaultLearningLanguageId,
+        birthdate,
+        gender: gender as Gender,
+        email,
+        defaultQuizCount: defaultQuizCount || 10,
       })
       console.log('User created successfully')
     }
 
     return NextResponse.json(result, { status: existingUser ? 200 : 201 })
   } catch (error) {
-    console.error('Error in POST /api/user/settings:', error)
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    })
-    
-    return NextResponse.json({ 
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    return createErrorResponse(error, 'POST /api/user/settings')
   }
 }
 
 // ユーザー設定更新
 export async function PUT(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Authorization header required' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-
-    if (error || !user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
     }
 
     const body = await request.json()
@@ -182,31 +128,16 @@ export async function PUT(request: NextRequest) {
       defaultQuizCount
     } = body
 
-    // ユーザー名の重複チェック（自分以外で同じユーザー名がないか）
+    // ユーザー名のバリデーション
     if (username) {
-      // ユーザー名のバリデーション
-      if (typeof username !== 'string' || username.trim().length < 2 || username.trim().length > 50) {
-        return NextResponse.json({ 
-          error: 'Display Name must be between 2 and 50 characters' 
-        }, { status: 400 })
+      const usernameValidation = validateUsername(username)
+      if (!usernameValidation.isValid) {
+        return NextResponse.json({ error: usernameValidation.error }, { status: 400 })
       }
 
-      // ユーザー名の文字制限チェック
-      const usernameRegex = /^[a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\s\-_]+$/
-      if (!usernameRegex.test(username.trim())) {
-        return NextResponse.json({ 
-          error: 'Display Name can only contain letters, numbers, Japanese characters, spaces, hyphens, and underscores' 
-        }, { status: 400 })
-      }
-
-      const usernameConflict = await prisma.user.findFirst({
-        where: { 
-          username: username,
-          id: { not: user.id }
-        }
-      })
-
-      if (usernameConflict) {
+      // ユーザー名の重複チェック
+      const hasConflict = await checkUsernameConflict(username, authResult.user.id)
+      if (hasConflict) {
         console.log('Username already exists for another user')
         return NextResponse.json({ 
           error: 'このユーザー名は既に使用されています。別のユーザー名を選択してください。' 
@@ -216,52 +147,33 @@ export async function PUT(request: NextRequest) {
 
     // メールアドレスのバリデーション
     if (email) {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailRegex.test(email) || email.length > 254) {
-        return NextResponse.json({ 
-          error: 'Please enter a valid email address' 
-        }, { status: 400 })
-      }
-      
-      // 追加のメールバリデーション
-      if (email.includes('..') || email.startsWith('.') || email.endsWith('.')) {
-        return NextResponse.json({ 
-          error: 'Please enter a valid email address format' 
-        }, { status: 400 })
+      const emailValidation = validateEmail(email)
+      if (!emailValidation.isValid) {
+        return NextResponse.json({ error: emailValidation.error }, { status: 400 })
       }
     }
 
     // 生年月日のバリデーション
     if (birthdate) {
-      const birthdateObj = new Date(birthdate)
-      if (isNaN(birthdateObj.getTime()) || birthdateObj > new Date() || birthdateObj.getFullYear() < 1900) {
-        return NextResponse.json({ 
-          error: 'Please enter a valid birth date' 
-        }, { status: 400 })
+      const birthdateValidation = validateBirthdate(birthdate)
+      if (!birthdateValidation.isValid) {
+        return NextResponse.json({ error: birthdateValidation.error }, { status: 400 })
       }
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        username,
-        iconUrl,
-        nativeLanguageId,
-        defaultLearningLanguageId,
-        birthdate: birthdate ? new Date(birthdate) : null,
-        gender,
-        email,
-        defaultQuizCount,
-      },
-      include: {
-        nativeLanguage: true,
-        defaultLearningLanguage: true,
-      }
+    const updatedUser = await updateUserSettings(authResult.user.id, {
+      username,
+      iconUrl,
+      nativeLanguageId,
+      defaultLearningLanguageId,
+      birthdate,
+      gender: gender as Gender,
+      email,
+      defaultQuizCount,
     })
 
     return NextResponse.json(updatedUser)
   } catch (error) {
-    console.error('Error updating user:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return createErrorResponse(error, 'PUT /api/user/settings')
   }
 }
