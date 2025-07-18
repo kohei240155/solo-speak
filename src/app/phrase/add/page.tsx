@@ -39,6 +39,7 @@ export default function PhraseAddPage() {
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedVariation, setSelectedVariation] = useState<PhraseVariation | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
 
   useEffect(() => {
     // 言語一覧を取得
@@ -88,6 +89,10 @@ export default function PhraseAddPage() {
     setRemainingGenerations(2)
   }
 
+  const handleEditVariation = (index: number, newText: string) => {
+    setEditingVariations(prev => ({ ...prev, [index]: newText }))
+  }
+
   const handleGeneratePhrase = async () => {
     if (!desiredPhrase.trim()) {
       setError('フレーズを入力してください')
@@ -102,6 +107,7 @@ export default function PhraseAddPage() {
     setIsLoading(true)
     setError('')
     setGeneratedVariations([])
+    setEditingVariations({}) // 編集状態をリセット
 
     try {
       const response = await fetch('/api/phrase/generate', {
@@ -133,7 +139,7 @@ export default function PhraseAddPage() {
     }
   }
 
-  const handleSelectVariation = async (variation: PhraseVariation) => {
+  const handleSelectVariation = async (variation: PhraseVariation, index: number) => {
     if (!user) {
       setError('ログインが必要です')
       return
@@ -149,6 +155,9 @@ export default function PhraseAddPage() {
         throw new Error('学習言語が見つかりません')
       }
 
+      // 編集されたテキストがあれば使用、なければ元のテキストを使用
+      const finalText = editingVariations[index] || variation.text
+
       const response = await fetch('/api/phrase', {
         method: 'POST',
         headers: {
@@ -158,7 +167,7 @@ export default function PhraseAddPage() {
           userId: user.id,
           languageId: learningLang.id,
           text: desiredPhrase,
-          translation: variation.text,
+          translation: finalText,
         }),
       })
 
@@ -275,7 +284,18 @@ export default function PhraseAddPage() {
           <button
             onClick={handleGeneratePhrase}
             disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0}
-            className="w-full bg-gray-700 text-white py-3 rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors duration-200 mb-8"
+            className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
+            style={{ backgroundColor: '#616161' }}
+            onMouseEnter={(e) => {
+              if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                e.currentTarget.style.backgroundColor = '#525252'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                e.currentTarget.style.backgroundColor = '#616161'
+              }
+            }}
           >
             {isLoading ? (
               <div className="flex items-center justify-center">
@@ -290,7 +310,7 @@ export default function PhraseAddPage() {
           {/* 生成結果 */}
           {generatedVariations.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
                 AI Suggested Phrases
               </h3>
               
@@ -305,25 +325,31 @@ export default function PhraseAddPage() {
                     </div>
                   </div>
                   
-                  <p className="text-gray-800 text-base mb-4 leading-relaxed">
-                    {variation.text}
-                  </p>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-red-500">
-                      100文字以内で入力してください
-                    </span>
-                    <span className="text-xs text-red-500">
-                      120 / 100
-                    </span>
-                  </div>
+                  {/* 編集可能なテキストエリア */}
+                  <textarea
+                    value={editingVariations[index] || variation.text}
+                    onChange={(e) => handleEditVariation(index, e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                    rows={3}
+                  />
                   
                   <button
-                    onClick={() => handleSelectVariation(variation)}
+                    onClick={() => handleSelectVariation(variation, index)}
                     disabled={isSaving}
-                    className="w-full mt-3 bg-gray-700 text-white py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                    style={{ backgroundColor: '#616161' }}
+                    onMouseEnter={(e) => {
+                      if (!isSaving) {
+                        e.currentTarget.style.backgroundColor = '#525252'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSaving) {
+                        e.currentTarget.style.backgroundColor = '#616161'
+                      }
+                    }}
                   >
-                    {isSaving ? '登録中...' : 'Select'}
+                    {isSaving ? 'Saving...' : 'Select'}
                   </button>
                 </div>
               ))}
