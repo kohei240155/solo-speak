@@ -155,7 +155,7 @@ const Header = memo(function Header() {
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = () => {
     return (
-      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
+      <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
         <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
@@ -193,9 +193,9 @@ const Header = memo(function Header() {
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
                     />
                   ) : (
@@ -282,9 +282,9 @@ const Header = memo(function Header() {
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
                     />
                   ) : (

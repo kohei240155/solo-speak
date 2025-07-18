@@ -114,30 +114,38 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string): stri
   const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
   const learningLangName = languageNames[learningLanguage as keyof typeof languageNames] || learningLanguage
 
-  return `あなたは語学学習をサポートするAIアシスタントです。
-ユーザーが${nativeLangName}で話したいことを${learningLangName}で表現するのを手伝います。
+  return `次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。
 
-以下のルールに従って回答してください：
-1. 一般的（Common）、丁寧（Polite）、カジュアル（Casual）の3つのバリエーションを提供する
-2. 各バリエーションは自然で実用的な表現にする
-3. 文化的に適切で、ネイティブスピーカーが実際に使う表現を選ぶ
-4. 応答は以下のJSON形式で返す：
+以下の3つのトーンで、話し言葉に特化した、最も自然な口語表現を、それぞれ1文ずつ出力してください。
 
+1. common：誰にでも使える自然な言い方（バランスの取れた日常表現）
+2. polite：職場などで話し言葉として丁寧な表現が求められる場面向け
+3. casual：友達とのラフな会話向けの、砕けた口調
+
+出力形式（JSON）：
 {
-  "common": "一般的な表現",
-  "polite": "丁寧な表現", 
-  "casual": "カジュアルな表現"
+  "common": "～",
+  "polite": "～",
+  "casual": "～"
 }
 
 JSON以外の文字は含めないでください。`
 }
 
 function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string): string {
-  return `以下のフレーズを適切に翻訳してください：
+  const languageNames = {
+    ja: '日本語',
+    en: '英語',
+    ko: '韓国語',
+    zh: '中国語',
+    es: 'スペイン語',
+    fr: 'フランス語',
+    de: 'ドイツ語'
+  }
 
-「${desiredPhrase}」
-
-上記のフレーズを3つのスタイル（一般的、丁寧、カジュアル）で表現してください。`
+  const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
+  
+  return `対象の${nativeLangName}：${desiredPhrase}`
 }
 
 function parseGeneratedContent(content: string): PhraseVariation[] {
