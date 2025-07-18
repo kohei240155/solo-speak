@@ -29,7 +29,7 @@ const typeIcons = {
 
 export default function PhraseAddPage() {
   const { user } = useAuth()
-  const [nativeLanguage] = useState('ja')
+  const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -47,6 +47,7 @@ export default function PhraseAddPage() {
     // ユーザーの残り生成回数を取得
     if (user) {
       fetchUserRemainingGenerations()
+      fetchUserSettings()
     }
   }, [user])
 
@@ -59,6 +60,23 @@ export default function PhraseAddPage() {
       }
     } catch (error) {
       console.error('Error fetching languages:', error)
+    }
+  }
+
+  const fetchUserSettings = async () => {
+    try {
+      const response = await fetch('/api/user/settings')
+      if (response.ok) {
+        const userData = await response.json()
+        if (userData.nativeLanguage) {
+          setNativeLanguage(userData.nativeLanguage)
+        }
+        if (userData.learningLanguage) {
+          setLearningLanguage(userData.learningLanguage)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user settings:', error)
     }
   }
 
@@ -189,7 +207,9 @@ export default function PhraseAddPage() {
           {/* 言語表示と残り回数 */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 mr-4">Japanese</h2>
+              <h2 className="text-lg md:text-xl font-bold text-gray-900 mr-4">
+                {languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese'}
+              </h2>
               <div className="text-sm text-gray-600">
                 Left: {remainingGenerations} / 5
               </div>
@@ -200,10 +220,15 @@ export default function PhraseAddPage() {
               <select
                 value={learningLanguage}
                 onChange={(e) => setLearningLanguage(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
               >
-                <option value="en">English</option>
-                <option value="ja">日本語</option>
+                {languages
+                  .filter(lang => lang.code !== nativeLanguage)
+                  .map(lang => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </option>
+                  ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -218,7 +243,7 @@ export default function PhraseAddPage() {
             <textarea
               value={desiredPhrase}
               onChange={(e) => setDesiredPhrase(e.target.value)}
-              placeholder="知りたいフレーズを日本語で入力してください"
+              placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
               className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
               maxLength={maxLength}
