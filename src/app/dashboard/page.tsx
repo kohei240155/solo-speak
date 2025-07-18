@@ -94,7 +94,7 @@ export default function DashboardPage() {
           {/* 機能メニュー */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div 
-              onClick={() => router.push('/phrase-generator')}
+              onClick={() => router.push('/phrase/add')}
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 hover:border-blue-300"
             >
               <div className="text-center">
