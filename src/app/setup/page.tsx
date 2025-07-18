@@ -256,16 +256,23 @@ export default function UserSetupPage() {
       })
 
       if (response.ok) {
+        const result = await response.json()
+        console.log('Setup: User settings saved successfully:', { iconUrl: result.iconUrl })
+        
         // Supabaseのユーザーメタデータも更新
         if (finalData.iconUrl) {
+          console.log('Setup: Updating user metadata with iconUrl:', finalData.iconUrl)
           await updateUserMetadata({ icon_url: finalData.iconUrl })
         }
         
         // 設定完了状態を更新
         setIsUserSetupComplete(true)
         
-        // ヘッダーに設定更新を通知するカスタムイベントを発行
-        window.dispatchEvent(new Event('userSettingsUpdated'))
+        // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
+        console.log('Setup: Dispatching userSettingsUpdated event')
+        setTimeout(() => {
+          window.dispatchEvent(new Event('userSettingsUpdated'))
+        }, 100)
         
         // 成功メッセージを表示
         setError('')

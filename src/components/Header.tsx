@@ -33,7 +33,10 @@ export default function Header() {
 
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
+    console.log('Header: checkUserSetupComplete called for user:', user?.id)
+    
     if (!user) {
+      console.log('Header: No user, setting iconUrl to null')
       setUserIconUrl(null)
       return
     }
@@ -42,34 +45,41 @@ export default function Header() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
+        console.log('Header: No session found')
         setIsUserSetupComplete(false)
         setUserIconUrl(null)
         return
       }
 
-      const response = await fetch('/api/user/settings', {
+      console.log('Header: Fetching user settings...')
+      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
         }
       })
 
       if (response.ok) {
         // ユーザー設定が存在する場合は完了とみなす
         const userData = await response.json()
+        console.log('Header: User settings found:', { iconUrl: userData.iconUrl })
         setIsUserSetupComplete(true)
         setUserIconUrl(userData.iconUrl || null)
       } else if (response.status === 404) {
         // ユーザー設定が存在しない場合は未完了
+        console.log('Header: User settings not found, using Google avatar')
         setIsUserSetupComplete(false)
         // Googleアカウントの初期アイコンを使用
         setUserIconUrl(user.user_metadata?.avatar_url || null)
       } else {
+        console.log('Header: Error response:', response.status)
         setIsUserSetupComplete(false)
         setUserIconUrl(null)
       }
     } catch (error) {
-      console.error('Error checking user setup:', error)
+      console.error('Header: Error checking user setup:', error)
       setIsUserSetupComplete(false)
       setUserIconUrl(null)
     }
@@ -133,8 +143,12 @@ export default function Header() {
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
+      console.log('Header: userSettingsUpdated event received')
       if (user) {
+        console.log('Header: Triggering checkUserSetupComplete')
         checkUserSetupComplete()
+      } else {
+        console.log('Header: No user found, skipping update')
       }
     }
 
@@ -189,6 +203,10 @@ export default function Header() {
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full border border-gray-300"
+                      onError={() => {
+                        console.log('Header: Failed to load user icon:', userIconUrl)
+                        setUserIconUrl(null)
+                      }}
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -270,6 +288,10 @@ export default function Header() {
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full border border-gray-300"
+                      onError={() => {
+                        console.log('Header: Failed to load user icon (mobile):', userIconUrl)
+                        setUserIconUrl(null)
+                      }}
                     />
                   ) : (
                     getDefaultUserIcon()
