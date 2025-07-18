@@ -14,6 +14,7 @@ interface UserSettingsFormProps {
   setError: (error: string) => void
   setIsUserSetupComplete: (complete: boolean) => void
   onSubmit: (data: UserSetupFormData) => void
+  submitting: boolean
 }
 
 export default function UserSettingsForm({
@@ -26,10 +27,12 @@ export default function UserSettingsForm({
   dataLoading,
   setError,
   setIsUserSetupComplete,
-  onSubmit
+  onSubmit,
+  submitting: submittingProp
 }: UserSettingsFormProps) {
   const { submitting, imageUploadRef } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
   const watchIconUrl = watch('iconUrl')
+  const isDisabled = dataLoading || submitting || submittingProp
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -47,6 +50,7 @@ export default function UserSettingsForm({
           onImageRemove={() => {
             setValue('iconUrl', '')
           }}
+          disabled={isDisabled}
         />
         {errors.iconUrl && (
           <p className="mt-1 text-sm text-red-600">{errors.iconUrl.message}</p>
@@ -62,8 +66,9 @@ export default function UserSettingsForm({
           type="text"
           id="username"
           {...register('username')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           placeholder="Solo Ichiro"
+          disabled={isDisabled}
         />
         {errors.username && (
           <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
@@ -79,8 +84,8 @@ export default function UserSettingsForm({
           <select
             id="nativeLanguageId"
             {...register('nativeLanguageId')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-            disabled={dataLoading}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            disabled={isDisabled}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -113,8 +118,8 @@ export default function UserSettingsForm({
           <select
             id="defaultLearningLanguageId"
             {...register('defaultLearningLanguageId')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-            disabled={dataLoading}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            disabled={isDisabled}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -148,7 +153,8 @@ export default function UserSettingsForm({
             type="date"
             id="birthdate"
             {...register('birthdate')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            disabled={isDisabled}
           />
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -173,6 +179,7 @@ export default function UserSettingsForm({
               value="male"
               {...register('gender')}
               className="mr-2"
+              disabled={isDisabled}
             />
             Male
           </label>
@@ -182,6 +189,7 @@ export default function UserSettingsForm({
               value="female"
               {...register('gender')}
               className="mr-2"
+              disabled={isDisabled}
             />
             Female
           </label>
@@ -191,6 +199,7 @@ export default function UserSettingsForm({
               value="unspecified"
               {...register('gender')}
               className="mr-2"
+              disabled={isDisabled}
             />
             Unspecified
           </label>
@@ -209,8 +218,9 @@ export default function UserSettingsForm({
           type="email"
           id="email"
           {...register('email')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
           placeholder="solospeak@example.com"
+          disabled={isDisabled}
         />
         {errors.email && (
           <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -226,7 +236,8 @@ export default function UserSettingsForm({
           <select
             id="defaultQuizCount"
             {...register('defaultQuizCount', { valueAsNumber: true })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            disabled={isDisabled}
           >
             <option value="5">5</option>
             <option value="10">10</option>

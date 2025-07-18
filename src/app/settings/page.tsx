@@ -54,7 +54,7 @@ export default function UserSettingsPage() {
     dataLoading
   } = useUserSettings(setValue)
 
-  const { onSubmit } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
+  const { onSubmit, submitting } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
 
   if (loading || dataLoading) {
     return (
@@ -105,6 +105,7 @@ export default function UserSettingsPage() {
               setError={setError}
               setIsUserSetupComplete={setIsUserSetupComplete}
               onSubmit={onSubmit}
+              submitting={submitting}
             />
           )}
 
