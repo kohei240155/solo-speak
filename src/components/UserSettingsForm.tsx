@@ -250,7 +250,7 @@ export default function UserSettingsForm({
         <button
           type="submit"
           disabled={submitting}
-          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] transform disabled:hover:scale-100 disabled:active:scale-100"
           style={{ backgroundColor: '#616161' }}
           onMouseEnter={(e) => {
             if (!submitting) {
@@ -263,7 +263,14 @@ export default function UserSettingsForm({
             }
           }}
         >
-          {submitting ? 'Saving...' : 'Save'}
+          {submitting ? (
+            <span className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+              Saving...
+            </span>
+          ) : (
+            'Save'
+          )}
         </button>
       </div>
     </form>
