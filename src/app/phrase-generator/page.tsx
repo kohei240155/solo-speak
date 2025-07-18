@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import Header from '@/components/Header'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -163,8 +162,6 @@ export default function PhraseGeneratorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         {/* ページタイトル */}
         <div className="text-center mb-8">
