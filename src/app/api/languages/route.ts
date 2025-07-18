@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma/client'
+import { createServerSupabaseClient } from '@/utils/supabase-server'
 
 // Global Prisma client for development
 declare global {
