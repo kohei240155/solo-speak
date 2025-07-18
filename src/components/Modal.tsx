@@ -33,7 +33,8 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* オーバーレイ */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 transition-opacity"
+        style={{ backgroundColor: 'rgba(97, 97, 97, 0.5)' }}
         onClick={onClose}
       />
       

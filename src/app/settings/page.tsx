@@ -18,54 +18,19 @@ interface Language {
 
 // バリデーションスキーマ
 const userSetupSchema = z.object({
-  username: z
-    .string()
-    .min(1, 'Display Name is required')
-    .max(100, 'Display Name must be less than 100 characters')
-    .trim(),
+  username: z.string().min(1, 'Display Name is required'),
   iconUrl: z.string().optional(),
   nativeLanguageId: z.string().min(1, 'Native Language is required'),
   defaultLearningLanguageId: z.string().min(1, 'Default Learning Language is required'),
-  birthdate: z
-    .string()
-    .min(1, 'Date of Birth is required')
-    .refine((date) => {
-      // 空文字列チェック
-      if (!date || date.trim() === '') {
-        return false
-      }
-      
-      // 日付形式のチェック（YYYY-MM-DD）
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-      if (!dateRegex.test(date)) {
-        return false
-      }
-      
-      // 有効な日付かチェック
-      const parsedDate = new Date(date)
-      const isValidDate = !isNaN(parsedDate.getTime())
-      
-      return isValidDate
-    }, 'Please enter a valid date'),
-  gender: z
-    .string()
-    .min(1, 'Gender is required')
-    .refine((val) => ['male', 'female', 'unspecified'].includes(val), {
-      message: 'Please select a valid gender option'
-    }),
-  email: z
-    .string()
-    .min(1, 'Contact Email is required')
-    .email('Please enter a valid email address'),
-  defaultQuizCount: z
-    .number()
-    .min(5, 'Default Quiz Length must be at least 5')
-    .max(25, 'Default Quiz Length must be at most 25')
+  birthdate: z.string().min(1, 'Date of Birth is required'),
+  gender: z.string().min(1, 'Gender is required'),
+  email: z.string().email('Please enter a valid email address'),
+  defaultQuizCount: z.number().min(5, 'Default Quiz Length must be at least 5').max(25, 'Default Quiz Length must be at most 25')
 })
 
 type UserSetupFormData = z.infer<typeof userSetupSchema>
 
-export default function UserSetupPage() {
+export default function UserSettingsPage() {
   const { user, loading, updateUserMetadata } = useAuth()
   const router = useRouter()
   const imageUploadRef = useRef<ImageUploadRef>(null)
@@ -129,7 +94,7 @@ export default function UserSetupPage() {
         // フォームに既存データを設定
         setValue('username', userData.username || '')
         setValue('iconUrl', userData.iconUrl || '')
-        console.log('Setup: Setting iconUrl in form:', {
+        console.log('Settings: Setting iconUrl in form:', {
           iconUrl: userData.iconUrl,
           type: typeof userData.iconUrl,
           length: userData.iconUrl?.length,
@@ -266,11 +231,11 @@ export default function UserSetupPage() {
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Setup: User settings saved successfully:', { iconUrl: result.iconUrl })
+        console.log('Settings: User settings saved successfully:', { iconUrl: result.iconUrl })
         
         // Supabaseのユーザーメタデータも更新
         if (finalData.iconUrl) {
-          console.log('Setup: Updating user metadata with iconUrl:', finalData.iconUrl)
+          console.log('Settings: Updating user metadata with iconUrl:', finalData.iconUrl)
           await updateUserMetadata({ icon_url: finalData.iconUrl })
         }
         
@@ -278,7 +243,7 @@ export default function UserSetupPage() {
         setIsUserSetupComplete(true)
         
         // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
-        console.log('Setup: Dispatching userSettingsUpdated event')
+        console.log('Settings: Dispatching userSettingsUpdated event')
         setTimeout(() => {
           window.dispatchEvent(new Event('userSettingsUpdated'))
         }, 100)
@@ -305,7 +270,14 @@ export default function UserSetupPage() {
           errorData = { error: 'Invalid response format from server' }
         }
         
-        setError(errorData.error || 'ユーザー設定の保存に失敗しました')
+        console.error('Settings save failed:', { status: response.status, errorData })
+        
+        // 400番台のエラーの場合はサーバーからのエラーメッセージを表示
+        if (response.status >= 400 && response.status < 500) {
+          setError(errorData.error || 'ユーザー設定の保存に失敗しました')
+        } else {
+          setError('サーバーエラーが発生しました。しばらくしてからもう一度お試しください。')
+        }
       }
     } catch (error) {
       console.error('Error saving user settings:', error)
@@ -553,7 +525,7 @@ export default function UserSetupPage() {
                 id="email"
                 {...register('email')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="solospeak@gmail.com"
+                placeholder="solospeak@example.com"
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>

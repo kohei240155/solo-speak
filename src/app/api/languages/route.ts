@@ -51,16 +51,15 @@ export async function GET() {
         status: 200,
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
+          'X-Fallback-Data': 'true',
+          'Cache-Control': 'public, max-age=1800' // 30分間キャッシュ
         },
       })
     }
 
-    return new NextResponse(JSON.stringify(languages), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-    })
+    const response = NextResponse.json(languages)
+    response.headers.set('Cache-Control', 'public, max-age=3600') // 1時間キャッシュ
+    return response
   } catch (error) {
     console.error('Error fetching languages:', error)
     
@@ -82,7 +81,8 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'X-Fallback-Data': 'true'
+        'X-Fallback-Data': 'true',
+        'Cache-Control': 'public, max-age=1800' // 30分間キャッシュ
       },
     })
   }

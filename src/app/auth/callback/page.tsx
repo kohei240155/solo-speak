@@ -34,7 +34,7 @@ export default function AuthCallback() {
             
             if (userCheckResponse.status === 404) {
               // ユーザーが未設定の場合は設定画面へ
-              window.location.href = `${redirectUrl}/setup`
+              window.location.href = `${redirectUrl}/settings`
             } else if (userCheckResponse.ok) {
               // ユーザーが設定済みの場合はダッシュボードへ
               window.location.href = `${redirectUrl}/dashboard`

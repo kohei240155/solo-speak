@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoginModal from './LoginModal'
 import { supabase } from '@/utils/spabase'
 
-export default function Header() {
+const Header = memo(function Header() {
   const { user, signOut } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -31,12 +31,9 @@ export default function Header() {
     setIsLoginModalOpen(false)
   }
 
-  // ユーザー設定の完了状態をチェック
+  // ユーザー設定の完了状態をチェック（キャッシュ機能付き）
   const checkUserSetupComplete = useCallback(async () => {
-    console.log('Header: checkUserSetupComplete called for user:', user?.id)
-    
-    if (!user) {
-      console.log('Header: No user, setting iconUrl to null')
+    if (!user?.id) {
       setUserIconUrl(null)
       return
     }
@@ -45,53 +42,36 @@ export default function Header() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        console.log('Header: No session found')
         setIsUserSetupComplete(false)
         setUserIconUrl(null)
         return
       }
 
-      console.log('Header: Fetching user settings...')
-      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
+      // キャッシュ期間を10分に設定
+      const cacheControl = 'public, max-age=600'
+      const response = await fetch(`/api/user/settings`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
+          'Cache-Control': cacheControl
         }
       })
 
       if (response.ok) {
-        // ユーザー設定が存在する場合は完了とみなす
         const userData = await response.json()
-        console.log('Header: User settings found:', { 
-          iconUrl: userData.iconUrl,
-          iconUrlType: typeof userData.iconUrl,
-          iconUrlLength: userData.iconUrl?.length 
-        })
         setIsUserSetupComplete(true)
         
         // 画像URLの有効性をチェック
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
-          console.log('Header: Setting valid iconUrl:', userData.iconUrl)
-          console.log('Header: URL analysis:', {
-            startsWithHttps: userData.iconUrl.startsWith('https://'),
-            includesSupabase: userData.iconUrl.includes('supabase'),
-            urlStructure: userData.iconUrl.split('/').slice(0, 5).join('/')
-          })
           setUserIconUrl(userData.iconUrl)
         } else {
-          console.log('Header: iconUrl is invalid or empty, using null')
           setUserIconUrl(null)
         }
       } else if (response.status === 404) {
-        // ユーザー設定が存在しない場合は未完了
-        console.log('Header: User settings not found, using Google avatar')
         setIsUserSetupComplete(false)
         // Googleアカウントの初期アイコンを使用
         setUserIconUrl(user.user_metadata?.avatar_url || null)
       } else {
-        console.log('Header: Error response:', response.status)
         setIsUserSetupComplete(false)
         setUserIconUrl(null)
       }
@@ -100,7 +80,7 @@ export default function Header() {
       setIsUserSetupComplete(false)
       setUserIconUrl(null)
     }
-  }, [user]) // userオブジェクト全体を依存関係に含める
+  }, [user?.id, user?.user_metadata?.avatar_url]) // 必要な依存関係のみ
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
@@ -111,12 +91,10 @@ export default function Header() {
   }
 
   const toggleMobileDropdown = () => {
-    console.log('Mobile dropdown toggle clicked')
     setIsMobileDropdownOpen(!isMobileDropdownOpen)
   }
 
   const closeMobileDropdown = () => {
-    console.log('Mobile dropdown close')
     setIsMobileDropdownOpen(false)
   }
 
@@ -152,43 +130,27 @@ export default function Header() {
 
   // ユーザー設定完了状態のチェック
   useEffect(() => {
-    console.log('Header: useEffect triggered for checkUserSetupComplete, user:', user?.id)
-    if (user) {
+    if (user?.id) {
       checkUserSetupComplete()
     }
-  }, [user, checkUserSetupComplete])
+  }, [user?.id, checkUserSetupComplete])
 
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
-      console.log('Header: userSettingsUpdated event received')
-      if (user) {
-        console.log('Header: Triggering checkUserSetupComplete from event')
-        // 直接関数を呼び出す（依存関係の問題を回避）
+      if (user?.id) {
         checkUserSetupComplete()
-      } else {
-        console.log('Header: No user found, skipping update')
       }
     }
 
-    console.log('Header: Setting up userSettingsUpdated event listener')
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
     
     return () => {
-      console.log('Header: Removing userSettingsUpdated event listener')
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
     }
-  }, [user, checkUserSetupComplete]) // userとcheckUserSetupCompleteに依存
+  }, [user?.id, checkUserSetupComplete])
 
-  // デバッグ用: userIconUrlの変更を監視
-  useEffect(() => {
-    console.log('Header: userIconUrl state changed:', {
-      userIconUrl,
-      type: typeof userIconUrl,
-      length: userIconUrl?.length,
-      timestamp: new Date().toISOString()
-    })
-  }, [userIconUrl])
+  // デバッグ用のuseEffectを削除してパフォーマンス改善
 
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = () => {
@@ -228,26 +190,13 @@ export default function Header() {
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
                   {userIconUrl ? (
-                    // TODO: Switch back to Next.js Image component after debugging
-                    <img
+                    <Image
                       src={userIconUrl}
                       alt="User Avatar"
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full border border-gray-300 object-cover"
-                      onLoad={() => {
-                        console.log('Header: Successfully loaded user icon:', userIconUrl)
-                      }}
-                      onError={(e) => {
-                        console.error('Header: Failed to load user icon URL:', userIconUrl)
-                        console.error('Header: Image load error details:', {
-                          error: e,
-                          naturalWidth: (e.target as HTMLImageElement).naturalWidth,
-                          naturalHeight: (e.target as HTMLImageElement).naturalHeight,
-                          src: (e.target as HTMLImageElement).src
-                        })
-                        setUserIconUrl(null)
-                      }}
+                      unoptimized
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -274,7 +223,7 @@ export default function Header() {
                             ダッシュボード
                           </Link>
                           <Link
-                            href="/setup"
+                            href="/settings"
                             className="block px-4 py-2 text-sm text-gray-700 transition-colors"
                             onClick={closeDropdown}
                             onMouseEnter={(e) => {
@@ -307,7 +256,14 @@ export default function Header() {
             ) : (
               <button
                 onClick={handleLoginClick}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                style={{ backgroundColor: '#616161' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#525252'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#616161'
+                }}
               >
                 ログイン
               </button>
@@ -323,25 +279,13 @@ export default function Header() {
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
                   {userIconUrl ? (
-                    <img
+                    <Image
                       src={userIconUrl}
                       alt="User Avatar"
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full border border-gray-300 object-cover"
-                      onLoad={() => {
-                        console.log('Header: Successfully loaded user icon (mobile):', userIconUrl)
-                      }}
-                      onError={(e) => {
-                        console.error('Header: Failed to load user icon URL (mobile):', userIconUrl)
-                        console.error('Header: Mobile image load error details:', {
-                          error: e,
-                          naturalWidth: (e.target as HTMLImageElement).naturalWidth,
-                          naturalHeight: (e.target as HTMLImageElement).naturalHeight,
-                          src: (e.target as HTMLImageElement).src
-                        })
-                        setUserIconUrl(null)
-                      }}
+                      unoptimized
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -368,7 +312,7 @@ export default function Header() {
                             ダッシュボード
                           </Link>
                           <Link
-                            href="/setup"
+                            href="/settings"
                             className="block px-4 py-2 text-sm text-gray-700 transition-colors"
                             onClick={closeMobileDropdown}
                             onMouseEnter={(e) => {
@@ -401,7 +345,14 @@ export default function Header() {
             ) : (
               <button
                 onClick={handleLoginClick}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                style={{ backgroundColor: '#616161' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#525252'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#616161'
+                }}
               >
                 ログイン
               </button>
@@ -414,4 +365,6 @@ export default function Header() {
       <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
     </header>
   )
-}
+})
+
+export default Header
