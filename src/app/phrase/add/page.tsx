@@ -183,10 +183,34 @@ export default function PhraseAddPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-        {/* Phrase タイトル */}
-        <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
-          Phrase
-        </h1>
+        {/* Phrase タイトルと言語選択を同じ行に配置 */}
+        <div className="flex justify-between items-center mb-[18px]">
+          <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+            Phrase
+          </h1>
+          
+          {/* 言語選択ドロップダウン */}
+          <div className="relative">
+            <select
+              value={learningLanguage}
+              onChange={(e) => setLearningLanguage(e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
+            >
+              {languages
+                .filter(lang => lang.code !== nativeLanguage)
+                .map(lang => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
         
         {/* タブメニュー */}
         <div className="flex mb-[18px]">
@@ -206,40 +230,16 @@ export default function PhraseAddPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {/* 言語表示と残り回数 */}
+          {/* Native Language表示とLeft情報 */}
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 mr-4">
-                {languages.length > 0 
-                  ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
-                  : 'Loading...'
-                }
-              </h2>
-              <div className="text-sm text-gray-600">
-                Left: {remainingGenerations} / 5
-              </div>
-            </div>
-            
-            {/* 言語選択ドロップダウン */}
-            <div className="relative">
-              <select
-                value={learningLanguage}
-                onChange={(e) => setLearningLanguage(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
-              >
-                {languages
-                  .filter(lang => lang.code !== nativeLanguage)
-                  .map(lang => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </option>
-                  ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-              </div>
+            <h2 className="text-lg md:text-xl font-bold text-gray-900">
+              {languages.length > 0 
+                ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
+                : 'Loading...'
+              }
+            </h2>
+            <div className="text-sm text-gray-600">
+              Left: {remainingGenerations} / 5
             </div>
           </div>
 
