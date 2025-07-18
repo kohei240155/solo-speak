@@ -43,7 +43,9 @@ export default function PhraseAddPage() {
   useEffect(() => {
     // 言語一覧を取得
     fetchLanguages()
-    
+  }, [])
+
+  useEffect(() => {
     // ユーザーの残り生成回数を取得
     if (user) {
       fetchUserRemainingGenerations()
@@ -68,11 +70,11 @@ export default function PhraseAddPage() {
       const response = await fetch('/api/user/settings')
       if (response.ok) {
         const userData = await response.json()
-        if (userData.nativeLanguage) {
-          setNativeLanguage(userData.nativeLanguage)
+        if (userData.nativeLanguage?.code) {
+          setNativeLanguage(userData.nativeLanguage.code)
         }
-        if (userData.learningLanguage) {
-          setLearningLanguage(userData.learningLanguage)
+        if (userData.defaultLearningLanguage?.code) {
+          setLearningLanguage(userData.defaultLearningLanguage.code)
         }
       }
     } catch (error) {
@@ -208,7 +210,10 @@ export default function PhraseAddPage() {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 mr-4">
-                {languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese'}
+                {languages.length > 0 
+                  ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
+                  : 'Loading...'
+                }
               </h2>
               <div className="text-sm text-gray-600">
                 Left: {remainingGenerations} / 5
