@@ -315,7 +315,7 @@ export default function PhraseAddPage() {
               </h3>
               
               {generatedVariations.map((variation, index) => (
-                <div key={index} className="rounded-md p-4">
+                <div key={index} className="p-0">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center">
                       <span className="text-lg mr-2">{typeIcons[variation.type]}</span>
