@@ -7,6 +7,7 @@ import { RiSpeakLine } from 'react-icons/ri'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
 import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
+import { HiSpeakerWave } from 'react-icons/hi2'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -63,6 +64,39 @@ export default function PhraseAddPage() {
   const [isLoadingPhrases, setIsLoadingPhrases] = useState(true)
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
+
+  // 音声再生機能
+  const playText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // 既存の音声を停止
+      speechSynthesis.cancel()
+      
+      const utterance = new SpeechSynthesisUtterance(text)
+      
+      // 学習言語に応じて音声言語を設定
+      const languageMap: { [key: string]: string } = {
+        'en': 'en-US',
+        'ja': 'ja-JP',
+        'es': 'es-ES',
+        'fr': 'fr-FR',
+        'de': 'de-DE',
+        'it': 'it-IT',
+        'pt': 'pt-BR',
+        'ru': 'ru-RU',
+        'ko': 'ko-KR',
+        'zh': 'zh-CN'
+      }
+      
+      utterance.lang = languageMap[learningLanguage] || 'en-US'
+      utterance.rate = 0.8 // 再生速度を少し遅くする
+      utterance.pitch = 1.0
+      utterance.volume = 1.0
+      
+      speechSynthesis.speak(utterance)
+    } else {
+      console.warn('Speech synthesis not supported')
+    }
+  }
 
   // 正解数に応じて縦線の色を決定する関数
   const getBorderColor = (correctAnswers: number) => {
@@ -526,6 +560,13 @@ export default function PhraseAddPage() {
                               {typeLabels[variation.type]}
                             </span>
                           </div>
+                          <button
+                            onClick={() => playText(editingVariations[index] || variation.text)}
+                            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+                            title="音声を再生"
+                          >
+                            <HiSpeakerWave className="w-4 h-4 text-gray-600" />
+                          </button>
                         </div>
                         
                         {/* 編集可能なテキストエリア */}
