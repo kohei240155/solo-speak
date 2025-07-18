@@ -302,7 +302,7 @@ export default function UserSettingsPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <Toaster />
-      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-4">
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Settings タイトル */}
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
           Settings
@@ -338,7 +338,7 @@ export default function UserSettingsPage() {
         </div>
 
         {/* コンテンツエリア */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
               <p className="text-red-600">{error}</p>

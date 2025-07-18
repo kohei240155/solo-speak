@@ -180,7 +180,7 @@ export default function PhraseAddPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-4">
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Phrase タイトル */}
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
           Phrase
@@ -203,7 +203,7 @@ export default function PhraseAddPage() {
         </div>
 
         {/* コンテンツエリア */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {/* 言語表示と残り回数 */}
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
