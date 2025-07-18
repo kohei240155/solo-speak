@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/utils/spabase'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -56,7 +57,19 @@ export default function PhraseAddPage() {
 
   const fetchLanguages = async () => {
     try {
-      const response = await fetch('/api/languages')
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        console.error('認証情報が見つかりません')
+        return
+      }
+
+      const response = await fetch('/api/languages', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setLanguages(data)
