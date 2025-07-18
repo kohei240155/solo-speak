@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
+import { RiSpeakLine } from 'react-icons/ri'
+import { IoCheckboxOutline } from 'react-icons/io5'
+import { BiCalendarAlt } from 'react-icons/bi'
+import { HiOutlineEllipsisHorizontal } from 'react-icons/hi2'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -361,229 +365,222 @@ export default function PhraseAddPage() {
         </div>
 
         {/* コンテンツエリア */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {activeTab === 'List' && (
-            <div>
-              {isLoadingPhrases ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading phrases...</p>
-                </div>
-              ) : !Array.isArray(savedPhrases) || savedPhrases.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-600">まだフレーズが登録されていません</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {savedPhrases.map((phrase) => (
-                    <div 
-                      key={phrase.id} 
-                      className="pl-4 py-3 bg-gray-50 rounded-r-lg"
-                      style={{ 
-                        borderLeft: `4px solid ${getBorderColor(phrase.correctAnswers || 0)}` 
-                      }}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-base font-medium text-gray-900">
-                          {phrase.translation}
-                        </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </button>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-3">
-                        {phrase.text}
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                            {phrase.practiceCount || 0}
-                          </span>
-                          <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                            {phrase.correctAnswers || 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center">
-                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          {new Date(phrase.createdAt).toLocaleDateString('ja-JP', { 
-                            year: 'numeric', 
-                            month: 'numeric', 
-                            day: 'numeric' 
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {/* 無限スクロール用のローディング */}
-                  {isLoadingPhrases && savedPhrases.length > 0 && (
-                    <div className="text-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'Add' && (
-            <>
-              {/* Native Language表示とLeft情報 */}
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                  {languages.length > 0 
-                    ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
-                    : 'Loading...'
-                  }
-                </h2>
-                <div className="text-sm text-gray-600">
-                  Left: {remainingGenerations} / 5
-                </div>
+        {activeTab === 'List' ? (
+          <div>
+            {isLoadingPhrases ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading phrases...</p>
               </div>
-
-              {/* フレーズ入力エリア */}
-              <div className="mb-6">
-                <textarea
-                  value={desiredPhrase}
-                  onChange={(e) => setDesiredPhrase(e.target.value)}
-                  placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-                  className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                  maxLength={maxLength}
-                />
-                
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-xs text-gray-500">
-                    100文字以内で入力してください
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {desiredPhrase.length} / 100
-                  </span>
-                </div>
+            ) : !Array.isArray(savedPhrases) || savedPhrases.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-600">まだフレーズが登録されていません</p>
               </div>
-
-              {/* エラーメッセージ */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-                  {error}
-                </div>
-              )}
-
-              {/* AI Suggest ボタン */}
-              <button
-                onClick={handleGeneratePhrase}
-                disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0}
-                className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
-                style={{ backgroundColor: '#616161' }}
-                onMouseEnter={(e) => {
-                  if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
-                    e.currentTarget.style.backgroundColor = '#525252'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
-                    e.currentTarget.style.backgroundColor = '#616161'
-                  }
-                }}
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                    AI Suggest
-                  </div>
-                ) : (
-                  'AI Suggest'
-                )}
-              </button>
-
-              {/* 生成結果 */}
-              {generatedVariations.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900">
-                      AI Suggested Phrases
-                    </h3>
-                    <button
-                      onClick={() => setEditingVariations({})}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                  
-                  {generatedVariations.map((variation, index) => (
-                    <div key={index} className="p-0">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center">
-                          <span className="text-lg mr-2">{typeIcons[variation.type]}</span>
-                          <span className="font-medium text-gray-900">
-                            {typeLabels[variation.type]}
-                          </span>
-                        </div>
+            ) : (
+              <div className="space-y-4">
+                {savedPhrases.map((phrase) => (
+                  <div 
+                    key={phrase.id} 
+                    className="pl-4 pr-6 py-6 bg-white shadow-md"
+                    style={{ 
+                      borderLeft: `4px solid ${getBorderColor(phrase.correctAnswers || 0)}`,
+                      borderRadius: '5px'
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-base font-medium text-gray-900">
+                        {phrase.translation}
                       </div>
-                      
-                      {/* 編集可能なテキストエリア */}
-                      <textarea
-                        value={editingVariations[index] || variation.text}
-                        onChange={(e) => handleEditVariation(index, e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-                        rows={3}
-                      />
-                      
-                      <button
-                        onClick={() => handleSelectVariation(variation, index)}
-                        disabled={isSaving}
-                        className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-                        style={{ backgroundColor: '#616161' }}
-                        onMouseEnter={(e) => {
-                          if (!isSaving) {
-                            e.currentTarget.style.backgroundColor = '#525252'
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isSaving) {
-                            e.currentTarget.style.backgroundColor = '#616161'
-                          }
-                        }}
-                      >
-                        {isSaving ? 'Saving...' : 'Select'}
+                      <button className="text-gray-400 hover:text-gray-600">
+                        <HiOutlineEllipsisHorizontal className="w-5 h-5" />
                       </button>
                     </div>
-                  ))}
+                    <div className="text-sm text-gray-600 mb-3">
+                      {phrase.text}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center space-x-4">
+                        <span className="flex items-center">
+                          <RiSpeakLine className="w-4 h-4 mr-1" />
+                          {phrase.practiceCount || 0}
+                        </span>
+                        <span className="flex items-center">
+                          <IoCheckboxOutline className="w-4 h-4 mr-1" />
+                          {phrase.correctAnswers || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <BiCalendarAlt className="w-4 h-4 mr-1" />
+                        {new Date(phrase.createdAt).toLocaleDateString('ja-JP', { 
+                          year: 'numeric', 
+                          month: 'numeric', 
+                          day: 'numeric' 
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* 無限スクロール用のローディング */}
+                {isLoadingPhrases && savedPhrases.length > 0 && (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            {activeTab === 'Add' && (
+              <>
+                {/* Native Language表示とLeft情報 */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                    {languages.length > 0 
+                      ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
+                      : 'Loading...'
+                    }
+                  </h2>
+                  <div className="text-sm text-gray-600">
+                    Left: {remainingGenerations} / 5
+                  </div>
                 </div>
-              )}
 
-              {/* 成功メッセージ */}
-              {selectedVariation && (
-                <div className="mt-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-                  フレーズを登録しました！
+                {/* フレーズ入力エリア */}
+                <div className="mb-6">
+                  <textarea
+                    value={desiredPhrase}
+                    onChange={(e) => setDesiredPhrase(e.target.value)}
+                    placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
+                    className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={3}
+                    maxLength={maxLength}
+                  />
+                  
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-xs text-gray-500">
+                      100文字以内で入力してください
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {desiredPhrase.length} / 100
+                    </span>
+                  </div>
                 </div>
-              )}
-            </>
-          )}
 
-          {activeTab === 'Speak' && (
-            <div className="text-center py-8">
-              <p className="text-gray-600">Speak機能は準備中です</p>
-            </div>
-          )}
+                {/* エラーメッセージ */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+                    {error}
+                  </div>
+                )}
 
-          {activeTab === 'Quiz' && (
-            <div className="text-center py-8">
-              <p className="text-gray-600">Quiz機能は準備中です</p>
-            </div>
-          )}
-        </div>
+                {/* AI Suggest ボタン */}
+                <button
+                  onClick={handleGeneratePhrase}
+                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0}
+                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
+                  style={{ backgroundColor: '#616161' }}
+                  onMouseEnter={(e) => {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                      e.currentTarget.style.backgroundColor = '#525252'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                      e.currentTarget.style.backgroundColor = '#616161'
+                    }
+                  }}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                      AI Suggest
+                    </div>
+                  ) : (
+                    'AI Suggest'
+                  )}
+                </button>
+
+                {/* 生成結果 */}
+                {generatedVariations.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900">
+                        AI Suggested Phrases
+                      </h3>
+                      <button
+                        onClick={() => setEditingVariations({})}
+                        className="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    
+                    {generatedVariations.map((variation, index) => (
+                      <div key={index} className="p-0">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center">
+                            <span className="text-lg mr-2">{typeIcons[variation.type]}</span>
+                            <span className="font-medium text-gray-900">
+                              {typeLabels[variation.type]}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* 編集可能なテキストエリア */}
+                        <textarea
+                          value={editingVariations[index] || variation.text}
+                          onChange={(e) => handleEditVariation(index, e.target.value)}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                          rows={3}
+                        />
+                        
+                        <button
+                          onClick={() => handleSelectVariation(variation, index)}
+                          disabled={isSaving}
+                          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+                          style={{ backgroundColor: '#616161' }}
+                          onMouseEnter={(e) => {
+                            if (!isSaving) {
+                              e.currentTarget.style.backgroundColor = '#525252'
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isSaving) {
+                              e.currentTarget.style.backgroundColor = '#616161'
+                            }
+                          }}
+                        >
+                          {isSaving ? 'Saving...' : 'Select'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 成功メッセージ */}
+                {selectedVariation && (
+                  <div className="mt-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+                    フレーズを登録しました！
+                  </div>
+                )}
+              </>
+            )}
+
+            {activeTab === 'Speak' && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">Speak機能は準備中です</p>
+              </div>
+            )}
+
+            {activeTab === 'Quiz' && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">Quiz機能は準備中です</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
