@@ -205,7 +205,7 @@ const Header = memo(function Header() {
 
                 {                /* ドロップダウンメニュー */}
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
                     <div className="py-1">
                       {isUserSetupComplete && (
                         <>
@@ -294,7 +294,7 @@ const Header = memo(function Header() {
 
                 {/* モバイル用ドロップダウンメニュー */}
                 {isMobileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
                     <div className="py-1">
                       {isUserSetupComplete && (
                         <>
