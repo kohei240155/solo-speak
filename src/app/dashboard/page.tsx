@@ -82,22 +82,82 @@ export default function DashboardPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                ダッシュボード
-              </h2>
-              <p className="text-gray-600 mb-4">
-                ようこそ、{user.email}さん！
-              </p>
-              <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-2">ユーザー情報</h3>
-                <div className="text-left space-y-2">
-                  <p><strong>ID:</strong> {user.id}</p>
-                  <p><strong>メールアドレス:</strong> {user.email}</p>
-                  <p><strong>登録日:</strong> {new Date(user.created_at).toLocaleDateString('ja-JP')}</p>
-                  <p><strong>最終ログイン:</strong> {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('ja-JP') : '未設定'}</p>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              ダッシュボード
+            </h2>
+            <p className="text-gray-600 mb-4">
+              ようこそ、{user.email}さん！
+            </p>
+          </div>
+
+          {/* 機能メニュー */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div 
+              onClick={() => router.push('/phrase-generator')}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 hover:border-blue-300"
+            >
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🤖</span>
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  AI フレーズ生成
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  AIが話したいフレーズを3つのスタイルで提案します
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md opacity-50 cursor-not-allowed border border-gray-200">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📚</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  フレーズ学習
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  登録したフレーズを学習します（準備中）
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-md opacity-50 cursor-not-allowed border border-gray-200">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  クイズ
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  フレーズの理解度をクイズで確認します（準備中）
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ユーザー情報 */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">ユーザー情報</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-600 mb-1">ID</p>
+                <p className="font-mono text-gray-900">{user.id}</p>
+              </div>
+              <div>
+                <p className="text-gray-600 mb-1">メールアドレス</p>
+                <p className="text-gray-900">{user.email}</p>
+              </div>
+              <div>
+                <p className="text-gray-600 mb-1">登録日</p>
+                <p className="text-gray-900">{new Date(user.created_at).toLocaleDateString('ja-JP')}</p>
+              </div>
+              <div>
+                <p className="text-gray-600 mb-1">最終ログイン</p>
+                <p className="text-gray-900">{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('ja-JP') : '未設定'}</p>
               </div>
             </div>
           </div>
