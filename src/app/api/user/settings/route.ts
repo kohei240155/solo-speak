@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/utils/spabase'
+import { createServerSupabaseClient } from '@/utils/supabase-server'
 import { PrismaClient } from '@/generated/prisma/client'
 
 // Prismaクライアントの初期化を改善
@@ -16,9 +17,12 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error } = await supabase.auth.getUser(token)
+    // サーバーサイドクライアントを使用してより確実な認証を実行
+    const serverSupabase = createServerSupabaseClient()
+    const { data: { user }, error } = await serverSupabase.auth.getUser(token)
 
     if (error || !user) {
+      console.log('認証エラー:', error)
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
