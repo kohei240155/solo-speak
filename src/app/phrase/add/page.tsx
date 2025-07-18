@@ -6,7 +6,7 @@ import { supabase } from '@/utils/spabase'
 import { RiSpeakLine } from 'react-icons/ri'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
-import { HiOutlineEllipsisHorizontal } from 'react-icons/hi2'
+import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -58,9 +58,9 @@ export default function PhraseAddPage() {
   const [selectedVariation, setSelectedVariation] = useState<PhraseVariation | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
-  const [activeTab, setActiveTab] = useState<'List' | 'Add' | 'Speak' | 'Quiz'>('Add')
+  const [activeTab, setActiveTab] = useState<'List' | 'Add' | 'Speak' | 'Quiz'>('List')
   const [savedPhrases, setSavedPhrases] = useState<SavedPhrase[]>([])
-  const [isLoadingPhrases, setIsLoadingPhrases] = useState(false)
+  const [isLoadingPhrases, setIsLoadingPhrases] = useState(true)
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
 
@@ -391,14 +391,14 @@ export default function PhraseAddPage() {
                       <div className="text-base font-medium text-gray-900">
                         {phrase.translation}
                       </div>
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <HiOutlineEllipsisHorizontal className="w-5 h-5" />
+                      <button className="text-gray-900 hover:text-gray-700">
+                        <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
                       </button>
                     </div>
-                    <div className="text-sm text-gray-600 mb-3">
+                    <div className="text-sm text-gray-900 mb-3">
                       {phrase.text}
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center justify-between text-xs text-gray-900">
                       <div className="flex items-center space-x-4">
                         <span className="flex items-center">
                           <RiSpeakLine className="w-4 h-4 mr-1" />
