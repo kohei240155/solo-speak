@@ -75,8 +75,6 @@ export default function UserSetupPage() {
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
-  const [userDataLoaded, setUserDataLoaded] = useState(false)
-  const [languagesLoaded, setLanguagesLoaded] = useState(false)
 
   // 認証チェック: ログインしていない場合はログインページにリダイレクト
   useEffect(() => {
@@ -112,7 +110,6 @@ export default function UserSetupPage() {
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        setUserDataLoaded(true)
         return
       }
 
@@ -158,8 +155,6 @@ export default function UserSetupPage() {
     } catch (error) {
       console.error('Error fetching user settings:', error)
       setIsUserSetupComplete(false)
-    } finally {
-      setUserDataLoaded(true)
     }
   }, [setValue, user, setIsUserSetupComplete])
 
@@ -190,8 +185,6 @@ export default function UserSetupPage() {
     } catch (error) {
       console.error('Error fetching languages:', error)
       setError('言語データの取得に失敗しました。ネットワーク接続を確認してください。')
-    } finally {
-      setLanguagesLoaded(true)
     }
   }, [])
 
@@ -414,17 +407,17 @@ export default function UserSetupPage() {
                   id="nativeLanguageId"
                   {...register('nativeLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-                  disabled={!languagesLoaded}
+                  disabled={dataLoading}
                 >
                   <option value="">
-                    {!languagesLoaded ? 'Loading languages...' : 'Select a language'}
+                    {dataLoading ? 'Loading languages...' : 'Select a language'}
                   </option>
                   {languages.map(lang => (
                     <option key={lang.id} value={lang.id}>{lang.name}</option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  {!languagesLoaded ? (
+                  {dataLoading ? (
                     <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
                   ) : (
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -448,17 +441,17 @@ export default function UserSetupPage() {
                   id="defaultLearningLanguageId"
                   {...register('defaultLearningLanguageId')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
-                  disabled={!languagesLoaded}
+                  disabled={dataLoading}
                 >
                   <option value="">
-                    {!languagesLoaded ? 'Loading languages...' : 'Select a language'}
+                    {dataLoading ? 'Loading languages...' : 'Select a language'}
                   </option>
                   {languages.map(lang => (
                     <option key={lang.id} value={lang.id}>{lang.name}</option>
                   ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  {!languagesLoaded ? (
+                  {dataLoading ? (
                     <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
                   ) : (
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
