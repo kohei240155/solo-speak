@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(userSettings)
+    // キャッシュヘッダーを追加してパフォーマンス改善
+    const response = NextResponse.json(userSettings)
+    response.headers.set('Cache-Control', 'public, max-age=300') // 5分間キャッシュ
+    return response
   } catch (error) {
     console.error('Error getting user settings:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -178,6 +181,65 @@ export async function PUT(request: NextRequest) {
       email,
       defaultQuizCount
     } = body
+
+    // ユーザー名の重複チェック（自分以外で同じユーザー名がないか）
+    if (username) {
+      // ユーザー名のバリデーション
+      if (typeof username !== 'string' || username.trim().length < 2 || username.trim().length > 50) {
+        return NextResponse.json({ 
+          error: 'Display Name must be between 2 and 50 characters' 
+        }, { status: 400 })
+      }
+
+      // ユーザー名の文字制限チェック
+      const usernameRegex = /^[a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\s\-_]+$/
+      if (!usernameRegex.test(username.trim())) {
+        return NextResponse.json({ 
+          error: 'Display Name can only contain letters, numbers, Japanese characters, spaces, hyphens, and underscores' 
+        }, { status: 400 })
+      }
+
+      const usernameConflict = await prisma.user.findFirst({
+        where: { 
+          username: username,
+          id: { not: user.id }
+        }
+      })
+
+      if (usernameConflict) {
+        console.log('Username already exists for another user')
+        return NextResponse.json({ 
+          error: 'このユーザー名は既に使用されています。別のユーザー名を選択してください。' 
+        }, { status: 400 })
+      }
+    }
+
+    // メールアドレスのバリデーション
+    if (email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(email) || email.length > 254) {
+        return NextResponse.json({ 
+          error: 'Please enter a valid email address' 
+        }, { status: 400 })
+      }
+      
+      // 追加のメールバリデーション
+      if (email.includes('..') || email.startsWith('.') || email.endsWith('.')) {
+        return NextResponse.json({ 
+          error: 'Please enter a valid email address format' 
+        }, { status: 400 })
+      }
+    }
+
+    // 生年月日のバリデーション
+    if (birthdate) {
+      const birthdateObj = new Date(birthdate)
+      if (isNaN(birthdateObj.getTime()) || birthdateObj > new Date() || birthdateObj.getFullYear() < 1900) {
+        return NextResponse.json({ 
+          error: 'Please enter a valid birth date' 
+        }, { status: 400 })
+      }
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },

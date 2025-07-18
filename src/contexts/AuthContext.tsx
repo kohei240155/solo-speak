@@ -61,12 +61,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
     const redirectUrl = `${productionUrl}/auth/callback`
     
-    console.log('Google認証設定:')
-    console.log('- リダイレクトURL:', redirectUrl)
-    console.log('- 現在のorigin:', window.location.origin)
-    console.log('- NODE_ENV:', process.env.NODE_ENV)
-    console.log('- VERCEL_ENV:', process.env.VERCEL_ENV)
-    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
