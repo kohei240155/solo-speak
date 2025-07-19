@@ -39,8 +39,20 @@ export default function PhraseAddPage() {
     handleGeneratePhrase,
     handleSelectVariation,
     handleResetVariations,
-    fetchSavedPhrases
+    fetchSavedPhrases,
+    checkUnsavedChanges
   } = usePhraseManager()
+
+  // タブ変更時の警告処理
+  const handleTabChange = (newTab: TabType) => {
+    // Addタブから他のタブに移動する際に、未保存の生成結果があるかチェック
+    if (activeTab === 'Add' && newTab !== 'Add' && generatedVariations.length > 0) {
+      if (!checkUnsavedChanges()) {
+        return // ユーザーがキャンセルした場合は何もしない
+      }
+    }
+    setActiveTab(newTab)
+  }
 
   // 無限スクロール機能
   useEffect(() => {
@@ -78,7 +90,7 @@ export default function PhraseAddPage() {
         {/* タブメニュー */}
         <PhraseTabNavigation
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
         />
 
         {/* コンテンツエリア */}

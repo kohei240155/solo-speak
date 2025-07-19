@@ -294,6 +294,34 @@ export const usePhraseManager = () => {
     fetchLanguages()
   }, [])
 
+  // ページ離脱時の警告処理
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // 生成された内容があり、まだ保存されていない場合のみ警告を表示
+      if (generatedVariations.length > 0) {
+        e.preventDefault()
+        e.returnValue = '生成されたフレーズが保存されていません。このページを離れますか？' // Chrome requires returnValue to be set
+        return '生成されたフレーズが保存されていません。このページを離れますか？' // For older browsers
+      }
+    }
+
+    // beforeunloadイベントリスナーを追加
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    // クリーンアップ関数でイベントリスナーを削除
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [generatedVariations.length])
+
+  // 警告チェック関数を公開（他のコンポーネントから使用可能）
+  const checkUnsavedChanges = useCallback(() => {
+    if (generatedVariations.length > 0) {
+      return window.confirm('生成されたフレーズが保存されていません。このページを離れますか？')
+    }
+    return true
+  }, [generatedVariations.length])
+
   useEffect(() => {
     // ユーザーの残り生成回数を取得
     if (user) {
@@ -337,6 +365,7 @@ export const usePhraseManager = () => {
     handleGeneratePhrase,
     handleSelectVariation,
     handleResetVariations,
-    fetchSavedPhrases
+    fetchSavedPhrases,
+    checkUnsavedChanges
   }
 }
