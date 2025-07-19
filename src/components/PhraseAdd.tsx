@@ -47,7 +47,7 @@ export default function PhraseAdd({
   return (
     <>
       {/* Native Language表示とLeft情報 */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900">
           {languages.length > 0 
             ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
@@ -61,7 +61,7 @@ export default function PhraseAdd({
 
       {/* Expression Type section */}
       <div className="mb-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
           <h3 className="text-base font-semibold text-gray-900">Expression Type</h3>
           <div className="flex gap-2">
             <button 
