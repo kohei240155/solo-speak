@@ -249,12 +249,8 @@ export default function PhraseAddPage() {
   const handlePhraseChange = (value: string) => {
     setDesiredPhrase(value)
     
-    // バリデーション - 空の場合のみエラーメッセージを表示
-    if (value.trim().length === 0) {
-      setPhraseValidationError('フレーズを入力してください')
-    } else {
-      setPhraseValidationError('')
-    }
+    // バリデーションエラーをクリア（空の場合はエラーメッセージを表示しない）
+    setPhraseValidationError('')
   }
 
   const handleGeneratePhrase = async () => {
@@ -555,22 +551,13 @@ export default function PhraseAddPage() {
                     onChange={(e) => handlePhraseChange(e.target.value)}
                     placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
                     className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 ${
-                      phraseValidationError 
+                      phraseValidationError && desiredPhrase.trim().length > 0
                         ? 'border-red-300 focus:ring-red-500' 
                         : 'border-gray-300 focus:ring-blue-500'
                     }`}
                     rows={3}
                     disabled={isSaving}
                   />
-                  
-                  {/* バリデーションメッセージ - 空の場合のみ表示 */}
-                  {phraseValidationError && desiredPhrase.trim().length === 0 && (
-                    <div className="mt-1">
-                      <span className="text-sm text-red-600">
-                        {phraseValidationError}
-                      </span>
-                    </div>
-                  )}
                   
                   {/* 100文字以内で入力するよう促す文言とリアルタイム文字数 */}
                   <div className="flex justify-between items-center mt-2">
