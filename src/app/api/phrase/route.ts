@@ -164,6 +164,7 @@ export async function GET(request: NextRequest) {
     const languageCode = searchParams.get('languageCode')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
+    const minimal = searchParams.get('minimal') === 'true' // 最小限のデータのみ取得するフラグ
     const offset = (page - 1) * limit
 
     // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック（userIdが指定されている場合）
@@ -197,7 +198,17 @@ export async function GET(request: NextRequest) {
 
     const phrases = await prisma.phrase.findMany({
       where,
-      include: {
+      include: minimal ? {
+        // 最小限のデータのみ
+        language: {
+          select: {
+            id: true,
+            name: true,
+            code: true
+          }
+        }
+      } : {
+        // 完全なデータ
         language: {
           select: {
             id: true,

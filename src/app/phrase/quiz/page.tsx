@@ -2,7 +2,7 @@
 
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import { usePhraseManager } from '@/hooks/usePhraseManager'
+import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 
 export default function PhraseQuizPage() {
   const {
@@ -10,7 +10,7 @@ export default function PhraseQuizPage() {
     handleLearningLanguageChange,
     languages,
     nativeLanguage,
-  } = usePhraseManager()
+  } = usePhraseSettings()
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>

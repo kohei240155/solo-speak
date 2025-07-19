@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { usePhraseManager } from '@/hooks/usePhraseManager'
+import { usePhraseList } from '@/hooks/usePhraseList'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseList from '@/components/PhraseList'
@@ -10,7 +10,6 @@ export default function PhraseListPage() {
   const {
     // State
     learningLanguage,
-    handleLearningLanguageChange,
     languages,
     savedPhrases,
     isLoadingPhrases,
@@ -19,8 +18,9 @@ export default function PhraseListPage() {
     nativeLanguage,
     
     // Handlers
+    handleLearningLanguageChange,
     fetchSavedPhrases,
-  } = usePhraseManager()
+  } = usePhraseList()
 
   // 無限スクロール機能
   useEffect(() => {

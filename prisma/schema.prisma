@@ -79,6 +79,8 @@ model Phrase {
   quizResults        QuizResult[]
   speakLogs          SpeakLog[]
 
+  @@index([userId, languageId, createdAt(sort: Desc)], name: "idx_phrases_user_language_created")
+  @@index([userId, createdAt(sort: Desc)], name: "idx_phrases_user_created")
   @@map("phrases")
 }
 
