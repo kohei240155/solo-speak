@@ -98,10 +98,28 @@ export const usePhraseManager = () => {
         const data = await response.json()
         const phrases = Array.isArray(data.phrases) ? data.phrases : []
         
+        // デバッグ: 重複チェック
+        const phraseIds = phrases.map((p: SavedPhrase) => p.id)
+        const uniqueIds = new Set(phraseIds)
+        if (phraseIds.length !== uniqueIds.size) {
+          console.warn('Duplicate phrase IDs detected in API response:', phraseIds)
+        }
+        
         if (append) {
-          setSavedPhrases(prev => [...prev, ...phrases])
+          // 重複を避けるため、IDが既に存在しないアイテムのみを追加
+          setSavedPhrases(prev => {
+            const existingIds = new Set(prev.map(p => p.id))
+            const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
+            console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
+            return [...prev, ...newPhrases]
+          })
         } else {
-          setSavedPhrases(phrases)
+          // 初回読み込み時も重複を除去
+          const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
+            self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
+          )
+          console.log(`Setting ${uniquePhrases.length} unique phrases out of ${phrases.length} fetched`)
+          setSavedPhrases(uniquePhrases)
         }
         
         setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)

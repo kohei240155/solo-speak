@@ -33,9 +33,9 @@ export default function PhraseList({
 
   return (
     <div className="space-y-4">
-      {savedPhrases.map((phrase) => (
+      {savedPhrases.map((phrase, index) => (
         <div 
-          key={phrase.id} 
+          key={`${phrase.id}-${index}`} 
           className="pl-4 pr-6 py-6 bg-white shadow-md"
           style={{ 
             borderLeft: `4px solid ${getBorderColor(phrase.correctAnswers || 0)}`,
