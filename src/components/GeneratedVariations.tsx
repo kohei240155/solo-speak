@@ -93,37 +93,21 @@ export default function GeneratedVariations({
           
           <button
             disabled={isSaving || !!variationValidationErrors[index] || desiredPhrase.length > 100}
-            className={`w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
-              (isSaving && savingVariationIndex === index) ? 'animate-pulse' : ''
-            }`}
+            className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
             style={{ 
-              backgroundColor: variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161',
-              boxShadow: (isSaving && savingVariationIndex === index) ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+              backgroundColor: variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161'
             }}
             onMouseEnter={(e) => {
               if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#525252'
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
               }
             }}
             onMouseLeave={(e) => {
               if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#616161'
-                e.currentTarget.style.boxShadow = (isSaving && savingVariationIndex === index) ? '0 0 15px rgba(97, 97, 97, 0.4)' : 'none'
               }
             }}
-            onClick={(e) => {
-              if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && e.currentTarget) {
-                // クリック効果
-                e.currentTarget.style.transform = 'scale(0.98)'
-                setTimeout(() => {
-                  if (e.currentTarget) {
-                    e.currentTarget.style.transform = 'scale(1)'
-                  }
-                }, 150)
-              }
-              onSelectVariation(variation, index)
-            }}
+            onClick={() => onSelectVariation(variation, index)}
           >
             {isSaving && savingVariationIndex === index ? (
               <div className="flex items-center justify-center">
