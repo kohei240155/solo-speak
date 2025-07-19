@@ -27,6 +27,9 @@ export const usePhraseManager = () => {
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
   const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
+  
+  // ユーザー設定の初期化が完了したかを追跡
+  const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // 認証ヘッダーを取得するヘルパー関数
   const getAuthHeaders = useCallback(async () => {
@@ -55,22 +58,26 @@ export const usePhraseManager = () => {
     }
   }, [getAuthHeaders])
 
-  const fetchUserSettings = async () => {
+  const fetchUserSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/user/settings')
       if (response.ok) {
         const userData = await response.json()
-        if (userData.nativeLanguage?.code) {
-          setNativeLanguage(userData.nativeLanguage.code)
-        }
-        if (userData.defaultLearningLanguage?.code) {
-          setLearningLanguage(userData.defaultLearningLanguage.code)
+        // 初期化時のみユーザー設定を適用
+        if (!userSettingsInitialized) {
+          if (userData.nativeLanguage?.code) {
+            setNativeLanguage(userData.nativeLanguage.code)
+          }
+          if (userData.defaultLearningLanguage?.code) {
+            setLearningLanguage(userData.defaultLearningLanguage.code)
+          }
+          setUserSettingsInitialized(true)
         }
       }
     } catch (error) {
       console.error('Error fetching user settings:', error)
     }
-  }
+  }, [userSettingsInitialized])
 
   const fetchUserRemainingGenerations = async () => {
     // ユーザー設定APIから残り生成回数を取得
@@ -318,6 +325,12 @@ export const usePhraseManager = () => {
     }
   }, [generatedVariations.length])
 
+  // 手動での言語変更ハンドラー
+  const handleLearningLanguageChange = (language: string) => {
+    setLearningLanguage(language)
+    setUserSettingsInitialized(true) // 手動変更後は初期化フラグをセット
+  }
+
   // 警告チェック関数を公開（他のコンポーネントから使用可能）
   const checkUnsavedChanges = useCallback(() => {
     if (generatedVariations.length > 0) {
@@ -333,7 +346,7 @@ export const usePhraseManager = () => {
       fetchUserSettings()
       fetchSavedPhrases(1, false)
     }
-  }, [user, fetchSavedPhrases])
+  }, [user, fetchUserSettings, fetchSavedPhrases])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {
@@ -372,6 +385,7 @@ export const usePhraseManager = () => {
     handleResetVariations,
     fetchSavedPhrases,
     checkUnsavedChanges,
-    handleTypeChange
+    handleTypeChange,
+    handleLearningLanguageChange
   }
 }

@@ -16,7 +16,7 @@ export default function PhraseAddPage() {
     // State
     nativeLanguage,
     learningLanguage,
-    setLearningLanguage,
+    handleLearningLanguageChange,
     desiredPhrase,
     selectedType,
     generatedVariations,
@@ -83,7 +83,7 @@ export default function PhraseAddPage() {
           
           <LanguageSelector
             learningLanguage={learningLanguage}
-            onLanguageChange={setLearningLanguage}
+            onLanguageChange={handleLearningLanguageChange}
             languages={languages}
             nativeLanguage={nativeLanguage}
           />
@@ -116,7 +116,6 @@ export default function PhraseAddPage() {
                 editingVariations={editingVariations}
                 variationValidationErrors={variationValidationErrors}
                 savingVariationIndex={savingVariationIndex}
-                learningLanguage={learningLanguage}
                 error={error}
                 selectedType={selectedType}
                 onPhraseChange={handlePhraseChange}
