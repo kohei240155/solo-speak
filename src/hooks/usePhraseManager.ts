@@ -10,6 +10,7 @@ export const usePhraseManager = () => {
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [desiredPhrase, setDesiredPhrase] = useState('明日花火に行きたい')
+  const [selectedType, setSelectedType] = useState<'common' | 'polite' | 'casual'>('common')
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -277,6 +278,10 @@ export const usePhraseManager = () => {
     }
   }
 
+  const handleTypeChange = (type: 'common' | 'polite' | 'casual') => {
+    setSelectedType(type)
+  }
+
   const handleResetVariations = () => {
     // ユーザーの編集内容のみをリセット（生成されたフレーズは残す）
     flushSync(() => {
@@ -341,6 +346,7 @@ export const usePhraseManager = () => {
     learningLanguage,
     setLearningLanguage,
     desiredPhrase,
+    selectedType,
     generatedVariations,
     isLoading,
     error,
@@ -363,6 +369,7 @@ export const usePhraseManager = () => {
     handleSelectVariation,
     handleResetVariations,
     fetchSavedPhrases,
-    checkUnsavedChanges
+    checkUnsavedChanges,
+    handleTypeChange
   }
 }

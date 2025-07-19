@@ -18,6 +18,7 @@ export default function PhraseAddPage() {
     learningLanguage,
     setLearningLanguage,
     desiredPhrase,
+    selectedType,
     generatedVariations,
     isLoading,
     error,
@@ -40,7 +41,8 @@ export default function PhraseAddPage() {
     handleSelectVariation,
     handleResetVariations,
     fetchSavedPhrases,
-    checkUnsavedChanges
+    checkUnsavedChanges,
+    handleTypeChange
   } = usePhraseManager()
 
   // タブ変更時の警告処理
@@ -116,11 +118,13 @@ export default function PhraseAddPage() {
                 savingVariationIndex={savingVariationIndex}
                 learningLanguage={learningLanguage}
                 error={error}
+                selectedType={selectedType}
                 onPhraseChange={handlePhraseChange}
                 onGeneratePhrase={handleGeneratePhrase}
                 onEditVariation={handleEditVariation}
                 onSelectVariation={handleSelectVariation}
                 onResetVariations={handleResetVariations}
+                onTypeChange={handleTypeChange}
               />
             )}
 

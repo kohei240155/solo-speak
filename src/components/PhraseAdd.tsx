@@ -15,11 +15,13 @@ interface PhraseAddProps {
   savingVariationIndex: number | null
   learningLanguage: string
   error: string
+  selectedType: 'common' | 'polite' | 'casual'
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
+  onTypeChange: (type: 'common' | 'polite' | 'casual') => void
 }
 
 export default function PhraseAdd({
@@ -36,17 +38,19 @@ export default function PhraseAdd({
   savingVariationIndex,
   learningLanguage,
   error,
+  selectedType,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
-  onResetVariations
+  onResetVariations,
+  onTypeChange
 }: PhraseAddProps) {
   return (
     <>
       {/* Native Language表示とLeft情報 */}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
           {languages.length > 0 
             ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
             : 'Loading...'
@@ -54,6 +58,54 @@ export default function PhraseAdd({
         </h2>
         <div className="text-sm text-gray-600">
           Left: {remainingGenerations} / 5
+        </div>
+      </div>
+
+      {/* Type section */}
+      <div className="mb-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-base font-semibold text-gray-900">Type</h3>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => onTypeChange('common')}
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
+                selectedType === 'common' 
+                  ? 'text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              style={{ 
+                backgroundColor: selectedType === 'common' ? '#616161' : undefined
+              }}
+            >
+              Common
+            </button>
+            <button 
+              onClick={() => onTypeChange('polite')}
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
+                selectedType === 'polite' 
+                  ? 'text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              style={{ 
+                backgroundColor: selectedType === 'polite' ? '#616161' : undefined
+              }}
+            >
+              Formal
+            </button>
+            <button 
+              onClick={() => onTypeChange('casual')}
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
+                selectedType === 'casual' 
+                  ? 'text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              style={{ 
+                backgroundColor: selectedType === 'casual' ? '#616161' : undefined
+              }}
+            >
+              Casual
+            </button>
+          </div>
         </div>
       </div>
 

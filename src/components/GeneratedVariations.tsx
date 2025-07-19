@@ -46,7 +46,7 @@ export default function GeneratedVariations({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-lg md:text-xl font-bold text-gray-900">
+        <h3 className="text-xl md:text-2xl font-bold text-gray-900">
           AI Suggested Phrases
         </h3>
         <button
