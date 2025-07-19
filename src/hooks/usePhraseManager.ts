@@ -28,20 +28,23 @@ export const usePhraseManager = () => {
   const [phraseValidationError, setPhraseValidationError] = useState('')
   const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
 
-  const fetchLanguages = async () => {
+  // 認証ヘッダーを取得するヘルパー関数
+  const getAuthHeaders = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) {
+      throw new Error('No authentication token available')
+    }
+    return {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    }
+  }, [])
+  const fetchLanguages = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        console.error('認証情報が見つかりません')
-        return
-      }
-
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/languages', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
+        headers
       })
       if (response.ok) {
         const data = await response.json()
@@ -50,7 +53,7 @@ export const usePhraseManager = () => {
     } catch (error) {
       console.error('Error fetching languages:', error)
     }
-  }
+  }, [getAuthHeaders])
 
   const fetchUserSettings = async () => {
     try {
@@ -80,7 +83,10 @@ export const usePhraseManager = () => {
     
     setIsLoadingPhrases(true)
     try {
-      const response = await fetch(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`)
+      const headers = await getAuthHeaders()
+      const response = await fetch(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`, {
+        headers
+      })
       if (response.ok) {
         const data = await response.json()
         const phrases = Array.isArray(data.phrases) ? data.phrases : []
@@ -102,7 +108,7 @@ export const usePhraseManager = () => {
     } finally {
       setIsLoadingPhrases(false)
     }
-  }, [user, learningLanguage])
+  }, [user, learningLanguage, getAuthHeaders])
 
   const handleEditVariation = (index: number, newText: string) => {
     setEditingVariations(prev => ({ ...prev, [index]: newText }))
@@ -157,11 +163,10 @@ export const usePhraseManager = () => {
 
     try {
       // 実際のAPI呼び出し
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/phrase/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           nativeLanguage,
           learningLanguage,
@@ -232,9 +237,7 @@ export const usePhraseManager = () => {
 
       const response = await fetch('/api/phrase', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({
           userId: user.id,
           languageId: learningLang.id,
@@ -293,7 +296,7 @@ export const usePhraseManager = () => {
   useEffect(() => {
     // 言語一覧を取得
     fetchLanguages()
-  }, [])
+  }, [fetchLanguages])
 
   // ページ離脱時の警告処理
   useEffect(() => {

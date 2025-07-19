@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 const prisma = new PrismaClient()
 
@@ -15,8 +16,22 @@ const createPhraseSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const body = await request.json()
     const { userId, languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
+
+    // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック
+    if (authResult.user.id !== userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Cannot create phrase for another user' },
+        { status: 403 }
+      )
+    }
 
     // ユーザーが存在するかチェック
     const user = await prisma.user.findUnique({
@@ -137,6 +152,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
     const languageId = searchParams.get('languageId')
@@ -144,6 +165,14 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = (page - 1) * limit
+
+    // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック（userIdが指定されている場合）
+    if (userId && authResult.user.id !== userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Cannot access another user\'s phrases' },
+        { status: 403 }
+      )
+    }
 
     const where: {
       userId?: string

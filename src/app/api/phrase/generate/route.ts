@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
@@ -20,6 +21,12 @@ interface GeneratePhraseResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const body = await request.json()
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle } = generatePhraseSchema.parse(body)
