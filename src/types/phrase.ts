@@ -1,5 +1,5 @@
 export interface PhraseVariation {
-  type: 'common' | 'polite' | 'casual'
+  type: 'common' | 'business' | 'casual'
   text: string
   explanation?: string
 }
@@ -25,7 +25,7 @@ export interface SavedPhrase {
 
 export const typeLabels = {
   common: 'Common',
-  polite: 'Formal',
+  business: 'Business',
   casual: 'Casual'
 }
 

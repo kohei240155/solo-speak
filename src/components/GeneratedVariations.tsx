@@ -8,7 +8,7 @@ import { CiFaceSmile } from 'react-icons/ci'
 // アイコンを直接定義
 const typeIcons = {
   common: <FiCheckCircle className="w-5 h-5 text-black" />,
-  polite: <MdOutlineBusinessCenter className="w-6 h-6 text-black" />,
+  business: <MdOutlineBusinessCenter className="w-6 h-6 text-black" />,
   casual: <CiFaceSmile className="w-6 h-6 text-black" />
 }
 

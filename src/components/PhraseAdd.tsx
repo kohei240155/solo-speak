@@ -15,13 +15,13 @@ interface PhraseAddProps {
   savingVariationIndex: number | null
   learningLanguage: string
   error: string
-  selectedType: 'common' | 'polite' | 'casual'
+  selectedType: 'common' | 'business' | 'casual'
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
-  onTypeChange: (type: 'common' | 'polite' | 'casual') => void
+  onTypeChange: (type: 'common' | 'business' | 'casual') => void
 }
 
 export default function PhraseAdd({
@@ -61,10 +61,10 @@ export default function PhraseAdd({
         </div>
       </div>
 
-      {/* Type section */}
+      {/* Style section */}
       <div className="mb-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-base font-semibold text-gray-900">Type</h3>
+          <h3 className="text-base font-semibold text-gray-900">Style</h3>
           <div className="flex gap-2">
             <button 
               onClick={() => onTypeChange('common')}
@@ -80,17 +80,17 @@ export default function PhraseAdd({
               Common
             </button>
             <button 
-              onClick={() => onTypeChange('polite')}
+              onClick={() => onTypeChange('business')}
               className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'polite' 
+                selectedType === 'business' 
                   ? 'text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               style={{ 
-                backgroundColor: selectedType === 'polite' ? '#616161' : undefined
+                backgroundColor: selectedType === 'business' ? '#616161' : undefined
               }}
             >
-              Formal
+              Business
             </button>
             <button 
               onClick={() => onTypeChange('casual')}

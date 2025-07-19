@@ -10,7 +10,7 @@ export const usePhraseManager = () => {
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [desiredPhrase, setDesiredPhrase] = useState('明日花火に行きたい')
-  const [selectedType, setSelectedType] = useState<'common' | 'polite' | 'casual'>('common')
+  const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -156,28 +156,27 @@ export const usePhraseManager = () => {
     setVariationValidationErrors({}) // バリデーションエラーをリセット
 
     try {
-      // 固定のフレーズを返す（テスト用）
-      await new Promise(resolve => setTimeout(resolve, 1000)) // 1秒待機でAPIっぽく見せる
-      
-      const mockVariations = [
-        {
-          type: 'common' as const,
-          text: 'I want to go see the fireworks tomorrow.',
-          explanation: 'Standard expression'
+      // 実際のAPI呼び出し
+      const response = await fetch('/api/phrase/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          type: 'polite' as const,
-          text: "I would like to go see the fireworks tomorrow, if that's alright.",
-          explanation: 'Formal expression'
-        },
-        {
-          type: 'casual' as const,
-          text: 'I wanna hit up the fireworks tomorrow!',
-          explanation: 'Casual expression'
-        }
-      ]
+        body: JSON.stringify({
+          nativeLanguage,
+          learningLanguage,
+          desiredPhrase,
+          selectedStyle: selectedType
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('フレーズの生成に失敗しました')
+      }
+
+      const data = await response.json()
+      setGeneratedVariations(data.variations || [])
       
-      setGeneratedVariations(mockVariations)
       // 生成回数の減算はSelect成功時に行うため、ここでは減らさない
       // setRemainingGenerations(prev => Math.max(0, prev - 1))
 
@@ -278,7 +277,7 @@ export const usePhraseManager = () => {
     }
   }
 
-  const handleTypeChange = (type: 'common' | 'polite' | 'casual') => {
+  const handleTypeChange = (type: 'common' | 'business' | 'casual') => {
     setSelectedType(type)
   }
 
