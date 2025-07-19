@@ -278,14 +278,11 @@ export const usePhraseManager = () => {
   }
 
   const handleResetVariations = () => {
-    // Reset関数も完全な初期化を行う
+    // ユーザーの編集内容のみをリセット（生成されたフレーズは残す）
     flushSync(() => {
-      setGeneratedVariations([])
-      setEditingVariations({})
-      setVariationValidationErrors({})
-      setError('')
-      setIsSaving(false)
-      setSavingVariationIndex(null)
+      setEditingVariations({}) // 編集内容をクリアして元のAI生成フレーズに戻す
+      setVariationValidationErrors({}) // バリデーションエラーもクリア
+      setError('') // エラーメッセージもクリア
     })
   }
 
