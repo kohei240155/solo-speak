@@ -14,9 +14,19 @@ const Header = memo(function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
-  const [imageError, setImageError] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
+
+  // ユーザーが変更された時の状態リセット
+  useEffect(() => {
+    if (!user) {
+      // ユーザーがログアウトした場合
+      setIsUserSetupComplete(false)
+      setUserIconUrl(null)
+      setIsDropdownOpen(false)
+      setIsMobileDropdownOpen(false)
+    }
+  }, [user]) // ユーザーオブジェクト全体が変更されたときに実行
 
   const handleSignOut = async () => {
     await signOut()
@@ -34,7 +44,6 @@ const Header = memo(function Header() {
 
   // 画像読み込みエラーハンドラー
   const handleImageError = () => {
-    setImageError(true)
     setUserIconUrl(null)
   }
 
@@ -56,43 +65,39 @@ const Header = memo(function Header() {
         return
       }
 
-      // キャッシュ期間を10分に設定
-      const cacheControl = 'public, max-age=600'
-      const response = await fetch(`/api/user/settings`, {
+      // ユーザー切り替え対応のためキャッシュを無効化
+      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': cacheControl
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
 
       if (response.ok) {
         const userData = await response.json()
         setIsUserSetupComplete(true)
-        setImageError(false) // 新しいURLを設定する際にエラー状態をリセット
         
         // 画像URLの有効性をチェック
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
-          // カスタムアイコンがない場合はデフォルトアイコン（null）を使用
           setUserIconUrl(null)
         }
       } else if (response.status === 404) {
         setIsUserSetupComplete(false)
-        setImageError(false)
         // 初回ログイン時はデフォルトアイコンを使用
         setUserIconUrl(null)
       } else {
         setIsUserSetupComplete(false)
-        setImageError(false)
         // エラーの場合もデフォルトアイコンを使用
         setUserIconUrl(null)
       }
     } catch (error) {
       console.error('Header: Error checking user setup:', error)
       setIsUserSetupComplete(false)
-      setImageError(false)
       // エラーの場合もデフォルトアイコンを使用
       setUserIconUrl(null)
     }
@@ -159,10 +164,20 @@ const Header = memo(function Header() {
       }
     }
 
+    const handleUserSignedOut = () => {
+      // ログアウト時の状態をクリア
+      setIsUserSetupComplete(false)
+      setUserIconUrl(null)
+      setIsDropdownOpen(false)
+      setIsMobileDropdownOpen(false)
+    }
+
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    window.addEventListener('userSignedOut', handleUserSignedOut)
     
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+      window.removeEventListener('userSignedOut', handleUserSignedOut)
     }
   }, [user?.id, checkUserSetupComplete])
 
@@ -205,7 +220,7 @@ const Header = memo(function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {userIconUrl && !imageError ? (
+                  {userIconUrl ? (
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"
@@ -295,7 +310,7 @@ const Header = memo(function Header() {
                   onClick={toggleMobileDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
-                  {userIconUrl && !imageError ? (
+                  {userIconUrl ? (
                     <Image
                       src={userIconUrl}
                       alt="User Avatar"

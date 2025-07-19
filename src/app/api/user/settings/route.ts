@@ -30,9 +30,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // キャッシュヘッダーを追加してパフォーマンス改善
+    // ユーザー切り替え対応のためキャッシュを無効化
     const response = NextResponse.json(userSettings)
-    response.headers.set('Cache-Control', 'public, max-age=300') // 5分間キャッシュ
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
     return response
   } catch (error) {
     return createErrorResponse(error, 'GET /api/user/settings')

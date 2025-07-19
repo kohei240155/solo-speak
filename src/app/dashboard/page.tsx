@@ -25,10 +25,13 @@ export default function DashboardPage() {
         return
       }
 
-      const response = await fetch('/api/user/settings', {
+      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session.access_token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
 

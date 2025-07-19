@@ -53,7 +53,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const signOut = async () => {
+    // ローカル状態をクリア
+    setUser(null)
+    setSession(null)
+    
+    // Supabaseからのログアウト
     await supabase.auth.signOut()
+    
+    // ユーザー設定関連のローカルストレージをクリア（もしあれば）
+    if (typeof window !== 'undefined') {
+      // ヘッダー関連の状態をクリアするためのカスタムイベントを発行
+      window.dispatchEvent(new Event('userSignedOut'))
+    }
   }
 
   const signInWithGoogle = async () => {

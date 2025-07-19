@@ -21,7 +21,9 @@ export default function AuthCallback() {
         }
 
         if (authData.session) {
-          // 認証成功時の処理
+          // 認証成功時の処理 - 以前のユーザー状態をクリア
+          console.log('New user session detected, clearing previous state')
+          
           try {
             // ユーザーが既に設定済みかチェック
             const userCheckResponse = await fetch('/api/user/settings', {
@@ -34,9 +36,11 @@ export default function AuthCallback() {
             
             if (userCheckResponse.status === 404) {
               // ユーザーが未設定の場合は設定画面へ
+              console.log('New user detected, redirecting to settings')
               window.location.href = `${redirectUrl}/settings`
             } else if (userCheckResponse.ok) {
               // ユーザーが設定済みの場合はダッシュボードへ
+              console.log('Existing user detected, redirecting to dashboard')
               window.location.href = `${redirectUrl}/dashboard`
             } else {
               // その他のエラー - とりあえずダッシュボードへ

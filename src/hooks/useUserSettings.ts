@@ -11,7 +11,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
 
-  const fetchUserSettings = useCallback(async (forceRefresh = false) => {
+  const fetchUserSettings = useCallback(async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       
@@ -19,18 +19,15 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         return
       }
 
-      // 強制リフレッシュ時はキャッシュを無効化
+      // ユーザー設定データの取得（常にキャッシュをバイパス）
       const headers: HeadersInit = {
-        'Authorization': `Bearer ${session.access_token}`
-      }
-      
-      if (forceRefresh) {
-        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        headers['Pragma'] = 'no-cache'
-        headers['Expires'] = '0'
+        'Authorization': `Bearer ${session.access_token}`,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
 
-      const response = await fetch(`/api/user/settings${forceRefresh ? `?t=${Date.now()}` : ''}`, {
+      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
         method: 'GET',
         headers
       })
@@ -157,7 +154,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       })
       
       Promise.all([
-        fetchUserSettings(true), // 初回読み込み時は強制リフレッシュ
+        fetchUserSettings(), // 初回読み込み時は常にフレッシュデータ
         fetchLanguages()
       ]).then(() => {
         setDataLoading(false)
