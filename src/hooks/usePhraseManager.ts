@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
 import { Language, SavedPhrase, PhraseVariation } from '@/types/phrase'
@@ -69,8 +70,8 @@ export const usePhraseManager = () => {
 
   const fetchUserRemainingGenerations = async () => {
     // ユーザー設定APIから残り生成回数を取得
-    // 画像に合わせて2に設定
-    setRemainingGenerations(2)
+    // テスト中なので多めに設定
+    setRemainingGenerations(5)
   }
 
   const fetchSavedPhrases = useCallback(async (page = 1, append = false) => {
@@ -176,7 +177,8 @@ export const usePhraseManager = () => {
       ]
       
       setGeneratedVariations(mockVariations)
-      setRemainingGenerations(prev => Math.max(0, prev - 1))
+      // 生成回数の減算はSelect成功時に行うため、ここでは減らさない
+      // setRemainingGenerations(prev => Math.max(0, prev - 1))
 
     } catch (error) {
       console.error('Error generating phrase:', error)
@@ -247,13 +249,19 @@ export const usePhraseManager = () => {
         throw new Error(errorData.error || 'フレーズの登録に失敗しました')
       }
 
-      // 成功時の処理
+      // 成功時の処理 - 即座に初期状態に戻す
       toast.success('Phrase registered successfully!')
       
-      // 表示を元に戻す
-      setGeneratedVariations([])
-      setEditingVariations({})
-      setVariationValidationErrors({})
+      // 即座に全ての状態を初期化（flushSyncで同期的に実行）
+      flushSync(() => {
+        setIsSaving(false)
+        setSavingVariationIndex(null)
+        setGeneratedVariations([])  // これにより AI Suggest ボタンが活性になる
+        setEditingVariations({})
+        setVariationValidationErrors({})
+        // テスト中なので生成回数は減らさない
+        // setRemainingGenerations(prev => Math.max(0, prev - 1))
+      })
       
       // 保存されたフレーズリストを再取得
       fetchSavedPhrases(1, false)
@@ -261,14 +269,24 @@ export const usePhraseManager = () => {
     } catch (error) {
       console.error('Error saving phrase:', error)
       setError(error instanceof Error ? error.message : 'フレーズの登録に失敗しました')
-    } finally {
-      setIsSaving(false)
-      setSavingVariationIndex(null)
+      // エラー時は保存関連の状態のみクリア（生成結果は残す）
+      flushSync(() => {
+        setIsSaving(false)
+        setSavingVariationIndex(null)
+      })
     }
   }
 
   const handleResetVariations = () => {
-    setEditingVariations({})
+    // Reset関数も完全な初期化を行う
+    flushSync(() => {
+      setGeneratedVariations([])
+      setEditingVariations({})
+      setVariationValidationErrors({})
+      setError('')
+      setIsSaving(false)
+      setSavingVariationIndex(null)
+    })
   }
 
   useEffect(() => {
