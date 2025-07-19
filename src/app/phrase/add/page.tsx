@@ -578,7 +578,7 @@ export default function PhraseAddPage() {
                 <button
                   onClick={handleGeneratePhrase}
                   disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving}
-                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200 mb-4"
+                  className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200 mb-6"
                   style={{ 
                     backgroundColor: (!desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0) ? '#9CA3AF' : '#616161'
                   }}
