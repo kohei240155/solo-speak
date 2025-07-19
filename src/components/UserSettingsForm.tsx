@@ -33,6 +33,9 @@ export default function UserSettingsForm({
   const { submitting, imageUploadRef } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
   const watchIconUrl = watch('iconUrl')
   const isDisabled = dataLoading || submitting || submittingProp
+  
+  // 実際に使用するsubmitting状態を統一
+  const actualSubmitting = submitting || submittingProp
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -260,25 +263,27 @@ export default function UserSettingsForm({
       <div className="pt-4">
         <button
           type="submit"
-          disabled={submitting}
-          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] transform disabled:hover:scale-100 disabled:active:scale-100"
-          style={{ backgroundColor: '#616161' }}
+          disabled={actualSubmitting}
+          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
+          style={{ 
+            backgroundColor: actualSubmitting ? '#9CA3AF' : '#616161'
+          }}
           onMouseEnter={(e) => {
-            if (!submitting) {
+            if (!actualSubmitting && e.currentTarget) {
               e.currentTarget.style.backgroundColor = '#525252'
             }
           }}
           onMouseLeave={(e) => {
-            if (!submitting) {
+            if (!actualSubmitting && e.currentTarget) {
               e.currentTarget.style.backgroundColor = '#616161'
             }
           }}
         >
-          {submitting ? (
-            <span className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+          {actualSubmitting ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               Saving...
-            </span>
+            </div>
           ) : (
             'Save'
           )}
