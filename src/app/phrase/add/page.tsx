@@ -234,7 +234,7 @@ export default function PhraseAddPage() {
     if (newText.length > 100) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
-        [index]: 'フレーズは100文字以内で入力してください' 
+        [index]: '100文字以内で入力してください' 
       }))
     } else {
       setVariationValidationErrors(prev => {
@@ -326,7 +326,7 @@ export default function PhraseAddPage() {
     if (finalText.length > 100) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
-        [index]: 'フレーズは100文字以内で入力してください' 
+        [index]: '100文字以内で入力してください' 
       }))
       return
     }
