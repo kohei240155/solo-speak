@@ -13,7 +13,6 @@ interface PhraseAddProps {
   editingVariations: {[key: number]: string}
   variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
-  learningLanguage: string
   error: string
   selectedType: 'common' | 'business' | 'casual'
   onPhraseChange: (value: string) => void
@@ -36,7 +35,6 @@ export default function PhraseAdd({
   editingVariations,
   variationValidationErrors,
   savingVariationIndex,
-  learningLanguage,
   error,
   selectedType,
   onPhraseChange,
@@ -61,17 +59,20 @@ export default function PhraseAdd({
         </div>
       </div>
 
-      {/* Style section */}
+      {/* Expression Type section */}
       <div className="mb-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-base font-semibold text-gray-900">Style</h3>
+          <h3 className="text-base font-semibold text-gray-900">Expression Type</h3>
           <div className="flex gap-2">
             <button 
-              onClick={() => onTypeChange('common')}
+              onClick={() => generatedVariations.length === 0 && onTypeChange('common')}
+              disabled={generatedVariations.length > 0}
               className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
                 selectedType === 'common' 
                   ? 'text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : generatedVariations.length > 0
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               style={{ 
                 backgroundColor: selectedType === 'common' ? '#616161' : undefined
@@ -80,11 +81,14 @@ export default function PhraseAdd({
               Common
             </button>
             <button 
-              onClick={() => onTypeChange('business')}
+              onClick={() => generatedVariations.length === 0 && onTypeChange('business')}
+              disabled={generatedVariations.length > 0}
               className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
                 selectedType === 'business' 
                   ? 'text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : generatedVariations.length > 0
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               style={{ 
                 backgroundColor: selectedType === 'business' ? '#616161' : undefined
@@ -93,11 +97,14 @@ export default function PhraseAdd({
               Business
             </button>
             <button 
-              onClick={() => onTypeChange('casual')}
+              onClick={() => generatedVariations.length === 0 && onTypeChange('casual')}
+              disabled={generatedVariations.length > 0}
               className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
                 selectedType === 'casual' 
                   ? 'text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : generatedVariations.length > 0
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               style={{ 
                 backgroundColor: selectedType === 'casual' ? '#616161' : undefined
@@ -192,7 +199,6 @@ export default function PhraseAdd({
         isSaving={isSaving}
         savingVariationIndex={savingVariationIndex}
         desiredPhrase={desiredPhrase}
-        learningLanguage={learningLanguage}
         onEditVariation={onEditVariation}
         onSelectVariation={onSelectVariation}
         onReset={onResetVariations}

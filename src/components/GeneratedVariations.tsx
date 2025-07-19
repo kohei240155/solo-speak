@@ -1,16 +1,6 @@
-import { PhraseVariation, typeLabels } from '@/types/phrase'
-import { playText } from '@/utils/phrase-utils'
-import { HiSpeakerWave } from 'react-icons/hi2'
-import { FiCheckCircle } from 'react-icons/fi'
-import { MdOutlineBusinessCenter } from 'react-icons/md'
-import { CiFaceSmile } from 'react-icons/ci'
-
-// アイコンを直接定義
-const typeIcons = {
-  common: <FiCheckCircle className="w-5 h-5 text-black" />,
-  business: <MdOutlineBusinessCenter className="w-6 h-6 text-black" />,
-  casual: <CiFaceSmile className="w-6 h-6 text-black" />
-}
+import { PhraseVariation } from '@/types/phrase'
+import { GrPowerReset } from 'react-icons/gr'
+import { AiOutlineCaretRight } from 'react-icons/ai'
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
@@ -19,7 +9,6 @@ interface GeneratedVariationsProps {
   isSaving: boolean
   savingVariationIndex: number | null
   desiredPhrase: string
-  learningLanguage: string
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onReset: () => void
@@ -33,7 +22,6 @@ export default function GeneratedVariations({
   isSaving,
   savingVariationIndex,
   desiredPhrase,
-  learningLanguage,
   onEditVariation,
   onSelectVariation,
   onReset,
@@ -52,28 +40,25 @@ export default function GeneratedVariations({
         <button
           onClick={onReset}
           disabled={isSaving}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
+          className="flex items-center justify-center w-8 h-8 text-gray-800 hover:text-black rounded-md hover:bg-gray-100 transition-colors duration-200"
+          title="Reset"
         >
-          Reset
+          <GrPowerReset className="w-4 h-4" />
         </button>
       </div>
       
       {generatedVariations.map((variation, index) => (
         <div key={index} className="mb-8">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center">
-              <span className="mr-2">{typeIcons[variation.type]}</span>
-              <span className="font-medium text-gray-900 text-lg">
-                {typeLabels[variation.type]}
-              </span>
+          <div className="mb-3">
+            <div className="flex flex-col">
+              {/* Phrase番号とキャレットアイコンを表示 */}
+              <div className="flex items-center">
+                <AiOutlineCaretRight className="w-4 h-4 mr-1 text-gray-600" />
+                <span className="font-medium text-gray-900 text-lg">
+                  Phrase {index + 1}
+                </span>
+              </div>
             </div>
-            <button
-              onClick={() => playText(editingVariations[index] || variation.text, learningLanguage)}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-              title="音声を再生"
-            >
-              <HiSpeakerWave className="w-4 h-4 text-gray-600" />
-            </button>
           </div>
           
           {/* 編集可能なテキストエリア */}
