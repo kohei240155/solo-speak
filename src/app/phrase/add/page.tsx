@@ -591,8 +591,10 @@ export default function PhraseAddPage() {
                 <button
                   onClick={handleGeneratePhrase}
                   disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving}
-                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
-                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving ? '#9CA3AF' : '#616161' }}
+                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
+                  style={{ 
+                    backgroundColor: (!desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0) ? '#9CA3AF' : '#616161'
+                  }}
                   onMouseEnter={(e) => {
                     if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving) {
                       e.currentTarget.style.backgroundColor = '#525252'
@@ -681,8 +683,10 @@ export default function PhraseAddPage() {
                         <button
                           onClick={() => handleSelectVariation(variation, index)}
                           disabled={isSaving || !!variationValidationErrors[index] || desiredPhrase.length > 100}
-                          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-                          style={{ backgroundColor: isSaving || variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161' }}
+                          className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
+                          style={{ 
+                            backgroundColor: variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161'
+                          }}
                           onMouseEnter={(e) => {
                             if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100) {
                               e.currentTarget.style.backgroundColor = '#525252'
