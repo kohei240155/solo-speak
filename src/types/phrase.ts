@@ -24,15 +24,9 @@ export interface SavedPhrase {
 }
 
 export const typeLabels = {
-  common: '一般的',
-  polite: '丁寧',
-  casual: 'カジュアル'
-}
-
-export const typeIcons = {
-  common: '✓',
-  polite: '📝',
-  casual: '😊'
+  common: 'Common',
+  polite: 'Formal',
+  casual: 'Casual'
 }
 
 export type TabType = 'List' | 'Add' | 'Speak' | 'Quiz'

@@ -162,17 +162,17 @@ export const usePhraseManager = () => {
         {
           type: 'common' as const,
           text: 'I want to go see the fireworks tomorrow.',
-          explanation: '一般的な表現'
+          explanation: 'Standard expression'
         },
         {
           type: 'polite' as const,
           text: "I would like to go see the fireworks tomorrow, if that's alright.",
-          explanation: '丁寧な表現'
+          explanation: 'Formal expression'
         },
         {
           type: 'casual' as const,
           text: 'I wanna hit up the fireworks tomorrow!',
-          explanation: 'カジュアルな表現'
+          explanation: 'Casual expression'
         }
       ]
       

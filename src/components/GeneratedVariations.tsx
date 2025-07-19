@@ -1,6 +1,16 @@
-import { PhraseVariation, typeLabels, typeIcons } from '@/types/phrase'
+import { PhraseVariation, typeLabels } from '@/types/phrase'
 import { playText } from '@/utils/phrase-utils'
 import { HiSpeakerWave } from 'react-icons/hi2'
+import { FiCheckCircle } from 'react-icons/fi'
+import { MdOutlineBusinessCenter } from 'react-icons/md'
+import { CiFaceSmile } from 'react-icons/ci'
+
+// アイコンを直接定義
+const typeIcons = {
+  common: <FiCheckCircle className="w-5 h-5 text-black" />,
+  polite: <MdOutlineBusinessCenter className="w-6 h-6 text-black" />,
+  casual: <CiFaceSmile className="w-6 h-6 text-black" />
+}
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
@@ -52,8 +62,8 @@ export default function GeneratedVariations({
         <div key={index} className="mb-8">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center">
-              <span className="text-lg mr-2">{typeIcons[variation.type]}</span>
-              <span className="font-medium text-gray-900">
+              <span className="mr-2">{typeIcons[variation.type]}</span>
+              <span className="font-medium text-gray-900 text-lg">
                 {typeLabels[variation.type]}
               </span>
             </div>
