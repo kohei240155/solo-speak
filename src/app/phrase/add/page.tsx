@@ -576,28 +576,28 @@ export default function PhraseAddPage() {
 
                 {/* AI Suggest ボタン */}
                 <button
-                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving}
+                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || (generatedVariations.length > 0 && !isSaving) || isSaving}
                   className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 mb-6 relative ${
                     isLoading ? 'animate-pulse' : ''
                   }`}
                   style={{ 
-                    backgroundColor: (!desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0) ? '#9CA3AF' : '#616161',
+                    backgroundColor: (!desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || (generatedVariations.length > 0 && !isSaving)) ? '#9CA3AF' : '#616161',
                     boxShadow: isLoading ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
                   }}
                   onMouseEnter={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving && e.currentTarget) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && !(generatedVariations.length > 0 && !isSaving) && !isSaving && e.currentTarget) {
                       e.currentTarget.style.backgroundColor = '#525252'
                       e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving && e.currentTarget) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && !(generatedVariations.length > 0 && !isSaving) && !isSaving && e.currentTarget) {
                       e.currentTarget.style.backgroundColor = '#616161'
                       e.currentTarget.style.boxShadow = 'none'
                     }
                   }}
                   onClick={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving && e.currentTarget) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && !(generatedVariations.length > 0 && !isSaving) && !isSaving && e.currentTarget) {
                       // より控えめなクリック効果
                       e.currentTarget.style.transform = 'scale(0.98)'
                       setTimeout(() => {
