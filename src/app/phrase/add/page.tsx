@@ -58,6 +58,7 @@ export default function PhraseAddPage() {
   const [remainingGenerations, setRemainingGenerations] = useState(0)
   const [languages, setLanguages] = useState<Language[]>([])
   const [isSaving, setIsSaving] = useState(false)
+  const [savingVariationIndex, setSavingVariationIndex] = useState<number | null>(null)
   const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
   const [activeTab, setActiveTab] = useState<'List' | 'Add' | 'Speak' | 'Quiz'>('List')
   const [savedPhrases, setSavedPhrases] = useState<SavedPhrase[]>([])
@@ -348,6 +349,7 @@ export default function PhraseAddPage() {
     setError('')
 
     setIsSaving(true)
+    setSavingVariationIndex(index)
 
     try {
       // 学習言語のIDを取得
@@ -391,6 +393,7 @@ export default function PhraseAddPage() {
       setError(error instanceof Error ? error.message : 'フレーズの登録に失敗しました')
     } finally {
       setIsSaving(false)
+      setSavingVariationIndex(null)
     }
   }
 
@@ -557,6 +560,7 @@ export default function PhraseAddPage() {
                         : 'border-gray-300 focus:ring-blue-500'
                     }`}
                     rows={3}
+                    disabled={isSaving}
                   />
                   
                   {/* バリデーションメッセージ - 空の場合のみ表示 */}
@@ -586,16 +590,16 @@ export default function PhraseAddPage() {
                 {/* AI Suggest ボタン */}
                 <button
                   onClick={handleGeneratePhrase}
-                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0}
+                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving}
                   className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
-                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 ? '#9CA3AF' : '#616161' }}
+                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving ? '#9CA3AF' : '#616161' }}
                   onMouseEnter={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving) {
                       e.currentTarget.style.backgroundColor = '#525252'
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && !isSaving) {
                       e.currentTarget.style.backgroundColor = '#616161'
                     }
                   }}
@@ -619,6 +623,7 @@ export default function PhraseAddPage() {
                       </h3>
                       <button
                         onClick={() => setEditingVariations({})}
+                        disabled={isSaving}
                         className="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
                       >
                         Reset
@@ -653,6 +658,7 @@ export default function PhraseAddPage() {
                               : 'border-gray-300 focus:ring-blue-500'
                           }`}
                           rows={3}
+                          disabled={isSaving}
                         />
                         
                         {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
@@ -688,7 +694,14 @@ export default function PhraseAddPage() {
                             }
                           }}
                         >
-                          {isSaving ? 'Saving...' : 'Select'}
+                          {isSaving && savingVariationIndex === index ? (
+                            <div className="flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Saving...
+                            </div>
+                          ) : (
+                            'Select'
+                          )}
                         </button>
                       </div>
                     ))}
