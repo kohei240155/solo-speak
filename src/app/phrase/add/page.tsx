@@ -8,6 +8,7 @@ import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
 import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { HiSpeakerWave } from 'react-icons/hi2'
+import toast, { Toaster } from 'react-hot-toast'
 
 interface PhraseVariation {
   type: 'common' | 'polite' | 'casual'
@@ -56,7 +57,6 @@ export default function PhraseAddPage() {
   const [error, setError] = useState('')
   const [remainingGenerations, setRemainingGenerations] = useState(0)
   const [languages, setLanguages] = useState<Language[]>([])
-  const [selectedVariation, setSelectedVariation] = useState<PhraseVariation | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
   const [activeTab, setActiveTab] = useState<'List' | 'Add' | 'Speak' | 'Quiz'>('List')
@@ -375,9 +375,14 @@ export default function PhraseAddPage() {
         throw new Error(errorData.error || 'フレーズの登録に失敗しました')
       }
 
-      setSelectedVariation(variation)
-      // フレーズ保存後、Listタブに移動
-      setActiveTab('List')
+      // 成功時の処理
+      toast.success('Phrase registered successfully!')
+      
+      // 表示を元に戻す
+      setGeneratedVariations([])
+      setEditingVariations({})
+      setVariationValidationErrors({})
+      
       // 保存されたフレーズリストを再取得
       fetchSavedPhrases(1, false)
 
@@ -696,13 +701,6 @@ export default function PhraseAddPage() {
                     )}
                   </div>
                 )}
-
-                {/* 成功メッセージ */}
-                {selectedVariation && (
-                  <div className="mt-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-                    フレーズを登録しました！
-                  </div>
-                )}
               </>
             )}
 
@@ -720,6 +718,9 @@ export default function PhraseAddPage() {
           </div>
         )}
       </div>
+      
+      {/* Toaster for notifications */}
+      <Toaster />
     </div>
   )
 }
