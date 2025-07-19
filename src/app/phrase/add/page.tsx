@@ -1,16 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { TabType } from '@/types/phrase'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import PhraseList from '@/components/PhraseList'
 import PhraseAdd from '@/components/PhraseAdd'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('List')
+  const router = useRouter()
   
   const {
     // State
@@ -27,10 +26,6 @@ export default function PhraseAddPage() {
     isSaving,
     savingVariationIndex,
     editingVariations,
-    savedPhrases,
-    isLoadingPhrases,
-    hasMorePhrases,
-    phrasePage,
     phraseValidationError,
     variationValidationErrors,
     
@@ -40,37 +35,25 @@ export default function PhraseAddPage() {
     handleGeneratePhrase,
     handleSelectVariation,
     handleResetVariations,
-    fetchSavedPhrases,
-    checkUnsavedChanges,
-    handleTypeChange
+    handleTypeChange,
+    checkUnsavedChanges
   } = usePhraseManager()
 
-  // タブ変更時の警告処理
-  const handleTabChange = (newTab: TabType) => {
-    // Addタブから他のタブに移動する際に、未保存の生成結果があるかチェック
-    if (activeTab === 'Add' && newTab !== 'Add' && generatedVariations.length > 0) {
-      if (!checkUnsavedChanges()) {
-        return // ユーザーがキャンセルした場合は何もしない
-      }
-    }
-    setActiveTab(newTab)
-  }
-
-  // 無限スクロール機能
+  // ページ離脱時の警告処理をオーバーライド
   useEffect(() => {
-    if (activeTab !== 'List') return
-
-    const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100) {
-        if (hasMorePhrases && !isLoadingPhrases) {
-          fetchSavedPhrases(phrasePage + 1, true)
-        }
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (generatedVariations.length > 0) {
+        e.preventDefault()
+        e.returnValue = '生成されたフレーズが保存されていません。このページを離れますか？'
+        return '生成されたフレーズが保存されていません。このページを離れますか？'
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [activeTab, hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [generatedVariations.length])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
@@ -90,56 +73,35 @@ export default function PhraseAddPage() {
         </div>
         
         {/* タブメニュー */}
-        <PhraseTabNavigation
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
+        <PhraseTabNavigation 
+          activeTab="Add" 
+          checkUnsavedChanges={checkUnsavedChanges}
         />
 
         {/* コンテンツエリア */}
-        {activeTab === 'List' ? (
-          <PhraseList
-            savedPhrases={savedPhrases}
-            isLoadingPhrases={isLoadingPhrases}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <PhraseAdd
+            languages={languages}
+            nativeLanguage={nativeLanguage}
+            remainingGenerations={remainingGenerations}
+            desiredPhrase={desiredPhrase}
+            phraseValidationError={phraseValidationError}
+            isLoading={isLoading}
+            isSaving={isSaving}
+            generatedVariations={generatedVariations}
+            editingVariations={editingVariations}
+            variationValidationErrors={variationValidationErrors}
+            savingVariationIndex={savingVariationIndex}
+            error={error}
+            selectedType={selectedType}
+            onPhraseChange={handlePhraseChange}
+            onGeneratePhrase={handleGeneratePhrase}
+            onEditVariation={handleEditVariation}
+            onSelectVariation={handleSelectVariation}
+            onResetVariations={handleResetVariations}
+            onTypeChange={handleTypeChange}
           />
-        ) : (
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            {activeTab === 'Add' && (
-              <PhraseAdd
-                languages={languages}
-                nativeLanguage={nativeLanguage}
-                remainingGenerations={remainingGenerations}
-                desiredPhrase={desiredPhrase}
-                phraseValidationError={phraseValidationError}
-                isLoading={isLoading}
-                isSaving={isSaving}
-                generatedVariations={generatedVariations}
-                editingVariations={editingVariations}
-                variationValidationErrors={variationValidationErrors}
-                savingVariationIndex={savingVariationIndex}
-                error={error}
-                selectedType={selectedType}
-                onPhraseChange={handlePhraseChange}
-                onGeneratePhrase={handleGeneratePhrase}
-                onEditVariation={handleEditVariation}
-                onSelectVariation={handleSelectVariation}
-                onResetVariations={handleResetVariations}
-                onTypeChange={handleTypeChange}
-              />
-            )}
-
-            {activeTab === 'Speak' && (
-              <div className="text-center py-8">
-                <p className="text-gray-600">Speak機能は準備中です</p>
-              </div>
-            )}
-
-            {activeTab === 'Quiz' && (
-              <div className="text-center py-8">
-                <p className="text-gray-600">Quiz機能は準備中です</p>
-              </div>
-            )}
-          </div>
-        )}
+        </div>
       </div>
       
       {/* Toaster for notifications */}
