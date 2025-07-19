@@ -50,10 +50,9 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       } else if (response.status === 404) {
         // 新規ユーザーの場合は設定未完了
         setIsUserSetupComplete(false)
-        // Googleアカウントの情報を初期値として設定
-        if (user?.user_metadata?.avatar_url) {
-          setValue('iconUrl', user.user_metadata.avatar_url)
-        }
+        // 初回ログイン時は空の iconUrl を設定（デフォルトアイコンを表示）
+        setValue('iconUrl', '')
+        // Googleアカウントの情報を初期値として設定（iconUrl以外）
         if (user?.user_metadata?.full_name) {
           setValue('username', user.user_metadata.full_name)
         }

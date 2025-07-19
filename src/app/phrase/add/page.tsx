@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
@@ -9,7 +9,7 @@ import PhraseAdd from '@/components/PhraseAdd'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
-  const router = useRouter()
+  // const router = useRouter() // 現在未使用
   
   const {
     // State

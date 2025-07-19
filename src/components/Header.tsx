@@ -51,8 +51,8 @@ const Header = memo(function Header() {
       
       if (!session) {
         setIsUserSetupComplete(false)
-        // セッションがない場合でも、Googleアカウントの初期アイコンを表示
-        setUserIconUrl(user.user_metadata?.avatar_url || null)
+        // セッションがない場合はデフォルトアイコンを表示
+        setUserIconUrl(null)
         return
       }
 
@@ -75,28 +75,28 @@ const Header = memo(function Header() {
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
-          // カスタムアイコンがない場合はGoogleアカウントの初期アイコンを使用
-          setUserIconUrl(user.user_metadata?.avatar_url || null)
+          // カスタムアイコンがない場合はデフォルトアイコン（null）を使用
+          setUserIconUrl(null)
         }
       } else if (response.status === 404) {
         setIsUserSetupComplete(false)
         setImageError(false)
-        // Googleアカウントの初期アイコンを使用
-        setUserIconUrl(user.user_metadata?.avatar_url || null)
+        // 初回ログイン時はデフォルトアイコンを使用
+        setUserIconUrl(null)
       } else {
         setIsUserSetupComplete(false)
         setImageError(false)
-        // エラーの場合でもGoogleアカウントの初期アイコンを表示
-        setUserIconUrl(user.user_metadata?.avatar_url || null)
+        // エラーの場合もデフォルトアイコンを使用
+        setUserIconUrl(null)
       }
     } catch (error) {
       console.error('Header: Error checking user setup:', error)
       setIsUserSetupComplete(false)
       setImageError(false)
-      // エラーの場合でもGoogleアカウントの初期アイコンを表示
-      setUserIconUrl(user.user_metadata?.avatar_url || null)
+      // エラーの場合もデフォルトアイコンを使用
+      setUserIconUrl(null)
     }
-  }, [user?.id, user?.user_metadata?.avatar_url]) // 必要な依存関係のみ
+  }, [user?.id]) // 必要な依存関係のみ
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
