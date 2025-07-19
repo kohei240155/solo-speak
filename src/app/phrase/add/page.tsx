@@ -64,6 +64,10 @@ export default function PhraseAddPage() {
   const [isLoadingPhrases, setIsLoadingPhrases] = useState(true)
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
+  
+  // バリデーション用state
+  const [phraseValidationError, setPhraseValidationError] = useState('')
+  const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
 
   // 音声再生機能
   const playText = (text: string) => {
@@ -225,11 +229,42 @@ export default function PhraseAddPage() {
 
   const handleEditVariation = (index: number, newText: string) => {
     setEditingVariations(prev => ({ ...prev, [index]: newText }))
+    
+    // バリデーション
+    if (newText.length > 100) {
+      setVariationValidationErrors(prev => ({ 
+        ...prev, 
+        [index]: 'フレーズは100文字以内で入力してください' 
+      }))
+    } else {
+      setVariationValidationErrors(prev => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [index]: _, ...rest } = prev
+        return rest
+      })
+    }
+  }
+
+  const handlePhraseChange = (value: string) => {
+    setDesiredPhrase(value)
+    
+    // バリデーション - 100文字を超えた場合のみエラーメッセージを表示
+    if (value.length > 100) {
+      setPhraseValidationError('フレーズは100文字以内で入力してください')
+    } else {
+      setPhraseValidationError('')
+    }
   }
 
   const handleGeneratePhrase = async () => {
+    // バリデーション
     if (!desiredPhrase.trim()) {
-      setError('フレーズを入力してください')
+      setPhraseValidationError('フレーズを入力してください')
+      return
+    }
+
+    if (desiredPhrase.length > 100) {
+      setPhraseValidationError('フレーズは100文字以内で入力してください')
       return
     }
 
@@ -238,10 +273,14 @@ export default function PhraseAddPage() {
       return
     }
 
-    setIsLoading(true)
+    // バリデーションをクリア
+    setPhraseValidationError('')
     setError('')
+
+    setIsLoading(true)
     setGeneratedVariations([])
     setEditingVariations({}) // 編集状態をリセット
+    setVariationValidationErrors({}) // バリデーションエラーをリセット
 
     try {
       // 固定のフレーズを返す（テスト用）
@@ -282,8 +321,33 @@ export default function PhraseAddPage() {
       return
     }
 
-    setIsSaving(true)
+    // 編集されたテキストの文字数バリデーション
+    const finalText = editingVariations[index] || variation.text
+    if (finalText.length > 100) {
+      setVariationValidationErrors(prev => ({ 
+        ...prev, 
+        [index]: 'フレーズは100文字以内で入力してください' 
+      }))
+      return
+    }
+
+    if (finalText.trim().length === 0) {
+      setVariationValidationErrors(prev => ({ 
+        ...prev, 
+        [index]: 'フレーズを入力してください' 
+      }))
+      return
+    }
+
+    // バリデーションをクリア
+    setVariationValidationErrors(prev => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [index]: _, ...rest } = prev
+      return rest
+    })
     setError('')
+
+    setIsSaving(true)
 
     try {
       // 学習言語のIDを取得
@@ -291,9 +355,6 @@ export default function PhraseAddPage() {
       if (!learningLang) {
         throw new Error('学習言語が見つかりません')
       }
-
-      // 編集されたテキストがあれば使用、なければ元のテキストを使用
-      const finalText = editingVariations[index] || variation.text
 
       const response = await fetch('/api/phrase', {
         method: 'POST',
@@ -327,8 +388,6 @@ export default function PhraseAddPage() {
       setIsSaving(false)
     }
   }
-
-  const maxLength = nativeLanguage === 'ja' ? 80 : 200
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
@@ -421,11 +480,11 @@ export default function PhraseAddPage() {
                       borderRadius: '5px'
                     }}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-base font-medium text-gray-900">
+                    <div className="flex justify-between mb-2">
+                      <div className="text-base font-medium text-gray-900 flex-1 pr-2">
                         {phrase.translation}
                       </div>
-                      <button className="text-gray-900 hover:text-gray-700">
+                      <button className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start">
                         <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
                       </button>
                     </div>
@@ -485,36 +544,35 @@ export default function PhraseAddPage() {
                 <div className="mb-6">
                   <textarea
                     value={desiredPhrase}
-                    onChange={(e) => setDesiredPhrase(e.target.value)}
+                    onChange={(e) => handlePhraseChange(e.target.value)}
                     placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-                    className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 ${
+                      phraseValidationError 
+                        ? 'border-red-300 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                     rows={3}
-                    maxLength={maxLength}
                   />
                   
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-500">
-                      100文字以内で入力してください
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {desiredPhrase.length} / 100
-                    </span>
-                  </div>
+                  {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
+                  {phraseValidationError && desiredPhrase.length > 100 && (
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-sm text-red-600">
+                        {phraseValidationError}
+                      </span>
+                      <span className="text-xs text-red-500">
+                        {desiredPhrase.length} / 100
+                      </span>
+                    </div>
+                  )}
                 </div>
-
-                {/* エラーメッセージ */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-                    {error}
-                  </div>
-                )}
 
                 {/* AI Suggest ボタン */}
                 <button
                   onClick={handleGeneratePhrase}
                   disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0}
                   className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
-                  style={{ backgroundColor: '#616161' }}
+                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 ? '#9CA3AF' : '#616161' }}
                   onMouseEnter={(e) => {
                     if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
                       e.currentTarget.style.backgroundColor = '#525252'
@@ -573,22 +631,43 @@ export default function PhraseAddPage() {
                         <textarea
                           value={editingVariations[index] || variation.text}
                           onChange={(e) => handleEditVariation(index, e.target.value)}
-                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                          className={`w-full border rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 ${
+                            variationValidationErrors[index]
+                              ? 'border-red-300 focus:ring-red-500'
+                              : 'border-gray-300 focus:ring-blue-500'
+                          }`}
                           rows={3}
                         />
                         
+                        {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
+                        {variationValidationErrors[index] && (editingVariations[index] || variation.text).length > 100 && (
+                          <div className="flex justify-between items-center mt-1 mb-4">
+                            <span className="text-sm text-red-600">
+                              {variationValidationErrors[index]}
+                            </span>
+                            <span className="text-xs text-red-500">
+                              {(editingVariations[index] || variation.text).length} / 100
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* 通常時のマージン */}
+                        {(editingVariations[index] || variation.text).length <= 100 && (
+                          <div className="mb-4"></div>
+                        )}
+                        
                         <button
                           onClick={() => handleSelectVariation(variation, index)}
-                          disabled={isSaving}
+                          disabled={isSaving || !!variationValidationErrors[index]}
                           className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-                          style={{ backgroundColor: '#616161' }}
+                          style={{ backgroundColor: isSaving || variationValidationErrors[index] ? '#9CA3AF' : '#616161' }}
                           onMouseEnter={(e) => {
-                            if (!isSaving) {
+                            if (!isSaving && !variationValidationErrors[index]) {
                               e.currentTarget.style.backgroundColor = '#525252'
                             }
                           }}
                           onMouseLeave={(e) => {
-                            if (!isSaving) {
+                            if (!isSaving && !variationValidationErrors[index]) {
                               e.currentTarget.style.backgroundColor = '#616161'
                             }
                           }}
@@ -597,6 +676,13 @@ export default function PhraseAddPage() {
                         </button>
                       </div>
                     ))}
+
+                    {/* エラーメッセージ */}
+                    {error && (
+                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mt-4">
+                        {error}
+                      </div>
+                    )}
                   </div>
                 )}
 

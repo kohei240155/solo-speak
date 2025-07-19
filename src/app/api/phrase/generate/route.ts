@@ -4,7 +4,7 @@ import { z } from 'zod'
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
   learningLanguage: z.string().min(1),
-  desiredPhrase: z.string().min(1).max(200),
+  desiredPhrase: z.string().min(1).max(100),
 })
 
 interface PhraseVariation {
