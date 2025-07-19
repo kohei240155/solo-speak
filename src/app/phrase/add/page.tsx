@@ -248,9 +248,9 @@ export default function PhraseAddPage() {
   const handlePhraseChange = (value: string) => {
     setDesiredPhrase(value)
     
-    // バリデーション - 100文字を超えた場合のみエラーメッセージを表示
-    if (value.length > 100) {
-      setPhraseValidationError('フレーズは100文字以内で入力してください')
+    // バリデーション - 空の場合のみエラーメッセージを表示
+    if (value.trim().length === 0) {
+      setPhraseValidationError('フレーズを入力してください')
     } else {
       setPhraseValidationError('')
     }
@@ -554,32 +554,43 @@ export default function PhraseAddPage() {
                     rows={3}
                   />
                   
-                  {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
-                  {phraseValidationError && desiredPhrase.length > 100 && (
-                    <div className="flex justify-between items-center mt-1">
+                  {/* バリデーションメッセージ - 空の場合のみ表示 */}
+                  {phraseValidationError && desiredPhrase.trim().length === 0 && (
+                    <div className="mt-1">
                       <span className="text-sm text-red-600">
                         {phraseValidationError}
                       </span>
-                      <span className="text-xs text-red-500">
-                        {desiredPhrase.length} / 100
-                      </span>
                     </div>
                   )}
+                  
+                  {/* 100文字以内で入力するよう促す文言とリアルタイム文字数 */}
+                  <div className="flex justify-between items-center mt-2">
+                    <span className={`text-xs ${
+                      desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
+                    }`}>
+                      100文字以内で入力してください
+                    </span>
+                    <span className={`text-xs ${
+                      desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
+                    }`}>
+                      {desiredPhrase.length} / 100
+                    </span>
+                  </div>
                 </div>
 
                 {/* AI Suggest ボタン */}
                 <button
                   onClick={handleGeneratePhrase}
-                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0}
+                  disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0}
                   className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
-                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 ? '#9CA3AF' : '#616161' }}
+                  style={{ backgroundColor: isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 ? '#9CA3AF' : '#616161' }}
                   onMouseEnter={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0) {
                       e.currentTarget.style.backgroundColor = '#525252'
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0) {
+                    if (!isLoading && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0) {
                       e.currentTarget.style.backgroundColor = '#616161'
                     }
                   }}
@@ -658,16 +669,16 @@ export default function PhraseAddPage() {
                         
                         <button
                           onClick={() => handleSelectVariation(variation, index)}
-                          disabled={isSaving || !!variationValidationErrors[index]}
+                          disabled={isSaving || !!variationValidationErrors[index] || desiredPhrase.length > 100}
                           className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-                          style={{ backgroundColor: isSaving || variationValidationErrors[index] ? '#9CA3AF' : '#616161' }}
+                          style={{ backgroundColor: isSaving || variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161' }}
                           onMouseEnter={(e) => {
-                            if (!isSaving && !variationValidationErrors[index]) {
+                            if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100) {
                               e.currentTarget.style.backgroundColor = '#525252'
                             }
                           }}
                           onMouseLeave={(e) => {
-                            if (!isSaving && !variationValidationErrors[index]) {
+                            if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100) {
                               e.currentTarget.style.backgroundColor = '#616161'
                             }
                           }}
