@@ -1,26 +1,36 @@
 import { supabase } from './spabase'
 
-export async function uploadUserIcon(file: File, userId: string): Promise<string> {
+export async function uploadUserIcon(file: File, userId: string, serverMode: boolean = false): Promise<string> {
   try {
     // 環境情報をログ出力
     console.log('Storage environment info:', {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       nodeEnv: process.env.NODE_ENV,
-      vercelEnv: process.env.VERCEL_ENV
+      vercelEnv: process.env.VERCEL_ENV,
+      serverMode
     })
 
-    // 認証状態を確認
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      throw new Error('認証が必要です')
+    let supabaseClient = supabase
+
+    // サーバーサイドモードの場合は、サーバーサイドクライアントを使用
+    if (serverMode) {
+      const { createServerSupabaseClient } = await import('@/utils/supabase-server')
+      supabaseClient = createServerSupabaseClient()
+      console.log('Using server-side Supabase client')
+    } else {
+      // 認証状態を確認（クライアントサイドのみ）
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('認証が必要です')
+      }
+
+      // ユーザー情報を詳細ログ出力
+      console.log('User session info:', {
+        userId,
+        sessionUserId: session.user.id,
+        userEmail: session.user.email
+      })
     }
-
-    // ユーザー情報を詳細ログ出力
-    console.log('User session info:', {
-      userId,
-      sessionUserId: session.user.id,
-      userEmail: session.user.email
-    })
 
     // ファイル名を生成（重複回避のためタイムスタンプを含む）
     const fileExt = file.name.split('.').pop()
@@ -36,7 +46,7 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
     })
 
     // バケットの存在確認と公開設定確認
-    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets()
+    const { data: buckets, error: bucketError } = await supabaseClient.storage.listBuckets()
     if (bucketError) {
       console.error('Error listing buckets:', bucketError)
     } else {
@@ -57,7 +67,7 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
     }
 
     // Supabase Storageにアップロード
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseClient.storage
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -83,7 +93,7 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
     console.log('Upload successful:', data)
 
     // 公開URLを取得
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = supabaseClient.storage
       .from('images')
       .getPublicUrl(filePath)
 
@@ -104,14 +114,12 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
         status: testResponse.status,
         ok: testResponse.ok,
         headers: Object.fromEntries(testResponse.headers.entries())
-      })
-      
-      // 公開URLでアクセスできない場合は、認証付きURLを試す
-      if (!testResponse.ok) {
-        console.log('Public URL failed, trying signed URL...')
-        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-          .from('images')
-          .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
+      })        // 公開URLでアクセスできない場合は、認証付きURLを試す
+        if (!testResponse.ok) {
+          console.log('Public URL failed, trying signed URL...')
+          const { data: signedUrlData, error: signedUrlError } = await supabaseClient.storage
+            .from('images')
+            .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
         
         if (signedUrlError) {
           console.error('Error creating signed URL:', signedUrlError)
@@ -133,11 +141,28 @@ export async function uploadUserIcon(file: File, userId: string): Promise<string
 
 export async function deleteUserIcon(iconUrl: string): Promise<void> {
   try {
+    console.log('Deleting user icon:', iconUrl)
+    
+    // ローカルのBlob URLの場合は削除処理をスキップ
+    if (iconUrl.startsWith('blob:')) {
+      console.log('Skipping deletion of local blob URL')
+      return
+    }
+    
     // URLからファイルパスを抽出
     const url = new URL(iconUrl)
     const pathSegments = url.pathname.split('/')
-    const fileName = pathSegments[pathSegments.length - 1]
-    const filePath = `user-icons/${fileName}`
+    
+    // Supabaseストレージの公開URLの構造: /storage/v1/object/public/images/user-icons/filename
+    const imagesIndex = pathSegments.findIndex(segment => segment === 'images')
+    if (imagesIndex === -1) {
+      console.error('Invalid storage URL structure:', iconUrl)
+      return
+    }
+    
+    // images以降のパスを取得
+    const filePath = pathSegments.slice(imagesIndex + 1).join('/')
+    console.log('Extracted file path:', filePath)
 
     const { error } = await supabase.storage
       .from('images')
@@ -147,6 +172,8 @@ export async function deleteUserIcon(iconUrl: string): Promise<void> {
       console.error('Supabase storage delete error:', error)
       throw new Error('画像の削除に失敗しました')
     }
+    
+    console.log('Successfully deleted file:', filePath)
   } catch (error) {
     console.error('Error deleting user icon:', error)
     throw error

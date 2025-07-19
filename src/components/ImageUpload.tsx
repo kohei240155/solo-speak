@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useImperativeHandle, forwardRef } from '
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { deleteUserIcon, uploadUserIcon } from '@/utils/storage'
+import { supabase } from '@/utils/spabase'
 
 interface ImageUploadProps {
   currentImage?: string
@@ -14,6 +15,7 @@ interface ImageUploadProps {
 
 export interface ImageUploadRef {
   uploadImage: (userId: string) => Promise<string | null>
+  uploadImageViaAPI: () => Promise<string | null>
 }
 
 const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
@@ -48,6 +50,51 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
           return publicUrl
         } catch (error) {
           console.error('ImageUpload: Upload error:', error)
+          throw error
+        }
+      },
+      uploadImageViaAPI: async () => {
+        console.log('ImageUpload: uploadImageViaAPI called')
+        console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
+        
+        if (!croppedImageBlob) {
+          console.log('ImageUpload: No cropped image blob available')
+          return null
+        }
+        
+        try {
+          const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
+          console.log('ImageUpload: Created file for API upload:', file)
+          
+          // FormDataを作成
+          const formData = new FormData()
+          formData.append('icon', file)
+          
+          // セッションを取得
+          const { data: { session } } = await supabase.auth.getSession()
+          if (!session) {
+            throw new Error('認証が必要です')
+          }
+          
+          // 専用APIにアップロード
+          const response = await fetch('/api/user/icon', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: formData
+          })
+          
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || 'アップロードに失敗しました')
+          }
+          
+          const result = await response.json()
+          console.log('ImageUpload: API upload successful:', result.iconUrl)
+          return result.iconUrl
+        } catch (error) {
+          console.error('ImageUpload: API upload error:', error)
           throw error
         }
       }

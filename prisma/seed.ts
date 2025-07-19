@@ -3,21 +3,21 @@ import { PrismaClient } from '../src/generated/prisma'
 const prisma = new PrismaClient()
 
 const languages = [
-  { name: '日本語', code: 'ja' },
-  { name: '英語', code: 'en' },
-  { name: '中国語', code: 'zh' },
-  { name: '韓国語', code: 'ko' },
-  { name: 'スペイン語', code: 'es' },
-  { name: 'フランス語', code: 'fr' },
-  { name: 'ドイツ語', code: 'de' },
-  { name: 'イタリア語', code: 'it' },
-  { name: 'ポルトガル語', code: 'pt' },
-  { name: 'ロシア語', code: 'ru' },
-  { name: 'アラビア語', code: 'ar' },
-  { name: 'ヒンディー語', code: 'hi' },
-  { name: 'タイ語', code: 'th' },
-  { name: 'ベトナム語', code: 'vi' },
-  { name: 'インドネシア語', code: 'id' }
+  { name: 'Japanese', code: 'ja' },
+  { name: 'English', code: 'en' },
+  { name: 'Chinese', code: 'zh' },
+  { name: 'Korean', code: 'ko' },
+  { name: 'Spanish', code: 'es' },
+  { name: 'French', code: 'fr' },
+  { name: 'German', code: 'de' },
+  { name: 'Italian', code: 'it' },
+  { name: 'Portuguese', code: 'pt' },
+  { name: 'Russian', code: 'ru' },
+  { name: 'Arabic', code: 'ar' },
+  { name: 'Hindi', code: 'hi' },
+  { name: 'Thai', code: 'th' },
+  { name: 'Vietnamese', code: 'vi' },
+  { name: 'Indonesian', code: 'id' }
 ]
 
 async function main() {

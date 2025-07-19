@@ -11,7 +11,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
 
-  const fetchUserSettings = useCallback(async () => {
+  const fetchUserSettings = useCallback(async (forceRefresh = false) => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       
@@ -19,11 +19,20 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         return
       }
 
-      const response = await fetch('/api/user/settings', {
+      // 強制リフレッシュ時はキャッシュを無効化
+      const headers: HeadersInit = {
+        'Authorization': `Bearer ${session.access_token}`
+      }
+      
+      if (forceRefresh) {
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        headers['Pragma'] = 'no-cache'
+        headers['Expires'] = '0'
+      }
+
+      const response = await fetch(`/api/user/settings${forceRefresh ? `?t=${Date.now()}` : ''}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
+        headers
       })
 
       if (response.ok) {
@@ -50,11 +59,35 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       } else if (response.status === 404) {
         // 新規ユーザーの場合は設定未完了
         setIsUserSetupComplete(false)
-        // 初回ログイン時は空の iconUrl を設定（デフォルトアイコンを表示）
-        setValue('iconUrl', '')
+        
+        // Googleアカウントの画像URLを取得して設定
+        // avatar_url, picture, avatar などの可能性を考慮
+        const googleAvatarUrl = user?.user_metadata?.avatar_url || 
+                               user?.user_metadata?.picture || 
+                               user?.user_metadata?.avatar
+        
+        console.log('User metadata for avatar:', {
+          avatar_url: user?.user_metadata?.avatar_url,
+          picture: user?.user_metadata?.picture,
+          avatar: user?.user_metadata?.avatar,
+          selected: googleAvatarUrl
+        })
+        
+        if (googleAvatarUrl) {
+          console.log('Setting Google avatar URL directly:', googleAvatarUrl)
+          setValue('iconUrl', googleAvatarUrl)
+        } else {
+          // Googleアバターがない場合は空の iconUrl を設定（デフォルトアイコンを表示）
+          setValue('iconUrl', '')
+        }
+        
         // Googleアカウントの情報を初期値として設定（iconUrl以外）
-        if (user?.user_metadata?.full_name) {
-          setValue('username', user.user_metadata.full_name)
+        const displayName = user?.user_metadata?.full_name || 
+                           user?.user_metadata?.name || 
+                           user?.user_metadata?.display_name
+        
+        if (displayName) {
+          setValue('username', displayName)
         }
         if (user?.email) {
           setValue('email', user.email)
@@ -113,11 +146,18 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
     }
   }, [])
 
-  // データの並列初期化
+  // データの並列初期化（再ログイン時は強制リフレッシュ）
   useEffect(() => {
     if (user) {
+      console.log('useUserSettings: User logged in, user metadata:', {
+        user_metadata: user.user_metadata,
+        avatar_url: user.user_metadata?.avatar_url,
+        picture: user.user_metadata?.picture,
+        avatar: user.user_metadata?.avatar
+      })
+      
       Promise.all([
-        fetchUserSettings(),
+        fetchUserSettings(true), // 初回読み込み時は強制リフレッシュ
         fetchLanguages()
       ]).then(() => {
         setDataLoading(false)

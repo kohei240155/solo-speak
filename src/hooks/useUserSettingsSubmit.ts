@@ -7,7 +7,8 @@ import { UserSetupFormData } from '@/types/userSettings'
 
 export function useUserSettingsSubmit(
   setError: (error: string) => void,
-  setIsUserSetupComplete: (complete: boolean) => void
+  setIsUserSetupComplete: (complete: boolean) => void,
+  onIconUrlUpdate?: (iconUrl: string) => void
 ) {
   const { user, updateUserMetadata } = useAuth()
   const [submitting, setSubmitting] = useState(false)
@@ -29,12 +30,44 @@ export function useUserSettingsSubmit(
 
       const finalData = { ...data }
 
-      // 画像がアップロードされている場合、Supabase Storageにアップロード
+      // 現在のユーザー設定を取得して既存のiconUrlを保持
+      let existingIconUrl = ''
+      try {
+        const currentSettingsResponse = await fetch('/api/user/settings', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
+        
+        if (currentSettingsResponse.ok) {
+          const currentSettings = await currentSettingsResponse.json()
+          existingIconUrl = currentSettings.iconUrl || ''
+          console.log('UserSettingsSubmit: Existing iconUrl:', existingIconUrl)
+        }
+      } catch (error) {
+        console.log('UserSettingsSubmit: Could not fetch existing settings:', error)
+      }
+
+      // 画像がアップロードされている場合、専用APIを使用してSupabase Storageにアップロード
       if (imageUploadRef.current && user) {
         try {
-          const uploadedUrl = await imageUploadRef.current.uploadImage(user.id)
+          // 新しいAPI経由でアップロード
+          const uploadedUrl = await imageUploadRef.current.uploadImageViaAPI()
           if (uploadedUrl) {
+            console.log('UserSettingsSubmit: Image uploaded via API successfully:', uploadedUrl)
             finalData.iconUrl = uploadedUrl
+            
+            // フォームのiconUrlも更新して表示に反映
+            onIconUrlUpdate?.(uploadedUrl)
+          } else {
+            // 新しい画像がアップロードされなかった場合
+            if (finalData.iconUrl && finalData.iconUrl.startsWith('blob:')) {
+              // ローカルBlob URLの場合は既存のSupabaseストレージURLを保持
+              console.log('UserSettingsSubmit: No new upload, keeping existing iconUrl:', existingIconUrl)
+              finalData.iconUrl = existingIconUrl
+            }
+            // 既にSupabaseストレージURLの場合はそのまま保持
           }
         } catch (uploadError) {
           console.error('Image upload failed:', uploadError)
@@ -53,7 +86,41 @@ export function useUserSettingsSubmit(
           setSubmitting(false)
           return
         }
+      } else {
+        // ImageUploadコンポーネントがない場合もローカルBlob URLをチェック
+        if (finalData.iconUrl && finalData.iconUrl.startsWith('blob:')) {
+          console.log('UserSettingsSubmit: No ImageUpload ref, keeping existing iconUrl:', existingIconUrl)
+          finalData.iconUrl = existingIconUrl
+        }
+        
+        // GoogleアバターURLの場合はそのまま保存（Storageに保存しない）
+        if (finalData.iconUrl && user &&
+            (finalData.iconUrl.includes('googleusercontent.com') || 
+             finalData.iconUrl.includes('googleapis.com') || 
+             finalData.iconUrl.includes('google.com') ||
+             finalData.iconUrl.includes('/api/proxy/image'))) {
+          
+          console.log('UserSettingsSubmit: Google avatar detected, saving URL directly to database')
+          
+          // プロキシ経由のURLの場合は元のURLを取得してデータベースに保存
+          if (finalData.iconUrl.includes('/api/proxy/image')) {
+            const urlParams = new URLSearchParams(finalData.iconUrl.split('?')[1])
+            const originalGoogleUrl = urlParams.get('url')
+            if (originalGoogleUrl) {
+              console.log('UserSettingsSubmit: Using original Google URL for database:', originalGoogleUrl)
+              finalData.iconUrl = originalGoogleUrl
+            }
+          }
+          
+          console.log('UserSettingsSubmit: Google avatar URL will be saved directly:', finalData.iconUrl)
+        }
       }
+
+      console.log('Final data being sent to API:', {
+        ...finalData,
+        iconUrl: finalData.iconUrl ? `${finalData.iconUrl.substring(0, 50)}...` : 'null'
+      })
+      console.log('Full iconUrl being sent:', finalData.iconUrl)
 
       const response = await fetch('/api/user/settings', {
         method: 'POST',
