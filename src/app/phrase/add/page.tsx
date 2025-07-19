@@ -532,7 +532,7 @@ export default function PhraseAddPage() {
             {activeTab === 'Add' && (
               <>
                 {/* Native Language表示とLeft情報 */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-3">
                   <h2 className="text-lg md:text-xl font-bold text-gray-900">
                     {languages.length > 0 
                       ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
@@ -545,7 +545,7 @@ export default function PhraseAddPage() {
                 </div>
 
                 {/* フレーズ入力エリア */}
-                <div className="mb-6">
+                <div className="mb-3">
                   <textarea
                     value={desiredPhrase}
                     onChange={(e) => handlePhraseChange(e.target.value)}
@@ -560,7 +560,7 @@ export default function PhraseAddPage() {
                   />
                   
                   {/* 100文字以内で入力するよう促す文言とリアルタイム文字数 */}
-                  <div className="flex justify-between items-center mt-2">
+                  <div className="flex justify-between items-center mt-1">
                     <span className={`text-xs ${
                       desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
                     }`}>
@@ -578,7 +578,7 @@ export default function PhraseAddPage() {
                 <button
                   onClick={handleGeneratePhrase}
                   disabled={isLoading || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0 || isSaving}
-                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200 mb-8"
+                  className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200 mb-4"
                   style={{ 
                     backgroundColor: (!desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0) ? '#9CA3AF' : '#616161'
                   }}
@@ -606,7 +606,7 @@ export default function PhraseAddPage() {
                 {/* 生成結果 */}
                 {generatedVariations.length > 0 && (
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-3">
                       <h3 className="text-lg md:text-xl font-bold text-gray-900">
                         AI Suggested Phrases
                       </h3>
@@ -620,7 +620,7 @@ export default function PhraseAddPage() {
                     </div>
                     
                     {generatedVariations.map((variation, index) => (
-                      <div key={index} className="p-0">
+                      <div key={index} className="mb-8">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center">
                             <span className="text-lg mr-2">{typeIcons[variation.type]}</span>
@@ -652,7 +652,7 @@ export default function PhraseAddPage() {
                         
                         {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
                         {variationValidationErrors[index] && (editingVariations[index] || variation.text).length > 100 && (
-                          <div className="flex justify-between items-center mt-1 mb-4">
+                          <div className="flex justify-between items-center mt-1 mb-3">
                             <span className="text-sm text-red-600">
                               {variationValidationErrors[index]}
                             </span>
@@ -664,7 +664,7 @@ export default function PhraseAddPage() {
                         
                         {/* 通常時のマージン */}
                         {(editingVariations[index] || variation.text).length <= 100 && (
-                          <div className="mb-4"></div>
+                          <div className="mb-3"></div>
                         )}
                         
                         <button
