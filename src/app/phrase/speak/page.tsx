@@ -23,7 +23,7 @@ export default function PhraseSpeakPage() {
     fetchSavedPhrases,
   } = usePhraseList()
 
-  const [showSpeakModal, setShowSpeakModal] = useState(true) // ページ表示時にモーダルを自動表示
+  const [showSpeakModal, setShowSpeakModal] = useState(false) // モーダルの表示状態
   const [speakMode, setSpeakMode] = useState<{ active: boolean; config: SpeakConfig | null }>({
     active: false,
     config: null
@@ -43,7 +43,7 @@ export default function PhraseSpeakPage() {
 
   const handleSpeakFinish = () => {
     setSpeakMode({ active: false, config: null })
-    setShowSpeakModal(true) // Finish後は再度モーダルを表示
+    // Finish後はモーダルを再表示しない
   }
 
   const handleSpeakModalClose = () => {
@@ -72,7 +72,7 @@ export default function PhraseSpeakPage() {
           {/* タブメニュー */}
           <PhraseTabNavigation 
             activeTab="Speak" 
-            onSpeakModalOpen={() => setShowSpeakModal(true)}
+            onSpeakModalOpen={undefined} // 練習モード中はモーダルを無効化
           />
 
           {/* Speak練習コンテンツエリア */}

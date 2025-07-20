@@ -45,25 +45,29 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       const response = await fetch(`/api/phrase/speak?${params.toString()}`)
       const data = await response.json()
 
+      console.log('SpeakModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })
+
       if (data.success && data.phrase) {
         // 設定オブジェクトを作成して渡す
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           prioritizeLowPractice: prioritizeLowPractice
         }
+        console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる
         onClose()
         onStart(config)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
+        console.warn('SpeakModeModal - No phrases found:', data.message)
         toast.error(errorMessage)
-        console.warn('No phrases found:', data.message)
       }
     } catch (error) {
-      console.error('Error fetching phrase:', error)
+      console.error('SpeakModeModal - Error fetching phrase:', error)
       toast.error('フレーズの取得中にエラーが発生しました')
     } finally {
+      console.log('SpeakModeModal - Setting loading to false')
       setIsLoading(false)
     }
   }
