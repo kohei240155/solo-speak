@@ -16,6 +16,7 @@ interface PhraseListProps {
   onUpdatePhrase?: (phrase: SavedPhrase) => void
   onDeletePhrase?: (phraseId: string) => void
   onSpeakPhrase?: (phrase: SavedPhrase) => void
+  onRefreshPhrases?: () => void
 }
 
 export default function PhraseList({ 
@@ -25,7 +26,8 @@ export default function PhraseList({
   nativeLanguage = 'ja',
   onUpdatePhrase,
   onDeletePhrase,
-  onSpeakPhrase
+  onSpeakPhrase,
+  onRefreshPhrases
 }: PhraseListProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null)
@@ -39,8 +41,8 @@ export default function PhraseList({
 
   const handleEdit = (phrase: SavedPhrase) => {
     setEditingPhrase(phrase)
-    setEditedText(phrase.text)
-    setEditedTranslation(phrase.translation)
+    setEditedText(phrase.text)               // 学習言語（下のフォーム）
+    setEditedTranslation(phrase.translation) // 母国語（上のフォーム）
     setOpenMenuId(null)
   }
 
@@ -59,19 +61,41 @@ export default function PhraseList({
   }
 
   const handleUpdatePhrase = async () => {
-    if (!editingPhrase || !onUpdatePhrase) return
+    if (!editingPhrase) return
 
     setIsUpdating(true)
     try {
-      const updatedPhrase = {
-        ...editingPhrase,
-        text: editedText,
-        translation: editedTranslation
+      const response = await fetch(`/api/phrase/${editingPhrase.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: editedText.trim(),            // 学習言語（下のフォーム）
+          translation: editedTranslation.trim() // 母国語（上のフォーム）
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update phrase')
       }
-      await onUpdatePhrase(updatedPhrase)
+
+      const updatedPhrase = await response.json()
+      
+      // フレーズを更新してモーダルを閉じる
+      if (onUpdatePhrase) {
+        await onUpdatePhrase(updatedPhrase)
+      }
+      
       setEditingPhrase(null)
+      
+      // リストを更新
+      if (onRefreshPhrases) {
+        onRefreshPhrases()
+      }
     } catch (error) {
       console.error('Error updating phrase:', error)
+      // TODO: エラーメッセージの表示
     } finally {
       setIsUpdating(false)
     }
@@ -113,7 +137,7 @@ export default function PhraseList({
           >
             <div className="flex justify-between mb-2">
               <div className="text-base font-medium text-gray-900 flex-1 pr-2">
-                {phrase.translation}
+                {phrase.text}
               </div>
               <div className="relative">
                 <button 
@@ -152,7 +176,7 @@ export default function PhraseList({
               </div>
             </div>
             <div className="text-sm text-gray-900 mb-3">
-              {phrase.text}
+              {phrase.translation}
             </div>
             <div className="flex items-center justify-between text-xs text-gray-900">
               <div className="flex items-center space-x-6">
@@ -195,34 +219,7 @@ export default function PhraseList({
             </h2>
           </div>
 
-          {/* 学習言語 section (上のフォーム) */}
-          <div className="mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {editingPhrase?.language?.name || 'English'}
-            </h3>
-            <textarea
-              value={editedText}
-              onChange={(e) => setEditedText(e.target.value)}
-              placeholder="Enter phrase"
-              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              disabled={isUpdating}
-            />
-            <div className="flex justify-between items-center mt-1">
-              <span className={`text-xs ${
-                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                100文字以内で入力してください
-              </span>
-              <span className={`text-xs ${
-                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                {editedText.length} / 100
-              </span>
-            </div>
-          </div>
-
-          {/* 母国語 section (下のフォーム) */}
+          {/* 母国語 section (上のフォーム) */}
           <div className="mb-6">
             <h3 className="text-base font-semibold text-gray-900 mb-3">
               {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
@@ -245,6 +242,33 @@ export default function PhraseList({
                 editedTranslation.length > 100 ? 'text-red-500' : 'text-gray-500'
               }`}>
                 {editedTranslation.length} / 100
+              </span>
+            </div>
+          </div>
+
+          {/* 学習言語 section (下のフォーム) */}
+          <div className="mb-6">
+            <h3 className="text-base font-semibold text-gray-900 mb-3">
+              {editingPhrase?.language?.name || 'English'}
+            </h3>
+            <textarea
+              value={editedText}
+              onChange={(e) => setEditedText(e.target.value)}
+              placeholder="Enter phrase"
+              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              disabled={isUpdating}
+            />
+            <div className="flex justify-between items-center mt-1">
+              <span className={`text-xs ${
+                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
+              }`}>
+                100文字以内で入力してください
+              </span>
+              <span className={`text-xs ${
+                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
+              }`}>
+                {editedText.length} / 100
               </span>
             </div>
           </div>

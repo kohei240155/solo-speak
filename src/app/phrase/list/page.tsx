@@ -74,6 +74,10 @@ export default function PhraseListPage() {
             // TODO: フレーズ音声再生の実装
             console.log('Speak phrase:', phrase)
           }}
+          onRefreshPhrases={() => {
+            // リストを最初のページから再取得
+            fetchSavedPhrases(1, false)
+          }}
         />
       </div>
     </div>
