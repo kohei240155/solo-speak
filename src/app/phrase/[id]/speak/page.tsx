@@ -318,8 +318,8 @@ export default function SpeakPage() {
           </div>
 
           {/* Count と Sound ボタン */}
-          <div className="mb-4 md:mb-6">
-            <div className="flex gap-3 relative md:gap-6">
+          <div className="mb-3 md:mb-4">
+            <div className="flex gap-3 relative md:gap-6 items-start">
               {/* Count ボタンエリア */}
               <div className="flex-1 flex flex-col items-center">
                 <button
@@ -328,11 +328,11 @@ export default function SpeakPage() {
                 >
                   <CiCirclePlus className="w-12 h-12 text-gray-600 md:w-16 md:h-16" />
                 </button>
-                <span className="text-gray-900 font-medium text-base mt-2 md:text-lg md:mt-3">Count</span>
+                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">Count</span>
               </div>
 
               {/* 中央の区切り線 */}
-              <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-px h-20 bg-gray-300 md:h-28"></div>
+              <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-px h-18 bg-gray-300 md:h-24"></div>
 
               {/* Sound ボタンエリア */}
               <div className="flex-1 flex flex-col items-center">
@@ -342,7 +342,7 @@ export default function SpeakPage() {
                 >
                   <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />
                 </button>
-                <span className="text-gray-900 font-medium text-base mt-2 md:text-lg md:mt-3">Sound</span>
+                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">Sound</span>
               </div>
             </div>
           </div>
