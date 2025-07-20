@@ -3,8 +3,7 @@
 import { useState, useRef, useCallback, useImperativeHandle, forwardRef } from 'react'
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { deleteUserIcon, uploadUserIcon } from '@/utils/storage'
-import { supabase } from '@/utils/spabase'
+import { deleteUserIcon } from '@/utils/storage'
 
 interface ImageUploadProps {
   currentImage?: string
@@ -14,13 +13,13 @@ interface ImageUploadProps {
 }
 
 export interface ImageUploadRef {
-  uploadImage: (userId: string) => Promise<string | null>
-  uploadImageViaAPI: () => Promise<string | null>
+  getImageFile: () => File | null
 }
 
 const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
   ({ currentImage, onImageChange, onImageRemove, disabled = false }, ref) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null) // 元のファイルオブジェクトを保持
     const [crop, setCrop] = useState<Crop>()
     const [completedCrop, setCompletedCrop] = useState<Crop>()
     const [showCrop, setShowCrop] = useState(false)
@@ -29,85 +28,83 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     const previewCanvasRef = useRef<HTMLCanvasElement>(null)
     const blobUrlRef = useRef('')
 
-    // 親コンポーネントが呼び出せるuploadImage関数を公開
-    useImperativeHandle(ref, () => ({
-      uploadImage: async (userId: string) => {
-        console.log('ImageUpload: uploadImage called with userId:', userId)
-        console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
-        
-        if (!croppedImageBlob) {
-          console.log('ImageUpload: No cropped image blob available')
+    // 共通のgetImageFile関数
+    const getImageFile = useCallback(() => {
+      console.log('ImageUpload: getImageFile called')
+      console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
+      console.log('ImageUpload: selectedFile:', selectedFile)
+      console.log('ImageUpload: selectedImage:', selectedImage)
+      console.log('ImageUpload: selectedImage type:', typeof selectedImage)
+      console.log('ImageUpload: selectedImage length:', selectedImage?.length)
+      
+      // クロップされた画像があればそれを使用
+      if (croppedImageBlob) {
+        console.log('ImageUpload: Using cropped image blob')
+        const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
+        console.log('ImageUpload: Created file from cropped blob:', file)
+        return file
+      }
+      
+      // 元のファイルオブジェクトがある場合はそれを使用
+      if (selectedFile) {
+        console.log('ImageUpload: Using original selected file')
+        console.log('ImageUpload: selectedFile:', selectedFile)
+        return selectedFile
+      }
+      
+      // クロップされた画像がなく、選択された画像がある場合
+      console.log('ImageUpload: Checking selectedImage condition...')
+      console.log('ImageUpload: selectedImage exists:', !!selectedImage)
+      console.log('ImageUpload: selectedImage starts with http:', selectedImage?.startsWith('http'))
+      
+      if (selectedImage && !selectedImage.startsWith('http')) {
+        console.log('ImageUpload: Using selected image (data URL)')
+        try {
+          // Data URLをBlobに変換
+          const [header, data] = selectedImage.split(',')
+          const mime = header.match(/:(.*?);/)?.[1] || 'image/jpeg'
+          const binary = atob(data)
+          const array = new Uint8Array(binary.length)
+          for (let i = 0; i < binary.length; i++) {
+            array[i] = binary.charCodeAt(i)
+          }
+          const blob = new Blob([array], { type: mime })
+          const file = new File([blob], 'avatar.jpg', { type: mime })
+          console.log('ImageUpload: Created file from selected image:', file)
+          return file
+        } catch (error) {
+          console.error('ImageUpload: Failed to convert selected image to file:', error)
           return null
         }
-        
-        try {
-          const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
-          console.log('ImageUpload: Created file:', file)
-          console.log('ImageUpload: Calling uploadUserIcon...')
-          
-          const publicUrl = await uploadUserIcon(file, userId)
-          console.log('ImageUpload: Upload successful, publicUrl:', publicUrl)
-          return publicUrl
-        } catch (error) {
-          console.error('ImageUpload: Upload error:', error)
-          throw error
-        }
-      },
-      uploadImageViaAPI: async () => {
-        console.log('ImageUpload: uploadImageViaAPI called')
-        console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
-        
-        if (!croppedImageBlob) {
-          console.log('ImageUpload: No cropped image blob available')
-          return null
-        }
-        
-        try {
-          const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
-          console.log('ImageUpload: Created file for API upload:', file)
-          
-          // FormDataを作成
-          const formData = new FormData()
-          formData.append('icon', file)
-          
-          // セッションを取得
-          const { data: { session } } = await supabase.auth.getSession()
-          if (!session) {
-            throw new Error('認証が必要です')
-          }
-          
-          // 専用APIにアップロード
-          const response = await fetch('/api/user/icon', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`
-            },
-            body: formData
-          })
-          
-          if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || 'アップロードに失敗しました')
-          }
-          
-          const result = await response.json()
-          console.log('ImageUpload: API upload successful:', result.iconUrl)
-          return result.iconUrl
-        } catch (error) {
-          console.error('ImageUpload: API upload error:', error)
-          throw error
+      } else {
+        console.log('ImageUpload: selectedImage condition not met')
+        console.log('ImageUpload: selectedImage exists:', !!selectedImage)
+        console.log('ImageUpload: selectedImage value:', selectedImage)
+        if (selectedImage) {
+          console.log('ImageUpload: selectedImage starts with http:', selectedImage.startsWith('http'))
         }
       }
-    }), [croppedImageBlob])
+      
+      console.log('ImageUpload: No image available, returning null')
+      return null
+    }, [croppedImageBlob, selectedFile, selectedImage])
+
+    // 親コンポーネントが呼び出せる関数を公開
+    useImperativeHandle(ref, () => ({
+      getImageFile
+    }), [getImageFile])
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      setSelectedFile(file) // 元のファイルオブジェクトを保存
+      
       const reader = new FileReader()
       reader.addEventListener('load', () => {
         setSelectedImage(reader.result?.toString() || '')
         setShowCrop(true)
       })
-      reader.readAsDataURL(e.target.files[0])
+      reader.readAsDataURL(file)
     }
   }
 
@@ -199,6 +196,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
   const handleCropCancel = () => {
     setShowCrop(false)
     setSelectedImage(null)
+    setSelectedFile(null)
     setCrop(undefined)
     setCompletedCrop(undefined)
   }
@@ -217,6 +215,12 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
       URL.revokeObjectURL(blobUrlRef.current)
       blobUrlRef.current = ''
     }
+    
+    // ローカル状態もクリア
+    setSelectedFile(null)
+    setSelectedImage(null)
+    setCroppedImageBlob(null)
+    
     onImageRemove()
   }
 

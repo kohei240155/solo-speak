@@ -44,9 +44,14 @@ export async function POST(request: NextRequest) {
     })
 
     // Supabase Storageにアップロード（サーバーモードで）
+    console.log('Calling uploadUserIcon with serverMode=true...')
     const publicUrl = await uploadUserIcon(file, authResult.user.id, true)
     
-    console.log('Icon upload successful:', publicUrl)
+    console.log('Icon upload successful:', {
+      publicUrl,
+      length: publicUrl?.length,
+      startsWithHttp: publicUrl?.startsWith('http')
+    })
 
     return NextResponse.json({ 
       iconUrl: publicUrl,

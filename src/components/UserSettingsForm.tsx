@@ -30,7 +30,10 @@ export default function UserSettingsForm({
   onSubmit,
   submitting: submittingProp
 }: UserSettingsFormProps) {
-  const { submitting, imageUploadRef } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
+  const { submitting, imageUploadRef, onSubmit: onSubmitFromHook } = useUserSettingsSubmit(
+    setError, 
+    setIsUserSetupComplete
+  )
   const watchIconUrl = watch('iconUrl')
   const isDisabled = dataLoading || submitting || submittingProp
   
@@ -38,7 +41,7 @@ export default function UserSettingsForm({
   const actualSubmitting = submitting || submittingProp
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
       <div>
         <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">

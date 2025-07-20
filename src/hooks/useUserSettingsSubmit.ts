@@ -7,8 +7,7 @@ import { UserSetupFormData } from '@/types/userSettings'
 
 export function useUserSettingsSubmit(
   setError: (error: string) => void,
-  setIsUserSetupComplete: (complete: boolean) => void,
-  onIconUrlUpdate?: (iconUrl: string) => void
+  setIsUserSetupComplete: (complete: boolean) => void
 ) {
   const { user, updateUserMetadata } = useAuth()
   const [submitting, setSubmitting] = useState(false)
@@ -49,70 +48,78 @@ export function useUserSettingsSubmit(
         console.log('UserSettingsSubmit: Could not fetch existing settings:', error)
       }
 
-      // 画像がアップロードされている場合、専用APIを使用してSupabase Storageにアップロード
+      // 画像がある場合はSupabase Storageにアップロード
+      console.log('UserSettingsSubmit: Checking image upload conditions...')
+      console.log('UserSettingsSubmit: imageUploadRef.current:', !!imageUploadRef.current)
+      console.log('UserSettingsSubmit: user:', !!user)
+      
       if (imageUploadRef.current && user) {
-        try {
-          // 新しいAPI経由でアップロード
-          const uploadedUrl = await imageUploadRef.current.uploadImageViaAPI()
-          if (uploadedUrl) {
-            console.log('UserSettingsSubmit: Image uploaded via API successfully:', uploadedUrl)
-            finalData.iconUrl = uploadedUrl
+        console.log('UserSettingsSubmit: Attempting image upload...')
+        
+        const imageFile = imageUploadRef.current.getImageFile()
+        console.log('UserSettingsSubmit: imageFile:', imageFile)
+        console.log('UserSettingsSubmit: imageFile type:', typeof imageFile)
+        console.log('UserSettingsSubmit: imageFile size:', imageFile?.size)
+        
+        if (imageFile) {
+          console.log('UserSettingsSubmit: Image file found, uploading to API...')
+          
+          try {
+            // 1つ目のAPI: 画像をSupabase Storageにアップロード
+            const formData = new FormData()
+            formData.append('icon', imageFile)
             
-            // フォームのiconUrlも更新して表示に反映
-            onIconUrlUpdate?.(uploadedUrl)
-          } else {
-            // 新しい画像がアップロードされなかった場合
-            if (finalData.iconUrl && finalData.iconUrl.startsWith('blob:')) {
-              // ローカルBlob URLの場合は既存のSupabaseストレージURLを保持
-              console.log('UserSettingsSubmit: No new upload, keeping existing iconUrl:', existingIconUrl)
-              finalData.iconUrl = existingIconUrl
+            console.log('UserSettingsSubmit: Making API call to /api/user/icon')
+            const uploadResponse = await fetch('/api/user/icon', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`
+              },
+              body: formData
+            })
+            
+            if (!uploadResponse.ok) {
+              const errorData = await uploadResponse.json()
+              throw new Error(errorData.error || 'アップロードに失敗しました')
             }
-            // 既にSupabaseストレージURLの場合はそのまま保持
-          }
-        } catch (uploadError) {
-          console.error('Image upload failed:', uploadError)
-          
-          // RLSエラーの場合はより詳細なエラーメッセージを提供
-          if (uploadError instanceof Error) {
-            if (uploadError.message.includes('row-level security') || uploadError.message.includes('policy')) {
-              setError(`画像のアップロード権限がありません。\n解決方法：\n1. Supabase Dashboard > Storage > Settings でRLSを一時的に無効化\n2. または適切なポリシーを設定してください。\n\n詳細: ${uploadError.message}`)
+            
+            const uploadResult = await uploadResponse.json()
+            console.log('UserSettingsSubmit: Image uploaded successfully:', uploadResult.iconUrl)
+            
+            // アップロードしたURLをフォームデータに設定
+            finalData.iconUrl = uploadResult.iconUrl
+            
+          } catch (uploadError) {
+            console.error('Image upload failed:', uploadError)
+            
+            if (uploadError instanceof Error) {
+              if (uploadError.message.includes('row-level security') || uploadError.message.includes('policy')) {
+                setError(`画像のアップロード権限がありません。\n解決方法：\n1. Supabase Dashboard > Storage > Settings でRLSを一時的に無効化\n2. または適切なポリシーを設定してください。\n\n詳細: ${uploadError.message}`)
+              } else {
+                setError(`画像のアップロードに失敗しました: ${uploadError.message}`)
+              }
             } else {
-              setError(`画像のアップロードに失敗しました: ${uploadError.message}`)
+              setError('画像のアップロードに失敗しました。')
             }
-          } else {
-            setError('画像のアップロードに失敗しました。')
+            
+            setSubmitting(false)
+            return
           }
-          
-          setSubmitting(false)
-          return
+        } else {
+          console.log('UserSettingsSubmit: No image file to upload')
+          console.log('UserSettingsSubmit: imageFile is null or undefined')
+          // 画像がない場合は既存のURLを保持
+          if (!finalData.iconUrl || finalData.iconUrl.startsWith('blob:')) {
+            finalData.iconUrl = existingIconUrl
+          }
         }
       } else {
-        // ImageUploadコンポーネントがない場合もローカルBlob URLをチェック
-        if (finalData.iconUrl && finalData.iconUrl.startsWith('blob:')) {
-          console.log('UserSettingsSubmit: No ImageUpload ref, keeping existing iconUrl:', existingIconUrl)
+        console.log('UserSettingsSubmit: No image upload component or user')
+        console.log('UserSettingsSubmit: imageUploadRef.current:', !!imageUploadRef.current)
+        console.log('UserSettingsSubmit: user:', !!user)
+        // 画像コンポーネントがない場合も既存のURLを保持
+        if (!finalData.iconUrl || finalData.iconUrl.startsWith('blob:')) {
           finalData.iconUrl = existingIconUrl
-        }
-        
-        // GoogleアバターURLの場合はそのまま保存（Storageに保存しない）
-        if (finalData.iconUrl && user &&
-            (finalData.iconUrl.includes('googleusercontent.com') || 
-             finalData.iconUrl.includes('googleapis.com') || 
-             finalData.iconUrl.includes('google.com') ||
-             finalData.iconUrl.includes('/api/proxy/image'))) {
-          
-          console.log('UserSettingsSubmit: Google avatar detected, saving URL directly to database')
-          
-          // プロキシ経由のURLの場合は元のURLを取得してデータベースに保存
-          if (finalData.iconUrl.includes('/api/proxy/image')) {
-            const urlParams = new URLSearchParams(finalData.iconUrl.split('?')[1])
-            const originalGoogleUrl = urlParams.get('url')
-            if (originalGoogleUrl) {
-              console.log('UserSettingsSubmit: Using original Google URL for database:', originalGoogleUrl)
-              finalData.iconUrl = originalGoogleUrl
-            }
-          }
-          
-          console.log('UserSettingsSubmit: Google avatar URL will be saved directly:', finalData.iconUrl)
         }
       }
 
@@ -122,6 +129,7 @@ export function useUserSettingsSubmit(
       })
       console.log('Full iconUrl being sent:', finalData.iconUrl)
 
+      // 2つ目のAPI: ユーザー設定を保存
       const response = await fetch('/api/user/settings', {
         method: 'POST',
         headers: {
