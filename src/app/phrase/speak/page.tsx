@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal, { SpeakConfig } from '@/components/SpeakModeModal'
 import SpeakPractice from '@/components/SpeakPractice'
@@ -22,7 +22,6 @@ export default function PhraseSpeakPage() {
   const {
     learningLanguage,
     languages,
-    nativeLanguage,
   } = usePhraseSettings()
 
   const {
@@ -44,7 +43,7 @@ export default function PhraseSpeakPage() {
   const [totalCount, setTotalCount] = useState(0) // 総音読回数
 
   // フレーズを取得する関数
-  const fetchSpeakPhrase = async (config: SpeakConfig) => {
+  const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
     setIsLoadingPhrase(true)
     try {
       const params = new URLSearchParams({
@@ -71,7 +70,7 @@ export default function PhraseSpeakPage() {
     } finally {
       setIsLoadingPhrase(false)
     }
-  }
+  }, [learningLanguage])
 
   // カウント機能
   const handleCount = async () => {
@@ -157,7 +156,7 @@ export default function PhraseSpeakPage() {
       setSpeakMode({ active: true, config })
       fetchSpeakPhrase(config)
     }
-  }, [learningLanguage]) // learningLanguageが設定されてから実行
+  }, [learningLanguage, fetchSpeakPhrase]) // learningLanguageが設定されてから実行
 
   const handleSpeakStart = async (config: SpeakConfig) => {
     setSpeakMode({ active: true, config })
@@ -220,8 +219,6 @@ export default function PhraseSpeakPage() {
             ) : currentPhrase ? (
               <SpeakPractice
                 phrase={currentPhrase}
-                languages={languages}
-                nativeLanguage={nativeLanguage}
                 onCount={handleCount}
                 onSound={handleSound}
                 onNext={handleNext}
