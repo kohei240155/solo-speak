@@ -15,21 +15,35 @@ interface SpeakModeModalProps {
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   prioritizeLowPractice: boolean
+  language: string
 }
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [prioritizeLowPractice, setPrioritizeLowPractice] = useState(true)
-  const [selectedLanguage, setSelectedLanguage] = useState(defaultLearningLanguage)
+  
+  // 初期言語の設定ロジックをuseMemoで最適化
+  const initialLanguage = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : 'en')
+  const [selectedLanguage, setSelectedLanguage] = useState(initialLanguage)
   const [isLoading, setIsLoading] = useState(false)
 
-  // モーダルが開かれた時に選択言語を更新
+  // モーダルが開かれた時またはdefaultLearningLanguageが変更された時に選択言語を更新
   useEffect(() => {
     if (isOpen) {
-      setSelectedLanguage(defaultLearningLanguage)
+      const languageToSet = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : 'en')
+      setSelectedLanguage(languageToSet)
       setIsLoading(false) // ローディング状態をリセット
     }
-  }, [isOpen, defaultLearningLanguage])
+  }, [isOpen, defaultLearningLanguage, languages])
+
+  // defaultLearningLanguageまたはlanguagesが変更された時も選択言語を更新
+  useEffect(() => {
+    if (defaultLearningLanguage) {
+      setSelectedLanguage(defaultLearningLanguage)
+    } else if (languages.length > 0 && !defaultLearningLanguage) {
+      setSelectedLanguage(languages[0].code)
+    }
+  }, [defaultLearningLanguage, languages])
 
   const handleStart = async () => {
     if (isLoading) return // 既に処理中の場合は何もしない
@@ -65,7 +79,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // 設定オブジェクトを作成して渡す
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
-          prioritizeLowPractice: prioritizeLowPractice
+          prioritizeLowPractice: prioritizeLowPractice,
+          language: selectedLanguage
         }
         console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる

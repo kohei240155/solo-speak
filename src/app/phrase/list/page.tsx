@@ -100,6 +100,7 @@ export default function PhraseListPage() {
           isLoadingPhrases={isLoadingPhrases}
           languages={languages}
           nativeLanguage={nativeLanguage}
+          learningLanguage={learningLanguage}
           showSpeakModal={showSpeakModal}
           onSpeakModalStateChange={setShowSpeakModal}
           onUpdatePhrase={(phrase) => {

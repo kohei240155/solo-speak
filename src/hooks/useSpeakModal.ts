@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   prioritizeLowPractice: boolean
+  language: string
 }
 
 export function useSpeakModal() {

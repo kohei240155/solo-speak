@@ -68,7 +68,7 @@ export default function PhraseSpeakPage() {
       }
 
       const params = new URLSearchParams({
-        language: learningLanguage,
+        language: config.language, // configから言語を取得
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowReadCount: config.prioritizeLowPractice.toString()
       })
@@ -95,7 +95,7 @@ export default function PhraseSpeakPage() {
     } finally {
       setIsLoadingPhrase(false)
     }
-  }, [learningLanguage])
+  }, [])
 
   // カウント機能
   const handleCount = async () => {
@@ -139,6 +139,9 @@ export default function PhraseSpeakPage() {
     if (!currentPhrase) return
 
     try {
+      // SpeakMode設定から言語を取得、フォールバックとしてlearningLanguageを使用
+      const languageToUse = speakMode.config?.language || learningLanguage
+      
       // Web Speech API を使用して音声再生
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel() // 既存の音声を停止
@@ -146,7 +149,7 @@ export default function PhraseSpeakPage() {
         
         // 言語設定
         const voices = speechSynthesis.getVoices()
-        const voice = voices.find(v => v.lang.startsWith(learningLanguage))
+        const voice = voices.find(v => v.lang.startsWith(languageToUse))
         if (voice) {
           utterance.voice = voice
         }
@@ -180,12 +183,14 @@ export default function PhraseSpeakPage() {
     const params = new URLSearchParams(window.location.search)
     const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
     const prioritizeLowPractice = params.get('prioritizeLowPractice') === 'true'
+    const urlLanguage = params.get('language')
     
     // URLパラメータに設定がある場合、自動的に練習モードを開始
     if (order && (order === 'new-to-old' || order === 'old-to-new') && learningLanguage) {
       const config: SpeakConfig = {
         order,
-        prioritizeLowPractice
+        prioritizeLowPractice,
+        language: urlLanguage || learningLanguage
       }
       setSpeakMode({ active: true, config })
       fetchSpeakPhrase(config)
@@ -199,6 +204,7 @@ export default function PhraseSpeakPage() {
     const params = new URLSearchParams(window.location.search)
     params.set('order', config.order)
     params.set('prioritizeLowPractice', config.prioritizeLowPractice.toString())
+    params.set('language', config.language)
     
     // URLを更新（ページリロードは発生しない）
     const newUrl = `${window.location.pathname}?${params.toString()}`

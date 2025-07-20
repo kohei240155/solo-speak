@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   prioritizeLowPractice: boolean
+  language: string
 }
 
 interface PhraseListProps {
@@ -21,6 +22,7 @@ interface PhraseListProps {
   isLoadingPhrases: boolean
   languages?: Language[]
   nativeLanguage?: string
+  learningLanguage?: string
   onUpdatePhrase?: (phrase: SavedPhrase) => void
   onRefreshPhrases?: () => void
   showSpeakModal?: boolean
@@ -32,6 +34,7 @@ export default function PhraseList({
   isLoadingPhrases,
   languages = [],
   nativeLanguage = 'ja',
+  learningLanguage = 'en',
   onUpdatePhrase,
   onRefreshPhrases,
   showSpeakModal: externalShowSpeakModal = false,
@@ -460,7 +463,7 @@ export default function PhraseList({
         onClose={handleSpeakModalClose}
         onStart={handleSpeakStart}
         languages={languages}
-        defaultLearningLanguage={languages.length > 0 ? languages[0].code : 'en'}
+        defaultLearningLanguage={learningLanguage}
       />
 
       {/* メニューが開いている時のオーバーレイ */}
