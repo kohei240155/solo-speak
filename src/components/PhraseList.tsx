@@ -7,6 +7,7 @@ import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { BsPencil } from 'react-icons/bs'
 import { useState } from 'react'
 import Modal from './Modal'
+import toast from 'react-hot-toast'
 
 interface PhraseListProps {
   savedPhrases: SavedPhrase[]
@@ -14,7 +15,6 @@ interface PhraseListProps {
   languages?: Language[]
   nativeLanguage?: string
   onUpdatePhrase?: (phrase: SavedPhrase) => void
-  onDeletePhrase?: (phraseId: string) => void
   onSpeakPhrase?: (phrase: SavedPhrase) => void
   onRefreshPhrases?: () => void
 }
@@ -25,7 +25,6 @@ export default function PhraseList({
   languages = [],
   nativeLanguage = 'ja',
   onUpdatePhrase,
-  onDeletePhrase,
   onSpeakPhrase,
   onRefreshPhrases
 }: PhraseListProps) {
@@ -34,6 +33,8 @@ export default function PhraseList({
   const [editedText, setEditedText] = useState('')
   const [editedTranslation, setEditedTranslation] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleMenuToggle = (phraseId: string) => {
     setOpenMenuId(openMenuId === phraseId ? null : phraseId)
@@ -54,10 +55,48 @@ export default function PhraseList({
   }
 
   const handleDelete = (phraseId: string) => {
-    if (onDeletePhrase) {
-      onDeletePhrase(phraseId)
-    }
+    setDeletingPhraseId(phraseId)
     setOpenMenuId(null)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingPhraseId) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/phrase/${deletingPhraseId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete phrase')
+      }
+
+      setDeletingPhraseId(null)
+      
+      // リストを更新
+      if (onRefreshPhrases) {
+        onRefreshPhrases()
+      }
+
+      // 成功トースト表示
+      toast.success('Phrase deleted successfully!')
+      
+    } catch (error) {
+      console.error('Error deleting phrase:', error)
+      toast.error('Failed to delete phrase')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setDeletingPhraseId(null)
+    setIsDeleting(false)
   }
 
   const handleUpdatePhrase = async () => {
@@ -77,7 +116,8 @@ export default function PhraseList({
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update phrase')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update phrase')
       }
 
       const updatedPhrase = await response.json()
@@ -93,9 +133,13 @@ export default function PhraseList({
       if (onRefreshPhrases) {
         onRefreshPhrases()
       }
+
+      // 成功トースト表示
+      toast.success('Phrase updated successfully!')
+      
     } catch (error) {
       console.error('Error updating phrase:', error)
-      // TODO: エラーメッセージの表示
+      toast.error('Failed to update phrase')
     } finally {
       setIsUpdating(false)
     }
@@ -136,10 +180,17 @@ export default function PhraseList({
             }}
           >
             <div className="flex justify-between mb-2">
-              <div className="text-base font-medium text-gray-900 flex-1 pr-2">
+              <div 
+                className="text-base font-medium text-gray-900 flex-1 pr-2 break-words"
+                style={{ 
+                  wordWrap: 'break-word',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word'
+                }}
+              >
                 {phrase.text}
               </div>
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 <button 
                   onClick={() => handleMenuToggle(phrase.id)}
                   className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
@@ -175,7 +226,14 @@ export default function PhraseList({
                 )}
               </div>
             </div>
-            <div className="text-sm text-gray-900 mb-3">
+            <div 
+              className="text-sm text-gray-900 mb-3 break-words"
+              style={{ 
+                wordWrap: 'break-word',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word'
+              }}
+            >
               {phrase.translation}
             </div>
             <div className="flex items-center justify-between text-xs text-gray-900">
@@ -301,6 +359,58 @@ export default function PhraseList({
                 </div>
               ) : (
                 'Save'
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 削除確認モーダル */}
+      <Modal isOpen={!!deletingPhraseId} onClose={handleCancelDelete}>
+        <div className="p-6">
+          {/* ヘッダー部分 */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              Delete Phrase
+            </h2>
+          </div>
+
+          {/* 確認メッセージ */}
+          <div className="mb-6">
+            <p className="text-gray-700">
+              このフレーズを削除してもよろしいですか？<br />
+              この操作は取り消すことができません。
+            </p>
+          </div>
+
+          {/* ボタン */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancelDelete}
+              disabled={isDeleting}
+              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+              }}
+            >
+              {isDeleting ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </div>
+              ) : (
+                'Delete'
               )}
             </button>
           </div>

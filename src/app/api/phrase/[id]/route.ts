@@ -3,10 +3,10 @@ import { prisma } from '@/utils/prisma'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { text, translation } = body
 
@@ -67,6 +67,46 @@ export async function PUT(
 
   } catch (error) {
     console.error('Error updating phrase:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    // フレーズの存在確認
+    const existingPhrase = await prisma.phrase.findUnique({
+      where: { id }
+    })
+
+    if (!existingPhrase) {
+      return NextResponse.json(
+        { error: 'Phrase not found' },
+        { status: 404 }
+      )
+    }
+
+    // フレーズの削除（ソフトデリート）
+    await prisma.phrase.update({
+      where: { id },
+      data: {
+        deletedAt: new Date()
+      }
+    })
+
+    return NextResponse.json({
+      message: 'Phrase deleted successfully'
+    })
+
+  } catch (error) {
+    console.error('Error deleting phrase:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

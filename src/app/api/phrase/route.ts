@@ -191,7 +191,10 @@ export async function GET(request: NextRequest) {
     const where: {
       userId?: string
       languageId?: string
-    } = {}
+      deletedAt?: null
+    } = {
+      deletedAt: null // 削除されていないフレーズのみを取得
+    }
     
     if (userId) {
       where.userId = userId

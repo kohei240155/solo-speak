@@ -5,6 +5,7 @@ import { usePhraseList } from '@/hooks/usePhraseList'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseList from '@/components/PhraseList'
+import { Toaster } from 'react-hot-toast'
 
 export default function PhraseListPage() {
   const {
@@ -66,10 +67,6 @@ export default function PhraseListPage() {
             // TODO: フレーズ更新の実装
             console.log('Update phrase:', phrase)
           }}
-          onDeletePhrase={(phraseId) => {
-            // TODO: フレーズ削除の実装
-            console.log('Delete phrase:', phraseId)
-          }}
           onSpeakPhrase={(phrase) => {
             // TODO: フレーズ音声再生の実装
             console.log('Speak phrase:', phrase)
@@ -80,6 +77,9 @@ export default function PhraseListPage() {
           }}
         />
       </div>
+      
+      {/* Toaster for notifications */}
+      <Toaster />
     </div>
   )
 }
