@@ -17,6 +17,17 @@ const Header = memo(function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
+  // ユーザーが変更された時の状態リセット
+  useEffect(() => {
+    if (!user) {
+      // ユーザーがログアウトした場合
+      setIsUserSetupComplete(false)
+      setUserIconUrl(null)
+      setIsDropdownOpen(false)
+      setIsMobileDropdownOpen(false)
+    }
+  }, [user]) // ユーザーオブジェクト全体が変更されたときに実行
+
   const handleSignOut = async () => {
     await signOut()
     setIsDropdownOpen(false)
@@ -31,9 +42,15 @@ const Header = memo(function Header() {
     setIsLoginModalOpen(false)
   }
 
+  // 画像読み込みエラーハンドラー
+  const handleImageError = () => {
+    setUserIconUrl(null)
+  }
+
   // ユーザー設定の完了状態をチェック（キャッシュ機能付き）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user?.id) {
+      setIsUserSetupComplete(false)
       setUserIconUrl(null)
       return
     }
@@ -43,17 +60,19 @@ const Header = memo(function Header() {
       
       if (!session) {
         setIsUserSetupComplete(false)
+        // セッションがない場合はデフォルトアイコンを表示
         setUserIconUrl(null)
         return
       }
 
-      // キャッシュ期間を10分に設定
-      const cacheControl = 'public, max-age=600'
-      const response = await fetch(`/api/user/settings`, {
+      // ユーザー切り替え対応のためキャッシュを無効化
+      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': cacheControl
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
 
@@ -61,26 +80,39 @@ const Header = memo(function Header() {
         const userData = await response.json()
         setIsUserSetupComplete(true)
         
-        // 画像URLの有効性をチェック
+        // 画像URLの有効性をチェック（空文字列や無効な値の場合はnullに設定してデフォルトアイコンを表示）
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
+          // iconUrlが空の場合はnullに設定（デフォルトアイコンが表示される）
           setUserIconUrl(null)
         }
       } else if (response.status === 404) {
+        // 初回ログイン時：Googleアイコンを自動設定
         setIsUserSetupComplete(false)
-        // Googleアカウントの初期アイコンを使用
-        setUserIconUrl(user.user_metadata?.avatar_url || null)
+        
+        // Googleアバターがある場合は自動的に表示
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
+                               googleAvatarUrl.includes('googleapis.com') || 
+                               googleAvatarUrl.includes('google.com'))) {
+          console.log('Header: Setting Google avatar for initial display:', googleAvatarUrl)
+          setUserIconUrl(googleAvatarUrl)
+        } else {
+          setUserIconUrl(null)
+        }
       } else {
         setIsUserSetupComplete(false)
+        // エラーの場合もデフォルトアイコンを使用
         setUserIconUrl(null)
       }
     } catch (error) {
       console.error('Header: Error checking user setup:', error)
       setIsUserSetupComplete(false)
+      // エラーの場合もデフォルトアイコンを使用
       setUserIconUrl(null)
     }
-  }, [user?.id, user?.user_metadata?.avatar_url]) // 必要な依存関係のみ
+  }, [user?.id, user?.user_metadata]) // Googleアバター情報も依存関係に含める
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
@@ -139,14 +171,29 @@ const Header = memo(function Header() {
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
       if (user?.id) {
-        checkUserSetupComplete()
+        // アイコンを強制的にリセット
+        setUserIconUrl(null)
+        // 少し遅延させてから再取得
+        setTimeout(() => {
+          checkUserSetupComplete()
+        }, 100)
       }
     }
 
+    const handleUserSignedOut = () => {
+      // ログアウト時の状態をクリア
+      setIsUserSetupComplete(false)
+      setUserIconUrl(null)
+      setIsDropdownOpen(false)
+      setIsMobileDropdownOpen(false)
+    }
+
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    window.addEventListener('userSignedOut', handleUserSignedOut)
     
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+      window.removeEventListener('userSignedOut', handleUserSignedOut)
     }
   }, [user?.id, checkUserSetupComplete])
 
@@ -155,7 +202,7 @@ const Header = memo(function Header() {
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = () => {
     return (
-      <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
+      <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
         <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
@@ -164,8 +211,8 @@ const Header = memo(function Header() {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
@@ -191,12 +238,13 @@ const Header = memo(function Header() {
                 >
                   {userIconUrl ? (
                     <Image
-                      src={userIconUrl}
+                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
+                      onError={handleImageError}
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -205,7 +253,7 @@ const Header = memo(function Header() {
 
                 {                /* ドロップダウンメニュー */}
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
                     <div className="py-1">
                       {isUserSetupComplete && (
                         <>
@@ -280,12 +328,13 @@ const Header = memo(function Header() {
                 >
                   {userIconUrl ? (
                     <Image
-                      src={userIconUrl}
+                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="User Avatar"
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+                      width={36}
+                      height={36}
+                      className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
+                      onError={handleImageError}
                     />
                   ) : (
                     getDefaultUserIcon()
@@ -294,7 +343,7 @@ const Header = memo(function Header() {
 
                 {/* モバイル用ドロップダウンメニュー */}
                 {isMobileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
                     <div className="py-1">
                       {isUserSetupComplete && (
                         <>
