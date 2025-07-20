@@ -188,29 +188,30 @@ export default function PhraseList({
       {/* 編集モーダル */}
       <Modal isOpen={!!editingPhrase} onClose={handleCancelEdit}>
         <div className="p-6">
-          {/* ヘッダー部分 - PhraseAddと同じスタイル */}
+          {/* ヘッダー部分 - Editタイトル */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              {languages.length > 0 
-                ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
-                : 'Japanese'
-              }
+              Edit
             </h2>
           </div>
 
-          {/* English section */}
+          {/* 学習言語 section (上のフォーム) */}
           <div className="mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">English</h3>
+            <h3 className="text-base font-semibold text-gray-900 mb-3">
+              {editingPhrase?.language?.name || 'English'}
+            </h3>
             <textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
-              placeholder="Enter English phrase"
+              placeholder="Enter phrase"
               className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
               disabled={isUpdating}
             />
             <div className="flex justify-between items-center mt-1">
-              <span className="text-xs text-gray-500">
+              <span className={`text-xs ${
+                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
+              }`}>
                 100文字以内で入力してください
               </span>
               <span className={`text-xs ${
@@ -221,7 +222,7 @@ export default function PhraseList({
             </div>
           </div>
 
-          {/* Japanese section */}
+          {/* 母国語 section (下のフォーム) */}
           <div className="mb-6">
             <h3 className="text-base font-semibold text-gray-900 mb-3">
               {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
@@ -235,7 +236,9 @@ export default function PhraseList({
               disabled={isUpdating}
             />
             <div className="flex justify-between items-center mt-1">
-              <span className="text-xs text-gray-500">
+              <span className={`text-xs ${
+                editedTranslation.length > 100 ? 'text-red-500' : 'text-gray-500'
+              }`}>
                 100文字以内で入力してください
               </span>
               <span className={`text-xs ${
@@ -251,7 +254,11 @@ export default function PhraseList({
             <button
               onClick={handleCancelEdit}
               disabled={isUpdating}
-              className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-md font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
             >
               Cancel
             </button>
