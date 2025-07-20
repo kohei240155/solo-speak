@@ -51,12 +51,12 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
         return selectedFile
       }
       
-      // クロップされた画像がなく、選択された画像がある場合
+      // selectedImageがData URLの場合の処理
       console.log('ImageUpload: Checking selectedImage condition...')
       console.log('ImageUpload: selectedImage exists:', !!selectedImage)
-      console.log('ImageUpload: selectedImage starts with http:', selectedImage?.startsWith('http'))
+      console.log('ImageUpload: selectedImage starts with data:', selectedImage?.startsWith('data:'))
       
-      if (selectedImage && !selectedImage.startsWith('http')) {
+      if (selectedImage && selectedImage.startsWith('data:')) {
         console.log('ImageUpload: Using selected image (data URL)')
         try {
           // Data URLをBlobに変換
@@ -80,7 +80,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
         console.log('ImageUpload: selectedImage exists:', !!selectedImage)
         console.log('ImageUpload: selectedImage value:', selectedImage)
         if (selectedImage) {
-          console.log('ImageUpload: selectedImage starts with http:', selectedImage.startsWith('http'))
+          console.log('ImageUpload: selectedImage starts with data:', selectedImage.startsWith('data:'))
         }
       }
       
@@ -170,26 +170,29 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     const canvas = previewCanvasRef.current
     generateCroppedImage(canvas, completedCrop)
 
+    // Blobを作成してローカル保存
     canvas.toBlob((blob) => {
       if (blob) {
         console.log('ImageUpload: Generated blob:', blob)
-        
-        // 画像のBlobを保存して、プレビュー用のURLを作成
         setCroppedImageBlob(blob)
-        const previewUrl = URL.createObjectURL(blob)
-        console.log('ImageUpload: Created preview URL:', previewUrl)
-        console.log('ImageUpload: Calling onImageChange with previewUrl')
-        onImageChange(previewUrl)
-        
-        if (blobUrlRef.current) {
-          URL.revokeObjectURL(blobUrlRef.current)
-        }
-        blobUrlRef.current = previewUrl
-        setShowCrop(false)
-        setSelectedImage(null)
-        console.log('ImageUpload: Apply completed - image is ready for upload on Save')
       }
     })
+
+    // フォーム表示用にBase64データURLを作成
+    const dataUrl = canvas.toDataURL('image/png', 0.9)
+    console.log('ImageUpload: Created data URL for preview:', dataUrl.substring(0, 50) + '...')
+    console.log('ImageUpload: Calling onImageChange with dataUrl')
+    onImageChange(dataUrl)
+    
+    // 古いBlob URLをクリーンアップ
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current)
+      blobUrlRef.current = ''
+    }
+    
+    setShowCrop(false)
+    setSelectedImage(null)
+    console.log('ImageUpload: Apply completed - image is ready for upload on Save')
   }, [completedCrop, generateCroppedImage, onImageChange])
 
   const handleCropCancel = () => {
@@ -218,6 +221,15 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     console.log('ImageUpload: Delete button clicked, iconUrl will be cleared on Save')
   }
 
+  // currentImageのデバッグログ
+  console.log('ImageUpload: render with currentImage:', {
+    currentImage,
+    type: typeof currentImage,
+    length: currentImage?.length,
+    isEmpty: !currentImage || currentImage.trim() === '',
+    timestamp: new Date().toISOString()
+  })
+
   return (
     <div className="space-y-4">
       {/* 現在のアイコン表示 */}
@@ -236,7 +248,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
           {currentImage && currentImage.trim() !== '' ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={`${currentImage}${currentImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
+              src={currentImage.startsWith('data:') ? currentImage : `${currentImage}${currentImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="User Icon"
               className="w-full h-full object-cover transition-transform duration-200"
               onMouseEnter={(e) => {

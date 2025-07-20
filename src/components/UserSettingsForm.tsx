@@ -40,6 +40,14 @@ export default function UserSettingsForm({
   // 実際に使用するsubmitting状態を統一
   const actualSubmitting = submitting || submittingProp
 
+  // デバッグ用ログ
+  console.log('UserSettingsForm: watchIconUrl:', {
+    value: watchIconUrl,
+    type: typeof watchIconUrl,
+    length: watchIconUrl?.length,
+    timestamp: new Date().toISOString()
+  })
+
   return (
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
@@ -51,10 +59,19 @@ export default function UserSettingsForm({
           ref={imageUploadRef}
           currentImage={watchIconUrl}
           onImageChange={(imageUrl) => {
+            console.log('UserSettingsForm: onImageChange called with:', {
+              imageUrl,
+              type: typeof imageUrl,
+              length: imageUrl?.length,
+              timestamp: new Date().toISOString()
+            })
             setValue('iconUrl', imageUrl)
+            console.log('UserSettingsForm: setValue called for iconUrl')
           }}
           onImageRemove={() => {
+            console.log('UserSettingsForm: onImageRemove called')
             setValue('iconUrl', '')
+            console.log('UserSettingsForm: setValue called for iconUrl with empty string')
           }}
           disabled={isDisabled}
         />
