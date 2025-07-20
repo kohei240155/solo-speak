@@ -70,11 +70,15 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
           selected: googleAvatarUrl
         })
         
-        if (googleAvatarUrl) {
+        // Googleアバターがある場合は設定、ない場合は空文字列（デフォルトシルエット表示）
+        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
+                               googleAvatarUrl.includes('googleapis.com') || 
+                               googleAvatarUrl.includes('google.com'))) {
           console.log('Setting Google avatar URL directly:', googleAvatarUrl)
           setValue('iconUrl', googleAvatarUrl)
         } else {
           // Googleアバターがない場合は空の iconUrl を設定（デフォルトアイコンを表示）
+          console.log('No valid Google avatar found, setting empty iconUrl')
           setValue('iconUrl', '')
         }
         

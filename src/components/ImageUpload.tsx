@@ -3,7 +3,6 @@
 import { useState, useRef, useCallback, useImperativeHandle, forwardRef } from 'react'
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { deleteUserIcon } from '@/utils/storage'
 
 interface ImageUploadProps {
   currentImage?: string
@@ -202,15 +201,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
   }
 
   const handleRemoveImage = async () => {
-    if (currentImage) {
-      try {
-        // Supabase Storageから画像を削除
-        await deleteUserIcon(currentImage)
-      } catch (error) {
-        console.error('Failed to delete image from storage:', error)
-      }
-    }
-    
+    // ローカル状態をクリア（実際のStorage削除はSave時に実行）
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current)
       blobUrlRef.current = ''
@@ -221,7 +212,10 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     setSelectedImage(null)
     setCroppedImageBlob(null)
     
+    // フォームの値を空文字列に設定（Save時に削除処理が実行される）
     onImageRemove()
+    
+    console.log('ImageUpload: Delete button clicked, iconUrl will be cleared on Save')
   }
 
   return (
@@ -239,10 +233,10 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
             e.currentTarget.style.boxShadow = 'none'
           }}
         >
-          {currentImage ? (
+          {currentImage && currentImage.trim() !== '' ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={currentImage}
+              src={`${currentImage}${currentImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="User Icon"
               className="w-full h-full object-cover transition-transform duration-200"
               onMouseEnter={(e) => {
@@ -294,7 +288,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               Select
             </span>
           </label>
-          {currentImage && (
+          {currentImage && currentImage.trim() !== '' && (
             <button
               type="button"
               onClick={handleRemoveImage}

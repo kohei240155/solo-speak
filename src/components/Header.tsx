@@ -80,16 +80,27 @@ const Header = memo(function Header() {
         const userData = await response.json()
         setIsUserSetupComplete(true)
         
-        // 画像URLの有効性をチェック
+        // 画像URLの有効性をチェック（空文字列や無効な値の場合はnullに設定してデフォルトアイコンを表示）
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
+          // iconUrlが空の場合はnullに設定（デフォルトアイコンが表示される）
           setUserIconUrl(null)
         }
       } else if (response.status === 404) {
+        // 初回ログイン時：Googleアイコンを自動設定
         setIsUserSetupComplete(false)
-        // 初回ログイン時はデフォルトアイコンを使用
-        setUserIconUrl(null)
+        
+        // Googleアバターがある場合は自動的に表示
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
+                               googleAvatarUrl.includes('googleapis.com') || 
+                               googleAvatarUrl.includes('google.com'))) {
+          console.log('Header: Setting Google avatar for initial display:', googleAvatarUrl)
+          setUserIconUrl(googleAvatarUrl)
+        } else {
+          setUserIconUrl(null)
+        }
       } else {
         setIsUserSetupComplete(false)
         // エラーの場合もデフォルトアイコンを使用
@@ -101,7 +112,7 @@ const Header = memo(function Header() {
       // エラーの場合もデフォルトアイコンを使用
       setUserIconUrl(null)
     }
-  }, [user?.id]) // 必要な依存関係のみ
+  }, [user?.id, user?.user_metadata]) // Googleアバター情報も依存関係に含める
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
@@ -160,7 +171,12 @@ const Header = memo(function Header() {
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
       if (user?.id) {
-        checkUserSetupComplete()
+        // アイコンを強制的にリセット
+        setUserIconUrl(null)
+        // 少し遅延させてから再取得
+        setTimeout(() => {
+          checkUserSetupComplete()
+        }, 100)
       }
     }
 
@@ -222,7 +238,7 @@ const Header = memo(function Header() {
                 >
                   {userIconUrl ? (
                     <Image
-                      src={userIconUrl}
+                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="User Avatar"
                       width={36}
                       height={36}
@@ -312,7 +328,7 @@ const Header = memo(function Header() {
                 >
                   {userIconUrl ? (
                     <Image
-                      src={userIconUrl}
+                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
                       alt="User Avatar"
                       width={36}
                       height={36}

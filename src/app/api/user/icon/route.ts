@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { uploadUserIcon, deleteUserIcon } from '@/utils/storage'
+import { prisma } from '@/utils/prisma'
 
 // ユーザーアイコンのアップロード
 export async function POST(request: NextRequest) {
@@ -42,6 +43,66 @@ export async function POST(request: NextRequest) {
       type: file.type,
       size: file.size
     })
+
+    // 既存のアイコンがある場合は削除
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { id: authResult.user.id },
+        select: { iconUrl: true }
+      })
+
+      if (existingUser?.iconUrl) {
+        console.log('Existing icon URL found:', existingUser.iconUrl)
+        
+        // Google URLかSupabase以外のURLかどうかをチェック
+        const isGoogleUrl = existingUser.iconUrl.includes('googleusercontent.com') || 
+                           existingUser.iconUrl.includes('googleapis.com') ||
+                           existingUser.iconUrl.startsWith('https://lh3.googleusercontent.com') ||
+                           existingUser.iconUrl.includes('accounts.google.com')
+        
+        // Supabase StorageのURLかどうかをチェック
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+        const isSupabaseUrl = existingUser.iconUrl.includes(supabaseUrl) &&
+                              existingUser.iconUrl.includes('/storage/v1/object/public/')
+        
+        console.log('URL analysis for existing icon:', {
+          isGoogleUrl,
+          isSupabaseUrl,
+          existingIconUrl: existingUser.iconUrl.substring(0, 50) + '...',
+          supabaseUrl: supabaseUrl.substring(0, 30) + '...'
+        })
+        
+        if (isSupabaseUrl && !isGoogleUrl) {
+          console.log('Deleting existing Supabase icon before new upload...')
+          console.log('About to delete URL:', existingUser.iconUrl)
+          try {
+            await deleteUserIcon(existingUser.iconUrl)
+            console.log('✅ Existing icon deleted successfully from storage')
+          } catch (deleteError) {
+            console.error('❌ Failed to delete existing icon from storage:', deleteError)
+            console.error('Delete error details:', {
+              message: deleteError instanceof Error ? deleteError.message : 'Unknown error',
+              stack: deleteError instanceof Error ? deleteError.stack : undefined
+            })
+            // 削除に失敗しても新しいアップロードは続行
+            console.log('⚠️ Continuing with new upload despite deletion failure')
+          }
+        } else {
+          console.log('Existing icon is from Google or external source, skipping deletion')
+          console.log('URL analysis result:', { isGoogleUrl, isSupabaseUrl })
+        }
+      } else {
+        console.log('No existing icon found for user')
+      }
+    } catch (dbError) {
+      console.error('Failed to check existing icon in database:', dbError)
+      console.error('Database error details:', {
+        message: dbError instanceof Error ? dbError.message : 'Unknown error',
+        stack: dbError instanceof Error ? dbError.stack : undefined
+      })
+      // データベースエラーでも新しいアップロードは続行
+      console.log('Continuing with new upload despite database check failure')
+    }
 
     // Supabase Storageにアップロード（サーバーモードで）
     console.log('Calling uploadUserIcon with serverMode=true...')

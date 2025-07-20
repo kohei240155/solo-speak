@@ -1,4 +1,5 @@
 import { supabase } from './spabase'
+import { createServerSupabaseClient } from './supabase-server'
 
 export async function uploadUserIcon(file: File, userId: string, serverMode: boolean = false): Promise<string> {
   try {
@@ -126,9 +127,40 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
   }
 }
 
+export async function testStoragePermissions(): Promise<void> {
+  try {
+    console.log('🔍 Testing Supabase Storage permissions...')
+    
+    // サーバーサイドクライアントを使用
+    const serverSupabase = createServerSupabaseClient()
+    
+    // バケット一覧を取得
+    const { data: buckets, error: bucketsError } = await serverSupabase.storage.listBuckets()
+    console.log('Buckets list:', { buckets, error: bucketsError })
+    
+    // imagesバケットの内容を確認
+    const { data: files, error: listError } = await serverSupabase.storage
+      .from('images')
+      .list('')
+    console.log('Images bucket root contents:', { files, error: listError })
+    
+    // user-iconsフォルダの内容を確認
+    const { data: userIconFiles, error: userIconsError } = await serverSupabase.storage
+      .from('images')
+      .list('user-icons')
+    console.log('User icons folder contents:', { userIconFiles, error: userIconsError })
+    
+    console.log('✅ Storage permissions test completed')
+  } catch (error) {
+    console.error('❌ Storage permissions test failed:', error)
+    throw error
+  }
+}
+
 export async function deleteUserIcon(iconUrl: string): Promise<void> {
   try {
-    console.log('Deleting user icon:', iconUrl)
+    console.log('Starting user icon deletion process...')
+    console.log('Icon URL to delete:', iconUrl)
     
     // ローカルのBlob URLの場合は削除処理をスキップ
     if (iconUrl.startsWith('blob:')) {
@@ -136,33 +168,123 @@ export async function deleteUserIcon(iconUrl: string): Promise<void> {
       return
     }
     
+    // Google URLの場合はスキップ
+    if (iconUrl.includes('googleusercontent.com') || 
+        iconUrl.includes('googleapis.com') || 
+        iconUrl.includes('google.com')) {
+      console.log('Skipping deletion of Google URL')
+      return
+    }
+    
+    // サーバーサイドクライアントを使用（より強い権限で削除操作）
+    const serverSupabase = createServerSupabaseClient()
+    console.log('Using server-side Supabase client for deletion')
+    
     // URLからファイルパスを抽出
-    const url = new URL(iconUrl)
+    let url: URL
+    try {
+      url = new URL(iconUrl)
+    } catch {
+      console.error('Invalid URL format:', iconUrl)
+      throw new Error('無効なURL形式です')
+    }
+    
     const pathSegments = url.pathname.split('/')
+    console.log('URL path segments:', pathSegments)
     
     // Supabaseストレージの公開URLの構造: /storage/v1/object/public/images/user-icons/filename
     const imagesIndex = pathSegments.findIndex(segment => segment === 'images')
     if (imagesIndex === -1) {
-      console.error('Invalid storage URL structure:', iconUrl)
-      return
+      console.error('Invalid storage URL structure - no "images" segment found:', iconUrl)
+      console.error('Path segments:', pathSegments)
+      throw new Error('無効なストレージURL構造です')
     }
     
     // images以降のパスを取得
     const filePath = pathSegments.slice(imagesIndex + 1).join('/')
-    console.log('Extracted file path:', filePath)
+    console.log('Extracted file path for deletion:', filePath)
 
-    const { error } = await supabase.storage
+    if (!filePath) {
+      console.error('Empty file path extracted from URL:', iconUrl)
+      throw new Error('ファイルパスが空です')
+    }
+
+    console.log('Attempting to delete from Supabase storage:', filePath)
+    
+    // まず、ファイルが存在するかを確認
+    console.log('Checking if file exists before deletion...')
+    try {
+      const { data: files, error: listError } = await serverSupabase.storage
+        .from('images')
+        .list(filePath.split('/').slice(0, -1).join('/') || '')
+      
+      if (listError) {
+        console.error('Error listing files for existence check:', listError)
+      } else {
+        const fileName = filePath.split('/').pop()
+        const fileExists = files?.some(file => file.name === fileName)
+        console.log('File existence check result:', {
+          fileName,
+          fileExists,
+          filesInDirectory: files?.map(f => f.name) || []
+        })
+      }
+    } catch (listError) {
+      console.error('Failed to check file existence:', listError)
+    }
+
+    // ファイルの削除を実行
+    console.log('Executing storage delete operation...')
+    const deleteResult = await serverSupabase.storage
       .from('images')
       .remove([filePath])
 
-    if (error) {
-      console.error('Supabase storage delete error:', error)
-      throw new Error('画像の削除に失敗しました')
+    console.log('Storage delete operation completed:', {
+      error: deleteResult.error,
+      data: deleteResult.data
+    })
+
+    if (deleteResult.error) {
+      console.error('Supabase storage delete error:', deleteResult.error)
+      console.error('Error details:', {
+        message: deleteResult.error.message,
+        name: deleteResult.error.name,
+        status: (deleteResult.error as unknown as { status?: number }).status,
+        statusCode: (deleteResult.error as unknown as { statusCode?: number }).statusCode
+      })
+      throw new Error(`画像の削除に失敗しました: ${deleteResult.error.message}`)
     }
     
-    console.log('Successfully deleted file:', filePath)
+    // 削除後の確認
+    console.log('Verifying file deletion...')
+    try {
+      const { data: filesAfter, error: listAfterError } = await serverSupabase.storage
+        .from('images')
+        .list(filePath.split('/').slice(0, -1).join('/') || '')
+      
+      if (!listAfterError) {
+        const fileName = filePath.split('/').pop()
+        const fileStillExists = filesAfter?.some(file => file.name === fileName)
+        console.log('Post-deletion verification:', {
+          fileName,
+          fileStillExists,
+          filesInDirectory: filesAfter?.map(f => f.name) || []
+        })
+      }
+    } catch (verifyError) {
+      console.error('Failed to verify deletion:', verifyError)
+    }
+    
+    console.log('Successfully completed delete operation for:', filePath)
   } catch (error) {
-    console.error('Error deleting user icon:', error)
+    console.error('Error in deleteUserIcon function:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      })
+    }
     throw error
   }
 }
