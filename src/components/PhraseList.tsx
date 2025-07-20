@@ -226,18 +226,23 @@ export default function PhraseList({
                 )}
               </div>
             </div>
-            <div 
-              className="text-sm text-gray-900 mb-3 break-words"
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
-              }}
-            >
-              {phrase.translation}
+            <div className="flex justify-between mb-3">
+              <div 
+                className="text-sm text-gray-600 break-words flex-1 pr-2"
+                style={{ 
+                  wordWrap: 'break-word',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word'
+                }}
+              >
+                {phrase.translation}
+              </div>
+              <div className="relative flex-shrink-0 w-5">
+                {/* 三点リーダーと同じ幅のスペースを確保 */}
+              </div>
             </div>
             <div className="flex items-center justify-between text-xs text-gray-900">
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-4">
                 <span className="flex items-center">
                   <RiSpeakLine className="w-4 h-4 mr-1" />
                   {phrase.practiceCount || 0}
