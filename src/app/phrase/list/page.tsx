@@ -60,6 +60,20 @@ export default function PhraseListPage() {
         <PhraseList
           savedPhrases={savedPhrases}
           isLoadingPhrases={isLoadingPhrases}
+          languages={languages}
+          nativeLanguage={nativeLanguage}
+          onUpdatePhrase={(phrase) => {
+            // TODO: フレーズ更新の実装
+            console.log('Update phrase:', phrase)
+          }}
+          onDeletePhrase={(phraseId) => {
+            // TODO: フレーズ削除の実装
+            console.log('Delete phrase:', phraseId)
+          }}
+          onSpeakPhrase={(phrase) => {
+            // TODO: フレーズ音声再生の実装
+            console.log('Speak phrase:', phrase)
+          }}
         />
       </div>
     </div>
