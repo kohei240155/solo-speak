@@ -63,9 +63,9 @@ export default function SpeakPractice({
         </div>
         
         {/* Speak回数表示 */}
-        <div className="flex items-center text-xs text-gray-600">
-          <RiSpeakLine className="w-4 h-4 mr-1" />
-          <span>Today: {todayCount} Total: {totalCount}</span>
+        <div className="flex items-center text-sm text-gray-600 min-w-0">
+          <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
+          <span className="break-words">Today: {todayCount} Total: {totalCount}</span>
         </div>
       </div>
 
