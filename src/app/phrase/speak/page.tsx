@@ -70,7 +70,10 @@ export default function PhraseSpeakPage() {
           </div>
           
           {/* タブメニュー */}
-          <PhraseTabNavigation activeTab="Speak" />
+          <PhraseTabNavigation 
+            activeTab="Speak" 
+            onSpeakModalOpen={() => setShowSpeakModal(true)}
+          />
 
           {/* Speak練習コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -118,7 +121,10 @@ export default function PhraseSpeakPage() {
         </div>
         
         {/* タブメニュー */}
-        <PhraseTabNavigation activeTab="Speak" />
+        <PhraseTabNavigation 
+          activeTab="Speak" 
+          onSpeakModalOpen={() => setShowSpeakModal(true)}
+        />
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">

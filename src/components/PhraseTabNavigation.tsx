@@ -31,16 +31,13 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
       }
     }
 
-    // Speakタブの場合は常にモーダルを表示
+    // Speakタブの場合は常にモーダルを表示（ページ遷移はしない）
     if (tab.key === 'Speak') {
       if (onSpeakModalOpen) {
         onSpeakModalOpen()
-      } else if (onTabChange) {
-        onTabChange(tab.key)
-      } else {
-        // フォールバック: 通常のページ遷移
-        router.push(tab.path)
       }
+      // onSpeakModalOpenがない場合でも、ページ遷移はしない
+      // モーダルが必須なので、何もしない
       return
     }
 
