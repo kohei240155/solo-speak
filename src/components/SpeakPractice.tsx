@@ -83,7 +83,7 @@ export default function SpeakPractice({
             <span className="text-gray-900 font-medium text-base mb-8">Count</span>
             <button
               onClick={onFinish}
-              className="w-full bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
               style={{ 
                 borderColor: '#616161',
                 color: '#616161'
@@ -107,7 +107,7 @@ export default function SpeakPractice({
             <span className="text-gray-900 font-medium text-base mb-8">Sound</span>
             <button
               onClick={onNext}
-              className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
               style={{ 
                 backgroundColor: '#616161'
               }}
