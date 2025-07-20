@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
+import toast from 'react-hot-toast'
 
 interface SpeakModeModalProps {
   isOpen: boolean
@@ -19,8 +20,20 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [prioritizeLowPractice, setPrioritizeLowPractice] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLearningLanguage)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // モーダルが開かれた時に選択言語を更新
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedLanguage(defaultLearningLanguage)
+      setIsLoading(false) // ローディング状態をリセット
+    }
+  }, [isOpen, defaultLearningLanguage])
 
   const handleStart = async () => {
+    if (isLoading) return // 既に処理中の場合は何もしない
+    
+    setIsLoading(true)
     try {
       // モード設定をクエリパラメータとして含めてGET APIを呼び出し
       const params = new URLSearchParams({
@@ -38,26 +51,21 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           order: order as 'new-to-old' | 'old-to-new',
           prioritizeLowPractice: prioritizeLowPractice
         }
+        // onStartの呼び出し前にモーダルを閉じる
+        onClose()
         onStart(config)
       } else {
-        console.error('Failed to fetch phrase:', data.message)
-        // エラーの場合もデフォルト設定で実行
-        const config: SpeakConfig = {
-          order: order as 'new-to-old' | 'old-to-new',
-          prioritizeLowPractice: prioritizeLowPractice
-        }
-        onStart(config)
+        // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
+        const errorMessage = data.message || 'フレーズが見つかりませんでした'
+        toast.error(errorMessage)
+        console.warn('No phrases found:', data.message)
       }
     } catch (error) {
       console.error('Error fetching phrase:', error)
-      // エラーの場合もデフォルト設定で実行
-      const config: SpeakConfig = {
-        order: order as 'new-to-old' | 'old-to-new',
-        prioritizeLowPractice: prioritizeLowPractice
-      }
-      onStart(config)
+      toast.error('フレーズの取得中にエラーが発生しました')
+    } finally {
+      setIsLoading(false)
     }
-    onClose()
   }
 
   return (
@@ -152,12 +160,20 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         {/* Start ボタン */}
         <button
           onClick={handleStart}
-          className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          disabled={isLoading}
+          className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
           style={{ 
-            backgroundColor: '#616161'
+            backgroundColor: isLoading ? '#9CA3AF' : '#616161'
           }}
         >
-          Start
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Loading...
+            </div>
+          ) : (
+            'Start'
+          )}
         </button>
       </div>
     </Modal>

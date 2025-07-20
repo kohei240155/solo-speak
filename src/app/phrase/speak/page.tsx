@@ -38,7 +38,7 @@ export default function PhraseSpeakPage() {
 
   const handleSpeakStart = (config: SpeakConfig) => {
     setSpeakMode({ active: true, config })
-    setShowSpeakModal(false)
+    // モーダルは既にSpeakModeModal内で閉じられているため、ここでは状態のみ更新
   }
 
   const handleSpeakFinish = () => {
