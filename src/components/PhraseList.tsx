@@ -8,6 +8,7 @@ import { BsPencil } from 'react-icons/bs'
 import { useState } from 'react'
 import Modal from './Modal'
 import SpeakModeModal, { SpeakConfig } from './SpeakModeModal'
+import SpeakPractice from './SpeakPractice'
 import toast from 'react-hot-toast'
 
 interface PhraseListProps {
@@ -16,7 +17,6 @@ interface PhraseListProps {
   languages?: Language[]
   nativeLanguage?: string
   onUpdatePhrase?: (phrase: SavedPhrase) => void
-  onSpeakPhrase?: (phrase: SavedPhrase) => void
   onRefreshPhrases?: () => void
 }
 
@@ -26,7 +26,6 @@ export default function PhraseList({
   languages = [],
   nativeLanguage = 'ja',
   onUpdatePhrase,
-  onSpeakPhrase,
   onRefreshPhrases
 }: PhraseListProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
@@ -37,7 +36,10 @@ export default function PhraseList({
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
-  const [selectedPhraseForSpeak, setSelectedPhraseForSpeak] = useState<SavedPhrase | null>(null)
+  const [speakMode, setSpeakMode] = useState<{ active: boolean; config: SpeakConfig | null }>({
+    active: false,
+    config: null
+  })
 
   const handleMenuToggle = (phraseId: string) => {
     setOpenMenuId(openMenuId === phraseId ? null : phraseId)
@@ -51,23 +53,24 @@ export default function PhraseList({
   }
 
   const handleSpeak = (phrase: SavedPhrase) => {
-    setSelectedPhraseForSpeak(phrase)
     setShowSpeakModal(true)
     setOpenMenuId(null)
   }
 
   const handleSpeakStart = (config: SpeakConfig) => {
-    if (selectedPhraseForSpeak && onSpeakPhrase) {
-      // TODO: configを使用してSpeak機能を実装
-      console.log('Speak config:', config)
-      onSpeakPhrase(selectedPhraseForSpeak)
+    setSpeakMode({ active: true, config })
+  }
+
+  const handleSpeakFinish = () => {
+    setSpeakMode({ active: false, config: null })
+    // リストを更新して練習回数を反映
+    if (onRefreshPhrases) {
+      onRefreshPhrases()
     }
-    setSelectedPhraseForSpeak(null)
   }
 
   const handleSpeakModalClose = () => {
     setShowSpeakModal(false)
-    setSelectedPhraseForSpeak(null)
   }
 
   const handleDelete = (phraseId: string) => {
@@ -166,6 +169,20 @@ export default function PhraseList({
     setEditedText('')
     setEditedTranslation('')
   }
+
+  // Speak練習モードが有効な場合はSpeakPracticeコンポーネントを表示
+  if (speakMode.active && speakMode.config) {
+    return (
+      <SpeakPractice
+        phrases={savedPhrases}
+        config={speakMode.config}
+        languages={languages}
+        nativeLanguage={nativeLanguage}
+        onFinish={handleSpeakFinish}
+      />
+    )
+  }
+
   if (isLoadingPhrases && savedPhrases.length === 0) {
     return (
       <div className="text-center py-8">
