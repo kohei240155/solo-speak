@@ -8,9 +8,12 @@ export async function GET(
   try {
     const { id } = await params
 
-    // フレーズを取得
+    // フレーズを取得（削除されていないもののみ）
     const phrase = await prisma.phrase.findUnique({
-      where: { id },
+      where: { 
+        id,
+        deletedAt: null // 削除されていないフレーズのみ
+      },
       include: {
         language: true
       }

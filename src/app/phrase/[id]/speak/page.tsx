@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import { Language } from '@/types/phrase'
-import { RiSpeakLine } from 'react-icons/ri'
+import { CiCirclePlus } from 'react-icons/ci'
+import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
@@ -136,38 +137,51 @@ export default function SpeakPage() {
       })
 
       if (response.ok) {
-        // カウント更新成功
+        // カウント更新成功（トーストは表示しない）
         setPhrase(prev => prev ? {
           ...prev,
           totalReadCount: prev.totalReadCount + 1,
           dailyReadCount: prev.dailyReadCount + 1
         } : null)
-        toast.success('音読回数を記録しました')
-      } else {
-        toast.error('音読回数の記録に失敗しました')
       }
     } catch (error) {
       console.error('Error updating count:', error)
-      toast.error('音読回数の記録に失敗しました')
     }
   }
 
-  const handleSound = () => {
+  const handleSound = async () => {
     if (!phrase) return
 
-    // Web Speech API を使用して音声再生
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(phrase.text)
-      
-      // 学習言語に合わせて言語設定
-      const language = languages.find(lang => lang.id === languageId)
-      if (language) {
-        utterance.lang = language.code === 'en' ? 'en-US' : language.code
+    try {
+      // 音声再生APIを呼び出し
+      const response = await fetch('/api/speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: phrase.text,
+          language: languageId
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Web Speech API を使用して音声再生
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(phrase.text)
+          utterance.lang = data.language
+          speechSynthesis.speak(utterance)
+        } else {
+          toast.error('音声再生がサポートされていません')
+        }
+      } else {
+        toast.error('音声データの取得に失敗しました')
       }
-      
-      speechSynthesis.speak(utterance)
-    } else {
-      toast.error('音声再生がサポートされていません')
+    } catch (error) {
+      console.error('Error playing sound:', error)
+      toast.error('音声再生に失敗しました')
     }
   }
 
@@ -273,64 +287,62 @@ export default function SpeakPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {/* 学習言語のフレーズ（上） */}
-          <div className="mb-4">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {languages.find(lang => lang.code === languageId)?.name || 'English'}
-            </h3>
-            <div className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm bg-gray-50 min-h-[80px] flex items-center">
-              <div className="text-gray-900">
-                {phrase.text}
-              </div>
-            </div>
-          </div>
-
-          {/* 母国語の翻訳（下） */}
+          {/* フレーズ表示 */}
           <div className="mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
-            </h3>
-            <div className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm bg-gray-50 min-h-[80px] flex items-center">
-              <div className="text-gray-600">
-                {phrase.translation}
-              </div>
+            <div 
+              className="text-base font-medium text-gray-900 mb-2 break-words"
+              style={{ 
+                wordWrap: 'break-word',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word'
+              }}
+            >
+              {phrase.text}
+            </div>
+            <div 
+              className="text-sm text-gray-600 break-words"
+              style={{ 
+                wordWrap: 'break-word',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word'
+              }}
+            >
+              {phrase.translation}
             </div>
           </div>
 
           {/* 音読回数表示 */}
-          <div className="mb-6 flex items-center text-sm text-gray-600">
-            <RiSpeakLine className="w-4 h-4 mr-1" />
+          <div className="mb-4 flex items-center text-sm text-gray-600 md:mb-6 md:text-base">
+            <HiMiniSpeakerWave className="w-4 h-4 mr-1 md:w-5 md:h-5 md:mr-2" />
             Today: {phrase.dailyReadCount}  Total: {phrase.totalReadCount}
           </div>
 
           {/* Count と Sound ボタン */}
-          <div className="mb-8">
-            <div className="flex items-center justify-center">
-              {/* Count ボタン */}
-              <div className="flex flex-col items-center mr-8">
+          <div className="mb-4 md:mb-6">
+            <div className="flex gap-3 relative md:gap-6">
+              {/* Count ボタンエリア */}
+              <div className="flex-1 flex flex-col items-center">
                 <button
                   onClick={handleCount}
-                  className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+                  className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
                 >
-                  <div className="w-8 h-8 border-2 border-gray-600 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600 text-xl font-bold">+</span>
-                  </div>
+                  <CiCirclePlus className="w-12 h-12 text-gray-600 md:w-16 md:h-16" />
                 </button>
-                <span className="text-gray-900 font-medium text-sm">Count</span>
+                <span className="text-gray-900 font-medium text-base mt-2 md:text-lg md:mt-3">Count</span>
               </div>
 
-              {/* 区切り線 */}
-              <div className="w-px h-20 bg-gray-300 mx-8"></div>
+              {/* 中央の区切り線 */}
+              <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-px h-20 bg-gray-300 md:h-28"></div>
 
-              {/* Sound ボタン */}
-              <div className="flex flex-col items-center ml-8">
+              {/* Sound ボタンエリア */}
+              <div className="flex-1 flex flex-col items-center">
                 <button
                   onClick={handleSound}
-                  className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+                  className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
                 >
-                  <RiSpeakLine className="w-7 h-7 text-gray-900" />
+                  <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />
                 </button>
-                <span className="text-gray-900 font-medium text-sm">Sound</span>
+                <span className="text-gray-900 font-medium text-base mt-2 md:text-lg md:mt-3">Sound</span>
               </div>
             </div>
           </div>

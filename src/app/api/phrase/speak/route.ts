@@ -21,12 +21,13 @@ export async function GET(request: NextRequest) {
       prioritizeLowReadCount
     }
 
-    // データベースからフレーズを取得
+    // データベースからフレーズを取得（削除されていないもののみ）
     const phrases = await prisma.phrase.findMany({
       where: {
         language: {
           code: language
-        }
+        },
+        deletedAt: null // 削除されていないフレーズのみ
       },
       include: {
         language: true
