@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     
     const debugInfo = {
       message: 'Storage debug information',
-      userIconFiles: userIconFiles?.map((file: any) => ({
+      userIconFiles: userIconFiles?.map((file: { name: string; id: string; updated_at?: string; created_at?: string; last_accessed_at?: string; metadata?: Record<string, unknown> }) => ({
         name: file.name,
         id: file.id,
         updated_at: file.updated_at,

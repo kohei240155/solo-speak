@@ -27,7 +27,7 @@ export default function UserSettingsForm({
   dataLoading,
   setError,
   setIsUserSetupComplete,
-  onSubmit,
+  // onSubmit, // 未使用のため削除
   submitting: submittingProp
 }: UserSettingsFormProps) {
   const { submitting, imageUploadRef, onSubmit: onSubmitFromHook } = useUserSettingsSubmit(
