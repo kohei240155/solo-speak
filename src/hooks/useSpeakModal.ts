@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation'
 
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
-  prioritizeLowPractice: boolean
   language: string
 }
 
@@ -23,7 +22,7 @@ export function useSpeakModal() {
     // 設定に基づいてSpeak画面に遷移
     const queryParams = new URLSearchParams({
       order: config.order,
-      prioritizeLowPractice: config.prioritizeLowPractice.toString()
+      language: config.language
     })
     router.push(`/phrase/speak?${queryParams.toString()}`)
   }

@@ -14,13 +14,11 @@ interface SpeakModeModalProps {
 
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
-  prioritizeLowPractice: boolean
   language: string
 }
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
-  const [prioritizeLowPractice, setPrioritizeLowPractice] = useState(true)
   
   // 初期言語の設定ロジックをuseMemoで最適化
   const initialLanguage = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : 'en')
@@ -63,7 +61,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       const params = new URLSearchParams({
         language: selectedLanguage,
         order: order.replace('-', '_'), // new-to-old → new_to_old
-        prioritizeLowReadCount: prioritizeLowPractice.toString()
       })
 
       const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
@@ -79,7 +76,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // 設定オブジェクトを作成して渡す
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
-          prioritizeLowPractice: prioritizeLowPractice,
           language: selectedLanguage
         }
         console.log('SpeakModeModal - Starting practice with config:', config)
@@ -156,37 +152,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
               <option value="new-to-old">New → Old</option>
               <option value="old-to-new">Old → New</option>
             </select>
-          </div>
-        </div>
-
-        {/* Option セクション */}
-        <div className="mb-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
-            Option
-          </h3>
-          <div className="flex items-center">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={prioritizeLowPractice}
-                onChange={(e) => setPrioritizeLowPractice(e.target.checked)}
-                className="sr-only"
-              />
-              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-3 ${
-                prioritizeLowPractice 
-                  ? 'bg-blue-500 border-blue-500' 
-                  : 'bg-white border-gray-300'
-              }`}>
-                {prioritizeLowPractice && (
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
-              </div>
-              <span className="text-sm text-gray-700">
-                音読回数が少ないフレーズを優先する
-              </span>
-            </label>
           </div>
         </div>
 

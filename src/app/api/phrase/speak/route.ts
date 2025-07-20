@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
-    const prioritizeLowReadCount = searchParams.get('prioritizeLowReadCount') === 'true'
 
     if (!language) {
       return NextResponse.json(
@@ -24,8 +23,7 @@ export async function GET(request: NextRequest) {
 
     // モード設定をクエリパラメータから取得
     const config = {
-      order,
-      prioritizeLowReadCount
+      order
     }
 
     // データベースからフレーズを取得（削除されていないもののみ）
@@ -53,42 +51,26 @@ export async function GET(request: NextRequest) {
     // ソート処理
     const sortedPhrases = [...phrases]
 
-    // 低い音読回数を優先する場合
-    if (config.prioritizeLowReadCount) {
-      sortedPhrases.sort((a, b) => (a.totalReadCount || 0) - (b.totalReadCount || 0))
-    }
-
-    // 日付順でソート
-    if (config.order === 'new_to_old') {
-      sortedPhrases.sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime()
-        const dateB = new Date(b.createdAt).getTime()
-        if (config.prioritizeLowReadCount) {
-          // 音読回数が同じ場合のみ日付でソート
-          const practiceA = a.totalReadCount || 0
-          const practiceB = b.totalReadCount || 0
-          if (practiceA === practiceB) {
-            return dateB - dateA // 新しい順
-          }
-          return 0 // 音読回数優先
-        }
-        return dateB - dateA
-      })
-    } else {
-      sortedPhrases.sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime()
-        const dateB = new Date(b.createdAt).getTime()
-        if (config.prioritizeLowReadCount) {
-          const practiceA = a.totalReadCount || 0
-          const practiceB = b.totalReadCount || 0
-          if (practiceA === practiceB) {
-            return dateA - dateB // 古い順
-          }
-          return 0
-        }
-        return dateA - dateB
-      })
-    }
+    // 常に音読回数の少ない順を優先
+    sortedPhrases.sort((a, b) => {
+      const practiceA = a.totalReadCount || 0
+      const practiceB = b.totalReadCount || 0
+      
+      // 音読回数が異なる場合は音読回数で優先
+      if (practiceA !== practiceB) {
+        return practiceA - practiceB // 少ない順
+      }
+      
+      // 音読回数が同じ場合は日付順でソート
+      const dateA = new Date(a.createdAt).getTime()
+      const dateB = new Date(b.createdAt).getTime()
+      
+      if (config.order === 'new_to_old') {
+        return dateB - dateA // 新しい順
+      } else {
+        return dateA - dateB // 古い順
+      }
+    })
 
     // 最初のフレーズを返す
     const firstPhrase = sortedPhrases[0]

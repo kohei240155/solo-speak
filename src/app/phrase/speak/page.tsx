@@ -87,7 +87,6 @@ export default function PhraseSpeakPage() {
       const params = new URLSearchParams({
         language: config.language, // configから言語を取得
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
-        prioritizeLowReadCount: config.prioritizeLowPractice.toString()
       })
 
       const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
@@ -293,14 +292,12 @@ export default function PhraseSpeakPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
-    const prioritizeLowPractice = params.get('prioritizeLowPractice') === 'true'
     const urlLanguage = params.get('language')
     
     // URLパラメータに設定がある場合、自動的に練習モードを開始
     if (order && (order === 'new-to-old' || order === 'old-to-new') && learningLanguage) {
       const config: SpeakConfig = {
         order,
-        prioritizeLowPractice,
         language: urlLanguage || learningLanguage
       }
       setSpeakMode({ active: true, config })
@@ -345,7 +342,6 @@ export default function PhraseSpeakPage() {
     // URLパラメータに選択した設定を反映
     const params = new URLSearchParams(window.location.search)
     params.set('order', config.order)
-    params.set('prioritizeLowPractice', config.prioritizeLowPractice.toString())
     params.set('language', config.language)
     
     // URLを更新（ページリロードは発生しない）
