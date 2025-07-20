@@ -26,7 +26,17 @@
     "generate": "prisma generate",
     "postinstall": "prisma generate",
     "diagnose:db": "tsx scripts/diagnose-production-db.ts",
-    "insert:languages": "tsx scripts/insert-production-languages.ts"
+    "insert:languages": "tsx scripts/insert-production-languages.ts",
+    "setup:phrase-levels": "tsx scripts/setup-phrase-levels.ts",
+    "setup:phrase-levels:local": "cp .env.local .env && tsx scripts/setup-phrase-levels.ts",
+    "setup:phrase-levels:production": "cp .env.production .env && tsx scripts/setup-phrase-levels.ts",
+    "update:phrase-levels": "tsx scripts/update-phrase-levels.ts",
+    "update:phrase-levels:local": "cp .env.local .env && tsx scripts/update-phrase-levels.ts",
+    "update:phrase-levels:production": "cp .env.production .env && tsx scripts/update-phrase-levels.ts",
+    "cleanup:phrase-levels": "tsx scripts/cleanup-phrase-levels.ts",
+    "cleanup:phrase-levels:local": "cp .env.local .env && tsx scripts/cleanup-phrase-levels.ts",
+    "cleanup:phrase-levels:production": "cp .env.production .env && tsx scripts/cleanup-phrase-levels.ts",
+    "test:phrase-levels": "tsx scripts/test-phrase-level-logic.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

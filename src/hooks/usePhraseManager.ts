@@ -266,8 +266,8 @@ export const usePhraseManager = () => {
         body: JSON.stringify({
           userId: user.id,
           languageId: learningLang.id,
-          text: desiredPhrase,
-          translation: finalText,
+          text: finalText,      // 学習言語のフレーズ
+          translation: desiredPhrase, // 母国語の翻訳
           level: variation.type, // フレーズのレベル（common, polite, casual）を追加
         }),
       })

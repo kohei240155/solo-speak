@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 
 const prisma = new PrismaClient()
 
@@ -71,20 +72,32 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // それでもphraseLevelIdが決まらない場合、デフォルトのフレーズレベルを取得
+    // それでもphraseLevelIdが決まらない場合、正解数（初期値0）に基づいてフレーズレベルを設定
     if (!finalPhraseLevelId) {
-      const defaultLevel = await prisma.phraseLevel.findFirst({
-        orderBy: { score: 'asc' }
+      const correctAnswers = 0 // 新規フレーズの初期正解数
+      const levelScore = getPhraseLevelScoreByCorrectAnswers(correctAnswers)
+      
+      const phraseLevel = await prisma.phraseLevel.findFirst({
+        where: { score: levelScore }
       })
       
-      if (!defaultLevel) {
-        return NextResponse.json(
-          { error: 'No phrase level found' },
-          { status: 500 }
-        )
+      if (phraseLevel) {
+        finalPhraseLevelId = phraseLevel.id
+      } else {
+        // フォールバック: 最低レベルを取得
+        const defaultLevel = await prisma.phraseLevel.findFirst({
+          orderBy: { score: 'asc' }
+        })
+        
+        if (!defaultLevel) {
+          return NextResponse.json(
+            { error: 'No phrase level found' },
+            { status: 500 }
+          )
+        }
+        
+        finalPhraseLevelId = defaultLevel.id
       }
-      
-      finalPhraseLevelId = defaultLevel.id
     }
 
     // フレーズを作成
@@ -178,7 +191,10 @@ export async function GET(request: NextRequest) {
     const where: {
       userId?: string
       languageId?: string
-    } = {}
+      deletedAt?: null
+    } = {
+      deletedAt: null // 削除されていないフレーズのみを取得
+    }
     
     if (userId) {
       where.userId = userId
