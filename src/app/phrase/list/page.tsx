@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import { usePhraseList } from '@/hooks/usePhraseList'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseList from '@/components/PhraseList'
+import { AuthLoading } from '@/components/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 import { TabType } from '@/types/phrase'
 
 export default function PhraseListPage() {
+  // 認証ガード - ログインしていない場合はホームページにリダイレクト
+  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
+  
   const {
     // State
     learningLanguage,
@@ -59,6 +64,11 @@ export default function PhraseListPage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
+
+  // 認証チェック中またはログインしていない場合は早期リターン
+  if (authLoading || !isAuthenticated) {
+    return <AuthLoading />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>

@@ -4,13 +4,18 @@ import { useEffect } from 'react'
 // import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseAdd from '@/components/PhraseAdd'
 import SpeakModeModal from '@/components/SpeakModeModal'
+import { AuthLoading } from '@/components/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
+  // 認証ガード - ログインしていない場合はホームページにリダイレクト
+  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
+  
   // const router = useRouter() // 現在未使用
   
   const {
@@ -64,6 +69,11 @@ export default function PhraseAddPage() {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [generatedVariations.length])
+
+  // 認証チェック中またはログインしていない場合は早期リターン
+  if (authLoading || !isAuthenticated) {
+    return <AuthLoading />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
