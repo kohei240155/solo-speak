@@ -73,7 +73,7 @@ export default function SpeakPractice({
       <div className="mb-6">
         <div className="flex justify-between items-start">
           {/* Count ボタン + Finish ボタン */}
-          <div className="flex flex-col items-center flex-1">
+          <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onCount}
               className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-1 transition-colors"
@@ -94,10 +94,10 @@ export default function SpeakPractice({
           </div>
 
           {/* 区切り線 - 上部に配置 */}
-          <div className="w-px h-20 bg-gray-300 mx-6"></div>
+          <div className="w-px h-20 bg-gray-300 mx-4"></div>
 
           {/* Sound ボタン + Next ボタン */}
-          <div className="flex flex-col items-center flex-1">
+          <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onSound}
               className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-1 transition-colors"
