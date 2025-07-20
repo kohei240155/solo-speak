@@ -53,6 +53,7 @@ export default function PhraseSpeakPage() {
   const [isLoadingPhrase, setIsLoadingPhrase] = useState(false)
   const [todayCount, setTodayCount] = useState(0) // 今日の音読回数
   const [totalCount, setTotalCount] = useState(0) // 総音読回数
+  const [pendingCount, setPendingCount] = useState(0) // 保留中のカウント数
 
   // フレーズを取得する関数
   const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
@@ -84,6 +85,7 @@ export default function PhraseSpeakPage() {
         setCurrentPhrase(data.phrase)
         setTodayCount(data.phrase.dailyReadCount || 0)
         setTotalCount(data.phrase.totalReadCount || 0)
+        setPendingCount(0) // 新しいフレーズ取得時はペンディングカウントをリセット
       } else {
         toast.error(data.message || 'フレーズが見つかりませんでした')
         setSpeakMode({ active: false, config: null })
@@ -97,41 +99,50 @@ export default function PhraseSpeakPage() {
     }
   }, [])
 
-  // カウント機能
-  const handleCount = async () => {
-    if (!currentPhrase) return
+  // カウントをサーバーに送信する関数
+  const sendPendingCount = useCallback(async (phraseId: string, countToSend: number) => {
+    if (countToSend === 0) return true // 送信するカウントがない場合は成功として扱う
 
     try {
       // 認証トークンを取得
       const { data: { session } } = await supabase.auth.getSession()
       
       if (!session) {
-        toast.error('認証情報が見つかりません。再度ログインしてください。')
-        return
+        console.error('No authentication session found')
+        return false
       }
 
-      const response = await fetch(`/api/phrase/${currentPhrase.id}/count`, {
+      const response = await fetch(`/api/phrase/${phraseId}/count`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
-        }
+        },
+        body: JSON.stringify({ count: countToSend })
       })
 
-      if (response.ok) {
-        // ローカル状態を更新
-        setCurrentPhrase(prev => prev ? {
-          ...prev,
-          totalReadCount: prev.totalReadCount + 1,
-          dailyReadCount: prev.dailyReadCount + 1
-        } : null)
-        setTodayCount(prev => prev + 1)
-        setTotalCount(prev => prev + 1)
-      }
+      return response.ok
     } catch (error) {
-      console.error('Error updating count:', error)
-      toast.error('カウントの更新に失敗しました')
+      console.error('Error sending count:', error)
+      return false
     }
+  }, [])
+
+  // カウント機能（ローカルでのみカウントを増加）
+  const handleCount = () => {
+    if (!currentPhrase) return
+
+    // ローカル状態を即座に更新
+    setPendingCount(prev => prev + 1)
+    setTodayCount(prev => prev + 1)
+    setTotalCount(prev => prev + 1)
+    
+    // フレーズの表示カウントも更新
+    setCurrentPhrase(prev => prev ? {
+      ...prev,
+      totalReadCount: prev.totalReadCount + 1,
+      dailyReadCount: prev.dailyReadCount + 1
+    } : null)
   }
 
   // 音声再生機能
@@ -166,6 +177,16 @@ export default function PhraseSpeakPage() {
 
   // 次のフレーズを取得
   const handleNext = async () => {
+    // 保留中のカウントを送信
+    if (currentPhrase && pendingCount > 0) {
+      const success = await sendPendingCount(currentPhrase.id, pendingCount)
+      if (success) {
+        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+      } else {
+        toast.error('カウントの送信に失敗しました')
+      }
+    }
+
     if (speakMode.config) {
       await fetchSpeakPhrase(speakMode.config)
     }
@@ -197,6 +218,37 @@ export default function PhraseSpeakPage() {
     }
   }, [learningLanguage, fetchSpeakPhrase]) // learningLanguageが設定されてから実行
 
+  // ページ離脱時に保留中のカウントを送信
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'hidden' && currentPhrase && pendingCount > 0) {
+        // ページが非表示になる時（タブ切り替えなど）にカウントを送信
+        const success = await sendPendingCount(currentPhrase.id, pendingCount)
+        if (success) {
+          setPendingCount(0)
+        }
+      }
+    }
+
+    // ページ離脱時の警告
+    const handleBeforeUnloadWarning = (event: BeforeUnloadEvent) => {
+      if (pendingCount > 0) {
+        // 保留中のカウントがある場合は離脱を警告
+        event.preventDefault()
+        event.returnValue = '保存されていないカウントがあります。本当にページを離れますか？'
+        return event.returnValue
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnloadWarning)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnloadWarning)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [currentPhrase, pendingCount, sendPendingCount])
+
   const handleSpeakStart = async (config: SpeakConfig) => {
     setSpeakMode({ active: true, config })
     
@@ -214,11 +266,20 @@ export default function PhraseSpeakPage() {
     await fetchSpeakPhrase(config)
   }
 
-  const handleSpeakFinish = () => {
+  const handleSpeakFinish = async () => {
+    // 保留中のカウントを送信
+    if (currentPhrase && pendingCount > 0) {
+      const success = await sendPendingCount(currentPhrase.id, pendingCount)
+      if (!success) {
+        toast.error('カウントの送信に失敗しました')
+      }
+    }
+
     setSpeakMode({ active: false, config: null })
     setCurrentPhrase(null)
     setTodayCount(0)
     setTotalCount(0)
+    setPendingCount(0) // ペンディングカウントもリセット
     
     // URLパラメータをクリア
     const newUrl = window.location.pathname

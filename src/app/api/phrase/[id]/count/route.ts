@@ -22,6 +22,10 @@ export async function POST(
       )
     }
 
+    // リクエストボディから増加するカウント数を取得（デフォルトは1）
+    const body = await request.json().catch(() => ({}))
+    const countIncrement = Math.max(1, parseInt(body.count) || 1) // 最低1、最大値制限は必要に応じて追加
+
     // フレーズが存在するかチェック（認証されたユーザーのフレーズのみ）
     const existingPhrase = await prisma.phrase.findUnique({
       where: { 
@@ -37,15 +41,15 @@ export async function POST(
       )
     }
 
-    // 音読回数を更新
+    // 音読回数を更新（指定された数だけ増加）
     const updatedPhrase = await prisma.phrase.update({
       where: { id: phraseId },
       data: {
         totalReadCount: {
-          increment: 1
+          increment: countIncrement
         },
         dailyReadCount: {
-          increment: 1
+          increment: countIncrement
         }
       },
       include: {
