@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import { Language } from '@/types/phrase'
@@ -26,6 +25,7 @@ export default function SpeakPage() {
   const [languages, setLanguages] = useState<Language[]>([])
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('')
+  const [defaultLearningLanguage, setDefaultLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -68,6 +68,7 @@ export default function SpeakPage() {
         if (response.ok) {
           const data = await response.json()
           setNativeLanguage(data.nativeLanguage || 'ja')
+          setDefaultLearningLanguage(data.learningLanguage || 'en')
         }
       } catch (error) {
         console.error('Error fetching user settings:', error)
@@ -193,10 +194,28 @@ export default function SpeakPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+          {/* Phrase タイトル（言語選択なし） */}
+          <div className="flex justify-between items-center mb-[18px]">
+            <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+              Phrase
+            </h1>
+          </div>
+          
+          {/* タブメニュー */}
+          <PhraseTabNavigation 
+            activeTab="Speak" 
+            onSpeakModalOpen={openSpeakModal}
+          />
+
+          {/* ローディング表示エリア */}
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+              <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -204,15 +223,33 @@ export default function SpeakPage() {
 
   if (error || !phrase) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">{error || 'フレーズが見つかりませんでした'}</p>
-          <button
-            onClick={() => router.push('/phrase/list')}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-          >
-            戻る
-          </button>
+      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+          {/* Phrase タイトル（言語選択なし） */}
+          <div className="flex justify-between items-center mb-[18px]">
+            <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+              Phrase
+            </h1>
+          </div>
+          
+          {/* タブメニュー */}
+          <PhraseTabNavigation 
+            activeTab="Speak" 
+            onSpeakModalOpen={openSpeakModal}
+          />
+
+          {/* エラー表示エリア */}
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">{error || 'フレーズが見つかりませんでした'}</p>
+              <button
+                onClick={() => router.push('/phrase/list')}
+                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+              >
+                戻る
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -221,23 +258,11 @@ export default function SpeakPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-        {/* Phrase タイトルと言語選択を同じ行に配置 */}
+        {/* Phrase タイトル（言語選択なし） */}
         <div className="flex justify-between items-center mb-[18px]">
           <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
             Phrase
           </h1>
-          
-          <LanguageSelector
-            learningLanguage={learningLanguage}
-            onLanguageChange={(newLanguage) => {
-              // 言語変更時は新しい言語でSpeak画面に遷移
-              if (newLanguage !== languageId) {
-                router.push(`/phrase/${newLanguage}/speak`)
-              }
-            }}
-            languages={languages}
-            nativeLanguage={nativeLanguage}
-          />
         </div>
         
         {/* タブメニュー */}
@@ -341,7 +366,7 @@ export default function SpeakPage() {
         onClose={closeSpeakModal}
         onStart={handleSpeakStart}
         languages={languages}
-        defaultLearningLanguage={learningLanguage}
+        defaultLearningLanguage={defaultLearningLanguage || learningLanguage}
       />
       
       {/* Toaster for notifications */}
