@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
@@ -22,8 +29,10 @@ export async function GET(request: NextRequest) {
     }
 
     // データベースからフレーズを取得（削除されていないもののみ）
+    // 認証されたユーザーのフレーズのみを取得
     const phrases = await prisma.phrase.findMany({
       where: {
+        userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
         language: {
           code: language
         },

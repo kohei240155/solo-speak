@@ -43,6 +43,12 @@ export const usePhraseManager = () => {
     }
   }, [])
   const fetchLanguages = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      console.log('User not logged in, skipping language fetch in usePhraseManager')
+      return
+    }
+
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/languages', {
@@ -52,11 +58,14 @@ export const usePhraseManager = () => {
       if (response.ok) {
         const data = await response.json()
         setLanguages(data)
+      } else {
+        console.error('Failed to fetch languages:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error('Error fetching languages:', error)
+      console.error('Error fetching languages in usePhraseManager:', error)
+      setLanguages([])
     }
-  }, [getAuthHeaders])
+  }, [getAuthHeaders, user])
 
   const fetchUserSettings = useCallback(async () => {
     try {
@@ -319,9 +328,11 @@ export const usePhraseManager = () => {
   }
 
   useEffect(() => {
-    // 言語一覧を取得
-    fetchLanguages()
-  }, [fetchLanguages])
+    // ユーザーがログインしている場合のみ言語一覧を取得
+    if (user) {
+      fetchLanguages()
+    }
+  }, [fetchLanguages, user])
 
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {

@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const { id: phraseId } = await params
 
     if (!phraseId) {
@@ -15,14 +22,17 @@ export async function POST(
       )
     }
 
-    // フレーズが存在するかチェック
+    // フレーズが存在するかチェック（認証されたユーザーのフレーズのみ）
     const existingPhrase = await prisma.phrase.findUnique({
-      where: { id: phraseId }
+      where: { 
+        id: phraseId,
+        userId: authResult.user.id // 認証されたユーザーのフレーズのみ
+      }
     })
 
     if (!existingPhrase) {
       return NextResponse.json(
-        { error: 'Phrase not found' },
+        { error: 'Phrase not found or you do not have permission to access it' },
         { status: 404 }
       )
     }

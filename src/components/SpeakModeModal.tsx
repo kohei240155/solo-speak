@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
+import { supabase } from '@/utils/spabase'
 import toast from 'react-hot-toast'
 
 interface SpeakModeModalProps {
@@ -35,6 +36,15 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
     
     setIsLoading(true)
     try {
+      // 認証トークンを取得
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('認証情報が見つかりません。再度ログインしてください。')
+        setIsLoading(false)
+        return
+      }
+
       // モード設定をクエリパラメータとして含めてGET APIを呼び出し
       const params = new URLSearchParams({
         language: selectedLanguage,
@@ -42,7 +52,11 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         prioritizeLowReadCount: prioritizeLowPractice.toString()
       })
 
-      const response = await fetch(`/api/phrase/speak?${params.toString()}`)
+      const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
       const data = await response.json()
 
       console.log('SpeakModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })

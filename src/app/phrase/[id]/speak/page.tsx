@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import { Language } from '@/types/phrase'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/utils/spabase'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
@@ -20,6 +22,7 @@ interface SpeakPhrase {
 }
 
 export default function SpeakPage() {
+  const { user, loading: authLoading } = useAuth()
   const params = useParams()
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
@@ -28,6 +31,13 @@ export default function SpeakPage() {
   const [defaultLearningLanguage, setDefaultLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // 認証チェック: ログインしていない場合はホームページにリダイレクト
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/')
+    }
+  }, [user, authLoading, router])
 
   // Speak modal functionality
   const {
@@ -44,6 +54,8 @@ export default function SpeakPage() {
   }, [languageId])
 
   useEffect(() => {
+    if (!user) return // ユーザーがログインしていない場合は何もしない
+
     // URLパラメータからphraseIdを取得
     const searchParams = new URLSearchParams(window.location.search)
     const phraseId = searchParams.get('phraseId')
@@ -51,7 +63,18 @@ export default function SpeakPage() {
     // 言語情報を取得
     const fetchLanguages = async () => {
       try {
-        const response = await fetch('/api/languages')
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          toast.error('認証情報が見つかりません。')
+          return
+        }
+
+        const response = await fetch('/api/languages', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
         if (response.ok) {
           const data = await response.json()
           setLanguages(data.languages || [])
@@ -64,7 +87,18 @@ export default function SpeakPage() {
     // ユーザー設定を取得
     const fetchUserSettings = async () => {
       try {
-        const response = await fetch('/api/user/settings')
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          toast.error('認証情報が見つかりません。')
+          return
+        }
+
+        const response = await fetch('/api/user/settings', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
         if (response.ok) {
           const data = await response.json()
           setDefaultLearningLanguage(data.learningLanguage || 'en')
@@ -77,13 +111,28 @@ export default function SpeakPage() {
     // フレーズを取得
     const fetchPhrase = async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          toast.error('認証情報が見つかりません。')
+          return
+        }
+
         let response
         if (phraseId) {
           // phraseIdが指定されている場合は特定のフレーズを取得
-          response = await fetch(`/api/phrase/${phraseId}`)
+          response = await fetch(`/api/phrase/${phraseId}`, {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
         } else {
           // phraseIdがない場合は従来通りのAPIを呼び出し
-          response = await fetch(`/api/phrase/speak?language=${languageId}`)
+          response = await fetch(`/api/phrase/speak?language=${languageId}`, {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          })
         }
         
         const data = await response.json()
@@ -120,17 +169,25 @@ export default function SpeakPage() {
     fetchLanguages()
     fetchUserSettings()
     fetchPhrase()
-  }, [languageId])
+  }, [languageId, user])
 
   const handleCount = async () => {
     if (!phrase) return
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('認証情報が見つかりません。')
+        return
+      }
+
       // 音読回数を更新
       const response = await fetch(`/api/phrase/${phrase.id}/count`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         }
       })
 
@@ -186,7 +243,18 @@ export default function SpeakPage() {
   const handleNext = async () => {
     // 次のフレーズを取得
     try {
-      const response = await fetch(`/api/phrase/speak?language=${languageId}`)
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('認証情報が見つかりません。')
+        return
+      }
+
+      const response = await fetch(`/api/phrase/speak?language=${languageId}`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
       const data = await response.json()
       
       if (data.success) {
@@ -202,6 +270,34 @@ export default function SpeakPage() {
 
   const handleFinish = () => {
     router.push('/phrase/list')
+  }
+
+  // 認証チェック
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">この機能を利用するにはログインが必要です</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            ホームに戻る
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (loading) {

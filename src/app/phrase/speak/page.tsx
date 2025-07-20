@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal, { SpeakConfig } from '@/components/SpeakModeModal'
 import SpeakPractice from '@/components/SpeakPractice'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/utils/spabase'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 
@@ -19,6 +22,8 @@ interface SpeakPhrase {
 }
 
 export default function PhraseSpeakPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const {
     learningLanguage,
     languages,
@@ -29,6 +34,13 @@ export default function PhraseSpeakPage() {
     isLoadingPhrases,
     fetchSavedPhrases,
   } = usePhraseList()
+
+  // 認証チェック: ログインしていない場合はホームページにリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
 
   const [showSpeakModal, setShowSpeakModal] = useState(false) // モーダルの表示状態
   const [speakMode, setSpeakMode] = useState<{ active: boolean; config: SpeakConfig | null }>({
@@ -46,13 +58,26 @@ export default function PhraseSpeakPage() {
   const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
     setIsLoadingPhrase(true)
     try {
+      // 認証トークンを取得
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('認証情報が見つかりません。再度ログインしてください。')
+        setSpeakMode({ active: false, config: null })
+        return
+      }
+
       const params = new URLSearchParams({
         language: learningLanguage,
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowReadCount: config.prioritizeLowPractice.toString()
       })
 
-      const response = await fetch(`/api/phrase/speak?${params.toString()}`)
+      const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
       const data = await response.json()
 
       if (data.success && data.phrase) {
@@ -77,10 +102,19 @@ export default function PhraseSpeakPage() {
     if (!currentPhrase) return
 
     try {
+      // 認証トークンを取得
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        toast.error('認証情報が見つかりません。再度ログインしてください。')
+        return
+      }
+
       const response = await fetch(`/api/phrase/${currentPhrase.id}/count`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
         }
       })
 
@@ -193,6 +227,34 @@ export default function PhraseSpeakPage() {
 
   // Speak練習モードが有効な場合はSpeakPracticeコンポーネントを表示
   if (speakMode.active && speakMode.config) {
+    // 認証チェック
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-2 text-gray-600">認証情報を確認中...</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (!user) {
+      return (
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">この機能を利用するにはログインが必要です</p>
+            <button
+              onClick={() => router.push('/')}
+              className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+            >
+              ホームに戻る
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
@@ -240,6 +302,34 @@ export default function PhraseSpeakPage() {
           </div>
         </div>
         <Toaster />
+      </div>
+    )
+  }
+
+  // 認証チェック
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">この機能を利用するにはログインが必要です</p>
+          <button
+            onClick={() => router.push('/')}
+            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            ホームに戻る
+          </button>
+        </div>
       </div>
     )
   }
