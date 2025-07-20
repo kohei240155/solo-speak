@@ -76,9 +76,9 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center mr-6">
             <button
               onClick={onCount}
-              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
+              className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
-              <CiCirclePlus className="w-8 h-8 text-gray-600" />
+              <CiCirclePlus className="w-10 h-10 text-gray-600" />
             </button>
             <span className="text-gray-900 font-medium text-sm">Count</span>
           </div>
@@ -90,9 +90,9 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center ml-6">
             <button
               onClick={onSound}
-              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
+              className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
-              <HiMiniSpeakerWave className="w-8 h-8 text-gray-900" />
+              <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
             </button>
             <span className="text-gray-900 font-medium text-sm">Sound</span>
           </div>
