@@ -7,6 +7,7 @@ import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { BsPencil } from 'react-icons/bs'
 import { useState } from 'react'
 import Modal from './Modal'
+import SpeakModeModal, { SpeakConfig } from './SpeakModeModal'
 import toast from 'react-hot-toast'
 
 interface PhraseListProps {
@@ -35,6 +36,8 @@ export default function PhraseList({
   const [isUpdating, setIsUpdating] = useState(false)
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showSpeakModal, setShowSpeakModal] = useState(false)
+  const [selectedPhraseForSpeak, setSelectedPhraseForSpeak] = useState<SavedPhrase | null>(null)
 
   const handleMenuToggle = (phraseId: string) => {
     setOpenMenuId(openMenuId === phraseId ? null : phraseId)
@@ -48,10 +51,23 @@ export default function PhraseList({
   }
 
   const handleSpeak = (phrase: SavedPhrase) => {
-    if (onSpeakPhrase) {
-      onSpeakPhrase(phrase)
-    }
+    setSelectedPhraseForSpeak(phrase)
+    setShowSpeakModal(true)
     setOpenMenuId(null)
+  }
+
+  const handleSpeakStart = (config: SpeakConfig) => {
+    if (selectedPhraseForSpeak && onSpeakPhrase) {
+      // TODO: configを使用してSpeak機能を実装
+      console.log('Speak config:', config)
+      onSpeakPhrase(selectedPhraseForSpeak)
+    }
+    setSelectedPhraseForSpeak(null)
+  }
+
+  const handleSpeakModalClose = () => {
+    setShowSpeakModal(false)
+    setSelectedPhraseForSpeak(null)
   }
 
   const handleDelete = (phraseId: string) => {
@@ -421,6 +437,13 @@ export default function PhraseList({
           </div>
         </div>
       </Modal>
+
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={showSpeakModal}
+        onClose={handleSpeakModalClose}
+        onStart={handleSpeakStart}
+      />
 
       {/* メニューが開いている時のオーバーレイ */}
       {openMenuId && (
