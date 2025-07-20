@@ -33,7 +33,7 @@ export default function SpeakPractice({
   return (
     <>
       {/* フレーズ表示エリア - Phrase Listと同じレイアウト */}
-      <div className="mb-8">
+      <div className="mb-10">
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
           <div 
@@ -70,7 +70,7 @@ export default function SpeakPractice({
       </div>
 
       {/* Count と Sound ボタン */}
-      <div className="mb-6">
+      <div>
         <div className="flex justify-between items-start">
           {/* Count ボタン + Finish ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
