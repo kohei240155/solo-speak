@@ -36,13 +36,44 @@ export default function PhraseSpeakPage() {
     }
   }, [learningLanguage, fetchSavedPhrases])
 
+  // ページ読み込み時にURLパラメータから設定を復元
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
+    const prioritizeLowPractice = params.get('prioritizeLowPractice') === 'true'
+    
+    // URLパラメータに設定がある場合、自動的に練習モードを開始
+    if (order && (order === 'new-to-old' || order === 'old-to-new')) {
+      const config: SpeakConfig = {
+        order,
+        prioritizeLowPractice
+      }
+      setSpeakMode({ active: true, config })
+    }
+  }, [])
+
   const handleSpeakStart = (config: SpeakConfig) => {
     setSpeakMode({ active: true, config })
+    
+    // URLパラメータに選択した設定を反映
+    const params = new URLSearchParams(window.location.search)
+    params.set('order', config.order)
+    params.set('prioritizeLowPractice', config.prioritizeLowPractice.toString())
+    
+    // URLを更新（ページリロードは発生しない）
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    window.history.replaceState({}, '', newUrl)
+    
     // モーダルは既にSpeakModeModal内で閉じられているため、ここでは状態のみ更新
   }
 
   const handleSpeakFinish = () => {
     setSpeakMode({ active: false, config: null })
+    
+    // URLパラメータをクリア
+    const newUrl = window.location.pathname
+    window.history.replaceState({}, '', newUrl)
+    
     // Finish後はモーダルを再表示しない
   }
 
