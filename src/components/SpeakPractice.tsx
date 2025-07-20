@@ -80,7 +80,7 @@ export default function SpeakPractice({
             >
               <CiCirclePlus className="w-10 h-10 text-gray-600" />
             </button>
-            <span className="text-gray-900 font-medium text-base mb-6">Count</span>
+            <span className="text-gray-900 font-medium text-base mb-8">Count</span>
             <button
               onClick={onFinish}
               className="w-full bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
@@ -104,7 +104,7 @@ export default function SpeakPractice({
             >
               <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
             </button>
-            <span className="text-gray-900 font-medium text-base mb-6">Sound</span>
+            <span className="text-gray-900 font-medium text-base mb-8">Sound</span>
             <button
               onClick={onNext}
               className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
