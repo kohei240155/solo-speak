@@ -1,18 +1,26 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal, { SpeakConfig } from '@/components/SpeakModeModal'
-import SpeakPracticeNew from '@/components/SpeakPracticeNew'
+import SpeakPractice from '@/components/SpeakPractice'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
+
+// 練習用フレーズの型定義
+interface SpeakPhrase {
+  id: string
+  text: string
+  translation: string
+  totalReadCount: number
+  dailyReadCount: number
+}
 
 export default function PhraseSpeakPage() {
   const {
     learningLanguage,
-    handleLearningLanguageChange,
     languages,
     nativeLanguage,
   } = usePhraseSettings()
@@ -28,6 +36,104 @@ export default function PhraseSpeakPage() {
     active: false,
     config: null
   })
+  
+  // 動的フレーズ取得用の状態
+  const [currentPhrase, setCurrentPhrase] = useState<SpeakPhrase | null>(null)
+  const [isLoadingPhrase, setIsLoadingPhrase] = useState(false)
+  const [todayCount, setTodayCount] = useState(0) // 今日の音読回数
+  const [totalCount, setTotalCount] = useState(0) // 総音読回数
+
+  // フレーズを取得する関数
+  const fetchSpeakPhrase = async (config: SpeakConfig) => {
+    setIsLoadingPhrase(true)
+    try {
+      const params = new URLSearchParams({
+        language: learningLanguage,
+        order: config.order.replace('-', '_'), // new-to-old → new_to_old
+        prioritizeLowReadCount: config.prioritizeLowPractice.toString()
+      })
+
+      const response = await fetch(`/api/phrase/speak?${params.toString()}`)
+      const data = await response.json()
+
+      if (data.success && data.phrase) {
+        setCurrentPhrase(data.phrase)
+        setTodayCount(data.phrase.dailyReadCount || 0)
+        setTotalCount(data.phrase.totalReadCount || 0)
+      } else {
+        toast.error(data.message || 'フレーズが見つかりませんでした')
+        setSpeakMode({ active: false, config: null })
+      }
+    } catch (error) {
+      console.error('Error fetching speak phrase:', error)
+      toast.error('フレーズの取得中にエラーが発生しました')
+      setSpeakMode({ active: false, config: null })
+    } finally {
+      setIsLoadingPhrase(false)
+    }
+  }
+
+  // カウント機能
+  const handleCount = async () => {
+    if (!currentPhrase) return
+
+    try {
+      const response = await fetch(`/api/phrase/${currentPhrase.id}/count`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (response.ok) {
+        // ローカル状態を更新
+        setCurrentPhrase(prev => prev ? {
+          ...prev,
+          totalReadCount: prev.totalReadCount + 1,
+          dailyReadCount: prev.dailyReadCount + 1
+        } : null)
+        setTodayCount(prev => prev + 1)
+        setTotalCount(prev => prev + 1)
+      }
+    } catch (error) {
+      console.error('Error updating count:', error)
+      toast.error('カウントの更新に失敗しました')
+    }
+  }
+
+  // 音声再生機能
+  const handleSound = async () => {
+    if (!currentPhrase) return
+
+    try {
+      // Web Speech API を使用して音声再生
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel() // 既存の音声を停止
+        const utterance = new SpeechSynthesisUtterance(currentPhrase.text)
+        
+        // 言語設定
+        const voices = speechSynthesis.getVoices()
+        const voice = voices.find(v => v.lang.startsWith(learningLanguage))
+        if (voice) {
+          utterance.voice = voice
+        }
+        
+        speechSynthesis.speak(utterance)
+      } else {
+        toast.error('音声再生がサポートされていません')
+      }
+    } catch (error) {
+      console.error('Error playing sound:', error)
+      toast.error('音声再生に失敗しました')
+    }
+  }
+
+  // 次のフレーズを取得
+  const handleNext = async () => {
+    if (speakMode.config) {
+      await fetchSpeakPhrase(speakMode.config)
+    }
+  }
 
   // ページ読み込み時にフレーズを取得
   useEffect(() => {
@@ -43,16 +149,17 @@ export default function PhraseSpeakPage() {
     const prioritizeLowPractice = params.get('prioritizeLowPractice') === 'true'
     
     // URLパラメータに設定がある場合、自動的に練習モードを開始
-    if (order && (order === 'new-to-old' || order === 'old-to-new')) {
+    if (order && (order === 'new-to-old' || order === 'old-to-new') && learningLanguage) {
       const config: SpeakConfig = {
         order,
         prioritizeLowPractice
       }
       setSpeakMode({ active: true, config })
+      fetchSpeakPhrase(config)
     }
-  }, [])
+  }, [learningLanguage]) // learningLanguageが設定されてから実行
 
-  const handleSpeakStart = (config: SpeakConfig) => {
+  const handleSpeakStart = async (config: SpeakConfig) => {
     setSpeakMode({ active: true, config })
     
     // URLパラメータに選択した設定を反映
@@ -64,11 +171,15 @@ export default function PhraseSpeakPage() {
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.replaceState({}, '', newUrl)
     
-    // モーダルは既にSpeakModeModal内で閉じられているため、ここでは状態のみ更新
+    // フレーズを取得
+    await fetchSpeakPhrase(config)
   }
 
   const handleSpeakFinish = () => {
     setSpeakMode({ active: false, config: null })
+    setCurrentPhrase(null)
+    setTodayCount(0)
+    setTotalCount(0)
     
     // URLパラメータをクリア
     const newUrl = window.location.pathname
@@ -101,24 +212,33 @@ export default function PhraseSpeakPage() {
 
           {/* Speak練習コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            {savedPhrases[0] && (
-              <SpeakPracticeNew
-                phrase={{
-                  id: savedPhrases[0].id,
-                  text: savedPhrases[0].text,
-                  translation: savedPhrases[0].translation,
-                  totalReadCount: savedPhrases[0].practiceCount || 0,
-                  dailyReadCount: 0
-                }}
+            {isLoadingPhrase ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+              </div>
+            ) : currentPhrase ? (
+              <SpeakPractice
+                phrase={currentPhrase}
                 languages={languages}
                 nativeLanguage={nativeLanguage}
-                onCount={() => {}}
-                onSound={() => {}}
-                onNext={() => {}}
+                onCount={handleCount}
+                onSound={handleSound}
+                onNext={handleNext}
                 onFinish={handleSpeakFinish}
-                todayCount={0}
-                totalCount={0}
+                todayCount={todayCount}
+                totalCount={totalCount}
               />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-600">フレーズが見つかりませんでした</p>
+                <button
+                  onClick={handleSpeakFinish}
+                  className="mt-4 px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  戻る
+                </button>
+              </div>
             )}
           </div>
         </div>
