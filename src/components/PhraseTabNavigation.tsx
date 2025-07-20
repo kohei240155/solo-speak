@@ -19,6 +19,11 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
   ]
 
   const handleTabClick = (tab: { key: TabType; label: string; path: string }) => {
+    // アクティブなタブがクリックされた場合は何もしない
+    if (activeTab === tab.key) {
+      return
+    }
+
     // 未保存の変更チェック（Addタブから離脱する場合）
     if (activeTab === 'Add' && tab.key !== 'Add' && checkUnsavedChanges) {
       if (!checkUnsavedChanges()) {
@@ -61,7 +66,9 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
           } ${
             index > 0 ? 'border-l-0' : ''
           } ${
-            activeTab === tab.key ? 'bg-gray-200 text-gray-700 font-bold' : 'bg-white text-gray-700 font-normal'
+            activeTab === tab.key 
+              ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
+              : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
           }`}
         >
           {tab.label}
