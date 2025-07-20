@@ -24,7 +24,6 @@ export default function SpeakPage() {
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
   const [languages, setLanguages] = useState<Language[]>([])
-  const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('')
   const [defaultLearningLanguage, setDefaultLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
@@ -68,7 +67,6 @@ export default function SpeakPage() {
         const response = await fetch('/api/user/settings')
         if (response.ok) {
           const data = await response.json()
-          setNativeLanguage(data.nativeLanguage || 'ja')
           setDefaultLearningLanguage(data.learningLanguage || 'en')
         }
       } catch (error) {

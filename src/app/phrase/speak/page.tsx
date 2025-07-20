@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal, { SpeakConfig } from '@/components/SpeakModeModal'
-import SpeakPractice from '@/components/SpeakPractice'
+import SpeakPracticeNew from '@/components/SpeakPracticeNew'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { Toaster } from 'react-hot-toast'
@@ -74,13 +74,25 @@ export default function PhraseSpeakPage() {
 
           {/* Speak練習コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <SpeakPractice
-              phrases={savedPhrases}
-              config={speakMode.config}
-              languages={languages}
-              nativeLanguage={nativeLanguage}
-              onFinish={handleSpeakFinish}
-            />
+            {savedPhrases[0] && (
+              <SpeakPracticeNew
+                phrase={{
+                  id: savedPhrases[0].id,
+                  text: savedPhrases[0].text,
+                  translation: savedPhrases[0].translation,
+                  totalReadCount: savedPhrases[0].practiceCount || 0,
+                  dailyReadCount: 0
+                }}
+                languages={languages}
+                nativeLanguage={nativeLanguage}
+                onCount={() => {}}
+                onSound={() => {}}
+                onNext={() => {}}
+                onFinish={handleSpeakFinish}
+                todayCount={0}
+                totalCount={0}
+              />
+            )}
           </div>
         </div>
         <Toaster />

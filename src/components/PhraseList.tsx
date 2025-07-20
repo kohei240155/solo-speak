@@ -11,6 +11,11 @@ import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
 
+interface SpeakConfig {
+  order: 'new-to-old' | 'old-to-new'
+  prioritizeLowPractice: boolean
+}
+
 interface PhraseListProps {
   savedPhrases: SavedPhrase[]
   isLoadingPhrases: boolean
@@ -64,16 +69,13 @@ export default function PhraseList({
     setOpenMenuId(null)
   }
 
-  const handleSpeakStart = (phrase: any) => {
-    if (phrase) {
-      // フレーズデータと共にSpeak画面に遷移
-      // フレーズデータをstateで渡すか、URLパラメータで渡す
-      const languageId = 'en' // 実際の学習言語IDに変更する必要がある
-      router.push(`/phrase/${languageId}/speak?phraseId=${phrase.id}`)
-    } else {
-      // エラー時は何もしないか、エラーメッセージを表示
-      console.error('Failed to get phrase data')
-    }
+  const handleSpeakStart = (config: SpeakConfig) => {
+    // 設定に基づいてSpeak画面に遷移
+    const queryParams = new URLSearchParams({
+      order: config.order,
+      prioritizeLowPractice: config.prioritizeLowPractice.toString()
+    })
+    router.push(`/phrase/speak?${queryParams.toString()}`)
   }
 
   const handleSpeakModalClose = () => {

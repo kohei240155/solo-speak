@@ -2,18 +2,10 @@ import { useState } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
 
-interface SpeakPhrase {
-  id: string
-  text: string
-  translation: string
-  totalReadCount: number
-  dailyReadCount: number
-}
-
 interface SpeakModeModalProps {
   isOpen: boolean
   onClose: () => void
-  onStart: (phrase: SpeakPhrase | null) => void
+  onStart: (config: SpeakConfig) => void
   languages: Language[]
   defaultLearningLanguage: string
 }
@@ -41,17 +33,29 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       const data = await response.json()
 
       if (data.success && data.phrase) {
-        // フレーズ取得成功時にStartコールバックを実行（フレーズデータを渡す）
-        onStart(data.phrase)
+        // 設定オブジェクトを作成して渡す
+        const config: SpeakConfig = {
+          order: order as 'new-to-old' | 'old-to-new',
+          prioritizeLowPractice: prioritizeLowPractice
+        }
+        onStart(config)
       } else {
         console.error('Failed to fetch phrase:', data.message)
-        // エラーでも画面遷移は実行（エラーハンドリング）
-        onStart(null)
+        // エラーの場合もデフォルト設定で実行
+        const config: SpeakConfig = {
+          order: order as 'new-to-old' | 'old-to-new',
+          prioritizeLowPractice: prioritizeLowPractice
+        }
+        onStart(config)
       }
     } catch (error) {
       console.error('Error fetching phrase:', error)
-      // エラーでも画面遷移は実行
-      onStart(null)
+      // エラーの場合もデフォルト設定で実行
+      const config: SpeakConfig = {
+        order: order as 'new-to-old' | 'old-to-new',
+        prioritizeLowPractice: prioritizeLowPractice
+      }
+      onStart(config)
     }
     onClose()
   }

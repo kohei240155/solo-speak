@@ -1,5 +1,7 @@
 import { Language } from '@/types/phrase'
 import { RiSpeakLine } from 'react-icons/ri'
+import { CiCirclePlus } from 'react-icons/ci'
+import { HiMiniSpeakerWave } from 'react-icons/hi2'
 
 interface SpeakPhrase {
   id: string
@@ -43,9 +45,9 @@ export default function SpeakPractice({
             : 'Loading...'
           }
         </h2>
-        <div className="text-sm text-gray-600 flex items-center">
-          <RiSpeakLine className="w-4 h-4 mr-1" />
-          Today: {todayCount}  Total: {totalCount}
+        <div className="text-xs text-gray-600 flex items-center max-w-[120px] compact">
+          <RiSpeakLine className="w-3 h-3 mr-1 flex-shrink-0" />
+          <span className="whitespace-nowrap">Today: {todayCount} Total: {totalCount}</span>
         </div>
       </div>
 
@@ -68,28 +70,26 @@ export default function SpeakPractice({
       <div className="mb-8">
         <div className="flex items-center justify-center">
           {/* Count ボタン */}
-          <div className="flex flex-col items-center mr-8">
+          <div className="flex flex-col items-center mr-4">
             <button
               onClick={onCount}
-              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+              className="w-12 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
             >
-              <div className="w-8 h-8 border-2 border-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 text-xl font-bold">+</span>
-              </div>
+              <CiCirclePlus className="w-6 h-6 text-gray-600" />
             </button>
             <span className="text-gray-900 font-medium text-sm">Count</span>
           </div>
 
           {/* 区切り線 */}
-          <div className="w-px h-20 bg-gray-300 mx-8"></div>
+          <div className="w-px h-12 bg-gray-300 mx-4"></div>
 
           {/* Sound ボタン */}
-          <div className="flex flex-col items-center ml-8">
+          <div className="flex flex-col items-center ml-4">
             <button
               onClick={onSound}
-              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+              className="w-12 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
             >
-              <RiSpeakLine className="w-7 h-7 text-gray-900" />
+              <HiMiniSpeakerWave className="w-5 h-5 text-gray-900" />
             </button>
             <span className="text-gray-900 font-medium text-sm">Sound</span>
           </div>

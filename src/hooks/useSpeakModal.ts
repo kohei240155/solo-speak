@@ -1,13 +1,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-interface SpeakPhrase {
-  id: string
-  text: string
-  translation: string
-  totalReadCount: number
-  dailyReadCount: number
-  languageCode?: string
+export interface SpeakConfig {
+  order: 'new-to-old' | 'old-to-new'
+  prioritizeLowPractice: boolean
 }
 
 export function useSpeakModal() {
@@ -22,15 +18,13 @@ export function useSpeakModal() {
     setShowSpeakModal(false)
   }
 
-  const handleSpeakStart = (phrase: SpeakPhrase | null) => {
-    if (phrase) {
-      // フレーズデータと共にSpeak画面に遷移
-      const languageId = phrase.languageCode || 'en'
-      router.push(`/phrase/${languageId}/speak?phraseId=${phrase.id}`)
-    } else {
-      // エラー時はエラーメッセージを表示
-      console.error('Failed to get phrase data')
-    }
+  const handleSpeakStart = (config: SpeakConfig) => {
+    // 設定に基づいてSpeak画面に遷移
+    const queryParams = new URLSearchParams({
+      order: config.order,
+      prioritizeLowPractice: config.prioritizeLowPractice.toString()
+    })
+    router.push(`/phrase/speak?${queryParams.toString()}`)
   }
 
   return {
