@@ -6,9 +6,9 @@ import { BiCalendarAlt } from 'react-icons/bi'
 import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { BsPencil } from 'react-icons/bs'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Modal from './Modal'
-import SpeakModeModal, { SpeakConfig } from './SpeakModeModal'
-import SpeakPractice from './SpeakPractice'
+import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
 
 interface PhraseListProps {
@@ -18,6 +18,8 @@ interface PhraseListProps {
   nativeLanguage?: string
   onUpdatePhrase?: (phrase: SavedPhrase) => void
   onRefreshPhrases?: () => void
+  showSpeakModal?: boolean
+  onSpeakModalStateChange?: (isOpen: boolean) => void
 }
 
 export default function PhraseList({ 
@@ -26,8 +28,11 @@ export default function PhraseList({
   languages = [],
   nativeLanguage = 'ja',
   onUpdatePhrase,
-  onRefreshPhrases
+  onRefreshPhrases,
+  showSpeakModal: externalShowSpeakModal = false,
+  onSpeakModalStateChange
 }: PhraseListProps) {
+  const router = useRouter()
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null)
   const [editedText, setEditedText] = useState('')
@@ -36,10 +41,9 @@ export default function PhraseList({
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
-  const [speakMode, setSpeakMode] = useState<{ active: boolean; config: SpeakConfig | null }>({
-    active: false,
-    config: null
-  })
+
+  // 外部からのSpeakモーダル制御
+  const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
 
   const handleMenuToggle = (phraseId: string) => {
     setOpenMenuId(openMenuId === phraseId ? null : phraseId)
@@ -52,25 +56,24 @@ export default function PhraseList({
     setOpenMenuId(null)
   }
 
-  const handleSpeak = (phrase: SavedPhrase) => {
+  const handleSpeak = () => {
     setShowSpeakModal(true)
+    if (onSpeakModalStateChange) {
+      onSpeakModalStateChange(true)
+    }
     setOpenMenuId(null)
   }
 
-  const handleSpeakStart = (config: SpeakConfig) => {
-    setSpeakMode({ active: true, config })
-  }
-
-  const handleSpeakFinish = () => {
-    setSpeakMode({ active: false, config: null })
-    // リストを更新して練習回数を反映
-    if (onRefreshPhrases) {
-      onRefreshPhrases()
-    }
+  const handleSpeakStart = () => {
+    // Speakページに遷移
+    router.push('/phrase/speak')
   }
 
   const handleSpeakModalClose = () => {
     setShowSpeakModal(false)
+    if (onSpeakModalStateChange) {
+      onSpeakModalStateChange(false)
+    }
   }
 
   const handleDelete = (phraseId: string) => {
@@ -170,19 +173,6 @@ export default function PhraseList({
     setEditedTranslation('')
   }
 
-  // Speak練習モードが有効な場合はSpeakPracticeコンポーネントを表示
-  if (speakMode.active && speakMode.config) {
-    return (
-      <SpeakPractice
-        phrases={savedPhrases}
-        config={speakMode.config}
-        languages={languages}
-        nativeLanguage={nativeLanguage}
-        onFinish={handleSpeakFinish}
-      />
-    )
-  }
-
   if (isLoadingPhrases && savedPhrases.length === 0) {
     return (
       <div className="text-center py-8">
@@ -242,7 +232,7 @@ export default function PhraseList({
                       Edit
                     </button>
                     <button
-                      onClick={() => handleSpeak(phrase)}
+                      onClick={() => handleSpeak()}
                       className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
                       <RiSpeakLine className="w-3 h-3" />
@@ -457,7 +447,7 @@ export default function PhraseList({
 
       {/* Speak Mode モーダル */}
       <SpeakModeModal
-        isOpen={showSpeakModal}
+        isOpen={actualShowSpeakModal}
         onClose={handleSpeakModalClose}
         onStart={handleSpeakStart}
       />
