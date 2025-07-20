@@ -81,6 +81,7 @@ export default function PhraseListPage() {
         <PhraseTabNavigation 
           activeTab="List" 
           onTabChange={handleTabChange}
+          onSpeakModalOpen={() => setShowSpeakModal(true)}
         />
 
         {/* コンテンツエリア */}

@@ -3,9 +3,11 @@
 import { useEffect } from 'react'
 // import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
+import { useSpeakModal } from '@/hooks/useSpeakModal'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseAdd from '@/components/PhraseAdd'
+import SpeakModeModal from '@/components/SpeakModeModal'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
@@ -38,6 +40,14 @@ export default function PhraseAddPage() {
     handleTypeChange,
     checkUnsavedChanges
   } = usePhraseManager()
+
+  // Speak modal functionality
+  const {
+    showSpeakModal,
+    openSpeakModal,
+    closeSpeakModal,
+    handleSpeakStart
+  } = useSpeakModal()
 
   // ページ離脱時の警告処理をオーバーライド
   useEffect(() => {
@@ -76,6 +86,7 @@ export default function PhraseAddPage() {
         <PhraseTabNavigation 
           activeTab="Add" 
           checkUnsavedChanges={checkUnsavedChanges}
+          onSpeakModalOpen={openSpeakModal}
         />
 
         {/* コンテンツエリア */}
@@ -103,6 +114,15 @@ export default function PhraseAddPage() {
           />
         </div>
       </div>
+      
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={showSpeakModal}
+        onClose={closeSpeakModal}
+        onStart={handleSpeakStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
       
       {/* Toaster for notifications */}
       <Toaster />

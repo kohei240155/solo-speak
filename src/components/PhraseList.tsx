@@ -64,9 +64,16 @@ export default function PhraseList({
     setOpenMenuId(null)
   }
 
-  const handleSpeakStart = () => {
-    // Speakページに遷移
-    router.push('/phrase/speak')
+  const handleSpeakStart = (phrase: any) => {
+    if (phrase) {
+      // フレーズデータと共にSpeak画面に遷移
+      // フレーズデータをstateで渡すか、URLパラメータで渡す
+      const languageId = 'en' // 実際の学習言語IDに変更する必要がある
+      router.push(`/phrase/${languageId}/speak?phraseId=${phrase.id}`)
+    } else {
+      // エラー時は何もしないか、エラーメッセージを表示
+      console.error('Failed to get phrase data')
+    }
   }
 
   const handleSpeakModalClose = () => {
@@ -450,6 +457,8 @@ export default function PhraseList({
         isOpen={actualShowSpeakModal}
         onClose={handleSpeakModalClose}
         onStart={handleSpeakStart}
+        languages={languages}
+        defaultLearningLanguage={languages.length > 0 ? languages[0].code : 'en'}
       />
 
       {/* メニューが開いている時のオーバーレイ */}

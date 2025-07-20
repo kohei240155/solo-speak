@@ -5,9 +5,10 @@ interface PhraseTabNavigationProps {
   activeTab: TabType
   onTabChange?: (tab: TabType) => void // Optional for backward compatibility
   checkUnsavedChanges?: () => boolean // Optional function to check for unsaved changes
+  onSpeakModalOpen?: () => void // Speak modal open handler
 }
 
-export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges }: PhraseTabNavigationProps) {
+export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen }: PhraseTabNavigationProps) {
   const router = useRouter()
 
   const tabs: { key: TabType; label: string; path: string }[] = [
@@ -23,6 +24,19 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
       if (!checkUnsavedChanges()) {
         return // ユーザーがキャンセルした場合は何もしない
       }
+    }
+
+    // Speakタブの場合は常にモーダルを表示
+    if (tab.key === 'Speak') {
+      if (onSpeakModalOpen) {
+        onSpeakModalOpen()
+      } else if (onTabChange) {
+        onTabChange(tab.key)
+      } else {
+        // フォールバック: 通常のページ遷移
+        router.push(tab.path)
+      }
+      return
     }
 
     // カスタムのonTabChangeがある場合は優先（backward compatibility）

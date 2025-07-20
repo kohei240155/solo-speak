@@ -138,6 +138,8 @@ export default function PhraseSpeakPage() {
           isOpen={showSpeakModal}
           onClose={handleSpeakModalClose}
           onStart={handleSpeakStart}
+          languages={languages}
+          defaultLearningLanguage={learningLanguage}
         />
       </div>
       

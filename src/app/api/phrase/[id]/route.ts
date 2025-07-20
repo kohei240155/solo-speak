@@ -1,6 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    // フレーズを取得
+    const phrase = await prisma.phrase.findUnique({
+      where: { id },
+      include: {
+        language: true
+      }
+    })
+
+    if (!phrase) {
+      return NextResponse.json(
+        { error: 'Phrase not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      id: phrase.id,
+      text: phrase.text,
+      translation: phrase.translation,
+      totalReadCount: phrase.totalReadCount,
+      dailyReadCount: phrase.dailyReadCount,
+      language: phrase.language
+    })
+
+  } catch (error) {
+    console.error('Error fetching phrase:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

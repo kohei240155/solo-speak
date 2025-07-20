@@ -1,10 +1,21 @@
 import { useState } from 'react'
 import Modal from './Modal'
+import { Language } from '@/types/phrase'
+
+interface SpeakPhrase {
+  id: string
+  text: string
+  translation: string
+  totalReadCount: number
+  dailyReadCount: number
+}
 
 interface SpeakModeModalProps {
   isOpen: boolean
   onClose: () => void
-  onStart: (config: SpeakConfig) => void
+  onStart: (phrase: SpeakPhrase | null) => void
+  languages: Language[]
+  defaultLearningLanguage: string
 }
 
 export interface SpeakConfig {
@@ -12,15 +23,36 @@ export interface SpeakConfig {
   prioritizeLowPractice: boolean
 }
 
-export default function SpeakModeModal({ isOpen, onClose, onStart }: SpeakModeModalProps) {
+export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [prioritizeLowPractice, setPrioritizeLowPractice] = useState(true)
+  const [selectedLanguage, setSelectedLanguage] = useState(defaultLearningLanguage)
 
-  const handleStart = () => {
-    onStart({
-      order,
-      prioritizeLowPractice
-    })
+  const handleStart = async () => {
+    try {
+      // モード設定をクエリパラメータとして含めてGET APIを呼び出し
+      const params = new URLSearchParams({
+        language: selectedLanguage,
+        order: order.replace('-', '_'), // new-to-old → new_to_old
+        prioritizeLowReadCount: prioritizeLowPractice.toString()
+      })
+
+      const response = await fetch(`/api/phrase/speak?${params.toString()}`)
+      const data = await response.json()
+
+      if (data.success && data.phrase) {
+        // フレーズ取得成功時にStartコールバックを実行（フレーズデータを渡す）
+        onStart(data.phrase)
+      } else {
+        console.error('Failed to fetch phrase:', data.message)
+        // エラーでも画面遷移は実行（エラーハンドリング）
+        onStart(null)
+      }
+    } catch (error) {
+      console.error('Error fetching phrase:', error)
+      // エラーでも画面遷移は実行
+      onStart(null)
+    }
     onClose()
   }
 
@@ -29,16 +61,41 @@ export default function SpeakModeModal({ isOpen, onClose, onStart }: SpeakModeMo
       <div className="p-6">
         {/* ヘッダー部分 */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-            Speak Mode
-          </h2>
-        </div>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">          Speak Mode
+        </h2>
+      </div>
 
-        {/* Order セクション */}
-        <div className="mb-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
-            Order
-          </h3>
+      {/* Language セクション */}
+      <div className="mb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">
+          Language
+        </h3>
+        <div className="relative">
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
+            style={{
+              backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 12px center',
+              backgroundSize: '20px'
+            }}
+          >
+            {languages.map((language) => (
+              <option key={language.id} value={language.code}>
+                {language.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Order セクション */}
+      <div className="mb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">
+          Order
+        </h3>
           <div className="relative">
             <select
               value={order}
