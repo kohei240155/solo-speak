@@ -65,7 +65,8 @@ export default function SpeakPractice({
         {/* Speak回数表示 */}
         <div className="flex items-center text-sm text-gray-600 min-w-0">
           <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
-          <span className="break-words">Today: {todayCount} Total: {totalCount}</span>
+          <span className="break-words">Today: {todayCount}</span>
+          <span className="break-words ml-4">Total: {totalCount}</span>
         </div>
       </div>
 
@@ -76,7 +77,7 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onCount}
-              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-1 transition-colors"
+              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none mb-1 transition-colors"
             >
               <CiCirclePlus className="w-10 h-10 text-gray-600" />
             </button>
@@ -100,7 +101,7 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onSound}
-              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-1 transition-colors"
+              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none mb-1 transition-colors"
             >
               <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
             </button>
