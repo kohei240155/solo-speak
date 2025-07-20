@@ -45,9 +45,9 @@ export default function SpeakPractice({
             : 'Loading...'
           }
         </h2>
-        <div className="text-xs text-gray-600 flex items-center max-w-[120px] compact">
+        <div className="text-xs text-gray-600 flex items-center max-w-[100px]">
           <RiSpeakLine className="w-3 h-3 mr-1 flex-shrink-0" />
-          <span className="whitespace-nowrap">Today: {todayCount} Total: {totalCount}</span>
+          <span className="whitespace-nowrap text-xs">Today: {todayCount} Total: {totalCount}</span>
         </div>
       </div>
 
@@ -70,28 +70,28 @@ export default function SpeakPractice({
       <div className="mb-8">
         <div className="flex items-center justify-center">
           {/* Count ボタン */}
-          <div className="flex flex-col items-center mr-4">
+          <div className="flex flex-col items-center mr-3">
             <button
               onClick={onCount}
-              className="w-12 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+              className="w-10 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
-              <CiCirclePlus className="w-6 h-6 text-gray-600" />
+              <CiCirclePlus className="w-5 h-5 text-gray-600" />
             </button>
-            <span className="text-gray-900 font-medium text-sm">Count</span>
+            <span className="text-gray-900 font-medium text-xs">Count</span>
           </div>
 
           {/* 区切り線 */}
-          <div className="w-px h-12 bg-gray-300 mx-4"></div>
+          <div className="w-px h-10 bg-gray-300 mx-3"></div>
 
           {/* Sound ボタン */}
-          <div className="flex flex-col items-center ml-4">
+          <div className="flex flex-col items-center ml-3">
             <button
               onClick={onSound}
-              className="w-12 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+              className="w-10 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
-              <HiMiniSpeakerWave className="w-5 h-5 text-gray-900" />
+              <HiMiniSpeakerWave className="w-4 h-4 text-gray-900" />
             </button>
-            <span className="text-gray-900 font-medium text-sm">Sound</span>
+            <span className="text-gray-900 font-medium text-xs">Sound</span>
           </div>
         </div>
       </div>
