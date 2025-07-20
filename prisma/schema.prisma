@@ -51,6 +51,7 @@ model PhraseLevel {
   id        String    @id @default(cuid())
   name      String
   score     Int
+  color     String?
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -79,8 +80,8 @@ model Phrase {
   quizResults        QuizResult[]
   speakLogs          SpeakLog[]
 
-  @@index([userId, languageId, createdAt(sort: Desc)], name: "idx_phrases_user_language_created")
-  @@index([userId, createdAt(sort: Desc)], name: "idx_phrases_user_created")
+  @@index([userId, languageId, createdAt(sort: Desc)], map: "idx_phrases_user_language_created")
+  @@index([userId, createdAt(sort: Desc)], map: "idx_phrases_user_created")
   @@map("phrases")
 }
 

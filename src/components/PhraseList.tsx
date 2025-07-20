@@ -1,5 +1,5 @@
 import { SavedPhrase } from '@/types/phrase'
-import { getBorderColor } from '@/utils/phrase-utils'
+import { getPhraseLevelColorByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { RiSpeakLine } from 'react-icons/ri'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
@@ -38,7 +38,7 @@ export default function PhraseList({
           key={`${phrase.id}-${index}`} 
           className="pl-4 pr-6 py-6 bg-white shadow-md"
           style={{ 
-            borderLeft: `4px solid ${getBorderColor(phrase.correctAnswers || 0)}`,
+            borderLeft: `4px solid ${getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0)}`,
             borderRadius: '5px'
           }}
         >
