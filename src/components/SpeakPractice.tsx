@@ -71,55 +71,51 @@ export default function SpeakPractice({
 
       {/* Count と Sound ボタン */}
       <div className="mb-6">
-        <div className="flex items-center justify-center">
-          {/* Count ボタン */}
-          <div className="flex flex-col items-center mr-6">
+        <div className="flex justify-between items-start">
+          {/* Count ボタン + Finish ボタン */}
+          <div className="flex flex-col items-center flex-1">
             <button
               onClick={onCount}
               className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
               <CiCirclePlus className="w-10 h-10 text-gray-600" />
             </button>
-            <span className="text-gray-900 font-medium text-sm">Count</span>
+            <span className="text-gray-900 font-medium text-sm mb-4">Count</span>
+            <button
+              onClick={onFinish}
+              className="w-full bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              Finish
+            </button>
           </div>
 
-          {/* 区切り線 */}
+          {/* 区切り線 - 上部に配置 */}
           <div className="w-px h-20 bg-gray-300 mx-6"></div>
 
-          {/* Sound ボタン */}
-          <div className="flex flex-col items-center ml-6">
+          {/* Sound ボタン + Next ボタン */}
+          <div className="flex flex-col items-center flex-1">
             <button
               onClick={onSound}
               className="w-[60px] h-[60px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-2 transition-colors"
             >
               <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
             </button>
-            <span className="text-gray-900 font-medium text-sm">Sound</span>
+            <span className="text-gray-900 font-medium text-sm mb-4">Sound</span>
+            <button
+              onClick={onNext}
+              className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              style={{ 
+                backgroundColor: '#616161'
+              }}
+            >
+              Next
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Finish と Next ボタン - Editと同じレイアウト */}
-      <div className="flex gap-3">
-        <button
-          onClick={onFinish}
-          className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-          style={{ 
-            borderColor: '#616161',
-            color: '#616161'
-          }}
-        >
-          Finish
-        </button>
-        <button
-          onClick={onNext}
-          className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-          style={{ 
-            backgroundColor: '#616161'
-          }}
-        >
-          Next
-        </button>
       </div>
     </>
   )
