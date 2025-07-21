@@ -28,11 +28,16 @@ export default function QuizPractice({
     if (hasAnswered) return
     setHasAnswered(true)
     onAnswer(isCorrect)
-  }
-
-  const handleNext = () => {
-    setHasAnswered(false)
-    onNext()
+    
+    // 1秒後に次の問題に進むか、最後の問題の場合は終了
+    setTimeout(() => {
+      if (isLastQuestion) {
+        onFinish()
+      } else {
+        setHasAnswered(false)
+        onNext()
+      }
+    }, 1000)
   }
 
   const isLastQuestion = session.currentIndex >= session.totalCount - 1
@@ -89,82 +94,49 @@ export default function QuizPractice({
         </div>
       </div>
 
-      {/* Got It / No Idea ボタン - SpeakPracticeのレイアウトに合わせて */}
-      {showTranslation && (
-        <div>
-          <div className="flex justify-between items-start">
-            {/* No Idea ボタン + Finish ボタン */}
-            <div className="flex flex-col items-center" style={{ width: '45%' }}>
-              <button
-                onClick={() => handleAnswer(false)}
-                disabled={hasAnswered}
-                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-8"
-                style={{ 
-                  borderColor: '#616161',
-                  color: '#616161'
-                }}
-              >
-                No Idea
-              </button>
-              <button
-                onClick={onFinish}
-                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                style={{ 
-                  borderColor: '#616161',
-                  color: '#616161'
-                }}
-              >
-                Finish
-              </button>
-            </div>
+      {/* Got It / No Idea ボタン */}
+      <div>
+        <div className="flex justify-center items-start">
+          {/* No Idea ボタン */}
+          <div className="flex flex-col items-center mr-4" style={{ width: '45%' }}>
+            <button
+              onClick={() => handleAnswer(false)}
+              disabled={hasAnswered}
+              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              No Idea
+            </button>
+          </div>
 
-            {/* 区切り線 - 上部に配置 */}
-            <div className="w-px h-20 bg-gray-300 mx-4"></div>
-
-            {/* Got It ボタン + Next ボタン */}
-            <div className="flex flex-col items-center" style={{ width: '45%' }}>
-              <button
-                onClick={() => handleAnswer(true)}
-                disabled={hasAnswered}
-                className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-8"
-                style={{ 
-                  backgroundColor: hasAnswered ? '#9CA3AF' : '#616161'
-                }}
-                onMouseEnter={(e) => {
-                  if (!hasAnswered && e.currentTarget) {
-                    e.currentTarget.style.backgroundColor = '#525252'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!hasAnswered && e.currentTarget) {
-                    e.currentTarget.style.backgroundColor = '#616161'
-                  }
-                }}
-              >
-                Got It
-              </button>
-              
-              {hasAnswered && (
-                <button
-                  onClick={isLastQuestion ? onFinish : handleNext}
-                  className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                  style={{ 
-                    backgroundColor: '#616161'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#525252'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#616161'
-                  }}
-                >
-                  {isLastQuestion ? 'Finish' : 'Next'}
-                </button>
-              )}
-            </div>
+          {/* Got It ボタン */}
+          <div className="flex flex-col items-center" style={{ width: '45%' }}>
+            <button
+              onClick={() => handleAnswer(true)}
+              disabled={hasAnswered}
+              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: hasAnswered ? '#9CA3AF' : '#616161'
+              }}
+              onMouseEnter={(e) => {
+                if (!hasAnswered && e.currentTarget) {
+                  e.currentTarget.style.backgroundColor = '#525252'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!hasAnswered && e.currentTarget) {
+                  e.currentTarget.style.backgroundColor = '#616161'
+                }
+              }}
+            >
+              Got It
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }
