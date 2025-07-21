@@ -11,13 +11,14 @@ interface SpeakPhrase {
 }
 
 interface SpeakPracticeProps {
-  phrase: SpeakPhrase
+  phrase: SpeakPhrase | null
   onCount: () => void
   onSound: () => void
   onNext: () => void
   onFinish: () => void
   todayCount: number
   totalCount: number
+  isLoading?: boolean
 }
 
 export default function SpeakPractice({
@@ -27,8 +28,34 @@ export default function SpeakPractice({
   onNext,
   onFinish,
   todayCount,
-  totalCount
+  totalCount,
+  isLoading = false
 }: SpeakPracticeProps) {
+
+  // ローディング中の表示
+  if (isLoading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+        <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+      </div>
+    )
+  }
+
+  // フレーズが見つからない場合の表示
+  if (!phrase) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600">フレーズが見つかりませんでした</p>
+        <button
+          onClick={onFinish}
+          className="mt-4 px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+        >
+          戻る
+        </button>
+      </div>
+    )
+  }
 
   return (
     <>

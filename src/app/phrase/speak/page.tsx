@@ -426,32 +426,16 @@ export default function PhraseSpeakPage() {
 
           {/* Speak練習コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            {isLoadingPhrase ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-              </div>
-            ) : currentPhrase ? (
-              <SpeakPractice
-                phrase={currentPhrase}
-                onCount={handleCount}
-                onSound={handleSound}
-                onNext={handleNext}
-                onFinish={handleSpeakFinish}
-                todayCount={todayCount}
-                totalCount={totalCount}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600">フレーズが見つかりませんでした</p>
-                <button
-                  onClick={handleSpeakFinish}
-                  className="mt-4 px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                >
-                  戻る
-                </button>
-              </div>
-            )}
+            <SpeakPractice
+              phrase={currentPhrase}
+              onCount={handleCount}
+              onSound={handleSound}
+              onNext={handleNext}
+              onFinish={handleSpeakFinish}
+              todayCount={todayCount}
+              totalCount={totalCount}
+              isLoading={isLoadingPhrase}
+            />
           </div>
         </div>
         <Toaster />

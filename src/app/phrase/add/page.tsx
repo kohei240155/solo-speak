@@ -9,7 +9,6 @@ import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseAdd from '@/components/PhraseAdd'
 import SpeakModeModal from '@/components/SpeakModeModal'
-import { AuthLoading } from '@/components/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
@@ -70,11 +69,6 @@ export default function PhraseAddPage() {
     }
   }, [generatedVariations.length])
 
-  // 認証チェック中またはログインしていない場合は早期リターン
-  if (authLoading || !isAuthenticated) {
-    return <AuthLoading />
-  }
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
@@ -101,27 +95,34 @@ export default function PhraseAddPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <PhraseAdd
-            languages={languages}
-            nativeLanguage={nativeLanguage}
-            remainingGenerations={remainingGenerations}
-            desiredPhrase={desiredPhrase}
-            phraseValidationError={phraseValidationError}
-            isLoading={isLoading}
-            isSaving={isSaving}
-            generatedVariations={generatedVariations}
-            editingVariations={editingVariations}
-            variationValidationErrors={variationValidationErrors}
-            savingVariationIndex={savingVariationIndex}
-            error={error}
-            selectedType={selectedType}
-            onPhraseChange={handlePhraseChange}
-            onGeneratePhrase={handleGeneratePhrase}
-            onEditVariation={handleEditVariation}
-            onSelectVariation={handleSelectVariation}
-            onResetVariations={handleResetVariations}
-            onTypeChange={handleTypeChange}
-          />
+          {authLoading || !isAuthenticated ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <PhraseAdd
+              languages={languages}
+              nativeLanguage={nativeLanguage}
+              remainingGenerations={remainingGenerations}
+              desiredPhrase={desiredPhrase}
+              phraseValidationError={phraseValidationError}
+              isLoading={isLoading}
+              isSaving={isSaving}
+              generatedVariations={generatedVariations}
+              editingVariations={editingVariations}
+              variationValidationErrors={variationValidationErrors}
+              savingVariationIndex={savingVariationIndex}
+              error={error}
+              selectedType={selectedType}
+              onPhraseChange={handlePhraseChange}
+              onGeneratePhrase={handleGeneratePhrase}
+              onEditVariation={handleEditVariation}
+              onSelectVariation={handleSelectVariation}
+              onResetVariations={handleResetVariations}
+              onTypeChange={handleTypeChange}
+            />
+          )}
         </div>
       </div>
       
