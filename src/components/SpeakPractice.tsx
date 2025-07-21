@@ -108,11 +108,13 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onCount}
-              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none mb-1 transition-colors"
+              className="flex flex-col items-center hover:bg-gray-50 focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
-              <CiCirclePlus className="w-10 h-10 text-gray-600" />
+              <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
+                <CiCirclePlus className="w-10 h-10 text-gray-600" />
+              </div>
+              <span className="text-gray-900 font-medium text-base">Count</span>
             </button>
-            <span className="text-gray-900 font-medium text-base mb-8">Count</span>
             {!isHideNext && (
               <button
                 onClick={onFinish}
@@ -134,11 +136,13 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onSound}
-              className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none mb-1 transition-colors"
+              className="flex flex-col items-center hover:bg-gray-50 focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
-              <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
+              <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
+                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
+              </div>
+              <span className="text-gray-900 font-medium text-base">Sound</span>
             </button>
-            <span className="text-gray-900 font-medium text-base mb-8">Sound</span>
             {!isHideNext && (
               <button
                 onClick={onNext}

@@ -69,7 +69,11 @@ export const speakText = async (text: string, languageCode: string): Promise<voi
   }
 
   try {
-    speechSynthesis.cancel() // 既存の音声を停止
+    // 既存の音声を停止（少し待機してから新しい音声を開始）
+    speechSynthesis.cancel()
+    
+    // 短い遅延を追加して、cancelが完了するのを待つ
+    await new Promise(resolve => setTimeout(resolve, 100))
     
     const voices = await initializeVoices()
     const utterance = new SpeechSynthesisUtterance(text)
@@ -92,16 +96,27 @@ export const speakText = async (text: string, languageCode: string): Promise<voi
     utterance.lang = selectedVoice?.lang || languageMap[languageCode]?.[0] || 'en-US'
     
     // エラーハンドリング
-    utterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event.error)
-      toast.error('音声再生中にエラーが発生しました')
-    }
+    return new Promise<void>((resolve, reject) => {
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event.error)
+        
+        // interrupted エラーは正常な動作の一部なので、ユーザーには表示しない
+        if (event.error !== 'interrupted') {
+          toast.error('音声再生中にエラーが発生しました')
+          reject(new Error(event.error))
+        } else {
+          // interrupted の場合は正常終了として扱う
+          resolve()
+        }
+      }
 
-    utterance.onend = () => {
-      console.log('Speech synthesis completed')
-    }
-    
-    speechSynthesis.speak(utterance)
+      utterance.onend = () => {
+        console.log('Speech synthesis completed')
+        resolve()
+      }
+      
+      speechSynthesis.speak(utterance)
+    })
   } catch (error) {
     console.error('Error playing sound:', error)
     toast.error('音声再生に失敗しました')
