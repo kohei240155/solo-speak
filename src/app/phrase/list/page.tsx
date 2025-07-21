@@ -1,11 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseList from '@/components/PhraseList'
+import SpeakModeModal from '@/components/SpeakModeModal'
+import QuizModeModal from '@/components/QuizModeModal'
 import { AuthLoading } from '@/components/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 import { TabType } from '@/types/phrase'
@@ -23,27 +27,41 @@ export default function PhraseListPage() {
     hasMorePhrases,
     phrasePage,
     nativeLanguage,
+    totalPhrases,
     
     // Handlers
     handleLearningLanguageChange,
     fetchSavedPhrases,
   } = usePhraseList()
 
-  const [showSpeakModal, setShowSpeakModal] = useState(false)
+  // Modal functionality
+  const {
+    showSpeakModal,
+    openSpeakModal,
+    closeSpeakModal,
+    handleSpeakStart
+  } = useSpeakModal()
+
+  const {
+    showQuizModal,
+    openQuizModal,
+    closeQuizModal,
+    handleQuizStart
+  } = useQuizModal()
 
   // タブの変更ハンドリング
   const handleTabChange = (tab: TabType) => {
     if (tab === 'Speak') {
       // Speakタブがクリックされた場合はモーダルを表示するだけ
-      setShowSpeakModal(true)
+      openSpeakModal()
+    } else if (tab === 'Quiz') {
+      // Quizタブがクリックされた場合はモーダルを表示するだけ
+      openQuizModal()
     } else {
       // 他のタブの場合は通常の遷移
       switch (tab) {
         case 'Add':
           window.location.href = '/phrase/add'
-          break
-        case 'Quiz':
-          window.location.href = '/phrase/quiz'
           break
         default:
           break
@@ -91,7 +109,8 @@ export default function PhraseListPage() {
         <PhraseTabNavigation 
           activeTab="List" 
           onTabChange={handleTabChange}
-          onSpeakModalOpen={() => setShowSpeakModal(true)}
+          onSpeakModalOpen={openSpeakModal}
+          onQuizModalOpen={openQuizModal}
         />
 
         {/* コンテンツエリア */}
@@ -102,7 +121,13 @@ export default function PhraseListPage() {
           nativeLanguage={nativeLanguage}
           learningLanguage={learningLanguage}
           showSpeakModal={showSpeakModal}
-          onSpeakModalStateChange={setShowSpeakModal}
+          onSpeakModalStateChange={(state: boolean) => {
+            if (state) {
+              openSpeakModal()
+            } else {
+              closeSpeakModal()
+            }
+          }}
           onUpdatePhrase={(phrase) => {
             // TODO: フレーズ更新の実装
             console.log('Update phrase:', phrase)
@@ -113,6 +138,25 @@ export default function PhraseListPage() {
           }}
         />
       </div>
+      
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={showSpeakModal}
+        onClose={closeSpeakModal}
+        onStart={handleSpeakStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
+
+      {/* Quiz Mode モーダル */}
+      <QuizModeModal
+        isOpen={showQuizModal}
+        onClose={closeQuizModal}
+        onStart={handleQuizStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+        availablePhraseCount={totalPhrases}
+      />
       
       {/* Toaster for notifications */}
       <Toaster />

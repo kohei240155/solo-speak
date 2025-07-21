@@ -4,11 +4,13 @@ import { useEffect } from 'react'
 // import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useQuizModal } from '@/hooks/useQuizModal'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseAdd from '@/components/PhraseAdd'
 import SpeakModeModal from '@/components/SpeakModeModal'
+import QuizModeModal from '@/components/QuizModeModal'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
@@ -34,6 +36,7 @@ export default function PhraseAddPage() {
     editingVariations,
     phraseValidationError,
     variationValidationErrors,
+    totalPhrases,
     
     // Handlers
     handleEditVariation,
@@ -45,13 +48,20 @@ export default function PhraseAddPage() {
     checkUnsavedChanges
   } = usePhraseManager()
 
-  // Speak modal functionality
+  // Modal functionality
   const {
     showSpeakModal,
     openSpeakModal,
     closeSpeakModal,
     handleSpeakStart
   } = useSpeakModal()
+
+  const {
+    showQuizModal,
+    openQuizModal,
+    closeQuizModal,
+    handleQuizStart
+  } = useQuizModal()
 
   // ページ離脱時の警告処理をオーバーライド
   useEffect(() => {
@@ -91,6 +101,7 @@ export default function PhraseAddPage() {
           activeTab="Add" 
           checkUnsavedChanges={checkUnsavedChanges}
           onSpeakModalOpen={openSpeakModal}
+          onQuizModalOpen={openQuizModal}
         />
 
         {/* コンテンツエリア */}
@@ -133,6 +144,16 @@ export default function PhraseAddPage() {
         onStart={handleSpeakStart}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
+      />
+
+      {/* Quiz Mode モーダル */}
+      <QuizModeModal
+        isOpen={showQuizModal}
+        onClose={closeQuizModal}
+        onStart={handleQuizStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+        availablePhraseCount={totalPhrases}
       />
       
       {/* Toaster for notifications */}

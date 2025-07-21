@@ -66,11 +66,9 @@ export default function PhraseList({
     setOpenMenuId(null)
   }
 
-  const handleSpeak = () => {
-    setShowSpeakModal(true)
-    if (onSpeakModalStateChange) {
-      onSpeakModalStateChange(true)
-    }
+  const handleSpeak = (phraseId: string) => {
+    // 特定のフレーズを練習するために、そのフレーズIDをパラメータとして遷移
+    router.push(`/phrase/speak?phraseId=${phraseId}`)
     setOpenMenuId(null)
   }
 
@@ -249,7 +247,7 @@ export default function PhraseList({
                       Edit
                     </button>
                     <button
-                      onClick={() => handleSpeak()}
+                      onClick={() => handleSpeak(phrase.id)}
                       className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
                       <RiSpeakLine className="w-3 h-3" />

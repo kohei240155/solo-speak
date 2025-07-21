@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 // Google画像プロキシ（CORS回避用）
 export async function GET(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const { searchParams } = new URL(request.url)
     const imageUrl = searchParams.get('url')
     

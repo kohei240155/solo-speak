@@ -41,6 +41,10 @@ const nextConfig: NextConfig = {
       },
     ],
     domains: ['localhost'],
+    // 画像キャッシュ設定を追加
+    minimumCacheTTL: 60, // 1分間のキャッシュ
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 };
 
