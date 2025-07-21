@@ -27,6 +27,12 @@ export const usePhraseList = () => {
   }, [])
 
   const fetchLanguages = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      console.log('User not logged in, skipping language fetch in usePhraseList')
+      return
+    }
+
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/languages', {
@@ -36,15 +42,27 @@ export const usePhraseList = () => {
       if (response.ok) {
         const data = await response.json()
         setLanguages(data)
+      } else {
+        console.error('Failed to fetch languages:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error('Error fetching languages:', error)
+      console.error('Error fetching languages in usePhraseList:', error)
+      setLanguages([])
     }
-  }, [getAuthHeaders])
+  }, [getAuthHeaders, user])
 
   const fetchUserSettings = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      return
+    }
+
     try {
-      const response = await fetch('/api/user/settings')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers
+      })
       if (response.ok) {
         const userData = await response.json()
         // 初期化時のみユーザー設定を適用
@@ -61,7 +79,7 @@ export const usePhraseList = () => {
     } catch (error) {
       console.error('Error fetching user settings:', error)
     }
-  }, [userSettingsInitialized])
+  }, [userSettingsInitialized, user, getAuthHeaders])
 
   const fetchSavedPhrases = useCallback(async (page = 1, append = false) => {
     if (!user) return
@@ -112,8 +130,11 @@ export const usePhraseList = () => {
 
   // 初期データ取得
   useEffect(() => {
-    fetchLanguages()
-  }, [fetchLanguages])
+    // ユーザーがログインしている場合のみ言語データを取得
+    if (user) {
+      fetchLanguages()
+    }
+  }, [fetchLanguages, user])
 
   useEffect(() => {
     if (user) {

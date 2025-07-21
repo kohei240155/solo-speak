@@ -14,6 +14,7 @@ export const usePhraseSettings = () => {
   const getAuthHeaders = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session?.access_token) {
+      console.warn('No authentication token available in usePhraseSettings')
       throw new Error('No authentication token available')
     }
     return {
@@ -23,6 +24,12 @@ export const usePhraseSettings = () => {
   }, [])
 
   const fetchLanguages = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      console.log('User not logged in, skipping language fetch in usePhraseSettings')
+      return
+    }
+
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/languages', {
@@ -32,15 +39,28 @@ export const usePhraseSettings = () => {
       if (response.ok) {
         const data = await response.json()
         setLanguages(data)
+      } else {
+        console.error('Failed to fetch languages:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error('Error fetching languages:', error)
+      console.error('Error fetching languages in usePhraseSettings:', error)
+      // 認証エラーの場合は言語リストを空にする
+      setLanguages([])
     }
-  }, [getAuthHeaders])
+  }, [getAuthHeaders, user])
 
   const fetchUserSettings = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      return
+    }
+
     try {
-      const response = await fetch('/api/user/settings')
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/user/settings', {
+        method: 'GET',
+        headers
+      })
       if (response.ok) {
         const userData = await response.json()
         // 初期化時のみユーザー設定を適用
@@ -57,7 +77,7 @@ export const usePhraseSettings = () => {
     } catch (error) {
       console.error('Error fetching user settings:', error)
     }
-  }, [userSettingsInitialized])
+  }, [userSettingsInitialized, user, getAuthHeaders])
 
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {
@@ -67,8 +87,11 @@ export const usePhraseSettings = () => {
 
   // 初期データ取得
   useEffect(() => {
-    fetchLanguages()
-  }, [fetchLanguages])
+    // ユーザーがログインしている場合のみ言語データを取得
+    if (user) {
+      fetchLanguages()
+    }
+  }, [fetchLanguages, user])
 
   useEffect(() => {
     if (user) {

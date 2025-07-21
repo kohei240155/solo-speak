@@ -5,9 +5,10 @@ interface PhraseTabNavigationProps {
   activeTab: TabType
   onTabChange?: (tab: TabType) => void // Optional for backward compatibility
   checkUnsavedChanges?: () => boolean // Optional function to check for unsaved changes
+  onSpeakModalOpen?: () => void // Speak modal open handler
 }
 
-export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges }: PhraseTabNavigationProps) {
+export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen }: PhraseTabNavigationProps) {
   const router = useRouter()
 
   const tabs: { key: TabType; label: string; path: string }[] = [
@@ -18,11 +19,26 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
   ]
 
   const handleTabClick = (tab: { key: TabType; label: string; path: string }) => {
+    // アクティブなタブがクリックされた場合は何もしない
+    if (activeTab === tab.key) {
+      return
+    }
+
     // 未保存の変更チェック（Addタブから離脱する場合）
     if (activeTab === 'Add' && tab.key !== 'Add' && checkUnsavedChanges) {
       if (!checkUnsavedChanges()) {
         return // ユーザーがキャンセルした場合は何もしない
       }
+    }
+
+    // Speakタブの場合は常にモーダルを表示（ページ遷移はしない）
+    if (tab.key === 'Speak') {
+      if (onSpeakModalOpen) {
+        onSpeakModalOpen()
+      }
+      // onSpeakModalOpenがない場合でも、ページ遷移はしない
+      // モーダルが必須なので、何もしない
+      return
     }
 
     // カスタムのonTabChangeがある場合は優先（backward compatibility）
@@ -47,7 +63,9 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
           } ${
             index > 0 ? 'border-l-0' : ''
           } ${
-            activeTab === tab.key ? 'bg-gray-200 text-gray-700 font-bold' : 'bg-white text-gray-700 font-normal'
+            activeTab === tab.key 
+              ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
+              : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
           }`}
         >
           {tab.label}

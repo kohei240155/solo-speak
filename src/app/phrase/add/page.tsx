@@ -3,12 +3,18 @@
 import { useEffect } from 'react'
 // import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
+import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseAdd from '@/components/PhraseAdd'
+import SpeakModeModal from '@/components/SpeakModeModal'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
+  // 認証ガード - ログインしていない場合はホームページにリダイレクト
+  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
+  
   // const router = useRouter() // 現在未使用
   
   const {
@@ -38,6 +44,14 @@ export default function PhraseAddPage() {
     handleTypeChange,
     checkUnsavedChanges
   } = usePhraseManager()
+
+  // Speak modal functionality
+  const {
+    showSpeakModal,
+    openSpeakModal,
+    closeSpeakModal,
+    handleSpeakStart
+  } = useSpeakModal()
 
   // ページ離脱時の警告処理をオーバーライド
   useEffect(() => {
@@ -76,33 +90,50 @@ export default function PhraseAddPage() {
         <PhraseTabNavigation 
           activeTab="Add" 
           checkUnsavedChanges={checkUnsavedChanges}
+          onSpeakModalOpen={openSpeakModal}
         />
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <PhraseAdd
-            languages={languages}
-            nativeLanguage={nativeLanguage}
-            remainingGenerations={remainingGenerations}
-            desiredPhrase={desiredPhrase}
-            phraseValidationError={phraseValidationError}
-            isLoading={isLoading}
-            isSaving={isSaving}
-            generatedVariations={generatedVariations}
-            editingVariations={editingVariations}
-            variationValidationErrors={variationValidationErrors}
-            savingVariationIndex={savingVariationIndex}
-            error={error}
-            selectedType={selectedType}
-            onPhraseChange={handlePhraseChange}
-            onGeneratePhrase={handleGeneratePhrase}
-            onEditVariation={handleEditVariation}
-            onSelectVariation={handleSelectVariation}
-            onResetVariations={handleResetVariations}
-            onTypeChange={handleTypeChange}
-          />
+          {authLoading || !isAuthenticated ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading...</p>
+            </div>
+          ) : (
+            <PhraseAdd
+              languages={languages}
+              nativeLanguage={nativeLanguage}
+              remainingGenerations={remainingGenerations}
+              desiredPhrase={desiredPhrase}
+              phraseValidationError={phraseValidationError}
+              isLoading={isLoading}
+              isSaving={isSaving}
+              generatedVariations={generatedVariations}
+              editingVariations={editingVariations}
+              variationValidationErrors={variationValidationErrors}
+              savingVariationIndex={savingVariationIndex}
+              error={error}
+              selectedType={selectedType}
+              onPhraseChange={handlePhraseChange}
+              onGeneratePhrase={handleGeneratePhrase}
+              onEditVariation={handleEditVariation}
+              onSelectVariation={handleSelectVariation}
+              onResetVariations={handleResetVariations}
+              onTypeChange={handleTypeChange}
+            />
+          )}
         </div>
       </div>
+      
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={showSpeakModal}
+        onClose={closeSpeakModal}
+        onStart={handleSpeakStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
       
       {/* Toaster for notifications */}
       <Toaster />

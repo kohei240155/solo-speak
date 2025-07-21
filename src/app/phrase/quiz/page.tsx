@@ -2,15 +2,35 @@
 
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
+import SpeakModeModal from '@/components/SpeakModeModal'
+import { AuthLoading } from '@/components/AuthLoading'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
+import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 
 export default function PhraseQuizPage() {
+  // 認証ガード - ログインしていない場合はホームページにリダイレクト
+  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
+  
   const {
     learningLanguage,
     handleLearningLanguageChange,
     languages,
     nativeLanguage,
   } = usePhraseSettings()
+
+  // Speak modal functionality
+  const {
+    showSpeakModal,
+    openSpeakModal,
+    closeSpeakModal,
+    handleSpeakStart
+  } = useSpeakModal()
+
+  // 認証チェック中またはログインしていない場合は早期リターン
+  if (authLoading || !isAuthenticated) {
+    return <AuthLoading />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
@@ -30,7 +50,10 @@ export default function PhraseQuizPage() {
         </div>
         
         {/* タブメニュー */}
-        <PhraseTabNavigation activeTab="Quiz" />
+        <PhraseTabNavigation 
+          activeTab="Quiz" 
+          onSpeakModalOpen={openSpeakModal}
+        />
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -39,6 +62,15 @@ export default function PhraseQuizPage() {
           </div>
         </div>
       </div>
+      
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={showSpeakModal}
+        onClose={closeSpeakModal}
+        onStart={handleSpeakStart}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
     </div>
   )
 }

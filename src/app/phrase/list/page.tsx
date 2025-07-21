@@ -1,13 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePhraseList } from '@/hooks/usePhraseList'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/LanguageSelector'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import PhraseList from '@/components/PhraseList'
+import { AuthLoading } from '@/components/AuthLoading'
 import { Toaster } from 'react-hot-toast'
+import { TabType } from '@/types/phrase'
 
 export default function PhraseListPage() {
+  // 認証ガード - ログインしていない場合はホームページにリダイレクト
+  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
+  
   const {
     // State
     learningLanguage,
@@ -23,6 +29,28 @@ export default function PhraseListPage() {
     fetchSavedPhrases,
   } = usePhraseList()
 
+  const [showSpeakModal, setShowSpeakModal] = useState(false)
+
+  // タブの変更ハンドリング
+  const handleTabChange = (tab: TabType) => {
+    if (tab === 'Speak') {
+      // Speakタブがクリックされた場合はモーダルを表示するだけ
+      setShowSpeakModal(true)
+    } else {
+      // 他のタブの場合は通常の遷移
+      switch (tab) {
+        case 'Add':
+          window.location.href = '/phrase/add'
+          break
+        case 'Quiz':
+          window.location.href = '/phrase/quiz'
+          break
+        default:
+          break
+      }
+    }
+  }
+
   // 無限スクロール機能
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +64,11 @@ export default function PhraseListPage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
+
+  // 認証チェック中またはログインしていない場合は早期リターン
+  if (authLoading || !isAuthenticated) {
+    return <AuthLoading />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
@@ -55,7 +88,11 @@ export default function PhraseListPage() {
         </div>
         
         {/* タブメニュー */}
-        <PhraseTabNavigation activeTab="List" />
+        <PhraseTabNavigation 
+          activeTab="List" 
+          onTabChange={handleTabChange}
+          onSpeakModalOpen={() => setShowSpeakModal(true)}
+        />
 
         {/* コンテンツエリア */}
         <PhraseList
@@ -63,13 +100,12 @@ export default function PhraseListPage() {
           isLoadingPhrases={isLoadingPhrases}
           languages={languages}
           nativeLanguage={nativeLanguage}
+          learningLanguage={learningLanguage}
+          showSpeakModal={showSpeakModal}
+          onSpeakModalStateChange={setShowSpeakModal}
           onUpdatePhrase={(phrase) => {
             // TODO: フレーズ更新の実装
             console.log('Update phrase:', phrase)
-          }}
-          onSpeakPhrase={(phrase) => {
-            // TODO: フレーズ音声再生の実装
-            console.log('Speak phrase:', phrase)
           }}
           onRefreshPhrases={() => {
             // リストを最初のページから再取得
