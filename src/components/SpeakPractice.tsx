@@ -98,8 +98,8 @@ export default function SpeakPractice({
         {/* Speak回数表示 */}
         <div className="flex items-center text-sm text-gray-600 min-w-0">
           <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
-          <span className="break-words">Today: {todayCount}</span>
-          <span className="break-words ml-4">Total: {totalCount}</span>
+          <span className={`break-words ${todayCount >= 10 ? 'font-bold' : ''}`}>Today: {todayCount}</span>
+          <span className={`break-words ml-4 ${totalCount >= 50 ? 'font-bold' : ''}`}>Total: {totalCount}</span>
         </div>
       </div>
 
