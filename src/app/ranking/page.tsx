@@ -120,10 +120,6 @@ export default function RankingPage() {
     }
   }, [user, selectedDate, fetchRanking])
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value)
-  }
-
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode)
   }
@@ -179,23 +175,6 @@ export default function RankingPage() {
 
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            {/* 日付選択 */}
-            {activeTab === 'Daily' && (
-              <div className="flex items-center gap-2 mb-6">
-                <label htmlFor="date" className="text-sm font-medium text-gray-700">
-                  日付:
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  max={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            )}
-
             {/* 自分の順位表示 */}
             {currentUserRank && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
