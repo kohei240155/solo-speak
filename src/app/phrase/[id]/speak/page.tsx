@@ -4,14 +4,12 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
-import QuizModeModal from '@/components/QuizModeModal'
 import { Language } from '@/types/phrase'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/utils/spabase'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
-import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 
@@ -48,24 +46,6 @@ export default function SpeakPage() {
     closeSpeakModal,
     handleSpeakStart
   } = useSpeakModal()
-
-  // Quiz modal state
-  const [showQuizModal, setShowQuizModal] = useState(false)
-
-  // Quiz modal handlers
-  const openQuizModal = () => {
-    setShowQuizModal(true)
-  }
-
-  const closeQuizModal = () => {
-    setShowQuizModal(false)
-  }
-
-  const handleQuizStart = (config: QuizConfig) => {
-    setShowQuizModal(false)
-    // Quizページに遷移
-    router.push('/phrase/quiz')
-  }
 
   const languageId = params.id as string
 

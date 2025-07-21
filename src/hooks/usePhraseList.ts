@@ -12,6 +12,7 @@ export const usePhraseList = () => {
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
   const [nativeLanguage, setNativeLanguage] = useState('ja')
+  const [totalPhrases, setTotalPhrases] = useState(0)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // 認証ヘッダーを取得するヘルパー関数
@@ -111,6 +112,7 @@ export const usePhraseList = () => {
         
         setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
         setPhrasePage(page)
+        setTotalPhrases(data.pagination?.total || 0)
       }
     } catch (error) {
       console.error('Error fetching saved phrases:', error)
@@ -159,6 +161,7 @@ export const usePhraseList = () => {
     hasMorePhrases,
     phrasePage,
     nativeLanguage,
+    totalPhrases,
     
     // Handlers
     handleLearningLanguageChange,

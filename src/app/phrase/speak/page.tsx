@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import QuizModeModal from '@/components/QuizModeModal'
@@ -28,7 +29,7 @@ interface SpeakPhrase {
   dailyReadCount: number
 }
 
-export default function PhraseSpeakPage() {
+function PhraseSpeakPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, loading } = useAuth()
@@ -304,4 +305,6 @@ export default function PhraseSpeakPage() {
     </AuthGuard>
   )
 }
+
+export default dynamic(() => Promise.resolve(PhraseSpeakPage), { ssr: false })
 

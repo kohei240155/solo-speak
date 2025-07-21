@@ -36,6 +36,7 @@ export default function PhraseAddPage() {
     editingVariations,
     phraseValidationError,
     variationValidationErrors,
+    totalPhrases,
     
     // Handlers
     handleEditVariation,
@@ -152,6 +153,7 @@ export default function PhraseAddPage() {
         onStart={handleQuizStart}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
+        availablePhraseCount={totalPhrases}
       />
       
       {/* Toaster for notifications */}

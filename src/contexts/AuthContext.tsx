@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { supabase } from '@/utils/spabase'
 
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // その後でAPIから正式な設定を取得
       refreshUserSettings()
     }
-  }, [user?.id, session, loading])
+  }, [user?.id, session, loading, user?.user_metadata?.avatar_url, user?.user_metadata?.picture]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
     }
-  }, [user?.id, session])
+  }, [user?.id, session]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const signOut = async () => {
     // ローカル状態をクリア
@@ -137,7 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const refreshUserSettings = async () => {
+  const refreshUserSettings = useCallback(async () => {
     if (!user?.id || !session) {
       setIsUserSetupComplete(false)
       setUserIconUrl(null)
@@ -163,7 +163,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
           setUserIconUrl(prev => {
-            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
             if (prev && (prev.includes('googleusercontent.com') || 
                         prev.includes('googleapis.com') || 
                         prev.includes('google.com'))) {
@@ -194,7 +193,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsUserSetupComplete(false)
       // エラー時は現在のアイコンを保持
       setUserIconUrl(prev => {
-        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
         if (prev && (prev.includes('googleusercontent.com') || 
                     prev.includes('googleapis.com') || 
                     prev.includes('google.com'))) {
@@ -203,7 +201,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return null
       })
     }
-  }
+  }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
   const refreshUser = async () => {
     try {

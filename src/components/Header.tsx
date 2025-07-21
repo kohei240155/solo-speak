@@ -7,7 +7,7 @@ import Link from 'next/link'
 import LoginModal from './LoginModal'
 
 const Header = memo(function Header() {
-  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, loading } = useAuth()
+  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)

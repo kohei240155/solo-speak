@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 interface EnvironmentInfo {
@@ -13,8 +15,11 @@ interface EnvironmentInfo {
 }
 
 export default function DebugPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const [envInfo, setEnvInfo] = useState<EnvironmentInfo>({})
 
+  // 環境変数情報の取得
   useEffect(() => {
     const info: EnvironmentInfo = {
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -26,6 +31,30 @@ export default function DebugPage() {
     }
     setEnvInfo(info)
   }, [])
+
+  // 認証チェック: ログインしていない場合はホームページにリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
+
+  // ローディング中の表示
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // 認証されていない場合は何も表示しない（リダイレクト処理中）
+  if (!user) {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

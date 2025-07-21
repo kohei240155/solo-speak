@@ -23,6 +23,7 @@ export const usePhraseManager = () => {
   const [isLoadingPhrases, setIsLoadingPhrases] = useState(true)
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
+  const [totalPhrases, setTotalPhrases] = useState(0)
   
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
@@ -133,6 +134,7 @@ export const usePhraseManager = () => {
         
         setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
         setPhrasePage(page)
+        setTotalPhrases(data.pagination?.total || 0)
       }
     } catch (error) {
       console.error('Error fetching saved phrases:', error)
@@ -383,6 +385,7 @@ export const usePhraseManager = () => {
     isLoadingPhrases,
     hasMorePhrases,
     phrasePage,
+    totalPhrases,
     phraseValidationError,
     variationValidationErrors,
     
