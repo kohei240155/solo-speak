@@ -99,8 +99,16 @@ export async function GET(request: NextRequest) {
     let selectedPhrases
 
     if (mode === 'random') {
-      // ランダムモード：ランダムに選択
-      const shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5)
+      // ランダムモード：Fisher-Yates シャッフルを使用して確実にランダム化
+      const shuffledPhrases = [...phrases]
+      
+      // Fisher-Yates シャッフルアルゴリズム
+      for (let i = shuffledPhrases.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledPhrases[i], shuffledPhrases[j]] = [shuffledPhrases[j], shuffledPhrases[i]]
+      }
+      
+      // 重複なしで必要な数だけ選択
       selectedPhrases = shuffledPhrases.slice(0, actualQuestionCount)
     } else {
       // ノーマルモード：優先度に基づいて選択
