@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import QuizModeModal from '@/components/QuizModeModal'
 import QuizPractice from '@/components/QuizPractice'
+import QuizComplete from '@/components/QuizComplete'
 import AuthGuard from '@/components/AuthGuard'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
@@ -21,10 +22,13 @@ export default function PhraseQuizPage() {
   const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
-  const searchParams = useSearchParams()
+  const router = useRouter()
 
   // ユーザー設定の状態
   const [userSettings, setUserSettings] = useState<{ defaultQuizCount: number } | null>(null)
+  
+  // クイズ完了状態
+  const [isQuizCompleted, setIsQuizCompleted] = useState(false)
 
   // Quiz functionality
   const {
@@ -91,12 +95,11 @@ export default function PhraseQuizPage() {
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
-    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active) {
+    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !isQuizCompleted) {
       // URLパラメータがある場合は自動開始（モーダルは開かない）
       const params = new URLSearchParams(window.location.search)
       const language = params.get('language')
       const mode = params.get('mode')
-      const count = params.get('count')
       
       if (language && mode && (mode === 'normal' || mode === 'random')) {
         // URLパラメータから自動開始（useQuizModeで処理される）
@@ -109,7 +112,7 @@ export default function PhraseQuizPage() {
         setShowQuizModal(true)
       }
     }
-  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal])
+  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal, isQuizCompleted])
 
   // URLパラメータからの自動開始処理（削除）
   // useEffect(() => {
@@ -142,8 +145,20 @@ export default function PhraseQuizPage() {
 
   // クイズ終了処理
   const handleQuizFinishComplete = () => {
+    setIsQuizCompleted(true)
+  }
+
+  // 完了画面からのFinish処理
+  const handleFinish = () => {
+    router.push('/phrase/list')
+  }
+
+  // 完了画面からのRetry処理
+  const handleRetry = () => {
+    setIsQuizCompleted(false)
     resetQuiz()
     handleQuizFinish()
+    setShowQuizModal(true)
   }
 
   // デバッグログ
@@ -174,7 +189,12 @@ export default function PhraseQuizPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {quizMode.active && quizMode.config && currentPhrase && session ? (
+          {isQuizCompleted ? (
+            <QuizComplete 
+              onFinish={handleFinish}
+              onRetry={handleRetry}
+            />
+          ) : quizMode.active && quizMode.config && currentPhrase && session ? (
             <QuizPractice
               session={session}
               currentPhrase={currentPhrase}
