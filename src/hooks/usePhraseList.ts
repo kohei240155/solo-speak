@@ -100,14 +100,11 @@ export const usePhraseList = () => {
           setSavedPhrases(prev => {
             const existingIds = new Set(prev.map(p => p.id))
             const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
-            return [...prev, ...newPhrases]
+            return newPhrases.length > 0 ? [...prev, ...newPhrases] : prev
           })
         } else {
-          // 初回読み込み時も重複を除去
-          const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
-            self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
-          )
-          setSavedPhrases(uniquePhrases)
+          // 初回読み込み時は重複除去処理を簡略化
+          setSavedPhrases(phrases)
         }
         
         setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
