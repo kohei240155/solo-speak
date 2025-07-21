@@ -77,14 +77,8 @@ export default function QuizPractice({
               </div>
             </div>
           ) : (
-            <div 
-              className="mb-3 cursor-pointer hover:bg-gray-50 rounded p-2 transition-colors"
-              onClick={onShowTranslation}
-            >
-              <div className="flex items-center justify-center text-gray-400">
-                <PiHandTapLight className="w-6 h-6 mr-2" />
-                <span className="text-sm">Tap to see translation</span>
-              </div>
+            <div className="mb-3">
+              {/* 翻訳が表示されていない時は空のスペース */}
             </div>
           )}
           
@@ -103,7 +97,12 @@ export default function QuizPractice({
 
       {/* 中央のアイコン表示エリア */}
       <div className="flex justify-center items-center mb-20">
-        <PiHandTapLight className="w-12 h-12 text-gray-400" />
+        <div 
+          className="cursor-pointer hover:bg-gray-50 rounded-full p-4 transition-colors"
+          onClick={onShowTranslation}
+        >
+          <PiHandTapLight className="w-12 h-12 text-gray-400" />
+        </div>
       </div>
 
       {/* Got It / No Idea ボタン */}
