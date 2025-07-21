@@ -56,9 +56,9 @@ export default function QuizPractice({
       {/* フレーズ表示エリア */}
       <div className="mb-4">
         {/* 母国語の翻訳（メイン表示） */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div 
-            className="text-xl font-medium text-gray-900 break-words leading-relaxed"
+            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
             style={{ 
               wordWrap: 'break-word',
               overflowWrap: 'anywhere',
@@ -69,10 +69,10 @@ export default function QuizPractice({
           </div>
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
-        <div className="mb-3 min-h-[3rem] flex items-start">
+        <div className="mb-2 min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[6rem] flex items-start">
           {showTranslation ? (
             <div 
-              className="text-lg text-gray-600 break-words w-full leading-relaxed"
+              className="text-sm sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium"
               style={{ 
                 wordWrap: 'break-word',
                 overflowWrap: 'anywhere',
