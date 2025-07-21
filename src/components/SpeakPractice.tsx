@@ -6,8 +6,8 @@ interface SpeakPhrase {
   id: string
   text: string
   translation: string
-  totalReadCount: number
-  dailyReadCount: number
+  totalSpeakCount: number
+  dailySpeakCount: number
 }
 
 interface SpeakPracticeProps {

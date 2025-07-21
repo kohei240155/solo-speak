@@ -25,8 +25,8 @@ interface SpeakPhrase {
   id: string
   text: string
   translation: string
-  totalReadCount: number
-  dailyReadCount: number
+  totalSpeakCount: number
+  dailySpeakCount: number
 }
 
 function PhraseSpeakPage() {
@@ -101,8 +101,8 @@ function PhraseSpeakPage() {
       
       if (data.success) {
         setSinglePhrase(data.phrase)
-        setSinglePhraseTodayCount(data.phrase.dailyReadCount || 0)
-        setSinglePhraseTotalCount(data.phrase.totalReadCount || 0)
+        setSinglePhraseTodayCount(data.phrase.dailySpeakCount || 0)
+        setSinglePhraseTotalCount(data.phrase.totalSpeakCount || 0)
         setSinglePhrasePendingCount(0) // ペンディングカウントを初期化
       } else {
         toast.error('フレーズが見つかりませんでした')
@@ -140,8 +140,8 @@ function PhraseSpeakPage() {
     // フレーズの表示カウントも更新
     setSinglePhrase(prev => prev ? {
       ...prev,
-      dailyReadCount: prev.dailyReadCount + 1,
-      totalReadCount: prev.totalReadCount + 1
+      dailySpeakCount: prev.dailySpeakCount + 1,
+      totalSpeakCount: prev.totalSpeakCount + 1
     } : null)
   }
 

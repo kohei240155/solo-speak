@@ -17,8 +17,8 @@ interface SpeakPhrase {
   id: string
   text: string
   translation: string
-  totalReadCount: number
-  dailyReadCount: number
+  totalSpeakCount: number
+  dailySpeakCount: number
 }
 
 export default function SpeakPage() {
@@ -144,8 +144,8 @@ export default function SpeakPage() {
               id: data.id,
               text: data.text,
               translation: data.translation,
-              totalReadCount: data.totalReadCount || 0,
-              dailyReadCount: data.dailyReadCount || 0
+              totalSpeakCount: data.totalSpeakCount || 0,
+              dailySpeakCount: data.dailySpeakCount || 0
             })
           } else {
             setError('フレーズが見つかりませんでした')
@@ -195,8 +195,8 @@ export default function SpeakPage() {
         // カウント更新成功（トーストは表示しない）
         setPhrase(prev => prev ? {
           ...prev,
-          totalReadCount: prev.totalReadCount + 1,
-          dailyReadCount: prev.dailyReadCount + 1
+          totalSpeakCount: prev.totalSpeakCount + 1,
+          dailySpeakCount: prev.dailySpeakCount + 1
         } : null)
       }
     } catch (error) {
@@ -408,7 +408,7 @@ export default function SpeakPage() {
           {/* 音読回数表示 */}
           <div className="mb-4 flex items-center text-sm text-gray-600 md:mb-6 md:text-base">
             <HiMiniSpeakerWave className="w-4 h-4 mr-1 md:w-5 md:h-5 md:mr-2" />
-            Today: {phrase.dailyReadCount}  Total: {phrase.totalReadCount}
+            Today: {phrase.dailySpeakCount}  Total: {phrase.totalSpeakCount}
           </div>
 
           {/* Count と Sound ボタン */}

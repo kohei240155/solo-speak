@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       text: phrase.text,
       translation: phrase.translation,
       createdAt: phrase.createdAt,
-      practiceCount: phrase.totalReadCount,
+      practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
         name: phrase.language.name,
@@ -255,7 +255,7 @@ export async function GET(request: NextRequest) {
       text: phrase.text,
       translation: phrase.translation,
       createdAt: phrase.createdAt,
-      practiceCount: phrase.totalReadCount,
+      practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
         name: phrase.language.name,

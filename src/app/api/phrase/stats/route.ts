@@ -43,8 +43,8 @@ export async function PATCH(request: NextRequest) {
     // アクションに応じて統計を更新
     type UpdateData = {
       updatedAt: Date
-      totalReadCount?: number
-      dailyReadCount?: number
+      totalSpeakCount?: number
+      dailySpeakCount?: number
       correctQuizCount?: number
       incorrectQuizCount?: number
       phraseLevelId?: string
@@ -58,8 +58,8 @@ export async function PATCH(request: NextRequest) {
       case 'practice':
         updateData = {
           ...updateData,
-          totalReadCount: phrase.totalReadCount + 1,
-          dailyReadCount: phrase.dailyReadCount + 1,
+          totalSpeakCount: phrase.totalSpeakCount + 1,
+          dailySpeakCount: phrase.dailySpeakCount + 1,
         }
         break
 
@@ -128,7 +128,7 @@ export async function PATCH(request: NextRequest) {
       text: updatedPhrase.text,
       translation: updatedPhrase.translation,
       createdAt: updatedPhrase.createdAt,
-      practiceCount: updatedPhrase.totalReadCount,
+      practiceCount: updatedPhrase.totalSpeakCount,
       correctAnswers: updatedPhrase.correctQuizCount,
       language: {
         name: updatedPhrase.language.name,

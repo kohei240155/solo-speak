@@ -21,8 +21,8 @@ model User {
   defaultQuizCount           Int       @default(10) @map("default_quiz_count")
   stripeCustomerId           String?   @map("stripe_customer_id")
   remainingPhraseGenerations Int       @default(100) @map("remaining_phrase_generations")
-  consecutiveReadingDays     Int       @default(0) @map("consecutive_reading_days")
-  lastReadingDate            DateTime? @map("last_reading_date")
+  consecutiveSpeakingDays   Int       @default(0) @map("consecutive_speaking_days")
+  lastSpeakingDate          DateTime? @map("last_speaking_date")
   createdAt                  DateTime  @default(now()) @map("created_at")
   updatedAt                  DateTime  @updatedAt @map("updated_at")
   deletedAt                  DateTime? @map("deleted_at")
@@ -66,8 +66,9 @@ model Phrase {
   languageId         String       @map("language_id")
   text               String
   translation        String
-  totalReadCount     Int          @default(0) @map("total_read_count")
-  dailyReadCount     Int          @default(0) @map("daily_read_count")
+  totalSpeakCount    Int          @default(0) @map("total_speak_count")
+  dailySpeakCount    Int          @default(0) @map("daily_speak_count")
+  lastSpeakDate      DateTime?    @map("last_speak_date")
   correctQuizCount   Int          @default(0) @map("correct_quiz_count")
   incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")
   phraseLevelId      String       @map("phrase_level_id")

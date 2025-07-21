@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { isDayChanged } from '@/utils/date-helpers'
 
 export async function POST(
   request: NextRequest,
@@ -41,16 +42,23 @@ export async function POST(
       )
     }
 
+    const currentDate = new Date()
+    const isDayChangedFlag = isDayChanged(existingPhrase.lastSpeakDate, currentDate)
+
+    // 日付が変わった場合は dailySpeakCount をリセット
+    const dailyCountUpdate = isDayChangedFlag 
+      ? countIncrement  // 新しい日なのでカウントをリセットして追加
+      : { increment: countIncrement }  // 同じ日なので追加
+
     // 音読回数を更新（指定された数だけ増加）
     const updatedPhrase = await prisma.phrase.update({
       where: { id: phraseId },
       data: {
-        totalReadCount: {
+        totalSpeakCount: {
           increment: countIncrement
         },
-        dailyReadCount: {
-          increment: countIncrement
-        }
+        dailySpeakCount: dailyCountUpdate,
+        lastSpeakDate: currentDate
       },
       include: {
         language: true
@@ -63,8 +71,8 @@ export async function POST(
         id: updatedPhrase.id,
         text: updatedPhrase.text,
         translation: updatedPhrase.translation,
-        totalReadCount: updatedPhrase.totalReadCount,
-        dailyReadCount: updatedPhrase.dailyReadCount
+        totalSpeakCount: updatedPhrase.totalSpeakCount,
+        dailySpeakCount: updatedPhrase.dailySpeakCount
       }
     })
 
