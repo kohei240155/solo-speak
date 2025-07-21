@@ -183,28 +183,28 @@ export default function RankingPage() {
               </button>
             ))}
           </div>
-          
-          {/* Daily/Weekly/Totalタブメニュー */}
-          <div className="mb-6">
-            <nav className="flex space-x-0">
-              {['Daily', 'Weekly', 'Total'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
-                    activeTab === tab
-                      ? 'border-gray-900 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </nav>
-          </div>
 
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            {/* Daily/Weekly/Totalタブメニュー */}
+            <div className="mb-6 border-b border-gray-200">
+              <nav className="flex space-x-0">
+                {['Daily', 'Weekly', 'Total'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
+                      activeTab === tab
+                        ? 'border-gray-900 text-gray-900 font-semibold'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
             {/* 自分の順位表示 */}
             {currentUserRank && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -224,7 +224,7 @@ export default function RankingPage() {
             {/* ランキングテーブル */}
             <div className="overflow-hidden">
               <div className="mb-4">
-                <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
+                <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-500 pb-2">
                   <div>Rank</div>
                   <div>User</div>
                   <div className="text-right">Count</div>
