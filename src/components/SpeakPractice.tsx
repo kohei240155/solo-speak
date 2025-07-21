@@ -20,6 +20,7 @@ interface SpeakPracticeProps {
   totalCount: number
   isLoading?: boolean
   isNextLoading?: boolean
+  isHideNext?: boolean // Nextボタンを非表示にするかどうか
 }
 
 export default function SpeakPractice({
@@ -31,7 +32,8 @@ export default function SpeakPractice({
   todayCount,
   totalCount,
   isLoading = false,
-  isNextLoading = false
+  isNextLoading = false,
+  isHideNext = false
 }: SpeakPracticeProps) {
 
   // ローディング中の表示
@@ -111,16 +113,18 @@ export default function SpeakPractice({
               <CiCirclePlus className="w-10 h-10 text-gray-600" />
             </button>
             <span className="text-gray-900 font-medium text-base mb-8">Count</span>
-            <button
-              onClick={onFinish}
-              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
-              }}
-            >
-              Finish
-            </button>
+            {!isHideNext && (
+              <button
+                onClick={onFinish}
+                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                style={{ 
+                  borderColor: '#616161',
+                  color: '#616161'
+                }}
+              >
+                Finish
+              </button>
+            )}
           </div>
 
           {/* 区切り線 - 上部に配置 */}
@@ -135,35 +139,53 @@ export default function SpeakPractice({
               <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
             </button>
             <span className="text-gray-900 font-medium text-base mb-8">Sound</span>
-            <button
-              onClick={onNext}
-              disabled={isNextLoading}
-              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
-              style={{ 
-                backgroundColor: isNextLoading ? '#9CA3AF' : '#616161'
-              }}
-              onMouseEnter={(e) => {
-                if (!isNextLoading && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = '#525252'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isNextLoading && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = '#616161'
-                }
-              }}
-            >
-              {isNextLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Loading...
-                </div>
-              ) : (
-                'Next'
-              )}
-            </button>
+            {!isHideNext && (
+              <button
+                onClick={onNext}
+                disabled={isNextLoading}
+                className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
+                style={{ 
+                  backgroundColor: isNextLoading ? '#9CA3AF' : '#616161'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isNextLoading && e.currentTarget) {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isNextLoading && e.currentTarget) {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }
+                }}
+              >
+                {isNextLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Loading...
+                  </div>
+                ) : (
+                  'Next'
+                )}
+              </button>
+            )}
           </div>
         </div>
+        
+        {/* 単一フレーズモード時のFinishボタン（横いっぱい） */}
+        {isHideNext && (
+          <div className="mt-4">
+            <button
+              onClick={onFinish}
+              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              Finish
+            </button>
+          </div>
+        )}
       </div>
     </>
   )
