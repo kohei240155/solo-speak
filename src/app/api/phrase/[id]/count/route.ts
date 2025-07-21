@@ -50,19 +50,33 @@ export async function POST(
       ? countIncrement  // 新しい日なのでカウントをリセットして追加
       : { increment: countIncrement }  // 同じ日なので追加
 
-    // 音読回数を更新（指定された数だけ増加）
-    const updatedPhrase = await prisma.phrase.update({
-      where: { id: phraseId },
-      data: {
-        totalSpeakCount: {
-          increment: countIncrement
+    // トランザクションで音読回数の更新とspeak_logsの記録を同時に実行
+    const updatedPhrase = await prisma.$transaction(async (prisma) => {
+      // 音読回数を更新（指定された数だけ増加）
+      const phrase = await prisma.phrase.update({
+        where: { id: phraseId },
+        data: {
+          totalSpeakCount: {
+            increment: countIncrement
+          },
+          dailySpeakCount: dailyCountUpdate,
+          lastSpeakDate: currentDate
         },
-        dailySpeakCount: dailyCountUpdate,
-        lastSpeakDate: currentDate
-      },
-      include: {
-        language: true
-      }
+        include: {
+          language: true
+        }
+      })
+
+      // speak_logsテーブルに記録を追加
+      await prisma.speakLog.create({
+        data: {
+          phraseId: phraseId,
+          date: currentDate,
+          count: countIncrement
+        }
+      })
+
+      return phrase
     })
 
     return NextResponse.json({
