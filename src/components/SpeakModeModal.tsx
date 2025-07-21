@@ -110,7 +110,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       </div>
 
       {/* Language セクション */}
-      <div className="mb-6">
+      <div className="mb-4">
         <h3 className="text-base font-semibold text-gray-900 mb-3">
           Language
         </h3>
@@ -136,7 +136,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       </div>
 
       {/* Order セクション */}
-      <div className="mb-6">
+      <div className="mb-8">
         <h3 className="text-base font-semibold text-gray-900 mb-3">
           Order
         </h3>
@@ -152,8 +152,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
                 backgroundSize: '20px'
               }}
             >
-              <option value="new-to-old">New → Old</option>
-              <option value="old-to-new">Old → New</option>
+              <option value="new-to-old">NEW → OLD</option>
+              <option value="old-to-new">OLD → NEW</option>
             </select>
           </div>
         </div>
@@ -162,9 +162,19 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         <button
           onClick={handleStart}
           disabled={isLoading}
-          className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+          className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           style={{ 
             backgroundColor: isLoading ? '#9CA3AF' : '#616161'
+          }}
+          onMouseEnter={(e) => {
+            if (!isLoading && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = '#525252'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isLoading && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = '#616161'
+            }
           }}
         >
           {isLoading ? (

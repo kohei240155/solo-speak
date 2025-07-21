@@ -19,6 +19,7 @@ interface SpeakPracticeProps {
   todayCount: number
   totalCount: number
   isLoading?: boolean
+  isNextLoading?: boolean
 }
 
 export default function SpeakPractice({
@@ -29,7 +30,8 @@ export default function SpeakPractice({
   onFinish,
   todayCount,
   totalCount,
-  isLoading = false
+  isLoading = false,
+  isNextLoading = false
 }: SpeakPracticeProps) {
 
   // ローディング中の表示
@@ -135,12 +137,30 @@ export default function SpeakPractice({
             <span className="text-gray-900 font-medium text-base mb-8">Sound</span>
             <button
               onClick={onNext}
-              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              disabled={isNextLoading}
+              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
               style={{ 
-                backgroundColor: '#616161'
+                backgroundColor: isNextLoading ? '#9CA3AF' : '#616161'
+              }}
+              onMouseEnter={(e) => {
+                if (!isNextLoading && e.currentTarget) {
+                  e.currentTarget.style.backgroundColor = '#525252'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isNextLoading && e.currentTarget) {
+                  e.currentTarget.style.backgroundColor = '#616161'
+                }
               }}
             >
-              Next
+              {isNextLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Loading...
+                </div>
+              ) : (
+                'Next'
+              )}
             </button>
           </div>
         </div>

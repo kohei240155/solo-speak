@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
@@ -41,6 +42,7 @@ export default function PhraseList({
   onSpeakModalStateChange
 }: PhraseListProps) {
   const router = useRouter()
+  const { session } = useAuth()
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null)
   const [editedText, setEditedText] = useState('')
@@ -95,7 +97,7 @@ export default function PhraseList({
   }
 
   const handleConfirmDelete = async () => {
-    if (!deletingPhraseId) return
+    if (!deletingPhraseId || !session) return
 
     setIsDeleting(true)
     try {
@@ -103,6 +105,7 @@ export default function PhraseList({
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         }
       })
 
@@ -135,7 +138,7 @@ export default function PhraseList({
   }
 
   const handleUpdatePhrase = async () => {
-    if (!editingPhrase) return
+    if (!editingPhrase || !session) return
 
     setIsUpdating(true)
     try {
@@ -143,6 +146,7 @@ export default function PhraseList({
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           text: editedText.trim(),            // 学習言語（下のフォーム）
