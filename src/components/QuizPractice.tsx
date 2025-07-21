@@ -54,7 +54,7 @@ export default function QuizPractice({
         </div>
       </div>
       {/* フレーズ表示エリア */}
-      <div className="mb-4">
+      <div className="mb-2">
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-3">
           <div 
@@ -90,7 +90,7 @@ export default function QuizPractice({
       </div>
 
       {/* 中央のアイコン表示エリア */}
-      <div className="flex justify-center items-center mb-20">
+      <div className="flex justify-center items-center mb-22">
         <div 
           className="cursor-pointer hover:bg-gray-50 rounded-full p-4 transition-colors"
           onClick={onShowTranslation}
