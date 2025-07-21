@@ -69,7 +69,7 @@ export default function QuizPractice({
           </div>
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
-        <div className="mb-2 min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[6rem] flex items-start">
+        <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[8rem] flex items-start">
           {showTranslation ? (
             <div 
               className="text-sm sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium"
@@ -90,7 +90,7 @@ export default function QuizPractice({
       </div>
 
       {/* 中央のアイコン表示エリア */}
-      <div className="flex justify-center items-center mb-22">
+      <div className="flex justify-center items-center mb-26">
         <div 
           className="cursor-pointer hover:bg-gray-50 rounded-full p-4 transition-colors"
           onClick={onShowTranslation}
