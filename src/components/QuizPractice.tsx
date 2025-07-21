@@ -69,7 +69,7 @@ export default function QuizPractice({
           </div>
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
-        <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[8rem] flex items-start">
+        <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           {showTranslation ? (
             <div 
               className="text-sm sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium"
