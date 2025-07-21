@@ -27,10 +27,10 @@ export default function QuizPhraseList({
     )
   }
 
-  if (phraseCount < 4) {
+  if (phraseCount < 1) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600 mb-4">At least 4 phrases are required for quiz mode.</p>
+        <p className="text-gray-600 mb-4">At least 1 phrase is required for quiz mode.</p>
         <p className="text-sm text-gray-500">Current phrases: {phraseCount}</p>
       </div>
     )

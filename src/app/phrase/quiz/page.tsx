@@ -25,18 +25,18 @@ export default function PhraseQuizPage() {
 
   // Quiz functionality
   const {
+    session,
     currentPhrase,
-    fetchQuizPhrase,
-    showResult,
-    isCorrect,
-    selectedAnswer,
+    showTranslation,
+    fetchQuizSession,
+    handleShowTranslation,
     handleAnswer,
     handleNext,
     resetQuiz
   } = useQuizPhrase()
 
   const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
-    fetchQuizPhrase
+    fetchQuizSession
   })
 
   // Speak modal functionality
@@ -79,13 +79,6 @@ export default function PhraseQuizPage() {
     }
   }
 
-  // 次のクイズを取得（設定付き）
-  const handleNextWithConfig = async () => {
-    if (quizMode.config) {
-      await handleNext(quizMode.config)
-    }
-  }
-
   // クイズ終了処理
   const handleQuizFinishComplete = () => {
     resetQuiz()
@@ -111,17 +104,17 @@ export default function PhraseQuizPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {quizMode.active && quizMode.config && currentPhrase ? (
+          {quizMode.active && quizMode.config && currentPhrase && session ? (
             <QuizPractice
-              phrase={currentPhrase}
+              session={session}
+              currentPhrase={currentPhrase}
               languages={languages}
               nativeLanguage={nativeLanguage}
+              showTranslation={showTranslation}
+              onShowTranslation={handleShowTranslation}
               onAnswer={handleAnswer}
-              onNext={handleNextWithConfig}
+              onNext={handleNext}
               onFinish={handleQuizFinishComplete}
-              showResult={showResult}
-              isCorrect={isCorrect}
-              selectedAnswer={selectedAnswer}
             />
           ) : (
             <QuizPhraseList

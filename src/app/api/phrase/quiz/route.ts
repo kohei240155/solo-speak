@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const mode = searchParams.get('mode') || 'normal'
+    const questionCount = parseInt(searchParams.get('count') || '10', 10)
 
     if (!language) {
       return NextResponse.json(
@@ -43,59 +44,59 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 少なくとも4つのフレーズが必要（選択肢作成のため）
-    if (phrases.length < 4) {
+    // 最低1つのフレーズがあれば実行可能
+    if (phrases.length < 1) {
       return NextResponse.json({
         success: false,
-        message: 'At least 4 phrases are required for quiz mode'
+        message: 'At least 1 phrase is required for quiz mode'
       })
     }
 
-    let selectedPhrase
+    let selectedPhrases
 
     if (mode === 'random') {
       // ランダムモード：ランダムに選択
-      const randomIndex = Math.floor(Math.random() * phrases.length)
-      selectedPhrase = phrases[randomIndex]
+      const shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5)
+      selectedPhrases = shuffledPhrases.slice(0, Math.min(questionCount, phrases.length))
     } else {
-      // ノーマルモード：作成日時順（新しい順）
+      // ノーマルモード：優先度に基づいて選択
+      // 1. 正解数が少ない順
+      // 2. 登録日時が古い順
       const sortedPhrases = [...phrases].sort((a, b) => {
+        // 正解数で比較（少ない順）
+        const correctA = a.correctQuizCount || 0
+        const correctB = b.correctQuizCount || 0
+        
+        if (correctA !== correctB) {
+          return correctA - correctB // 正解数が少ない順
+        }
+        
+        // 正解数が同じ場合は登録日時で比較（古い順）
         const dateA = new Date(a.createdAt).getTime()
         const dateB = new Date(b.createdAt).getTime()
-        return dateB - dateA // 新しい順
+        return dateA - dateB // 古い順
       })
-      selectedPhrase = sortedPhrases[0]
+      
+      selectedPhrases = sortedPhrases.slice(0, Math.min(questionCount, phrases.length))
     }
 
-    // 選択肢を作成（正解を含む4つの選択肢）
-    const otherPhrases = phrases.filter(p => p.id !== selectedPhrase.id)
-    
-    // 他のフレーズからランダムに3つ選択
-    const wrongOptions = []
-    const shuffledOthers = [...otherPhrases].sort(() => Math.random() - 0.5)
-    
-    for (let i = 0; i < Math.min(3, shuffledOthers.length); i++) {
-      wrongOptions.push(shuffledOthers[i].translation)
-    }
-
-    // 正解と不正解の選択肢を混ぜる
-    const allOptions = [selectedPhrase.translation, ...wrongOptions]
-    const shuffledOptions = allOptions.sort(() => Math.random() - 0.5)
+    // フレーズリストを返す
+    const quizPhrases = selectedPhrases.map(phrase => ({
+      id: phrase.id,
+      text: phrase.text,
+      translation: phrase.translation,
+      languageCode: phrase.language.code,
+      correctQuizCount: phrase.correctQuizCount || 0
+    }))
 
     return NextResponse.json({
       success: true,
-      phrase: {
-        id: selectedPhrase.id,
-        text: selectedPhrase.text,
-        translation: selectedPhrase.translation,
-        options: shuffledOptions,
-        correctAnswer: selectedPhrase.translation,
-        languageCode: selectedPhrase.language.code
-      }
+      phrases: quizPhrases,
+      totalCount: quizPhrases.length
     })
 
   } catch (error) {
-    console.error('Error fetching quiz phrase:', error)
+    console.error('Error fetching quiz phrases:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
