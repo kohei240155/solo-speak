@@ -53,14 +53,14 @@ export default function PhraseListPage() {
     if (tab === 'Speak') {
       // Speakタブがクリックされた場合はモーダルを表示するだけ
       openSpeakModal()
+    } else if (tab === 'Quiz') {
+      // Quizタブがクリックされた場合はモーダルを表示するだけ
+      openQuizModal()
     } else {
       // 他のタブの場合は通常の遷移
       switch (tab) {
         case 'Add':
           window.location.href = '/phrase/add'
-          break
-        case 'Quiz':
-          window.location.href = '/phrase/quiz'
           break
         default:
           break

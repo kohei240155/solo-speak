@@ -22,13 +22,13 @@ export function useQuizModal(): UseQuizModalReturn {
   }, [])
 
   const handleQuizStart = useCallback(async (config: QuizConfig) => {
-    // Quizページに遷移して開始
-    const params = new URLSearchParams({
+    // 設定に基づいてQuiz画面に遷移
+    const queryParams = new URLSearchParams({
       language: config.language,
       mode: config.mode,
-      autostart: 'true'
+      count: (config.questionCount || 10).toString()
     })
-    router.push(`/phrase/quiz?${params.toString()}`)
+    router.push(`/phrase/quiz?${queryParams.toString()}`)
   }, [router])
 
   return {

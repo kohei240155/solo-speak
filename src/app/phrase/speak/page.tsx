@@ -90,10 +90,15 @@ export default function PhraseSpeakPage() {
   }
 
   // Quizモーダル開始処理
-  const handleQuizStartWithModal = (config: QuizConfig) => {
+  const handleQuizStartWithModal = async (config: QuizConfig) => {
     setShowQuizModal(false)
-    // Quizページに遷移
-    router.push('/phrase/quiz')
+    // 設定に基づいてQuiz画面に遷移
+    const queryParams = new URLSearchParams({
+      language: config.language,
+      mode: config.mode,
+      count: (config.questionCount || 10).toString()
+    })
+    router.push(`/phrase/quiz?${queryParams.toString()}`)
   }
 
   // Speakモーダルを開く

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
+import toast from 'react-hot-toast'
 
 interface QuizModeModalProps {
   isOpen: boolean
@@ -9,17 +10,22 @@ interface QuizModeModalProps {
   onStart: (config: QuizConfig) => Promise<void>
   languages: Language[]
   defaultLearningLanguage: string
+  availablePhraseCount: number
+  defaultQuizCount?: number
 }
 
 export type { QuizConfig } from '@/types/quiz'
 
-export default function QuizModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: QuizModeModalProps) {
+export default function QuizModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage, availablePhraseCount, defaultQuizCount = 10 }: QuizModeModalProps) {
   const [mode, setMode] = useState<'normal' | 'random'>('normal')
   
   // 初期言語の設定ロジック
   const initialLanguage = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : 'en')
   const [selectedLanguage, setSelectedLanguage] = useState(initialLanguage)
   const [isLoading, setIsLoading] = useState(false)
+
+  // 問題数の計算（デフォルト値とフレーズ数の少ない方）
+  const questionCount = Math.min(defaultQuizCount, availablePhraseCount)
 
   // モーダルが開かれた時またはdefaultLearningLanguageが変更された時に選択言語を更新
   useEffect(() => {
@@ -44,22 +50,24 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     
     setIsLoading(true)
     
-    // 設定オブジェクトを作成して渡す
-    const config: QuizConfig = {
-      mode: mode,
-      language: selectedLanguage,
-    }
-    console.log('QuizModeModal - Starting quiz with config:', config)
-    
-    // onStartを呼び出し、成功した場合のみモーダルを閉じる
     try {
+      // 設定オブジェクトを作成
+      const config: QuizConfig = {
+        mode: mode,
+        language: selectedLanguage,
+        questionCount: questionCount
+      }
+      console.log('QuizModeModal - Starting quiz with config:', config)
+      
+      // onStartを呼び出し、成功した場合のみモーダルを閉じる
       await onStart(config)
       onClose()
     } catch (error) {
-      console.error('Failed to start quiz:', error)
+      console.error('QuizModeModal - Error starting quiz:', error)
+      toast.error('クイズの開始に失敗しました')
+    } finally {
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
   }
 
   return (

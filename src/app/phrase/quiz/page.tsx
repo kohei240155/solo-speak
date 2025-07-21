@@ -15,12 +15,16 @@ import { useQuizMode } from '@/hooks/useQuizMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
+import { supabase } from '@/utils/spabase'
 
 export default function PhraseQuizPage() {
   const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   const searchParams = useSearchParams()
+
+  // ユーザー設定の状態
+  const [userSettings, setUserSettings] = useState<{ defaultQuizCount: number } | null>(null)
 
   // Quiz functionality
   const {
@@ -55,39 +59,84 @@ export default function PhraseQuizPage() {
     }
   }, [learningLanguage, fetchSavedPhrases])
 
-  // フレーズが読み込まれた後、クイズがアクティブでない場合は自動的にモーダルを開く
+  // ユーザー設定を取得
   useEffect(() => {
-    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !showQuizModal) {
-      setShowQuizModal(true)
+    const fetchUserSettings = async () => {
+      if (!user) return
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const response = await fetch('/api/user/settings', {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        })
+
+        if (response.ok) {
+          const settings = await response.json()
+          setUserSettings({
+            defaultQuizCount: settings.defaultQuizCount || 10
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching user settings:', error)
+        setUserSettings({ defaultQuizCount: 10 }) // デフォルト値
+      }
+    }
+
+    fetchUserSettings()
+  }, [user])
+
+  // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
+  useEffect(() => {
+    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active) {
+      // URLパラメータがある場合は自動開始（モーダルは開かない）
+      const params = new URLSearchParams(window.location.search)
+      const language = params.get('language')
+      const mode = params.get('mode')
+      const count = params.get('count')
+      
+      if (language && mode && (mode === 'normal' || mode === 'random')) {
+        // URLパラメータから自動開始（useQuizModeで処理される）
+        console.log('Auto-starting quiz from URL parameters')
+        return
+      }
+      
+      // URLパラメータがない場合はモーダルを開く
+      if (!showQuizModal) {
+        setShowQuizModal(true)
+      }
     }
   }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal])
 
-  // URLパラメータからの自動開始処理
-  useEffect(() => {
-    const autostart = searchParams.get('autostart')
-    const language = searchParams.get('language')
-    const mode = searchParams.get('mode')
+  // URLパラメータからの自動開始処理（削除）
+  // useEffect(() => {
+  //   const autostart = searchParams.get('autostart')
+  //   const language = searchParams.get('language')
+  //   const mode = searchParams.get('mode')
 
-    if (autostart === 'true' && language && mode && (mode === 'normal' || mode === 'random')) {
-      const config: QuizConfig = {
-        language,
-        mode
-      }
-      handleQuizStart(config)
-    }
-  }, [searchParams, handleQuizStart])
+  //   if (autostart === 'true' && language && mode && (mode === 'normal' || mode === 'random')) {
+  //     const config: QuizConfig = {
+  //       language,
+  //       mode
+  //     }
+  //     handleQuizStart(config)
+  //   }
+  // }, [searchParams, handleQuizStart])
 
-  // Quiz開始処理
-  const handleQuizStartWithModal = async (config: QuizConfig): Promise<void> => {
+  // Quiz開始処理（モーダルから呼ばれる）
+  const handleQuizStartWithModal = async (config: QuizConfig) => {
     console.log('Quiz modal start requested with config:', config)
-    const success = await handleQuizStart(config)
-    console.log('Quiz start result:', success)
-    console.log('Quiz mode after start:', quizMode)
-    console.log('Current session:', session)
-    console.log('Current phrase:', currentPhrase)
     
-    if (!success) {
-      throw new Error('Failed to start quiz')
+    try {
+      const success = await handleQuizStart(config)
+      if (success) {
+        setShowQuizModal(false)
+      }
+    } catch (error) {
+      console.error('Error starting quiz:', error)
     }
   }
 
@@ -179,6 +228,8 @@ export default function PhraseQuizPage() {
         onStart={handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
+        availablePhraseCount={savedPhrases.length}
+        defaultQuizCount={userSettings?.defaultQuizCount}
       />
       
       <Toaster />
