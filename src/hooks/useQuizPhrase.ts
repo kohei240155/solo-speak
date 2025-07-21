@@ -61,7 +61,8 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
           currentIndex: 0,
           totalCount: data.totalCount,
           correctCount: 0,
-          incorrectCount: 0
+          incorrectCount: 0,
+          availablePhraseCount: data.availablePhraseCount || data.phrases.length
         }
         setSession(newSession)
         console.log('Quiz session created successfully:', newSession)

@@ -21,6 +21,7 @@ export interface QuizSession {
   totalCount: number
   correctCount: number
   incorrectCount: number
+  availablePhraseCount: number // 登録されているフレーズの総数
 }
 
 // クイズモードの状態型

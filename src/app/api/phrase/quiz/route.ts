@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const mode = searchParams.get('mode') || 'normal'
-    const questionCount = parseInt(searchParams.get('count') || '10', 10)
+    const requestedQuestionCount = parseInt(searchParams.get('count') || '10', 10)
 
-    console.log('Quiz API request params:', { language, mode, questionCount, userId: authResult.user.id })
+    console.log('Quiz API request params:', { language, mode, requestedQuestionCount, userId: authResult.user.id })
 
     if (!language) {
       return NextResponse.json(
@@ -23,6 +23,14 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // ユーザー設定を取得（デフォルトクイズ出題数）
+    const userSettings = await prisma.user.findUnique({
+      where: { id: authResult.user.id },
+      select: { defaultQuizCount: true }
+    })
+
+    const userDefaultQuizCount = userSettings?.defaultQuizCount || 10
 
     // まず指定された言語が存在するか確認
     const languageExists = await prisma.language.findUnique({
@@ -79,20 +87,21 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 最低1つのフレーズがあれば実行可能
-    if (phrases.length < 1) {
-      return NextResponse.json({
-        success: false,
-        message: 'At least 1 phrase is required for quiz mode'
-      })
-    }
+    // 実際の問題数を決定（フレーズ数とユーザー設定の小さい方）
+    const actualQuestionCount = Math.min(userDefaultQuizCount, phrases.length)
+    
+    console.log('Quiz count decision:', {
+      userDefaultQuizCount,
+      availablePhrases: phrases.length,
+      actualQuestionCount
+    })
 
     let selectedPhrases
 
     if (mode === 'random') {
       // ランダムモード：ランダムに選択
       const shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5)
-      selectedPhrases = shuffledPhrases.slice(0, Math.min(questionCount, phrases.length))
+      selectedPhrases = shuffledPhrases.slice(0, actualQuestionCount)
     } else {
       // ノーマルモード：優先度に基づいて選択
       // 1. 正解数が少ない順
@@ -112,7 +121,7 @@ export async function GET(request: NextRequest) {
         return dateA - dateB // 古い順
       })
       
-      selectedPhrases = sortedPhrases.slice(0, Math.min(questionCount, phrases.length))
+      selectedPhrases = sortedPhrases.slice(0, actualQuestionCount)
     }
 
     // フレーズリストを返す
@@ -127,7 +136,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       phrases: quizPhrases,
-      totalCount: quizPhrases.length
+      totalCount: quizPhrases.length,
+      availablePhraseCount: phrases.length // 登録されているフレーズの総数
     })
 
   } catch (error) {
