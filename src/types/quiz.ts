@@ -19,8 +19,6 @@ export interface QuizSession {
   phrases: QuizPhrase[]
   currentIndex: number
   totalCount: number
-  correctCount: number
-  incorrectCount: number
   availablePhraseCount: number // 登録されているフレーズの総数
 }
 

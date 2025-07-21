@@ -60,8 +60,6 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
           phrases: data.phrases,
           currentIndex: 0,
           totalCount: data.totalCount,
-          correctCount: 0,
-          incorrectCount: 0,
           availablePhraseCount: data.availablePhraseCount || data.phrases.length
         }
         setSession(newSession)
@@ -108,16 +106,6 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
           phraseId: currentPhrase.id,
           isCorrect
         })
-      })
-
-      // セッションの正解数/不正解数を更新
-      setSession(prevSession => {
-        if (!prevSession) return null
-        return {
-          ...prevSession,
-          correctCount: isCorrect ? prevSession.correctCount + 1 : prevSession.correctCount,
-          incorrectCount: !isCorrect ? prevSession.incorrectCount + 1 : prevSession.incorrectCount
-        }
       })
 
     } catch (error) {

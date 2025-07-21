@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
-import { IoCheckboxOutline } from 'react-icons/io5'
 
 interface QuizPracticeProps {
   session: QuizSession
@@ -42,56 +41,51 @@ export default function QuizPractice({
 
   const isLastQuestion = session.currentIndex >= session.totalCount - 1
 
+
   return (
     <>
-      {/* フレーズ表示エリアとQuiz進行状況の横並び */}
-      <div className="flex justify-between items-start mb-4">
-        {/* フレーズ表示エリア - 左側 */}
-        <div className="flex-1 mr-4">
-          {/* 母国語の翻訳（メイン表示） */}
-          <div className="mb-2">
+      {/* プログレスバー */}
+      <div className="w-full mb-2">
+        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gray-600 transition-all duration-300"
+            style={{ width: `${((session.currentIndex + 1) / session.totalCount) * 100}%` }}
+          />
+        </div>
+      </div>
+      {/* フレーズ表示エリア */}
+      <div className="mb-4">
+        {/* 母国語の翻訳（メイン表示） */}
+        <div className="mb-2">
+          <div 
+            className="text-base font-medium text-gray-900 break-words"
+            style={{ 
+              wordWrap: 'break-word',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word'
+            }}
+          >
+            {currentPhrase.translation}
+          </div>
+        </div>
+        {/* 学習言語のフレーズ - タップで表示 */}
+        <div className="mb-3 min-h-[2.5rem] flex items-start">
+          {showTranslation ? (
             <div 
-              className="text-base font-medium text-gray-900 break-words"
+              className="text-sm text-gray-600 break-words w-full"
               style={{ 
                 wordWrap: 'break-word',
                 overflowWrap: 'anywhere',
                 wordBreak: 'break-word'
               }}
             >
-              {currentPhrase.translation}
-            </div>
-          </div>
-          
-          {/* 学習言語のフレーズ - タップで表示 */}
-          {showTranslation ? (
-            <div className="mb-3">
-              <div 
-                className="text-sm text-gray-600 break-words"
-                style={{ 
-                  wordWrap: 'break-word',
-                  overflowWrap: 'anywhere',
-                  wordBreak: 'break-word'
-                }}
-              >
-                {currentPhrase.text}
-              </div>
+              {currentPhrase.text}
             </div>
           ) : (
-            <div className="mb-3">
+            <div className="w-full">
               {/* 翻訳が表示されていない時は空のスペース */}
             </div>
           )}
-          
-          {/* Correct統計表示 - フレーズの下に配置 */}
-          <div className="flex items-center text-sm text-gray-600">
-            <IoCheckboxOutline className="w-4 h-4 mr-1 flex-shrink-0" />
-            <span className="break-words">Correct: {session.correctCount}</span>
-          </div>
-        </div>
-
-        {/* Quiz進行状況表示 - 右側 */}
-        <div className="text-sm text-gray-600">
-          <span className="break-words">Question: {session.currentIndex + 1} / {session.totalCount}</span>
         </div>
       </div>
 
