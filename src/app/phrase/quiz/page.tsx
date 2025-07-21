@@ -24,6 +24,13 @@ export default function PhraseQuizPage() {
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   const router = useRouter()
 
+  // 認証チェック: ログインしていない場合はログインページにリダイレクト
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login')
+    }
+  }, [user, loading, router])
+
   // ユーザー設定の状態
   const [userSettings, setUserSettings] = useState<{ defaultQuizCount: number } | null>(null)
   

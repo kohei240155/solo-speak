@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function POST(request: NextRequest) {
   try {
+    // 認証チェック
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
+    }
+
     const body = await request.json()
     const { text, language } = body
 
