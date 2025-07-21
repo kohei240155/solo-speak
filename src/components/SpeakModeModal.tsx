@@ -15,6 +15,7 @@ interface SpeakModeModalProps {
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   language: string
+  prioritizeLowPractice: boolean
 }
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
@@ -61,6 +62,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       const params = new URLSearchParams({
         language: selectedLanguage,
         order: order.replace('-', '_'), // new-to-old → new_to_old
+        prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
       })
 
       const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
@@ -76,7 +78,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // 設定オブジェクトを作成して渡す
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
-          language: selectedLanguage
+          language: selectedLanguage,
+          prioritizeLowPractice: true // 常に少ない練習回数から表示
         }
         console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる
