@@ -21,6 +21,7 @@ interface SpeakPracticeProps {
   isLoading?: boolean
   isNextLoading?: boolean
   isHideNext?: boolean // Nextボタンを非表示にするかどうか
+  isFinishing?: boolean // Finish処理中かどうか
 }
 
 export default function SpeakPractice({
@@ -33,7 +34,8 @@ export default function SpeakPractice({
   totalCount,
   isLoading = false,
   isNextLoading = false,
-  isHideNext = false
+  isHideNext = false,
+  isFinishing = false
 }: SpeakPracticeProps) {
 
   // ローディング中の表示
@@ -118,13 +120,21 @@ export default function SpeakPractice({
             {!isHideNext && (
               <button
                 onClick={onFinish}
-                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                disabled={isFinishing}
+                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:cursor-not-allowed"
                 style={{ 
                   borderColor: '#616161',
-                  color: '#616161'
+                  color: isFinishing ? '#9CA3AF' : '#616161'
                 }}
               >
-                Finish
+                {isFinishing ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                    Finishing...
+                  </div>
+                ) : (
+                  'Finish'
+                )}
               </button>
             )}
           </div>
@@ -180,13 +190,21 @@ export default function SpeakPractice({
           <div className="mt-4">
             <button
               onClick={onFinish}
-              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              disabled={isFinishing}
+              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:cursor-not-allowed"
               style={{ 
                 borderColor: '#616161',
-                color: '#616161'
+                color: isFinishing ? '#9CA3AF' : '#616161'
               }}
             >
-              Finish
+              {isFinishing ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                  Finishing...
+                </div>
+              ) : (
+                'Finish'
+              )}
             </button>
           </div>
         )}

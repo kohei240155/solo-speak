@@ -50,10 +50,10 @@ export default function SpeakPractice({
       </div>
 
       {/* フレーズ表示エリア */}
-      <div className="mb-8">
-        <div className="bg-white rounded-lg p-6 min-h-[140px] flex flex-col justify-center text-center">
+      <div className="mb-12">
+        <div className="bg-white rounded-lg p-8 min-h-[160px] flex flex-col justify-center text-center">
           {/* 学習言語のフレーズ（大きく表示） */}
-          <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 mb-4 leading-relaxed">
+          <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 mb-6 leading-relaxed">
             {phrase.text}
           </div>
           
