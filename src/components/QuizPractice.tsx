@@ -45,7 +45,7 @@ export default function QuizPractice({
   return (
     <>
       {/* フレーズ表示エリア - SpeakPracticeと同じレイアウト */}
-      <div className="mb-10">
+      <div className="mb-16">
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-2">
           <div 
