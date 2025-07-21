@@ -154,7 +154,37 @@ export default function RankingPage() {
             />
           </div>
           
-          {/* タブメニュー */}
+          {/* Phrase、Speak、Quizタブメニュー */}
+          <div className="flex mb-[18px]">
+            {[
+              { key: 'Phrase', label: 'Phrase' },
+              { key: 'Speak', label: 'Speak' },
+              { key: 'Quiz', label: 'Quiz' }
+            ].map((tab, index) => (
+              <button 
+                key={tab.key}
+                onClick={() => {
+                  // タブのクリック処理（将来的に実装）
+                  console.log(`${tab.key} tab clicked`)
+                }}
+                className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
+                  index === 0 ? 'rounded-l-[20px]' : ''
+                } ${
+                  index === 2 ? 'rounded-r-[20px]' : ''
+                } ${
+                  index > 0 ? 'border-l-0' : ''
+                } ${
+                  tab.key === 'Phrase' 
+                    ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
+                    : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Daily/Weekly/Totalタブメニュー */}
           <div className="mb-6">
             <nav className="flex space-x-0">
               {['Daily', 'Weekly', 'Total'].map((tab) => (
