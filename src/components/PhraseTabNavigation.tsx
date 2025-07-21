@@ -6,9 +6,10 @@ interface PhraseTabNavigationProps {
   onTabChange?: (tab: TabType) => void // Optional for backward compatibility
   checkUnsavedChanges?: () => boolean // Optional function to check for unsaved changes
   onSpeakModalOpen?: () => void // Speak modal open handler
+  onQuizModalOpen?: () => void // Quiz modal open handler
 }
 
-export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen }: PhraseTabNavigationProps) {
+export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen, onQuizModalOpen }: PhraseTabNavigationProps) {
   const router = useRouter()
 
   const tabs: { key: TabType; label: string; path: string }[] = [
@@ -37,6 +38,16 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
         onSpeakModalOpen()
       }
       // onSpeakModalOpenがない場合でも、ページ遷移はしない
+      // モーダルが必須なので、何もしない
+      return
+    }
+
+    // Quizタブの場合は常にモーダルを表示（ページ遷移はしない）
+    if (tab.key === 'Quiz') {
+      if (onQuizModalOpen) {
+        onQuizModalOpen()
+      }
+      // onQuizModalOpenがない場合でも、ページ遷移はしない
       // モーダルが必須なので、何もしない
       return
     }
