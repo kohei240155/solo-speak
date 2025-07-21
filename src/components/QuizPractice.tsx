@@ -44,54 +44,66 @@ export default function QuizPractice({
 
   return (
     <>
-      {/* フレーズ表示エリア - SpeakPracticeと同じレイアウト */}
-      <div className="mb-16">
-        {/* 母国語の翻訳（メイン表示） */}
-        <div className="mb-2">
-          <div 
-            className="text-base font-medium text-gray-900 break-words"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
-            {currentPhrase.translation}
-          </div>
-        </div>
-        
-        {/* 学習言語のフレーズ - タップで表示 */}
-        {showTranslation ? (
-          <div className="mb-3">
+      {/* フレーズ表示エリアとQuiz進行状況の横並び */}
+      <div className="flex justify-between items-start mb-4">
+        {/* フレーズ表示エリア - 左側 */}
+        <div className="flex-1 mr-4">
+          {/* 母国語の翻訳（メイン表示） */}
+          <div className="mb-2">
             <div 
-              className="text-sm text-gray-600 break-words"
+              className="text-base font-medium text-gray-900 break-words"
               style={{ 
                 wordWrap: 'break-word',
                 overflowWrap: 'anywhere',
                 wordBreak: 'break-word'
               }}
             >
-              {currentPhrase.text}
+              {currentPhrase.translation}
             </div>
           </div>
-        ) : (
-          <div 
-            className="mb-3 cursor-pointer hover:bg-gray-50 rounded p-2 transition-colors"
-            onClick={onShowTranslation}
-          >
-            <div className="flex items-center justify-center text-gray-400">
-              <PiHandTapLight className="w-6 h-6 mr-2" />
-              <span className="text-sm">Tap to see translation</span>
+          
+          {/* 学習言語のフレーズ - タップで表示 */}
+          {showTranslation ? (
+            <div className="mb-3">
+              <div 
+                className="text-sm text-gray-600 break-words"
+                style={{ 
+                  wordWrap: 'break-word',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word'
+                }}
+              >
+                {currentPhrase.text}
+              </div>
             </div>
+          ) : (
+            <div 
+              className="mb-3 cursor-pointer hover:bg-gray-50 rounded p-2 transition-colors"
+              onClick={onShowTranslation}
+            >
+              <div className="flex items-center justify-center text-gray-400">
+                <PiHandTapLight className="w-6 h-6 mr-2" />
+                <span className="text-sm">Tap to see translation</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Correct統計表示 - フレーズの下に配置 */}
+          <div className="flex items-center text-sm text-gray-600">
+            <IoCheckboxOutline className="w-4 h-4 mr-1 flex-shrink-0" />
+            <span className="break-words">Correct: {session.correctCount}</span>
           </div>
-        )}
-        
-        {/* Quiz統計表示 */}
-        <div className="flex items-center text-sm text-gray-600 min-w-0">
-          <IoCheckboxOutline className="w-4 h-4 mr-1 flex-shrink-0" />
-          <span className="break-words">Question: {session.currentIndex + 1} / {session.totalCount}</span>
-          <span className="break-words ml-4">Correct: {session.correctCount}</span>
         </div>
+
+        {/* Quiz進行状況表示 - 右側 */}
+        <div className="text-sm text-gray-600">
+          <span className="break-words">Question: {session.currentIndex + 1} / {session.totalCount}</span>
+        </div>
+      </div>
+
+      {/* 中央のアイコン表示エリア */}
+      <div className="flex justify-center items-center mb-20">
+        <PiHandTapLight className="w-12 h-12 text-gray-400" />
       </div>
 
       {/* Got It / No Idea ボタン */}
