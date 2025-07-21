@@ -66,12 +66,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // ユーザーとセッションが利用可能になったらユーザー設定を取得
   useEffect(() => {
     if (user?.id && session && !loading) {
-      // Googleアバターがある場合は即座に設定
+      // Googleアバターがある場合は即座に設定（一度だけ）
       const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
       if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
                              googleAvatarUrl.includes('googleapis.com') || 
                              googleAvatarUrl.includes('google.com'))) {
-        setUserIconUrl(googleAvatarUrl)
+        setUserIconUrl(prev => prev || googleAvatarUrl) // 既にセットされている場合は更新しない
       }
       
       // その後でAPIから正式な設定を取得
@@ -149,6 +149,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
+          'Cache-Control': 'no-cache', // キャッシュを無効化
         }
       })
 
@@ -160,7 +161,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
           setUserIconUrl(userData.iconUrl)
         } else {
-          setUserIconUrl(null)
+          // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
+          setUserIconUrl(prev => {
+            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+            if (prev && (prev.includes('googleusercontent.com') || 
+                        prev.includes('googleapis.com') || 
+                        prev.includes('google.com'))) {
+              return prev // Googleアバターを保持
+            }
+            return null
+          })
         }
       } else if (response.status === 404) {
         // 初回ログイン時：Googleアイコンを自動設定
@@ -182,7 +192,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error('Error fetching user settings:', error)
       setIsUserSetupComplete(false)
-      setUserIconUrl(null)
+      // エラー時は現在のアイコンを保持
+      setUserIconUrl(prev => {
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        if (prev && (prev.includes('googleusercontent.com') || 
+                    prev.includes('googleapis.com') || 
+                    prev.includes('google.com'))) {
+          return prev
+        }
+        return null
+      })
     }
   }
 

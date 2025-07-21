@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, memo } from 'react'
+import { useState, useRef, useEffect, memo, useMemo } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ const Header = memo(function Header() {
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   // 表示するアイコンURLを決定（フォールバック機能付き）
-  const getDisplayIconUrl = () => {
+  const getDisplayIconUrl = useMemo(() => {
     if (userIconUrl) {
       return userIconUrl
     }
@@ -31,7 +31,7 @@ const Header = memo(function Header() {
     }
     
     return null
-  }
+  }, [userIconUrl, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
   // ユーザーが変更された時の状態リセット
   useEffect(() => {
@@ -124,7 +124,7 @@ const Header = memo(function Header() {
   }, [user?.id, refreshUserSettings])
 
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
-  const getDefaultUserIcon = () => {
+  const getDefaultUserIcon = useMemo(() => {
     return (
       <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
         <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
@@ -132,7 +132,7 @@ const Header = memo(function Header() {
         </svg>
       </div>
     )
-  }
+  }, [])
 
   return (
     <header className="bg-white">
@@ -160,18 +160,19 @@ const Header = memo(function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {getDisplayIconUrl() ? (
+                  {getDisplayIconUrl ? (
                     <Image
-                      src={getDisplayIconUrl()!}
+                      src={getDisplayIconUrl}
                       alt="User Avatar"
                       width={36}
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
                       onError={handleImageError}
+                      priority
                     />
                   ) : (
-                    getDefaultUserIcon()
+                    getDefaultUserIcon
                   )}
                 </button>
 
@@ -250,18 +251,19 @@ const Header = memo(function Header() {
                   onClick={toggleMobileDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
-                  {getDisplayIconUrl() ? (
+                  {getDisplayIconUrl ? (
                     <Image
-                      src={getDisplayIconUrl()!}
+                      src={getDisplayIconUrl}
                       alt="User Avatar"
                       width={36}
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
                       onError={handleImageError}
+                      priority
                     />
                   ) : (
-                    getDefaultUserIcon()
+                    getDefaultUserIcon
                   )}
                 </button>
 
