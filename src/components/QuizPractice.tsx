@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
+import { IoCheckboxOutline } from 'react-icons/io5'
 
 interface QuizPracticeProps {
   session: QuizSession
@@ -57,15 +58,22 @@ export default function QuizPractice({
       <div className="mb-2">
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-3">
-          <div 
-            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
-            {currentPhrase.translation}
+          <div className="flex items-start justify-between">
+            <div 
+              className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed flex-1"
+              style={{ 
+                wordWrap: 'break-word',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word'
+              }}
+            >
+              {currentPhrase.translation}
+            </div>
+            {/* 正解数表示 */}
+            <div className="flex items-center ml-3 text-xs text-gray-500 flex-shrink-0">
+              <IoCheckboxOutline className="w-4 h-4 mr-1" />
+              <span>Correct: {currentPhrase.correctQuizCount}</span>
+            </div>
           </div>
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
