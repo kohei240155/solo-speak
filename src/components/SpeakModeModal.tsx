@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
+import { SpeakConfig } from '@/types/speak'
 import { supabase } from '@/utils/spabase'
 import toast from 'react-hot-toast'
 
@@ -12,11 +13,7 @@ interface SpeakModeModalProps {
   defaultLearningLanguage: string
 }
 
-export interface SpeakConfig {
-  order: 'new-to-old' | 'old-to-new'
-  language: string
-  prioritizeLowPractice: boolean
-}
+export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
