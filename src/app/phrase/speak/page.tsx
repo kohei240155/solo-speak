@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
+import QuizModeModal from '@/components/QuizModeModal'
 import SpeakPractice from '@/components/SpeakPractice'
 import AuthGuard from '@/components/AuthGuard'
 import SpeakPhraseList from '@/components/SpeakPhraseList'
@@ -13,9 +14,12 @@ import { useSpeakMode } from '@/hooks/useSpeakMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { speakText, preloadVoices } from '@/utils/speechSynthesis'
 import { SpeakConfig } from '@/types/speak'
+import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 export default function PhraseSpeakPage() {
+  const router = useRouter()
   const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
@@ -42,6 +46,7 @@ export default function PhraseSpeakPage() {
   })
 
   const [showSpeakModal, setShowSpeakModal] = useState(false)
+  const [showQuizModal, setShowQuizModal] = useState(false)
 
   // 音声リストの初期化
   useEffect(() => {
@@ -84,6 +89,23 @@ export default function PhraseSpeakPage() {
     }
   }
 
+  // Quizモーダル開始処理
+  const handleQuizStartWithModal = (config: QuizConfig) => {
+    setShowQuizModal(false)
+    // Quizページに遷移
+    router.push('/phrase/quiz')
+  }
+
+  // Speakモーダルを開く
+  const openSpeakModal = () => {
+    setShowSpeakModal(true)
+  }
+
+  // Quizモーダルを開く  
+  const openQuizModal = () => {
+    setShowQuizModal(true)
+  }
+
   return (
     <AuthGuard user={user} loading={loading}>
       <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
@@ -99,6 +121,7 @@ export default function PhraseSpeakPage() {
           <PhraseTabNavigation 
             activeTab="Speak" 
             onSpeakModalOpen={speakMode.active ? undefined : () => setShowSpeakModal(true)}
+            onQuizModalOpen={openQuizModal}
           />
 
           {/* コンテンツエリア */}
@@ -128,6 +151,15 @@ export default function PhraseSpeakPage() {
             isOpen={showSpeakModal}
             onClose={() => setShowSpeakModal(false)}
             onStart={handleSpeakStartWithModal}
+            languages={languages}
+            defaultLearningLanguage={learningLanguage}
+          />
+
+          {/* Quiz Mode モーダル */}
+          <QuizModeModal
+            isOpen={showQuizModal}
+            onClose={() => setShowQuizModal(false)}
+            onStart={handleQuizStartWithModal}
             languages={languages}
             defaultLearningLanguage={learningLanguage}
           />

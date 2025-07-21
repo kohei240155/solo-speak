@@ -15,11 +15,27 @@ export async function GET(request: NextRequest) {
     const mode = searchParams.get('mode') || 'normal'
     const questionCount = parseInt(searchParams.get('count') || '10', 10)
 
+    console.log('Quiz API request params:', { language, mode, questionCount, userId: authResult.user.id })
+
     if (!language) {
       return NextResponse.json(
         { error: 'Language parameter is required' },
         { status: 400 }
       )
+    }
+
+    // まず指定された言語が存在するか確認
+    const languageExists = await prisma.language.findUnique({
+      where: { code: language }
+    })
+
+    console.log('Language exists check:', { language, exists: !!languageExists })
+
+    if (!languageExists) {
+      return NextResponse.json({
+        success: false,
+        message: `Language with code '${language}' not found`
+      })
     }
 
     // データベースからフレーズを取得（削除されていないもののみ）
@@ -37,10 +53,29 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    // デバッグ用：ユーザーの全フレーズ数も確認
+    const allUserPhrases = await prisma.phrase.findMany({
+      where: {
+        userId: authResult.user.id,
+        deletedAt: null
+      },
+      include: {
+        language: true
+      }
+    })
+
+    console.log(`Quiz API: Found ${phrases.length} phrases for user ${authResult.user.id} and language ${language}`)
+    console.log(`Quiz API: User has ${allUserPhrases.length} total phrases`)
+    console.log('User phrases by language:', allUserPhrases.reduce((acc, phrase) => {
+      acc[phrase.language.code] = (acc[phrase.language.code] || 0) + 1
+      return acc
+    }, {} as Record<string, number>))
+
     if (phrases.length === 0) {
+      console.log(`Quiz API: No phrases found for language ${language}`)
       return NextResponse.json({
         success: false,
-        message: 'No phrases found for the specified language'
+        message: `No phrases found for the specified language: ${language}`
       })
     }
 

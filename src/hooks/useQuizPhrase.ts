@@ -40,6 +40,12 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         count: (config.questionCount || 10).toString()
       })
 
+      console.log('Quiz API request:', {
+        language: config.language,
+        mode: config.mode,
+        count: config.questionCount || 10
+      })
+
       const response = await fetch(`/api/phrase/quiz?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${authSession.access_token}`
@@ -47,6 +53,7 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
       })
       
       const data = await response.json()
+      console.log('Quiz API response:', data)
 
       if (data.success && data.phrases && data.phrases.length > 0) {
         const newSession: QuizSession = {
@@ -57,9 +64,11 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
           incorrectCount: 0
         }
         setSession(newSession)
+        console.log('Quiz session created successfully:', newSession)
         return true
       } else {
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
+        console.error('Quiz API failed:', data)
         toast.error(errorMessage)
         return false
       }

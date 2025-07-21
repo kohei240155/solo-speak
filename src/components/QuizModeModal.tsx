@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
-import { supabase } from '@/utils/spabase'
-import toast from 'react-hot-toast'
 
 interface QuizModeModalProps {
   isOpen: boolean
   onClose: () => void
-  onStart: (config: QuizConfig) => void
+  onStart: (config: QuizConfig) => Promise<void>
   languages: Language[]
   defaultLearningLanguage: string
 }
@@ -45,54 +43,23 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     if (isLoading) return // 既に処理中の場合は何もしない
     
     setIsLoading(true)
-    try {
-      // 認証トークンを取得
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。再度ログインしてください。')
-        setIsLoading(false)
-        return
-      }
-
-      // モード設定をクエリパラメータとして含めてGET APIを呼び出し
-      const params = new URLSearchParams({
-        language: selectedLanguage,
-        mode: mode,
-      })
-
-      const response = await fetch(`/api/phrase/quiz?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-      const data = await response.json()
-
-      console.log('QuizModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })
-
-      if (data.success && data.phrase) {
-        // 設定オブジェクトを作成して渡す
-        const config: QuizConfig = {
-          mode: mode,
-          language: selectedLanguage,
-        }
-        console.log('QuizModeModal - Starting quiz with config:', config)
-        // onStartの呼び出し前にモーダルを閉じる
-        onClose()
-        onStart(config)
-      } else {
-        // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = data.message || 'フレーズが見つかりませんでした'
-        console.warn('QuizModeModal - No phrases found:', data.message)
-        toast.error(errorMessage)
-      }
-    } catch (error) {
-      console.error('QuizModeModal - Error fetching phrase:', error)
-      toast.error('フレーズの取得中にエラーが発生しました')
-    } finally {
-      console.log('QuizModeModal - Setting loading to false')
-      setIsLoading(false)
+    
+    // 設定オブジェクトを作成して渡す
+    const config: QuizConfig = {
+      mode: mode,
+      language: selectedLanguage,
     }
+    console.log('QuizModeModal - Starting quiz with config:', config)
+    
+    // onStartを呼び出し、成功した場合のみモーダルを閉じる
+    try {
+      await onStart(config)
+      onClose()
+    } catch (error) {
+      console.error('Failed to start quiz:', error)
+    }
+    
+    setIsLoading(false)
   }
 
   return (
