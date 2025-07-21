@@ -1,28 +1,42 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback, memo } from 'react'
+import { useState, useRef, useEffect, memo } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoginModal from './LoginModal'
-import { supabase } from '@/utils/spabase'
 
 const Header = memo(function Header() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, loading } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
-  const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
-  const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
+
+  // 表示するアイコンURLを決定（フォールバック機能付き）
+  const getDisplayIconUrl = () => {
+    if (userIconUrl) {
+      return userIconUrl
+    }
+    
+    // AuthContextでまだロードされていない場合でも、Googleアバターがあればそれを使用
+    if (user?.user_metadata?.avatar_url || user?.user_metadata?.picture) {
+      const googleAvatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture
+      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
+                             googleAvatarUrl.includes('googleapis.com') || 
+                             googleAvatarUrl.includes('google.com'))) {
+        return googleAvatarUrl
+      }
+    }
+    
+    return null
+  }
 
   // ユーザーが変更された時の状態リセット
   useEffect(() => {
     if (!user) {
       // ユーザーがログアウトした場合
-      setIsUserSetupComplete(false)
-      setUserIconUrl(null)
       setIsDropdownOpen(false)
       setIsMobileDropdownOpen(false)
     }
@@ -44,75 +58,9 @@ const Header = memo(function Header() {
 
   // 画像読み込みエラーハンドラー
   const handleImageError = () => {
-    setUserIconUrl(null)
+    // AuthContextでエラーハンドリングを行うため、ここでは何もしない
+    console.warn('User icon failed to load')
   }
-
-  // ユーザー設定の完了状態をチェック（キャッシュ機能付き）
-  const checkUserSetupComplete = useCallback(async () => {
-    if (!user?.id) {
-      setIsUserSetupComplete(false)
-      setUserIconUrl(null)
-      return
-    }
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        setIsUserSetupComplete(false)
-        // セッションがない場合はデフォルトアイコンを表示
-        setUserIconUrl(null)
-        return
-      }
-
-      // ユーザー切り替え対応のためキャッシュを無効化
-      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-
-      if (response.ok) {
-        const userData = await response.json()
-        setIsUserSetupComplete(true)
-        
-        // 画像URLの有効性をチェック（空文字列や無効な値の場合はnullに設定してデフォルトアイコンを表示）
-        if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
-          setUserIconUrl(userData.iconUrl)
-        } else {
-          // iconUrlが空の場合はnullに設定（デフォルトアイコンが表示される）
-          setUserIconUrl(null)
-        }
-      } else if (response.status === 404) {
-        // 初回ログイン時：Googleアイコンを自動設定
-        setIsUserSetupComplete(false)
-        
-        // Googleアバターがある場合は自動的に表示
-        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                               googleAvatarUrl.includes('googleapis.com') || 
-                               googleAvatarUrl.includes('google.com'))) {
-          console.log('Header: Setting Google avatar for initial display:', googleAvatarUrl)
-          setUserIconUrl(googleAvatarUrl)
-        } else {
-          setUserIconUrl(null)
-        }
-      } else {
-        setIsUserSetupComplete(false)
-        // エラーの場合もデフォルトアイコンを使用
-        setUserIconUrl(null)
-      }
-    } catch (error) {
-      console.error('Header: Error checking user setup:', error)
-      setIsUserSetupComplete(false)
-      // エラーの場合もデフォルトアイコンを使用
-      setUserIconUrl(null)
-    }
-  }, [user?.id, user?.user_metadata]) // Googleアバター情報も依存関係に含める
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
@@ -160,44 +108,20 @@ const Header = memo(function Header() {
     }
   }, [isDropdownOpen, isMobileDropdownOpen])
 
-  // ユーザー設定完了状態のチェック
-  useEffect(() => {
-    if (user?.id) {
-      checkUserSetupComplete()
-    }
-  }, [user?.id, checkUserSetupComplete])
-
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
       if (user?.id) {
-        // アイコンを強制的にリセット
-        setUserIconUrl(null)
-        // 少し遅延させてから再取得
-        setTimeout(() => {
-          checkUserSetupComplete()
-        }, 100)
+        refreshUserSettings()
       }
     }
 
-    const handleUserSignedOut = () => {
-      // ログアウト時の状態をクリア
-      setIsUserSetupComplete(false)
-      setUserIconUrl(null)
-      setIsDropdownOpen(false)
-      setIsMobileDropdownOpen(false)
-    }
-
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-    window.addEventListener('userSignedOut', handleUserSignedOut)
     
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-      window.removeEventListener('userSignedOut', handleUserSignedOut)
     }
-  }, [user?.id, checkUserSetupComplete])
-
-  // デバッグ用のuseEffectを削除してパフォーマンス改善
+  }, [user?.id, refreshUserSettings])
 
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = () => {
@@ -236,9 +160,9 @@ const Header = memo(function Header() {
                   onClick={toggleDropdown}
                   className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  {userIconUrl ? (
+                  {getDisplayIconUrl() ? (
                     <Image
-                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                      src={getDisplayIconUrl()!}
                       alt="User Avatar"
                       width={36}
                       height={36}
@@ -326,9 +250,9 @@ const Header = memo(function Header() {
                   onClick={toggleMobileDropdown}
                   className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                 >
-                  {userIconUrl ? (
+                  {getDisplayIconUrl() ? (
                     <Image
-                      src={`${userIconUrl}${userIconUrl.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                      src={getDisplayIconUrl()!}
                       alt="User Avatar"
                       width={36}
                       height={36}
