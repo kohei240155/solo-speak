@@ -107,7 +107,11 @@ export default function QuizPractice({
             <button
               onClick={() => handleAnswer(false)}
               disabled={hasAnswered}
-              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full bg-white border py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed ${
+                hasAnswered 
+                  ? 'opacity-50' 
+                  : 'hover:bg-gray-50'
+              }`}
               style={{ 
                 borderColor: '#616161',
                 color: '#616161'
@@ -122,7 +126,11 @@ export default function QuizPractice({
             <button
               onClick={() => handleAnswer(true)}
               disabled={hasAnswered}
-              className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed ${
+                hasAnswered 
+                  ? 'opacity-50' 
+                  : ''
+              }`}
               style={{ 
                 backgroundColor: hasAnswered ? '#9CA3AF' : '#616161'
               }}
