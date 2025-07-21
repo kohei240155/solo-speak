@@ -5,7 +5,7 @@ import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
 import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { BsPencil } from 'react-icons/bs'
-import { useState } from 'react'
+import { useState, useCallback, useMemo, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
@@ -17,6 +17,129 @@ interface SpeakConfig {
   prioritizeLowPractice: boolean
   language: string
 }
+
+interface PhraseItemProps {
+  phrase: SavedPhrase
+  isMenuOpen: boolean
+  onMenuToggle: (phraseId: string) => void
+  onEdit: (phrase: SavedPhrase) => void
+  onSpeak: (phraseId: string) => void
+  onDelete: (phraseId: string) => void
+}
+
+const PhraseItem = memo(({ 
+  phrase, 
+  isMenuOpen, 
+  onMenuToggle, 
+  onEdit, 
+  onSpeak, 
+  onDelete 
+}: PhraseItemProps) => {
+  const borderColor = useMemo(() => 
+    getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
+    [phrase.correctAnswers]
+  )
+
+  const formattedDate = useMemo(() => 
+    new Date(phrase.createdAt).toLocaleDateString('ja-JP', { 
+      year: 'numeric', 
+      month: 'numeric', 
+      day: 'numeric' 
+    }),
+    [phrase.createdAt]
+  )
+
+  return (
+    <div 
+      className="pl-4 pr-6 py-6 bg-white shadow-md relative"
+      style={{ 
+        borderLeft: `4px solid ${borderColor}`,
+        borderRadius: '5px'
+      }}
+    >
+      <div className="flex justify-between mb-2">
+        <div 
+          className="text-base font-medium text-gray-900 flex-1 pr-2 break-words"
+          style={{ 
+            wordWrap: 'break-word',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word'
+          }}
+        >
+          {phrase.text}
+        </div>
+        <div className="relative flex-shrink-0">
+          <button 
+            onClick={() => onMenuToggle(phrase.id)}
+            className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
+          >
+            <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
+          </button>
+          
+          {/* ドロップダウンメニュー */}
+          {isMenuOpen && (
+            <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-28">
+              <button
+                onClick={() => onEdit(phrase)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+              >
+                <BsPencil className="w-3 h-3" />
+                Edit
+              </button>
+              <button
+                onClick={() => onSpeak(phrase.id)}
+                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+              >
+                <RiSpeakLine className="w-3 h-3" />
+                Speak
+              </button>
+              <button
+                onClick={() => onDelete(phrase.id)}
+                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+              >
+                <RiDeleteBin6Line className="w-3 h-3" />
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex justify-between mb-3">
+        <div 
+          className="text-sm text-gray-600 break-words flex-1 pr-2"
+          style={{ 
+            wordWrap: 'break-word',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word'
+          }}
+        >
+          {phrase.translation}
+        </div>
+        <div className="relative flex-shrink-0 w-5">
+          {/* 三点リーダーと同じ幅のスペースを確保 */}
+        </div>
+      </div>
+      <div className="flex items-center justify-between text-xs text-gray-900">
+        <div className="flex items-center space-x-4">
+          <span className="flex items-center">
+            <RiSpeakLine className="w-4 h-4 mr-1" />
+            {phrase.practiceCount || 0}
+          </span>
+          <span className="flex items-center">
+            <IoCheckboxOutline className="w-4 h-4 mr-1" />
+            {phrase.correctAnswers || 0}
+          </span>
+        </div>
+        <div className="flex items-center">
+          <BiCalendarAlt className="w-4 h-4 mr-1" />
+          {formattedDate}
+        </div>
+      </div>
+    </div>
+  )
+})
+
+PhraseItem.displayName = 'PhraseItem'
 
 interface PhraseListProps {
   savedPhrases: SavedPhrase[]
@@ -55,22 +178,31 @@ export default function PhraseList({
   // 外部からのSpeakモーダル制御
   const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
 
-  const handleMenuToggle = (phraseId: string) => {
+  const handleMenuToggle = useCallback((phraseId: string) => {
     setOpenMenuId(openMenuId === phraseId ? null : phraseId)
-  }
+  }, [openMenuId])
 
-  const handleEdit = (phrase: SavedPhrase) => {
+  const handleEdit = useCallback((phrase: SavedPhrase) => {
     setEditingPhrase(phrase)
     setEditedText(phrase.text)               // 学習言語（下のフォーム）
     setEditedTranslation(phrase.translation) // 母国語（上のフォーム）
     setOpenMenuId(null)
-  }
+  }, [])
 
-  const handleSpeak = (phraseId: string) => {
+  const handleSpeak = useCallback((phraseId: string) => {
     // 特定のフレーズを練習するために、そのフレーズIDをパラメータとして遷移
     router.push(`/phrase/speak?phraseId=${phraseId}`)
     setOpenMenuId(null)
-  }
+  }, [router])
+
+  const handleDelete = useCallback((phraseId: string) => {
+    setDeletingPhraseId(phraseId)
+    setOpenMenuId(null)
+  }, [])
+
+  const handleCloseMenu = useCallback(() => {
+    setOpenMenuId(null)
+  }, [])
 
   const handleSpeakStart = (config: SpeakConfig) => {
     // 設定に基づいてSpeak画面に遷移
@@ -87,11 +219,6 @@ export default function PhraseList({
     if (onSpeakModalStateChange) {
       onSpeakModalStateChange(false)
     }
-  }
-
-  const handleDelete = (phraseId: string) => {
-    setDeletingPhraseId(phraseId)
-    setOpenMenuId(null)
   }
 
   const handleConfirmDelete = async () => {
@@ -209,97 +336,15 @@ export default function PhraseList({
     <>
       <div className="space-y-4">
         {savedPhrases.map((phrase, index) => (
-          <div 
-            key={`${phrase.id}-${index}`} 
-            className="pl-4 pr-6 py-6 bg-white shadow-md relative"
-            style={{ 
-              borderLeft: `4px solid ${getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0)}`,
-              borderRadius: '5px'
-            }}
-          >
-            <div className="flex justify-between mb-2">
-              <div 
-                className="text-base font-medium text-gray-900 flex-1 pr-2 break-words"
-                style={{ 
-                  wordWrap: 'break-word',
-                  overflowWrap: 'anywhere',
-                  wordBreak: 'break-word'
-                }}
-              >
-                {phrase.text}
-              </div>
-              <div className="relative flex-shrink-0">
-                <button 
-                  onClick={() => handleMenuToggle(phrase.id)}
-                  className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
-                >
-                  <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
-                </button>
-                
-                {/* ドロップダウンメニュー */}
-                {openMenuId === phrase.id && (
-                  <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-28">
-                    <button
-                      onClick={() => handleEdit(phrase)}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <BsPencil className="w-3 h-3" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleSpeak(phrase.id)}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <RiSpeakLine className="w-3 h-3" />
-                      Speak
-                    </button>
-                    <button
-                      onClick={() => handleDelete(phrase.id)}
-                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <RiDeleteBin6Line className="w-3 h-3" />
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex justify-between mb-3">
-              <div 
-                className="text-sm text-gray-600 break-words flex-1 pr-2"
-                style={{ 
-                  wordWrap: 'break-word',
-                  overflowWrap: 'anywhere',
-                  wordBreak: 'break-word'
-                }}
-              >
-                {phrase.translation}
-              </div>
-              <div className="relative flex-shrink-0 w-5">
-                {/* 三点リーダーと同じ幅のスペースを確保 */}
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-xs text-gray-900">
-              <div className="flex items-center space-x-4">
-                <span className="flex items-center">
-                  <RiSpeakLine className="w-4 h-4 mr-1" />
-                  {phrase.practiceCount || 0}
-                </span>
-                <span className="flex items-center">
-                  <IoCheckboxOutline className="w-4 h-4 mr-1" />
-                  {phrase.correctAnswers || 0}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <BiCalendarAlt className="w-4 h-4 mr-1" />
-                {new Date(phrase.createdAt).toLocaleDateString('ja-JP', { 
-                  year: 'numeric', 
-                  month: 'numeric', 
-                  day: 'numeric' 
-                })}
-              </div>
-            </div>
-          </div>
+          <PhraseItem
+            key={`${phrase.id}-${index}`}
+            phrase={phrase}
+            isMenuOpen={openMenuId === phrase.id}
+            onMenuToggle={handleMenuToggle}
+            onEdit={handleEdit}
+            onSpeak={handleSpeak}
+            onDelete={handleDelete}
+          />
         ))}
         
         {/* 無限スクロール用のローディング */}
@@ -473,7 +518,7 @@ export default function PhraseList({
       {openMenuId && (
         <div 
           className="fixed inset-0 z-0"
-          onClick={() => setOpenMenuId(null)}
+          onClick={handleCloseMenu}
         />
       )}
     </>

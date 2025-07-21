@@ -69,18 +69,32 @@ export default function PhraseListPage() {
     }
   }
 
-  // 無限スクロール機能
+  // 無限スクロール機能（スロットリング付き）
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100) {
-        if (hasMorePhrases && !isLoadingPhrases) {
-          fetchSavedPhrases(phrasePage + 1, true)
-        }
+      // スロットリング: 100ms間隔でのみ実行
+      if (timeoutId) {
+        clearTimeout(timeoutId)
       }
+      
+      timeoutId = setTimeout(() => {
+        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100) {
+          if (hasMorePhrases && !isLoadingPhrases) {
+            fetchSavedPhrases(phrasePage + 1, true)
+          }
+        }
+      }, 100)
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
 
   // 認証チェック中またはログインしていない場合は早期リターン
