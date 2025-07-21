@@ -49,9 +49,19 @@ export default function RankingPage() {
 
         if (response.ok) {
           const data = await response.json()
-          if (data.success) {
+          console.log('Languages API response:', data)
+          // APIは直接言語配列を返すか、フォールバックデータを返す
+          if (Array.isArray(data)) {
+            setLanguages(data)
+            console.log('Set languages from array:', data.length)
+          } else if (data.success && data.languages) {
             setLanguages(data.languages)
+            console.log('Set languages from success response:', data.languages.length)
+          } else {
+            console.warn('Unexpected response format:', data)
           }
+        } else {
+          console.error('Failed to fetch languages, status:', response.status)
         }
       } catch (error) {
         console.error('Error fetching languages:', error)
