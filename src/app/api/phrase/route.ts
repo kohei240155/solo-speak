@@ -100,6 +100,53 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // その日初めてのフレーズ生成かどうかをチェック
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // 今日の00:00:00に設定
+    
+    const todayEnd = new Date(today)
+    todayEnd.setHours(23, 59, 59, 999) // 今日の23:59:59に設定
+
+    // 今日既にフレーズを作成しているかチェック
+    const todayPhrasesCount = await prisma.phrase.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: today,
+          lte: todayEnd
+        },
+        deletedAt: null
+      }
+    })
+
+    // 連続日数の更新処理
+    let shouldUpdateConsecutiveDays = false
+    let newConsecutiveDays = user.consecutiveSpeakingDays
+
+    if (todayPhrasesCount === 0) {
+      // 今日初めてのフレーズ生成の場合
+      shouldUpdateConsecutiveDays = true
+      
+      if (user.lastSpeakingDate) {
+        const lastSpeakingDate = new Date(user.lastSpeakingDate)
+        lastSpeakingDate.setHours(0, 0, 0, 0)
+        
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        
+        if (lastSpeakingDate.getTime() === yesterday.getTime()) {
+          // 昨日もフレーズを作成していた場合、連続日数を+1
+          newConsecutiveDays = user.consecutiveSpeakingDays + 1
+        } else {
+          // 連続していない場合、1からスタート
+          newConsecutiveDays = 1
+        }
+      } else {
+        // 初回の場合
+        newConsecutiveDays = 1
+      }
+    }
+
     // フレーズを作成
     const phrase = await prisma.phrase.create({
       data: {
@@ -126,6 +173,17 @@ export async function POST(request: NextRequest) {
         }
       }
     })
+
+    // その日初めてのフレーズ生成だった場合、連続日数を更新
+    if (shouldUpdateConsecutiveDays) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          consecutiveSpeakingDays: newConsecutiveDays,
+          lastSpeakingDate: new Date()
+        }
+      })
+    }
 
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
