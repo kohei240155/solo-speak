@@ -108,10 +108,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+        <div className="space-y-6">
           {/* ヘッダー */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
             {userSettings && languages && (
               <LanguageSelector
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           )}
 
           {/* 機能メニュー */}
-          <div className="mt-12">
+          <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">機能メニュー</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div 
