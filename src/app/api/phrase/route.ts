@@ -67,16 +67,17 @@ export async function POST(request: NextRequest) {
 
     // 残り生成回数をチェック（翌日復活ロジック付き）
     let updatedUser = user
-    if (user.lastSpeakingDate) {
-      const lastSpeakingDate = new Date(user.lastSpeakingDate)
-      const lastSpeakingDay = new Date(lastSpeakingDate.getFullYear(), lastSpeakingDate.getMonth(), lastSpeakingDate.getDate())
+    if (user.lastPhraseGenerationDate) {
+      const lastGenerationDate = new Date(user.lastPhraseGenerationDate)
+      const lastGenerationDay = new Date(lastGenerationDate.getFullYear(), lastGenerationDate.getMonth(), lastGenerationDate.getDate())
       
-      // 最後のスピーキング日が今日より前の場合、残り回数をリセット
-      if (lastSpeakingDay.getTime() < todayStart.getTime()) {
+      // 最後の生成日が今日より前の場合、残り回数をリセット
+      if (lastGenerationDay.getTime() < todayStart.getTime()) {
         updatedUser = await prisma.user.update({
           where: { id: userId },
           data: {
-            remainingPhraseGenerations: 5 // 毎日5回にリセット
+            remainingPhraseGenerations: 5, // 毎日5回にリセット
+            lastPhraseGenerationDate: currentTime
           }
         })
       }
@@ -85,7 +86,8 @@ export async function POST(request: NextRequest) {
       updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          remainingPhraseGenerations: 5
+          remainingPhraseGenerations: 5,
+          lastPhraseGenerationDate: currentTime
         }
       })
     }
@@ -194,6 +196,15 @@ export async function POST(request: NextRequest) {
             username: true,
           }
         }
+      }
+    })
+
+    // フレーズ作成成功後、残り回数を1減らして日付を更新
+    updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        remainingPhraseGenerations: Math.max(0, updatedUser.remainingPhraseGenerations - 1),
+        lastPhraseGenerationDate: currentTime
       }
     })
 

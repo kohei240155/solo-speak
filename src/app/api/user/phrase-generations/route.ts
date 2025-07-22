@@ -34,9 +34,9 @@ export async function GET(request: NextRequest) {
     const today = new Date()
     today.setHours(0, 0, 0, 0) // 今日の開始時刻に設定
 
-    // lastPhraseGenerationDateが存在しない、または今日より前の場合
-    if (!lastGenerationDate || new Date(lastGenerationDate) < today) {
-      // フレーズ生成回数を5にリセット
+    // lastPhraseGenerationDateが存在しない、または今日より前の場合のみリセット
+    if (!lastGenerationDate) {
+      // 初回の場合は5回に設定
       remainingGenerations = 5
       
       // データベースを更新
@@ -47,6 +47,24 @@ export async function GET(request: NextRequest) {
           lastPhraseGenerationDate: new Date()
         }
       })
+    } else {
+      const lastGenerationDay = new Date(lastGenerationDate)
+      lastGenerationDay.setHours(0, 0, 0, 0) // 最後の生成日の開始時刻に設定
+      
+      // 最後の生成日が今日より前の場合のみリセット
+      if (lastGenerationDay.getTime() < today.getTime()) {
+        remainingGenerations = 5
+        
+        // データベースを更新
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            remainingPhraseGenerations: 5,
+            lastPhraseGenerationDate: new Date()
+          }
+        })
+      }
+      // 今日の場合は現在の値をそのまま使用（更新しない）
     }
 
     return NextResponse.json({
