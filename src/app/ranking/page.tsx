@@ -28,7 +28,6 @@ export default function RankingPage() {
   const [rankingData, setRankingData] = useState<RankingUser[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [isLoading, setIsLoading] = useState(false)
-  const [currentUserRank, setCurrentUserRank] = useState<RankingUser | null>(null)
   const [activeTab, setActiveTab] = useState('Daily')
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
@@ -49,19 +48,12 @@ export default function RankingPage() {
 
         if (response.ok) {
           const data = await response.json()
-          console.log('Languages API response:', data)
           // APIは直接言語配列を返すか、フォールバックデータを返す
           if (Array.isArray(data)) {
             setLanguages(data)
-            console.log('Set languages from array:', data.length)
           } else if (data.success && data.languages) {
             setLanguages(data.languages)
-            console.log('Set languages from success response:', data.languages.length)
-          } else {
-            console.warn('Unexpected response format:', data)
           }
-        } else {
-          console.error('Failed to fetch languages, status:', response.status)
         }
       } catch (error) {
         console.error('Error fetching languages:', error)
@@ -193,9 +185,9 @@ export default function RankingPage() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
+                    className={`px-4 py-3 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
                       activeTab === tab
-                        ? 'border-gray-900 text-gray-900 font-semibold'
+                        ? 'border-gray-900 text-gray-900'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
@@ -205,26 +197,10 @@ export default function RankingPage() {
               </nav>
             </div>
 
-            {/* 自分の順位表示 */}
-            {currentUserRank && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <h2 className="text-lg font-semibold text-blue-800 mb-2">あなたの順位</h2>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                    <span className="text-blue-800 font-bold">{currentUserRank.rank}</span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-blue-900">{currentUserRank.username}</p>
-                    <p className="text-sm text-blue-700">{currentUserRank.totalCount}回音読</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* ランキングテーブル */}
             <div className="overflow-hidden">
               <div className="mb-4">
-                <div className="grid grid-cols-3 gap-4 text-sm font-medium text-gray-500 pb-2">
+                <div className="grid grid-cols-3 gap-4 text-base md:text-lg font-bold text-gray-900 pb-2">
                   <div>Rank</div>
                   <div>User</div>
                   <div className="text-right">Count</div>
@@ -246,7 +222,7 @@ export default function RankingPage() {
                     <div
                       key={rankUser.userId}
                       className={`grid grid-cols-3 gap-4 py-3 px-2 rounded-lg ${
-                        rankUser.userId === user?.id ? 'bg-blue-50' : 'hover:bg-gray-50'
+                        rankUser.userId === user?.id ? 'bg-gray-100' : 'hover:bg-gray-50'
                       }`}
                     >
                       {/* 順位 */}
@@ -269,7 +245,7 @@ export default function RankingPage() {
                       </div>
 
                       {/* ユーザー */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 -ml-4">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                           {rankUser.iconUrl ? (
                             <Image
@@ -292,7 +268,7 @@ export default function RankingPage() {
 
                       {/* 回数 */}
                       <div className="text-right">
-                        <p className="font-bold text-lg text-blue-600">{rankUser.totalCount}</p>
+                        <p className="font-bold text-lg text-gray-900">{rankUser.totalCount}</p>
                       </div>
                     </div>
                   ))}
