@@ -22,7 +22,7 @@ model User {
   stripeCustomerId           String?   @map("stripe_customer_id")
   remainingPhraseGenerations Int       @default(0) @map("remaining_phrase_generations")
   lastPhraseGenerationDate   DateTime? @map("last_phrase_generation_date")
-  lastSpeakingDate          DateTime? @map("last_speaking_date")
+  lastSpeakingDate           DateTime? @map("last_speaking_date")
   createdAt                  DateTime  @default(now()) @map("created_at")
   updatedAt                  DateTime  @updatedAt @map("updated_at")
   deletedAt                  DateTime? @map("deleted_at")
