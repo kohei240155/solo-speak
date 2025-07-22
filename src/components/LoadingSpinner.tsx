@@ -19,7 +19,7 @@ export default function LoadingSpinner({
 
   const spinner = (
     <div className={`text-center ${className}`}>
-      <div className={`animate-spin rounded-full border-b-2 border-blue-600 mx-auto ${sizeClasses[size]}`}></div>
+      <div className={`animate-spin rounded-full border-b-2 border-gray-600 mx-auto ${sizeClasses[size]}`}></div>
       {message && (
         <p className="mt-2 text-gray-600 text-sm">{message}</p>
       )}
