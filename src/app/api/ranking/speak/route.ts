@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { prisma } from '@/utils/prisma'
+import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,73 +13,63 @@ export async function GET(request: NextRequest) {
     console.log('Parameters:', { language, period })
 
     // 認証チェック
-    const authHeader = request.headers.get('authorization')
-    if (!authHeader?.startsWith('Bearer ')) {
-      console.log('No auth header')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const authResult = await authenticateRequest(request)
+    if ('error' in authResult) {
+      return authResult.error
     }
 
-    const token = authHeader.split(' ')[1]
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-    
-    if (authError || !user) {
-      console.log('Auth error:', authError)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const user = authResult.user
     console.log('User authenticated:', user.id)
 
     // 期間に応じた日付条件を設定
     const now = new Date()
-    let startDate: string
+    let startDate: Date
     
     if (period === 'daily') {
-      startDate = new Date(now.toDateString()).toISOString()
+      startDate = new Date(now.toDateString())
     } else if (period === 'weekly') {
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      startDate = weekAgo.toISOString()
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     } else {
       // total の場合は全期間
-      startDate = '1970-01-01T00:00:00.000Z'
+      startDate = new Date('1970-01-01')
     }
 
-    // Speak Logsテーブルからランキングデータを取得（phrasesテーブル経由でユーザー情報を取得）
-    const { data: speakLogs, error } = await supabase
-      .from('speak_logs')
-      .select(`
-        count,
-        date,
-        phrases!inner(
-          user_id,
-          language_id,
-          users!inner(
-            id,
-            username,
-            icon_url
-          )
-        )
-      `)
-      .eq('phrases.language_id', language)
-      .gte('date', startDate)
+    console.log('Date filter:', { period, startDate })
 
-    console.log('Supabase query executed:', { speakLogs, error })
+    // Prismaを使用してSpeak Logsデータを取得
+    const speakLogs = await prisma.speakLog.findMany({
+      where: {
+        date: {
+          gte: startDate
+        },
+        phrase: {
+          languageId: language
+        }
+      },
+      include: {
+        phrase: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                iconUrl: true
+              }
+            }
+          }
+        }
+      }
+    })
 
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: 'Database error', details: error }, { status: 500 })
-    }
+    console.log('Prisma query result:', { count: speakLogs.length })
 
     // ユーザーごとのSpeak回数を集計
     const userCounts = new Map<string, { userId: string, username: string, iconUrl: string | null, count: number }>()
 
-    speakLogs?.forEach((log: any) => {
-      // Supabaseのinner joinで返されるデータ構造に対応
-      const phrase = log.phrases
-      if (!phrase || !phrase.users) return
-      
-      const userId = phrase.users.id
-      const username = phrase.users.username
-      const iconUrl = phrase.users.icon_url
+    speakLogs.forEach((log) => {
+      const userId = log.phrase.user.id
+      const username = log.phrase.user.username
+      const iconUrl = log.phrase.user.iconUrl
       const speakCount = log.count || 1
 
       if (userCounts.has(userId)) {
