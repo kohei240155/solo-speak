@@ -7,7 +7,6 @@ import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 const prisma = new PrismaClient()
 
 const createPhraseSchema = z.object({
-  userId: z.string().min(1),
   languageId: z.string().min(1),
   text: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
@@ -24,15 +23,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { userId, languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
+    const { languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
 
-    // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック
-    if (authResult.user.id !== userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized: Cannot create phrase for another user' },
-        { status: 403 }
-      )
-    }
+    // 認証されたユーザーIDを使用
+    const userId = authResult.user.id
 
     // ユーザーが存在するかチェック
     const user = await prisma.user.findUnique({
@@ -189,7 +183,6 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
     const languageId = searchParams.get('languageId')
     const languageCode = searchParams.get('languageCode')
     const page = parseInt(searchParams.get('page') || '1')
@@ -197,24 +190,16 @@ export async function GET(request: NextRequest) {
     const minimal = searchParams.get('minimal') === 'true' // 最小限のデータのみ取得するフラグ
     const offset = (page - 1) * limit
 
-    // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック（userIdが指定されている場合）
-    if (userId && authResult.user.id !== userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized: Cannot access another user\'s phrases' },
-        { status: 403 }
-      )
-    }
+    // 認証されたユーザーのIDを使用
+    const userId = authResult.user.id
 
     const where: {
-      userId?: string
+      userId: string
       languageId?: string
       deletedAt?: null
     } = {
+      userId, // 認証されたユーザーのフレーズのみを取得
       deletedAt: null // 削除されていないフレーズのみを取得
-    }
-    
-    if (userId) {
-      where.userId = userId
     }
     
     if (languageId) {

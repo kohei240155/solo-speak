@@ -9,7 +9,8 @@ export const usePhraseManager = () => {
   const { user } = useAuth()
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
-  const [desiredPhrase, setDesiredPhrase] = useState('明日花火に行きたい')
+  const [useChatGptApi, setUseChatGptApi] = useState(false)
+  const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -31,6 +32,15 @@ export const usePhraseManager = () => {
   
   // ユーザー設定の初期化が完了したかを追跡
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
+
+  // useChatGptApiの状態に応じてフレーズを自動設定
+  useEffect(() => {
+    if (!useChatGptApi) {
+      setDesiredPhrase('明日花火に行きたい')
+    } else {
+      setDesiredPhrase('')
+    }
+  }, [useChatGptApi])
 
   // 認証ヘッダーを取得するヘルパー関数
   const getAuthHeaders = useCallback(async () => {
@@ -225,7 +235,8 @@ export const usePhraseManager = () => {
           nativeLanguage,
           learningLanguage,
           desiredPhrase,
-          selectedStyle: selectedType
+          selectedStyle: selectedType,
+          useChatGptApi
         })
       })
 
@@ -395,6 +406,11 @@ export const usePhraseManager = () => {
     }
   }, [learningLanguage, user, fetchSavedPhrases])
 
+  const handleUseChatGptApiChange = (value: boolean) => {
+    setUseChatGptApi(value)
+    // useEffectでフレーズの自動設定が行われるため、ここでは何もしない
+  }
+
   return {
     // State
     nativeLanguage,
@@ -417,6 +433,7 @@ export const usePhraseManager = () => {
     totalPhrases,
     phraseValidationError,
     variationValidationErrors,
+    useChatGptApi,
     
     // Handlers
     handleEditVariation,
@@ -427,6 +444,7 @@ export const usePhraseManager = () => {
     fetchSavedPhrases,
     checkUnsavedChanges,
     handleTypeChange,
-    handleLearningLanguageChange
+    handleLearningLanguageChange,
+    handleUseChatGptApiChange
   }
 }

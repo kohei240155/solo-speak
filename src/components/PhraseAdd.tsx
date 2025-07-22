@@ -15,12 +15,14 @@ interface PhraseAddProps {
   savingVariationIndex: number | null
   error: string
   selectedType: 'common' | 'business' | 'casual'
+  useChatGptApi: boolean
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
   onTypeChange: (type: 'common' | 'business' | 'casual') => void
+  onUseChatGptApiChange: (value: boolean) => void
 }
 
 export default function PhraseAdd({
@@ -37,12 +39,14 @@ export default function PhraseAdd({
   savingVariationIndex,
   error,
   selectedType,
+  useChatGptApi,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
   onResetVariations,
-  onTypeChange
+  onTypeChange,
+  onUseChatGptApiChange
 }: PhraseAddProps) {
   return (
     <>
@@ -144,6 +148,24 @@ export default function PhraseAdd({
             {desiredPhrase.length} / 100
           </span>
         </div>
+      </div>
+
+      {/* ChatGPT API使用チェックボックス */}
+      <div className="mb-4 flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="useChatGptApi"
+          checked={useChatGptApi}
+          onChange={(e) => onUseChatGptApiChange(e.target.checked)}
+          disabled={generatedVariations.length > 0}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+        />
+        <label 
+          htmlFor="useChatGptApi" 
+          className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}
+        >
+          ChatGPT APIを使用する {!useChatGptApi && '(テスト用固定値を使用)'}
+        </label>
       </div>
 
       {/* AI Suggest ボタン */}
