@@ -25,6 +25,8 @@ interface PhraseItemProps {
   onEdit: (phrase: SavedPhrase) => void
   onSpeak: (phraseId: string) => void
   onDelete: (phraseId: string) => void
+  isShowingNuance: boolean
+  onCardClick: (phraseId: string) => void
 }
 
 const PhraseItem = memo(({ 
@@ -33,7 +35,9 @@ const PhraseItem = memo(({
   onMenuToggle, 
   onEdit, 
   onSpeak, 
-  onDelete 
+  onDelete,
+  isShowingNuance,
+  onCardClick
 }: PhraseItemProps) => {
   const borderColor = useMemo(() => 
     getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
@@ -51,11 +55,13 @@ const PhraseItem = memo(({
 
   return (
     <div 
-      className="pl-4 pr-6 py-6 bg-white shadow-md relative"
+      className="pl-4 pr-6 py-6 bg-white shadow-md relative cursor-pointer"
       style={{ 
         borderLeft: `4px solid ${borderColor}`,
-        borderRadius: '5px'
+        borderRadius: '5px',
+        minHeight: '140px' // 固定の最小高さを設定
       }}
+      onClick={() => onCardClick(phrase.id)}
     >
       <div className="flex justify-between mb-2">
         <div 
@@ -63,14 +69,18 @@ const PhraseItem = memo(({
           style={{ 
             wordWrap: 'break-word',
             overflowWrap: 'anywhere',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            minHeight: '24px' // テキスト行の最小高さを確保
           }}
         >
-          {phrase.text}
+          {isShowingNuance ? (phrase.nuance || 'ニュアンス情報がありません') : phrase.text}
         </div>
         <div className="relative flex-shrink-0">
           <button 
-            onClick={() => onMenuToggle(phrase.id)}
+            onClick={(e) => {
+              e.stopPropagation(); // カードクリックイベントの伝播を防ぐ
+              onMenuToggle(phrase.id);
+            }}
             className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
           >
             <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
@@ -110,10 +120,11 @@ const PhraseItem = memo(({
           style={{ 
             wordWrap: 'break-word',
             overflowWrap: 'anywhere',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            minHeight: '20px' // 翻訳行の最小高さを確保
           }}
         >
-          {phrase.translation}
+          {isShowingNuance ? '\u00A0' : phrase.translation} {/* ニュアンス表示時は非破壊スペースで高さを保持 */}
         </div>
         <div className="relative flex-shrink-0 w-5">
           {/* 三点リーダーと同じ幅のスペースを確保 */}
@@ -174,6 +185,7 @@ export default function PhraseList({
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
+  const [nuanceViewingIds, setNuanceViewingIds] = useState<Set<string>>(new Set())
 
   // 外部からのSpeakモーダル制御
   const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
@@ -202,6 +214,18 @@ export default function PhraseList({
 
   const handleCloseMenu = useCallback(() => {
     setOpenMenuId(null)
+  }, [])
+
+  const handleCardClick = useCallback((phraseId: string) => {
+    setNuanceViewingIds(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(phraseId)) {
+        newSet.delete(phraseId)
+      } else {
+        newSet.add(phraseId)
+      }
+      return newSet
+    })
   }, [])
 
   const handleSpeakStart = (config: SpeakConfig) => {
@@ -344,6 +368,8 @@ export default function PhraseList({
             onEdit={handleEdit}
             onSpeak={handleSpeak}
             onDelete={handleDelete}
+            isShowingNuance={nuanceViewingIds.has(phrase.id)}
+            onCardClick={handleCardClick}
           />
         ))}
         
