@@ -313,7 +313,7 @@ export default function RankingPage() {
                 <LoadingSpinner message="Loading..." className="py-8" />
               ) : rankingData.length === 0 ? (
                 <div className="py-8 text-center text-gray-500">
-                  この日のデータがありません
+                  表示対象のデータがありません
                 </div>
               ) : (
                 <div className="space-y-3">
