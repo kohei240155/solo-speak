@@ -220,7 +220,7 @@ export default function RankingPage() {
   return (
     <AuthGuard user={user} loading={loading}>
       <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-2 sm:px-4 md:px-6">
           <Toaster />
           
           {/* Ranking タイトルと言語選択を同じ行に配置 */}
@@ -267,13 +267,13 @@ export default function RankingPage() {
           </div>
 
           {/* コンテンツエリア */}
-          <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-8 sm:pt-4 sm:pb-10 sm:px-10">
+          <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
             {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotalのみ表示） */}
             {activeRankingType === 'Phrase' ? (
               <div className="mb-4 border-b border-gray-200">
                 <nav className="flex space-x-0">
                   <button
-                    className="px-6 py-2 text-base md:text-lg font-bold border-b-2 border-gray-900 text-gray-900"
+                    className="px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 border-gray-900 text-gray-900"
                   >
                     Total
                   </button>
@@ -286,7 +286,7 @@ export default function RankingPage() {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-6 py-2 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                      className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
                         activeTab === tab
                           ? 'border-gray-900 text-gray-900'
                           : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -300,12 +300,12 @@ export default function RankingPage() {
             )}
 
             {/* ランキングテーブル */}
-            <div className="overflow-hidden px-8">
+            <div className="overflow-hidden px-2 sm:px-4 md:px-8">
               <div className="mb-2">
-                <div className="grid grid-cols-[50px_1fr_50px] gap-2 text-base md:text-lg font-bold text-gray-900 pb-2">
-                  <div className="text-left">Rank</div>
-                  <div className="text-left ml-12">User</div>
-                  <div className="text-right">Count</div>
+                <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 text-sm sm:text-base md:text-lg font-bold text-gray-900 pb-2">
+                  <div className="text-left pl-2">Rank</div>
+                  <div className="text-left ml-8 sm:ml-12">User</div>
+                  <div className="text-right pr-2">Count</div>
                 </div>
               </div>
 
@@ -320,15 +320,15 @@ export default function RankingPage() {
                   {rankingData.map((rankUser) => (
                     <div
                       key={rankUser.userId}
-                      className={`grid grid-cols-[50px_1fr_50px] gap-2 py-3 px-2 rounded-lg ${
+                      className={`grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 py-2 sm:py-3 px-1 sm:px-2 rounded-lg ${
                         rankUser.userId === user?.id ? 'bg-gray-100' : 'hover:bg-gray-50'
                       }`}
                     >
                       {/* 順位 */}
-                      <div className="flex items-center justify-start">
+                      <div className="flex items-center justify-start pl-2">
                         {rankUser.rank <= 3 ? (
                           <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
                               rankUser.rank === 1
                                 ? 'bg-yellow-500'
                                 : rankUser.rank === 2
@@ -339,13 +339,13 @@ export default function RankingPage() {
                             {rankUser.rank}
                           </div>
                         ) : (
-                          <span className="text-gray-600 font-medium">{rankUser.rank}</span>
+                          <span className="text-gray-600 font-medium text-sm sm:text-base">{rankUser.rank}</span>
                         )}
                       </div>
 
                       {/* ユーザー */}
-                      <div className="flex items-center gap-2 ml-10">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                      <div className="flex items-center gap-1 sm:gap-2 ml-6 sm:ml-10 min-w-0">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                           {rankUser.iconUrl ? (
                             <Image
                               src={rankUser.iconUrl}
@@ -362,12 +362,17 @@ export default function RankingPage() {
                             </div>
                           )}
                         </div>
-                        <p className="font-medium text-gray-900 truncate">{rankUser.username}</p>
+                        <p className="font-medium text-gray-900 truncate text-sm sm:text-base min-w-0 flex-1">
+                          {rankUser.username.length > 20 
+                            ? `${rankUser.username.substring(0, 20)}...` 
+                            : rankUser.username
+                          }
+                        </p>
                       </div>
 
                       {/* 回数 */}
-                      <div className="flex items-center justify-end">
-                        <p className="font-bold text-lg text-gray-900">{rankUser.totalCount}</p>
+                      <div className="flex items-center justify-end pr-2">
+                        <p className="font-bold text-sm sm:text-lg text-gray-900">{rankUser.totalCount}</p>
                       </div>
                     </div>
                   ))}
