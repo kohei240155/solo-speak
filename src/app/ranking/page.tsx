@@ -29,6 +29,7 @@ export default function RankingPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
+  const [activeRankingType, setActiveRankingType] = useState('Phrase') // Phrase, Speak, Quiz
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
@@ -77,7 +78,15 @@ export default function RankingPage() {
         return
       }
 
-      const response = await fetch(`/api/ranking/daily?date=${date}`, {
+      let endpoint = ''
+      if (activeRankingType === 'Phrase') {
+        endpoint = `/api/ranking/daily?date=${date}`
+      } else if (activeRankingType === 'Speak') {
+        const period = activeTab.toLowerCase() // daily, weekly, total
+        endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
+      }
+
+      const response = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`
         }
@@ -90,7 +99,19 @@ export default function RankingPage() {
       const data = await response.json()
       
       if (data.success) {
-        setRankingData(data.data)
+        if (activeRankingType === 'Speak') {
+          // Speak APIの形式に合わせてデータを変換
+          const transformedData = data.topUsers.map((user: any) => ({
+            userId: user.userId,
+            username: user.username,
+            iconUrl: user.iconUrl,
+            totalCount: user.count,
+            rank: user.rank
+          }))
+          setRankingData(transformedData)
+        } else {
+          setRankingData(data.data)
+        }
       } else {
         toast.error('ランキングデータの取得に失敗しました')
       }
@@ -100,13 +121,13 @@ export default function RankingPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [user])
+  }, [user, activeRankingType, activeTab, selectedLanguage])
 
   useEffect(() => {
     if (user) {
       fetchRanking(selectedDate)
     }
-  }, [user, selectedDate, fetchRanking])
+  }, [user, selectedDate, fetchRanking, activeRankingType, activeTab, selectedLanguage])
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode)
@@ -152,8 +173,7 @@ export default function RankingPage() {
               <button 
                 key={tab.key}
                 onClick={() => {
-                  // タブのクリック処理（将来的に実装）
-                  console.log(`${tab.key} tab clicked`)
+                  setActiveRankingType(tab.key)
                 }}
                 className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
                   index === 0 ? 'rounded-l-[20px]' : ''
@@ -162,7 +182,7 @@ export default function RankingPage() {
                 } ${
                   index > 0 ? 'border-l-0' : ''
                 } ${
-                  tab.key === 'Phrase' 
+                  tab.key === activeRankingType 
                     ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
                     : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
                 }`}
