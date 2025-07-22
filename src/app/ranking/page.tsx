@@ -34,10 +34,9 @@ interface SpeakUser {
 export default function RankingPage() {
   const { user, loading } = useAuth()
   const [rankingData, setRankingData] = useState<RankingUser[]>([])
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
-  const [activeRankingType, setActiveRankingType] = useState('Phrase') // Phrase, Speak, Quiz
+  const [activeRankingType, setActiveRankingType] = useState('Speak') // デフォルトをSpeakに変更
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
@@ -74,7 +73,7 @@ export default function RankingPage() {
     }
   }, [user])
 
-  const fetchRanking = useCallback(async (date: string) => {
+  const fetchRanking = useCallback(async () => {
     if (!user) return
 
     setIsLoading(true)
@@ -88,7 +87,9 @@ export default function RankingPage() {
 
       let endpoint = ''
       if (activeRankingType === 'Phrase') {
-        endpoint = `/api/ranking/daily?date=${date}`
+        // Phraseランキングは後で実装予定
+        toast.error('Phraseランキングは準備中です')
+        return
       } else if (activeRankingType === 'Speak') {
         const period = activeTab.toLowerCase() // daily, weekly, total
         endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
@@ -163,9 +164,9 @@ export default function RankingPage() {
 
   useEffect(() => {
     if (user) {
-      fetchRanking(selectedDate)
+      fetchRanking()
     }
-  }, [user, selectedDate, fetchRanking, activeRankingType, activeTab, selectedLanguage])
+  }, [user, fetchRanking, activeRankingType, activeTab, selectedLanguage])
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode)
