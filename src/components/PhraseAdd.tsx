@@ -164,7 +164,7 @@ export default function PhraseAdd({
           htmlFor="useChatGptApi" 
           className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}
         >
-          ChatGPT APIを使用する {!useChatGptApi && '(テスト用固定値を使用)'}
+          ChatGPT APIを使用する
         </label>
       </div>
 
@@ -212,6 +212,13 @@ export default function PhraseAdd({
           'AI Suggest'
         )}
       </button>
+
+      {/* エラー表示 */}
+      {error && !isLoading && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* 生成結果 */}
       <GeneratedVariations

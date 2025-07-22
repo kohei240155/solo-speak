@@ -31,28 +31,43 @@ interface GeneratePhraseResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== POST /api/phrase/generate called ===')
+    
     // 認証チェック
     const authResult = await authenticateRequest(request)
     if ('error' in authResult) {
+      console.log('Authentication failed')
       return authResult.error
     }
+    console.log('Authentication successful, user ID:', authResult.user.id)
 
     const body = await request.json()
+    console.log('Request body:', body)
+    
     const { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle, useChatGptApi } = generatePhraseSchema.parse(body)
+    console.log('Parsed request:', { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle, useChatGptApi })
 
     // ChatGPT APIを使用するかどうかで分岐
     if (useChatGptApi) {
+      console.log('Using ChatGPT API...')
       // ===== ChatGPT API呼び出し (Structured Outputs使用) =====
       if (!process.env.OPENAI_API_KEY) {
+        console.error('OpenAI API key is not configured')
         return NextResponse.json(
           { error: 'OpenAI API key is not configured' },
           { status: 500 }
         )
       }
+      console.log('OpenAI API key is configured')
 
       // ChatGPT APIに送信するプロンプトを構築
       const prompt = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase)
+      console.log('Generated prompt:', prompt)
 
+      const systemPrompt = getSystemPrompt(nativeLanguage, learningLanguage, selectedStyle)
+      console.log('System prompt length:', systemPrompt.length)
+
+      console.log('Making request to OpenAI API...')
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -78,6 +93,9 @@ export async function POST(request: NextRequest) {
         }),
       })
 
+      console.log('OpenAI API response status:', response.status)
+      console.log('OpenAI API response ok:', response.ok)
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('OpenAI API error:', errorData)
@@ -87,10 +105,15 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      console.log('Parsing OpenAI response...')
       const data = await response.json()
+      console.log('OpenAI response data:', JSON.stringify(data, null, 2))
+      
       const generatedContent = data.choices[0]?.message?.content
+      console.log('Generated content:', generatedContent)
 
       if (!generatedContent) {
+        console.error('No content generated from OpenAI')
         return NextResponse.json(
           { error: 'No content generated' },
           { status: 500 }
@@ -98,32 +121,43 @@ export async function POST(request: NextRequest) {
       }
 
       // Structured Outputsなので直接パースできる
+      console.log('Parsing structured output...')
       const parsedResponse = phraseVariationsSchema.parse(JSON.parse(generatedContent))
+      console.log('Parsed response:', parsedResponse)
       
       // レスポンス形式を既存のインターフェースに変換
+      console.log('Converting to response format...')
       const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
         type: selectedStyle,
         text: variation.text,
         explanation: variation.explanation
       }))
+      console.log('Converted variations:', variations)
 
       const result: GeneratePhraseResponse = {
         variations
       }
+      console.log('Final result:', result)
 
       return NextResponse.json(result)
     } else {
+      console.log('Using mock variations...')
       // テスト用: 固定の応答を返す
       const result: GeneratePhraseResponse = {
         variations: getMockVariations(selectedStyle)
       }
+      console.log('Mock result:', result)
       return NextResponse.json(result)
     }
 
   } catch (error) {
-    console.error('Error generating phrases:', error)
+    console.error('=== Error in POST /api/phrase/generate ===')
+    console.error('Error type:', typeof error)
+    console.error('Error message:', error instanceof Error ? error.message : error)
+    console.error('Full error:', error)
     
     if (error instanceof z.ZodError) {
+      console.error('Zod validation error:', error.issues)
       return NextResponse.json(
         { error: 'Invalid request data', details: error.issues },
         { status: 400 }
