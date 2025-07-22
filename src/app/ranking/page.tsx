@@ -110,10 +110,20 @@ export default function RankingPage() {
       console.log('Response status:', response.status, response.statusText)
 
       if (!response.ok) {
+        // エラーレスポンスの詳細を取得
+        let errorMessage = `Failed to fetch ranking: ${response.status} ${response.statusText}`
+        try {
+          const errorData = await response.json()
+          console.error('Error response:', errorData)
+          errorMessage = errorData.message || errorData.error || errorMessage
+        } catch {
+          console.error('Failed to parse error response')
+        }
+
         if (response.status === 404) {
           toast.error(`${activeRankingType}ランキングのAPIが見つかりません`)
         } else {
-          throw new Error(`Failed to fetch ranking: ${response.status} ${response.statusText}`)
+          toast.error(`エラー: ${errorMessage}`)
         }
         return
       }
