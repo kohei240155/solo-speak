@@ -173,15 +173,15 @@ export default function RankingPage() {
           </div>
 
           {/* コンテンツエリア */}
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-8 sm:pt-4 sm:pb-10 sm:px-10">
             {/* Daily/Weekly/Totalタブメニュー */}
-            <div className="mb-6 border-b border-gray-200">
+            <div className="mb-4 border-b border-gray-200">
               <nav className="flex space-x-0">
                 {['Daily', 'Weekly', 'Total'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-3 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                    className={`px-6 py-2 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
                       activeTab === tab
                         ? 'border-gray-900 text-gray-900'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -194,11 +194,11 @@ export default function RankingPage() {
             </div>
 
             {/* ランキングテーブル */}
-            <div className="overflow-hidden">
+            <div className="overflow-hidden px-8">
               <div className="mb-4">
-                <div className="grid grid-cols-[80px_1fr_80px] gap-4 text-base md:text-lg font-bold text-gray-900 pb-2">
+                <div className="grid grid-cols-[50px_1fr_50px] gap-2 text-base md:text-lg font-bold text-gray-900 pb-2">
                   <div className="text-left">Rank</div>
-                  <div className="text-left">User</div>
+                  <div className="text-left ml-3">User</div>
                   <div className="text-right">Count</div>
                 </div>
               </div>
@@ -217,7 +217,7 @@ export default function RankingPage() {
                   {rankingData.map((rankUser) => (
                     <div
                       key={rankUser.userId}
-                      className={`grid grid-cols-[80px_1fr_80px] gap-4 py-3 px-2 rounded-lg ${
+                      className={`grid grid-cols-[50px_1fr_50px] gap-2 py-3 px-2 rounded-lg ${
                         rankUser.userId === user?.id ? 'bg-gray-100' : 'hover:bg-gray-50'
                       }`}
                     >
@@ -241,7 +241,7 @@ export default function RankingPage() {
                       </div>
 
                       {/* ユーザー */}
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2 ml-3">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                           {rankUser.iconUrl ? (
                             <Image
