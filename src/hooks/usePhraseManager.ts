@@ -89,11 +89,29 @@ export const usePhraseManager = () => {
     }
   }, [userSettingsInitialized])
 
-  const fetchUserRemainingGenerations = async () => {
-    // ユーザー設定APIから残り生成回数を取得
-    // テスト中なので多めに設定
-    setRemainingGenerations(5)
-  }
+  const fetchUserRemainingGenerations = useCallback(async () => {
+    if (!user) return
+    
+    try {
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/user/phrase-generations', {
+        headers
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setRemainingGenerations(data.remainingGenerations)
+      } else {
+        console.error('Failed to fetch remaining generations:', response.statusText)
+        // フォールバック: 0に設定
+        setRemainingGenerations(0)
+      }
+    } catch (error) {
+      console.error('Error fetching remaining generations:', error)
+      // フォールバック: 0に設定
+      setRemainingGenerations(0)
+    }
+  }, [user, getAuthHeaders])
 
   const fetchSavedPhrases = useCallback(async (page = 1, append = false) => {
     if (!user) return
@@ -218,8 +236,21 @@ export const usePhraseManager = () => {
       const data = await response.json()
       setGeneratedVariations(data.variations || [])
       
-      // 生成回数の減算はSelect成功時に行うため、ここでは減らさない
-      // setRemainingGenerations(prev => Math.max(0, prev - 1))
+      // AI Suggest成功時に生成回数を減らす
+      try {
+        const generationsResponse = await fetch('/api/user/phrase-generations', {
+          method: 'POST',
+          headers: await getAuthHeaders()
+        })
+        
+        if (generationsResponse.ok) {
+          const generationsData = await generationsResponse.json()
+          setRemainingGenerations(generationsData.remainingGenerations)
+        }
+      } catch (generationsError) {
+        console.error('Error updating phrase generations:', generationsError)
+        // エラーが発生しても生成処理は成功しているので続行
+      }
 
     } catch (error) {
       console.error('Error generating phrase:', error)
@@ -298,8 +329,6 @@ export const usePhraseManager = () => {
         setGeneratedVariations([])  // これにより AI Suggest ボタンが活性になる
         setEditingVariations({})
         setVariationValidationErrors({})
-        // テスト中なので生成回数は減らさない
-        // setRemainingGenerations(prev => Math.max(0, prev - 1))
       })
       
       // 保存されたフレーズリストを再取得
@@ -357,7 +386,7 @@ export const usePhraseManager = () => {
       fetchUserSettings()
       fetchSavedPhrases(1, false)
     }
-  }, [user, fetchUserSettings, fetchSavedPhrases])
+  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {
