@@ -137,35 +137,36 @@ export default function DashboardPage() {
               <p className="mt-2 text-gray-600">データ読み込み中...</p>
             </div>
           ) : dashboardData ? (
-            <div className="space-y-8">
+            <div className="bg-white rounded-lg shadow-md p-8">
               {/* Speak Streak */}
-              <div className="bg-white p-8 rounded-lg shadow-md">
+              <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
-                <div className="text-6xl font-bold text-blue-600 mb-2">
-                  {dashboardData.speakStreak}
+                <div className="flex items-baseline">
+                  <div className="text-6xl font-bold text-gray-900 mr-3">
+                    {dashboardData.speakStreak}
+                  </div>
+                  <div className="text-xl text-gray-600">days</div>
                 </div>
-                <div className="text-xl text-gray-600">days</div>
               </div>
 
-              {/* Speak Counts */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-white p-8 rounded-lg shadow-md">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
-                  <div className="text-6xl font-bold text-green-600">
-                    {dashboardData.speakCountToday}
-                  </div>
+              {/* Speak Count (Today) */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <div className="text-6xl font-bold text-gray-900">
+                  {dashboardData.speakCountToday}
                 </div>
+              </div>
 
-                <div className="bg-white p-8 rounded-lg shadow-md">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
-                  <div className="text-6xl font-bold text-purple-600">
-                    {dashboardData.speakCountTotal}
-                  </div>
+              {/* Speak Count (Total) */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <div className="text-6xl font-bold text-gray-900">
+                  {dashboardData.speakCountTotal}
                 </div>
               </div>
 
               {/* Quiz Mastery */}
-              <div className="bg-white p-8 rounded-lg shadow-md">
+              <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
                 <div className="space-y-4">
                   {dashboardData.quizMastery.map((level) => (
