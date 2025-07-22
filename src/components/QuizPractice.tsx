@@ -100,7 +100,7 @@ export default function QuizPractice({
       {/* 中央のアイコン表示エリア */}
       <div className="flex justify-center items-center mb-26">
         <div 
-          className="cursor-pointer hover:bg-gray-50 rounded-full p-4 transition-colors"
+          className="cursor-pointer rounded-full p-4 transition-colors"
           onClick={onShowTranslation}
         >
           <PiHandTapLight className="w-12 h-12 text-gray-400" />
