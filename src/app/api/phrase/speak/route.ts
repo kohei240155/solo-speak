@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { isDayChanged } from '@/utils/date-helpers'
 
 export async function GET(request: NextRequest) {
   try {
@@ -53,8 +54,8 @@ export async function GET(request: NextRequest) {
 
     // 常に音読回数の少ない順を優先
     sortedPhrases.sort((a, b) => {
-      const practiceA = a.totalReadCount || 0
-      const practiceB = b.totalReadCount || 0
+      const practiceA = a.totalSpeakCount || 0
+      const practiceB = b.totalSpeakCount || 0
       
       // 音読回数が異なる場合は音読回数で優先
       if (practiceA !== practiceB) {
@@ -74,9 +75,11 @@ export async function GET(request: NextRequest) {
 
     // 最初のフレーズを返す
     const firstPhrase = sortedPhrases[0]
+    const currentDate = new Date()
 
-    // 今日の音読回数を計算
-    const dailyReadCount = firstPhrase.dailyReadCount || 0
+    // 日付が変わった場合はdailySpeakCountを0として扱う
+    const isDayChangedFlag = isDayChanged(firstPhrase.lastSpeakDate, currentDate)
+    const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
 
     return NextResponse.json({
       success: true,
@@ -84,8 +87,8 @@ export async function GET(request: NextRequest) {
         id: firstPhrase.id,
         text: firstPhrase.text,
         translation: firstPhrase.translation,
-        totalReadCount: firstPhrase.totalReadCount || 0,
-        dailyReadCount: dailyReadCount,
+        totalSpeakCount: firstPhrase.totalSpeakCount || 0,
+        dailySpeakCount: dailySpeakCount,
         languageCode: firstPhrase.language.code
       }
     })

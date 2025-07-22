@@ -39,17 +39,17 @@ export default function AuthCallback() {
               console.log('New user detected, redirecting to settings')
               window.location.href = `${redirectUrl}/settings`
             } else if (userCheckResponse.ok) {
-              // ユーザーが設定済みの場合はダッシュボードへ
-              console.log('Existing user detected, redirecting to dashboard')
-              window.location.href = `${redirectUrl}/dashboard`
+              // ユーザーが設定済みの場合はフレーズリストページへ
+              console.log('Existing user detected, redirecting to phrase list')
+              window.location.href = `${redirectUrl}/phrase/list`
             } else {
-              // その他のエラー - とりあえずダッシュボードへ
-              window.location.href = `${redirectUrl}/dashboard`
+              // その他のエラー - とりあえずフレーズリストページへ
+              window.location.href = `${redirectUrl}/phrase/list`
             }
           } catch (apiError) {
             console.error('API呼び出しエラー:', apiError)
             const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
-            window.location.href = `${redirectUrl}/dashboard`
+            window.location.href = `${redirectUrl}/phrase/list`
           }
         } else {
           // セッション情報がない場合はホームページへ

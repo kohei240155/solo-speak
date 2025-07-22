@@ -38,8 +38,8 @@ export async function GET(
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
-      totalReadCount: phrase.totalReadCount,
-      dailyReadCount: phrase.dailyReadCount,
+      totalSpeakCount: phrase.totalSpeakCount,
+      dailySpeakCount: phrase.dailySpeakCount,
       language: phrase.language
     })
 
@@ -120,7 +120,7 @@ export async function PUT(
       text: updatedPhrase.text,
       translation: updatedPhrase.translation,
       createdAt: updatedPhrase.createdAt.toISOString(),
-      practiceCount: updatedPhrase.totalReadCount,
+      practiceCount: updatedPhrase.totalSpeakCount,
       correctAnswers: updatedPhrase.correctQuizCount,
       language: updatedPhrase.language
     })

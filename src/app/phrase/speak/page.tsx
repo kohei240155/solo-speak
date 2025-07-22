@@ -25,8 +25,8 @@ interface SpeakPhrase {
   id: string
   text: string
   translation: string
-  totalReadCount: number
-  dailyReadCount: number
+  totalSpeakCount: number
+  dailySpeakCount: number
 }
 
 function PhraseSpeakPage() {
@@ -49,7 +49,7 @@ function PhraseSpeakPage() {
     handleFinish
   } = useSpeakPhrase()
 
-  const { speakMode, handleSpeakStart, handleSpeakFinish } = useSpeakMode({
+  const { speakMode, handleSpeakStart } = useSpeakMode({
     learningLanguage,
     fetchSpeakPhrase,
     currentPhraseId: currentPhrase?.id || null,
@@ -59,6 +59,7 @@ function PhraseSpeakPage() {
 
   const [showSpeakModal, setShowSpeakModal] = useState(false)
   const [showQuizModal, setShowQuizModal] = useState(false)
+  const [isFinishing, setIsFinishing] = useState(false) // Finish処理中の状態を追加
   
   // 単一フレーズ練習用の状態
   const [singlePhrase, setSinglePhrase] = useState<SpeakPhrase | null>(null)
@@ -100,8 +101,8 @@ function PhraseSpeakPage() {
       
       if (data.success) {
         setSinglePhrase(data.phrase)
-        setSinglePhraseTodayCount(data.phrase.dailyReadCount || 0)
-        setSinglePhraseTotalCount(data.phrase.totalReadCount || 0)
+        setSinglePhraseTodayCount(data.phrase.dailySpeakCount || 0)
+        setSinglePhraseTotalCount(data.phrase.totalSpeakCount || 0)
         setSinglePhrasePendingCount(0) // ペンディングカウントを初期化
       } else {
         toast.error('フレーズが見つかりませんでした')
@@ -139,8 +140,8 @@ function PhraseSpeakPage() {
     // フレーズの表示カウントも更新
     setSinglePhrase(prev => prev ? {
       ...prev,
-      dailyReadCount: prev.dailyReadCount + 1,
-      totalReadCount: prev.totalReadCount + 1
+      dailySpeakCount: prev.dailySpeakCount + 1,
+      totalSpeakCount: prev.totalSpeakCount + 1
     } : null)
   }
 
@@ -152,14 +153,22 @@ function PhraseSpeakPage() {
 
   // 単一フレーズ練習終了処理
   const handleSinglePhraseFinish = async () => {
-    // 保留中のカウントを送信（既存のuseSpeakPhraseと同じロジック）
-    if (singlePhrase && singlePhrasePendingCount > 0) {
-      const success = await sendPendingCount(singlePhrase.id, singlePhrasePendingCount)
-      if (!success) {
-        toast.error('カウントの送信に失敗しました')
+    setIsFinishing(true)
+    try {
+      // 保留中のカウントを送信（既存のuseSpeakPhraseと同じロジック）
+      if (singlePhrase && singlePhrasePendingCount > 0) {
+        const success = await sendPendingCount(singlePhrase.id, singlePhrasePendingCount)
+        if (!success) {
+          toast.error('カウントの送信に失敗しました')
+        }
       }
+      router.push('/phrase/list')
+    } catch (error) {
+      console.error('Error finishing single phrase practice:', error)
+      toast.error('終了処理中にエラーが発生しました')
+    } finally {
+      setIsFinishing(false)
     }
-    router.push('/phrase/list')
   }
 
   // ページ読み込み時にフレーズを取得
@@ -186,8 +195,17 @@ function PhraseSpeakPage() {
 
   // 練習終了処理
   const handleSpeakFinishComplete = async () => {
-    await handleFinish()
-    handleSpeakFinish()
+    setIsFinishing(true)
+    try {
+      await handleFinish()
+      // 練習準備画面ではなく、直接Listページに遷移
+      router.push('/phrase/list')
+    } catch (error) {
+      console.error('Error finishing speak practice:', error)
+      toast.error('終了処理中にエラーが発生しました')
+    } finally {
+      setIsFinishing(false)
+    }
   }
 
   // モーダル開始処理
@@ -249,6 +267,7 @@ function PhraseSpeakPage() {
                   isLoading={isLoadingSinglePhrase}
                   isNextLoading={false}
                   isHideNext={true}
+                  isFinishing={isFinishing}
                 />
               ) : (
                 <div className="text-center py-8">
@@ -259,17 +278,26 @@ function PhraseSpeakPage() {
             ) : (
               // 通常の複数フレーズ練習モード
               speakMode.active && speakMode.config ? (
-                <SpeakPractice
-                  phrase={currentPhrase}
-                  onCount={handleCount}
-                  onSound={handleSound}
-                  onNext={handleNextWithConfig}
-                  onFinish={handleSpeakFinishComplete}
-                  todayCount={todayCount}
-                  totalCount={totalCount}
-                  isLoading={isLoadingPhrase}
-                  isHideNext={false}
-                />
+                // Finish処理中またはフレーズがある場合は練習画面を表示
+                (currentPhrase || isFinishing) ? (
+                  <SpeakPractice
+                    phrase={currentPhrase}
+                    onCount={handleCount}
+                    onSound={handleSound}
+                    onNext={handleNextWithConfig}
+                    onFinish={handleSpeakFinishComplete}
+                    todayCount={todayCount}
+                    totalCount={totalCount}
+                    isLoading={isLoadingPhrase}
+                    isHideNext={false}
+                    isFinishing={isFinishing}
+                  />
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+                  </div>
+                )
               ) : (
                 <SpeakPhraseList
                   isLoadingPhrases={isLoadingPhrases}

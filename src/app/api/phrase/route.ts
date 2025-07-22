@@ -100,6 +100,79 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // その日初めてのフレーズ生成かどうかをチェック（フレーズ作成前にチェック）
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()) // 今日の00:00:00
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1) // 明日の00:00:00
+
+    console.log('Consecutive days check (before phrase creation):', {
+      userId,
+      today: today.toISOString(),
+      tomorrow: tomorrow.toISOString(),
+      currentConsecutiveDays: user.consecutiveSpeakingDays,
+      lastSpeakingDate: user.lastSpeakingDate
+    })
+
+    // 今日既にフレーズを作成しているかチェック（作成前の状態をチェック）
+    const todayPhrasesCount = await prisma.phrase.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: today,
+          lt: tomorrow // 明日の00:00:00未満
+        },
+        deletedAt: null
+      }
+    })
+
+    console.log('Today phrases count (before creation):', todayPhrasesCount)
+
+    // 連続日数の更新処理の判定
+    let shouldUpdateConsecutiveDays = false
+    let newConsecutiveDays = user.consecutiveSpeakingDays
+
+    if (todayPhrasesCount === 0) { 
+      // 今日初めてのフレーズ生成の場合
+      shouldUpdateConsecutiveDays = true
+      
+      if (user.lastSpeakingDate) {
+        const lastSpeakingDate = new Date(user.lastSpeakingDate)
+        const lastSpeakingDay = new Date(lastSpeakingDate.getFullYear(), lastSpeakingDate.getMonth(), lastSpeakingDate.getDate())
+        
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        
+        console.log('Date comparison:', {
+          lastSpeakingDay: lastSpeakingDay.toISOString(),
+          yesterday: yesterday.toISOString(),
+          isConsecutive: lastSpeakingDay.getTime() === yesterday.getTime()
+        })
+        
+        if (lastSpeakingDay.getTime() === yesterday.getTime()) {
+          // 昨日もフレーズを作成していた場合、連続日数を+1
+          newConsecutiveDays = user.consecutiveSpeakingDays + 1
+        } else if (lastSpeakingDay.getTime() === today.getTime()) {
+          // 今日既にフレーズを作成している場合、連続日数はそのまま
+          newConsecutiveDays = user.consecutiveSpeakingDays
+        } else {
+          // 連続していない場合、1からスタート
+          newConsecutiveDays = 1
+        }
+      } else {
+        // 初回の場合
+        newConsecutiveDays = 1
+      }
+      
+      console.log('Will update consecutive days:', {
+        shouldUpdateConsecutiveDays,
+        oldDays: user.consecutiveSpeakingDays,
+        newDays: newConsecutiveDays
+      })
+    } else {
+      console.log('Not first phrase today, skipping consecutive days update')
+    }
+
     // フレーズを作成
     const phrase = await prisma.phrase.create({
       data: {
@@ -127,13 +200,31 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // フレーズ作成後に連続日数を更新
+    if (shouldUpdateConsecutiveDays) {
+      console.log('Updating consecutive days...')
+      const updateResult = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          consecutiveSpeakingDays: newConsecutiveDays,
+          lastSpeakingDate: now // 現在時刻で更新
+        }
+      })
+      console.log('Update result:', {
+        consecutiveSpeakingDays: updateResult.consecutiveSpeakingDays,
+        lastSpeakingDate: updateResult.lastSpeakingDate
+      })
+    } else {
+      console.log('Skipping consecutive days update')
+    }
+
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
       createdAt: phrase.createdAt,
-      practiceCount: phrase.totalReadCount,
+      practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
         name: phrase.language.name,
@@ -255,7 +346,7 @@ export async function GET(request: NextRequest) {
       text: phrase.text,
       translation: phrase.translation,
       createdAt: phrase.createdAt,
-      practiceCount: phrase.totalReadCount,
+      practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
         name: phrase.language.name,

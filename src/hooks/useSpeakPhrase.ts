@@ -36,8 +36,8 @@ export const useSpeakPhrase = () => {
 
       if (data.success && data.phrase) {
         setCurrentPhrase(data.phrase)
-        setTodayCount(data.phrase.dailyReadCount || 0)
-        setTotalCount(data.phrase.totalReadCount || 0)
+        setTodayCount(data.phrase.dailySpeakCount || 0)
+        setTotalCount(data.phrase.totalSpeakCount || 0)
         setPendingCount(0) // 新しいフレーズ取得時はペンディングカウントをリセット
         return true
       } else {
@@ -94,8 +94,8 @@ export const useSpeakPhrase = () => {
     // フレーズの表示カウントも更新
     setCurrentPhrase(prev => prev ? {
       ...prev,
-      totalReadCount: prev.totalReadCount + 1,
-      dailyReadCount: prev.dailyReadCount + 1
+      totalSpeakCount: prev.totalSpeakCount + 1,
+      dailySpeakCount: prev.dailySpeakCount + 1
     } : null)
   }, [currentPhrase])
 
