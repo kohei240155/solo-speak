@@ -22,7 +22,7 @@ model User {
   stripeCustomerId           String?   @map("stripe_customer_id")
   remainingPhraseGenerations Int       @default(0) @map("remaining_phrase_generations")
   lastPhraseGenerationDate   DateTime? @map("last_phrase_generation_date")
-  lastSpeakingDate          DateTime? @map("last_speaking_date")
+  lastSpeakingDate           DateTime? @map("last_speaking_date")
   createdAt                  DateTime  @default(now()) @map("created_at")
   updatedAt                  DateTime  @updatedAt @map("updated_at")
   deletedAt                  DateTime? @map("deleted_at")
@@ -66,6 +66,7 @@ model Phrase {
   languageId         String       @map("language_id")
   text               String
   translation        String
+  nuance             String?
   totalSpeakCount    Int          @default(0) @map("total_speak_count")
   dailySpeakCount    Int          @default(0) @map("daily_speak_count")
   lastSpeakDate      DateTime?    @map("last_speak_date")

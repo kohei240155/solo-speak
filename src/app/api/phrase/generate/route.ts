@@ -15,7 +15,7 @@ const generatePhraseSchema = z.object({
 const phraseVariationsSchema = z.object({
   variations: z.array(z.object({
     text: z.string().describe("自然な話し言葉の表現"),
-    explanation: z.string().nullable().optional().describe("表現の説明やニュアンスの解説（必要に応じて）")
+    explanation: z.string().describe("他の表現との違いを示すニュアンスの説明（30-50文字程度）")
   })).length(3).describe("同じ意味を持つ3つの異なる表現パターン")
 })
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
         type: selectedStyle,
         text: variation.text,
-        explanation: variation.explanation || undefined
+        explanation: variation.explanation
       }))
 
       const result: GeneratePhraseResponse = {
@@ -143,14 +143,17 @@ function getMockVariations(selectedStyle: 'common' | 'business' | 'casual'): Phr
     {
       type: selectedStyle,
       text: 'I want to go see fireworks tomorrow.',
+      explanation: '最も直接的な表現。自分の意思をはっきりと伝える標準的な言い回し。'
     },
     {
       type: selectedStyle,
       text: "I'm thinking of going to see the fireworks tomorrow.",
+      explanation: '少し控えめな表現。「考えている」という言葉で、まだ完全には決めていないニュアンスを含む。'
     },
     {
       type: selectedStyle,
       text: "I'd like to check out the fireworks tomorrow.",
+      explanation: 'カジュアルで親しみやすい表現。「check out」を使うことでよりリラックスした雰囲気を演出。'
     }
   ]
 }
@@ -183,7 +186,10 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
 
 このスタイルに適した、同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した最も自然な口語表現で生成してください。
 
-各表現には、必要に応じてニュアンスや使用場面の説明を付けてください。`
+【重要】各表現には必ずニュアンスの説明を付けてください：
+- 他の2つの表現と比較してどのような違いがあるかを明確に説明する
+- 説明は30-50文字程度の簡潔な表現にする
+- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する`
 }
 
 function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string): string {

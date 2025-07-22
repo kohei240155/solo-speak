@@ -33,6 +33,18 @@ export const usePhraseManager = () => {
   // ユーザー設定の初期化が完了したかを追跡
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
+  // ユーザーがログアウトした時の状態クリア
+  useEffect(() => {
+    if (!user) {
+      // ログアウト時に状態をクリア
+      setRemainingGenerations(0)
+      setSavedPhrases([])
+      setLanguages([])
+      setUserSettingsInitialized(false)
+      setLearningLanguage('en')
+    }
+  }, [user])
+
   // useChatGptApiの状態に応じてフレーズを自動設定
   useEffect(() => {
     if (!useChatGptApi) {
@@ -100,10 +112,19 @@ export const usePhraseManager = () => {
   }, [userSettingsInitialized])
 
   const fetchUserRemainingGenerations = useCallback(async () => {
-    if (!user) return
+    if (!user) {
+      setRemainingGenerations(0)
+      return
+    }
     
     try {
       const headers = await getAuthHeaders()
+      if (!headers.Authorization) {
+        // 認証ヘッダーがない場合は処理を停止
+        setRemainingGenerations(0)
+        return
+      }
+      
       const response = await fetch('/api/user/phrase-generations', {
         headers
       })
@@ -111,14 +132,18 @@ export const usePhraseManager = () => {
       if (response.ok) {
         const data = await response.json()
         setRemainingGenerations(data.remainingGenerations)
+      } else if (response.status === 401) {
+        // 認証エラーの場合は静かに処理
+        console.log('User not authenticated, setting remaining generations to 0')
+        setRemainingGenerations(0)
       } else {
         console.error('Failed to fetch remaining generations:', response.statusText)
         // フォールバック: 0に設定
         setRemainingGenerations(0)
       }
     } catch (error) {
-      console.error('Error fetching remaining generations:', error)
-      // フォールバック: 0に設定
+      // ネットワークエラーや認証エラーの場合は静かに処理
+      console.log('Error fetching remaining generations (likely due to logout):', error)
       setRemainingGenerations(0)
     }
   }, [user, getAuthHeaders])
@@ -321,6 +346,7 @@ export const usePhraseManager = () => {
           languageId: learningLang.id,
           text: finalText,      // 学習言語のフレーズ
           translation: desiredPhrase, // 母国語の翻訳
+          nuance: variation.explanation, // ニュアンス説明
           level: variation.type, // フレーズのレベル（common, polite, casual）を追加
         }),
       })

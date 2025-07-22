@@ -18,7 +18,7 @@ export default function LanguageSelector({
       <select
         value={learningLanguage}
         onChange={(e) => onLanguageChange(e.target.value)}
-        className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-1 pr-10 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px] md:min-w-[160px]"
+        className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-1 pr-10 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px] md:min-w-[160px] text-gray-900"
       >
         {languages
           .filter(lang => lang.code !== nativeLanguage)

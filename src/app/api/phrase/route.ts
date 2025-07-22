@@ -10,6 +10,7 @@ const createPhraseSchema = z.object({
   languageId: z.string().min(1),
   text: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
+  nuance: z.string().optional(),
   level: z.enum(['common', 'polite', 'casual']).optional(),
   phraseLevelId: z.string().optional(),
 })
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
+    const { languageId, text, translation, nuance, level, phraseLevelId } = createPhraseSchema.parse(body)
 
     // 認証されたユーザーIDを使用
     const userId = authResult.user.id
@@ -101,6 +102,7 @@ export async function POST(request: NextRequest) {
         languageId,
         text,
         translation,
+        nuance,
         phraseLevelId: finalPhraseLevelId,
       },
       include: {
@@ -140,6 +142,7 @@ export async function POST(request: NextRequest) {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
+      nuance: phrase.nuance,
       createdAt: phrase.createdAt,
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
@@ -256,6 +259,7 @@ export async function GET(request: NextRequest) {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
+      nuance: phrase.nuance,
       createdAt: phrase.createdAt,
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,

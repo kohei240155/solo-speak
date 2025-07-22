@@ -7,6 +7,7 @@ import { supabase } from '@/utils/spabase'
 import { useDashboardData } from '@/hooks/useDashboardData'
 import { useUserSettingsData } from '@/hooks/useUserSettingsData'
 import LanguageSelector from '@/components/LanguageSelector'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
@@ -92,14 +93,7 @@ export default function DashboardPage() {
   }, [userSettings, selectedLanguage])
 
   if (loading || setupCheckLoading || settingsLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   if (!user) {
@@ -132,10 +126,7 @@ export default function DashboardPage() {
 
           {/* ダッシュボード統計 */}
           {dashboardLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">データ読み込み中...</p>
-            </div>
+            <LoadingSpinner message="Loading data..." className="py-8" />
           ) : dashboardData ? (
             <div className="space-y-6">
               {/* Speak Streak */}

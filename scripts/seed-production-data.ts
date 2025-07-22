@@ -19,16 +19,8 @@ async function seedProductionData() {
       { name: 'Chinese', code: 'zh' },
       { name: 'Korean', code: 'ko' },
       { name: 'Spanish', code: 'es' },
-      { name: 'French', code: 'fr' },
-      { name: 'German', code: 'de' },
-      { name: 'Italian', code: 'it' },
       { name: 'Portuguese', code: 'pt' },
-      { name: 'Russian', code: 'ru' },
-      { name: 'Arabic', code: 'ar' },
-      { name: 'Hindi', code: 'hi' },
-      { name: 'Thai', code: 'th' },
-      { name: 'Vietnamese', code: 'vi' },
-      { name: 'Indonesian', code: 'id' }
+      { name: 'Thai', code: 'th' }
     ]
     
     for (const lang of languages) {

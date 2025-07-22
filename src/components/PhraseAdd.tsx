@@ -126,7 +126,7 @@ export default function PhraseAdd({
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 ${
+          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-red-300 focus:ring-red-500' 
               : 'border-gray-300 focus:ring-blue-500'

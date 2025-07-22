@@ -290,19 +290,26 @@ export function useUserSettingsSubmit(
         // Settings画面に留まる（ダッシュボードへのリダイレクトを削除）
       } else {
         let errorData
+        const responseText = await response.text()
+        console.log('Response text:', responseText)
+        
         try {
-          const responseText = await response.text()
-          
           if (responseText) {
             errorData = JSON.parse(responseText)
           } else {
             errorData = { error: 'Empty response from server' }
           }
-        } catch {
-          errorData = { error: 'Invalid response format from server' }
+        } catch (parseError) {
+          console.error('Failed to parse response as JSON:', parseError)
+          errorData = { error: 'Invalid response format from server', responseText }
         }
         
-        console.error('Settings save failed:', { status: response.status, errorData })
+        console.error('Settings save failed:', { 
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url,
+          errorData 
+        })
         
         // 400番台のエラーの場合はサーバーからのエラーメッセージを表示
         if (response.status >= 400 && response.status < 500) {
@@ -312,8 +319,13 @@ export function useUserSettingsSubmit(
         }
       }
     } catch (error) {
-      console.error('Error saving user settings:', error)
-      setError('ユーザー設定の保存に失敗しました')
+      console.error('Settings save failed:', error)
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      })
+      setError(`ユーザー設定の保存に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setSubmitting(false)
     }

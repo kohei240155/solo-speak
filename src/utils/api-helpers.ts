@@ -11,18 +11,23 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
   try {
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
+      console.log('認証ヘッダーが見つかりません')
       return { error: NextResponse.json({ error: 'Authorization header required' }, { status: 401 }) }
     }
 
     const token = authHeader.replace('Bearer ', '')
+    console.log('認証トークンを受信:', token.substring(0, 20) + '...')
+    
     const serverSupabase = createServerSupabaseClient()
     const { data: { user }, error } = await serverSupabase.auth.getUser(token)
 
     if (error || !user) {
       console.log('認証エラー:', error)
+      console.log('ユーザー情報:', user)
       return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
     }
 
+    console.log('認証成功 - ユーザーID:', user.id)
     return { user }
   } catch (error) {
     console.error('Authentication error:', error)

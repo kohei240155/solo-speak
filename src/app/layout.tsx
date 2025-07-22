@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import SecondaryNavigation from "@/components/SecondaryNavigation";
-import Footer from "@/components/Footer";
+import ViewportFix from "@/components/ViewportFix";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Solo Speak",
   description: "Language learning application",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
@@ -28,6 +30,26 @@ export const metadata: Metadata = {
       { url: '/images/logo/Solo Speak Icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Solo Speak",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#1f2937",
 };
 
 export default function RootLayout({
@@ -40,13 +62,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        <ViewportFix />
+        <ServiceWorkerRegistration />
         <AuthProvider>
           <Header />
           <SecondaryNavigation />
           <main className="flex-1">
             {children}
           </main>
-          <Footer />
         </AuthProvider>
       </body>
     </html>

@@ -11,6 +11,7 @@ import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/contexts/AuthContext'
+import LoadingSpinner from './LoadingSpinner'
 
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
@@ -25,6 +26,8 @@ interface PhraseItemProps {
   onEdit: (phrase: SavedPhrase) => void
   onSpeak: (phraseId: string) => void
   onDelete: (phraseId: string) => void
+  isShowingNuance: boolean
+  onCardClick: (phraseId: string) => void
 }
 
 const PhraseItem = memo(({ 
@@ -33,7 +36,9 @@ const PhraseItem = memo(({
   onMenuToggle, 
   onEdit, 
   onSpeak, 
-  onDelete 
+  onDelete,
+  isShowingNuance,
+  onCardClick
 }: PhraseItemProps) => {
   const borderColor = useMemo(() => 
     getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
@@ -51,11 +56,13 @@ const PhraseItem = memo(({
 
   return (
     <div 
-      className="pl-4 pr-6 py-6 bg-white shadow-md relative"
+      className="pl-4 pr-6 py-4 bg-white shadow-md relative cursor-pointer"
       style={{ 
         borderLeft: `4px solid ${borderColor}`,
-        borderRadius: '5px'
+        borderRadius: '5px',
+        minHeight: '120px' // パディング減少に合わせて最小高さも調整
       }}
+      onClick={() => onCardClick(phrase.id)}
     >
       <div className="flex justify-between mb-2">
         <div 
@@ -63,14 +70,18 @@ const PhraseItem = memo(({
           style={{ 
             wordWrap: 'break-word',
             overflowWrap: 'anywhere',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            minHeight: '24px' // テキスト行の最小高さを確保
           }}
         >
-          {phrase.text}
+          {isShowingNuance ? (phrase.nuance || 'ニュアンス情報がありません') : phrase.text}
         </div>
         <div className="relative flex-shrink-0">
           <button 
-            onClick={() => onMenuToggle(phrase.id)}
+            onClick={(e) => {
+              e.stopPropagation(); // カードクリックイベントの伝播を防ぐ
+              onMenuToggle(phrase.id);
+            }}
             className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
           >
             <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
@@ -110,10 +121,11 @@ const PhraseItem = memo(({
           style={{ 
             wordWrap: 'break-word',
             overflowWrap: 'anywhere',
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            minHeight: '20px' // 翻訳行の最小高さを確保
           }}
         >
-          {phrase.translation}
+          {isShowingNuance ? '\u00A0' : phrase.translation} {/* ニュアンス表示時は非破壊スペースで高さを保持 */}
         </div>
         <div className="relative flex-shrink-0 w-5">
           {/* 三点リーダーと同じ幅のスペースを確保 */}
@@ -174,6 +186,7 @@ export default function PhraseList({
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
+  const [nuanceViewingIds, setNuanceViewingIds] = useState<Set<string>>(new Set())
 
   // 外部からのSpeakモーダル制御
   const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
@@ -202,6 +215,18 @@ export default function PhraseList({
 
   const handleCloseMenu = useCallback(() => {
     setOpenMenuId(null)
+  }, [])
+
+  const handleCardClick = useCallback((phraseId: string) => {
+    setNuanceViewingIds(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(phraseId)) {
+        newSet.delete(phraseId)
+      } else {
+        newSet.add(phraseId)
+      }
+      return newSet
+    })
   }, [])
 
   const handleSpeakStart = (config: SpeakConfig) => {
@@ -316,12 +341,7 @@ export default function PhraseList({
   }
 
   if (isLoadingPhrases && savedPhrases.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading phrases...</p>
-      </div>
-    )
+    return <LoadingSpinner message="Loading phrases..." className="py-8" />
   }
 
   if (!Array.isArray(savedPhrases) || savedPhrases.length === 0) {
@@ -344,14 +364,14 @@ export default function PhraseList({
             onEdit={handleEdit}
             onSpeak={handleSpeak}
             onDelete={handleDelete}
+            isShowingNuance={nuanceViewingIds.has(phrase.id)}
+            onCardClick={handleCardClick}
           />
         ))}
         
         {/* 無限スクロール用のローディング */}
         {isLoadingPhrases && savedPhrases.length > 0 && (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-          </div>
+          <LoadingSpinner size="sm" message="" className="py-4" />
         )}
       </div>
 

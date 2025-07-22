@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 interface EnvironmentInfo {
   NEXT_PUBLIC_SITE_URL?: string
@@ -41,14 +42,7 @@ export default function DebugPage() {
 
   // ローディング中の表示
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Authenticating..." />
   }
 
   // 認証されていない場合は何も表示しない（リダイレクト処理中）
