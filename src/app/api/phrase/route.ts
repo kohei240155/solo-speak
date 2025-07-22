@@ -7,7 +7,6 @@ import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 const prisma = new PrismaClient()
 
 const createPhraseSchema = z.object({
-  userId: z.string().min(1),
   languageId: z.string().min(1),
   text: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
@@ -24,15 +23,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { userId, languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
+    const { languageId, text, translation, level, phraseLevelId } = createPhraseSchema.parse(body)
 
-    // 認証されたユーザーIDとリクエストのuserIdが一致するかチェック
-    if (authResult.user.id !== userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized: Cannot create phrase for another user' },
-        { status: 403 }
-      )
-    }
+    // 認証されたユーザーIDを使用
+    const userId = authResult.user.id
 
     // ユーザーが存在するかチェック
     const user = await prisma.user.findUnique({
