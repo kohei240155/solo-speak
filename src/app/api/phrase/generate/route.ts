@@ -143,14 +143,17 @@ function getMockVariations(selectedStyle: 'common' | 'business' | 'casual'): Phr
     {
       type: selectedStyle,
       text: 'I want to go see fireworks tomorrow.',
+      explanation: '最も直接的な表現。自分の意思をはっきりと伝える標準的な言い回し。'
     },
     {
       type: selectedStyle,
       text: "I'm thinking of going to see the fireworks tomorrow.",
+      explanation: '少し控えめな表現。「考えている」という言葉で、まだ完全には決めていないニュアンスを含む。'
     },
     {
       type: selectedStyle,
       text: "I'd like to check out the fireworks tomorrow.",
+      explanation: 'カジュアルで親しみやすい表現。「check out」を使うことでよりリラックスした雰囲気を演出。'
     }
   ]
 }

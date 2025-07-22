@@ -73,6 +73,20 @@ export default function GeneratedVariations({
             rows={3}
             disabled={isSaving}
           />
+
+          {/* ニュアンス・説明欄 */}
+          {variation.explanation && (
+            <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+              <div className="flex items-start">
+                <div className="text-gray-600 text-xs font-semibold uppercase tracking-wide mb-1">
+                  Nuance
+                </div>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {variation.explanation}
+              </p>
+            </div>
+          )}
           
           {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
           {variationValidationErrors[index] && (editingVariations[index] || variation.text).length > 100 && (
