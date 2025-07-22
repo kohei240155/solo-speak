@@ -30,7 +30,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/about"
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     Solo Speakについて
                   </a>
@@ -44,7 +44,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/terms"
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     利用規約
                   </a>
@@ -52,7 +52,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/privacy"
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     プライバシーポリシー
                   </a>
@@ -60,7 +60,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/commercial-transaction"
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     特定商取引法表記
                   </a>
@@ -74,7 +74,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="/contact"
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     お問い合わせ
                   </a>
