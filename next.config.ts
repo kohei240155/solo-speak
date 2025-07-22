@@ -39,8 +39,14 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      // localhost用の設定（開発環境）
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '',
+        pathname: '/**',
+      },
     ],
-    domains: ['localhost'],
     // 画像キャッシュ設定を追加
     minimumCacheTTL: 60, // 1分間のキャッシュ
     dangerouslyAllowSVG: false,
