@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
 
     console.log('Date filter:', { period, startDate })
 
-    // Prismaを使用してQuiz Logsデータを取得
-    const quizLogs = await prisma.quizLog.findMany({
+    // Prismaを使用してQuiz Resultsデータを取得
+    const quizResults = await prisma.quizResult.findMany({
       where: {
         date: {
           gte: startDate
@@ -79,12 +79,12 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('Prisma query result:', { count: quizLogs.length })
-    console.log('First few quiz logs:', quizLogs.slice(0, 3))
+    console.log('Prisma query result:', { count: quizResults.length })
+    console.log('First few quiz results:', quizResults.slice(0, 3))
 
     // デバッグ: 全期間のデータも確認
-    const allQuizLogs = await prisma.quizLog.count()
-    console.log('Total quiz logs in database:', allQuizLogs)
+    const allQuizResults = await prisma.quizResult.count()
+    console.log('Total quiz results in database:', allQuizResults)
 
     // デバッグ: 指定言語のフレーズ数も確認
     const phrasesForLanguage = await prisma.phrase.count({
@@ -94,22 +94,22 @@ export async function GET(request: NextRequest) {
     })
     console.log('Phrases for language', language, ':', phrasesForLanguage)
 
-    // ユーザー別に回数を集計
+    // ユーザー別に回数を集計（QuizResultはcorrect/incorrectの回数なので、総回答数をカウント）
     const userCountMap = new Map<string, { 
       user: { id: string, username: string, iconUrl: string | null }, 
       totalCount: number 
     }>()
     
-    quizLogs.forEach((log: any) => {
-      const userId = log.phrase.user.id
+    quizResults.forEach((result: any) => {
+      const userId = result.phrase.user.id
       const currentData = userCountMap.get(userId)
       
       if (currentData) {
-        currentData.totalCount += log.count
+        currentData.totalCount += 1 // クイズ結果1件につき1回とカウント
       } else {
         userCountMap.set(userId, {
-          user: log.phrase.user,
-          totalCount: log.count
+          user: result.phrase.user,
+          totalCount: 1
         })
       }
     })
@@ -151,10 +151,19 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Quiz ranking error:', error)
+    
+    // 詳細なエラー情報をログに出力
+    if (error instanceof Error) {
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
+    
     return NextResponse.json({ 
       success: false, 
       error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
+      details: error instanceof Error ? error.stack : undefined
     }, { status: 500 })
   }
 }

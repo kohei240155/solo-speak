@@ -9,6 +9,10 @@ export async function GET() {
     const totalSpeakLogs = await prisma.speakLog.count()
     console.log('Total speak logs:', totalSpeakLogs)
 
+    // 1.5. quiz_resultsテーブルのデータ数を確認
+    const totalQuizResults = await prisma.quizResult.count()
+    console.log('Total quiz results:', totalQuizResults)
+
     // 2. 実際のspeak_logsデータを取得（最初の5件）
     const sampleSpeakLogs = await prisma.speakLog.findMany({
       take: 5,
@@ -29,6 +33,27 @@ export async function GET() {
       }
     })
     console.log('Sample speak logs:', sampleSpeakLogs)
+
+    // 2.5. 実際のquiz_resultsデータを取得（最初の5件）
+    const sampleQuizResults = await prisma.quizResult.findMany({
+      take: 5,
+      include: {
+        phrase: {
+          select: {
+            id: true,
+            languageId: true,
+            text: true,
+            user: {
+              select: {
+                id: true,
+                username: true
+              }
+            }
+          }
+        }
+      }
+    })
+    console.log('Sample quiz results:', sampleQuizResults)
 
     // 3. 言語データを確認
     const languages = await prisma.language.findMany({
@@ -57,7 +82,9 @@ export async function GET() {
       success: true,
       data: {
         totalSpeakLogs,
+        totalQuizResults,
         sampleSpeakLogs,
+        sampleQuizResults,
         languages,
         totalPhrases,
         phrasesEn,
