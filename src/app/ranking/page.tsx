@@ -87,9 +87,8 @@ export default function RankingPage() {
 
       let endpoint = ''
       if (activeRankingType === 'Phrase') {
-        // Phraseランキングは後で実装予定
-        toast.error('Phraseランキングは準備中です')
-        return
+        // Phraseランキングは期間指定なし（総合のみ）
+        endpoint = `/api/ranking/phrase?language=${selectedLanguage}`
       } else if (activeRankingType === 'Speak') {
         const period = activeTab.toLowerCase() // daily, weekly, total
         endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
@@ -148,6 +147,21 @@ export default function RankingPage() {
             setRankingData([])
             toast.error('Speakランキングデータの形式が正しくありません')
           }
+        } else if (activeRankingType === 'Phrase') {
+          // Phrase APIの形式に合わせてデータを変換
+          if (data.topUsers && Array.isArray(data.topUsers)) {
+            const transformedData = data.topUsers.map((user: SpeakUser) => ({
+              userId: user.userId,
+              username: user.username,
+              iconUrl: user.iconUrl,
+              totalCount: user.count,
+              rank: user.rank
+            }))
+            setRankingData(transformedData)
+          } else {
+            setRankingData([])
+            toast.error('Phraseランキングデータの形式が正しくありません')
+          }
         }
       } else {
         toast.error(data.message || 'ランキングデータの取得に失敗しました')
@@ -165,6 +179,13 @@ export default function RankingPage() {
       fetchRanking()
     }
   }, [user, fetchRanking, activeRankingType, activeTab, selectedLanguage])
+
+  // Phraseタブに切り替えた時は自動的にTotalタブにする
+  useEffect(() => {
+    if (activeRankingType === 'Phrase') {
+      setActiveTab('Total')
+    }
+  }, [activeRankingType])
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode)
@@ -231,24 +252,36 @@ export default function RankingPage() {
 
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-8 sm:pt-4 sm:pb-10 sm:px-10">
-            {/* Daily/Weekly/Totalタブメニュー */}
-            <div className="mb-4 border-b border-gray-200">
-              <nav className="flex space-x-0">
-                {['Daily', 'Weekly', 'Total'].map((tab) => (
+            {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotalのみ表示） */}
+            {activeRankingType === 'Phrase' ? (
+              <div className="mb-4 border-b border-gray-200">
+                <nav className="flex space-x-0">
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-2 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
-                      activeTab === tab
-                        ? 'border-gray-900 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                    className="px-6 py-2 text-base md:text-lg font-bold border-b-2 border-gray-900 text-gray-900"
                   >
-                    {tab}
+                    Total
                   </button>
-                ))}
-              </nav>
-            </div>
+                </nav>
+              </div>
+            ) : (
+              <div className="mb-4 border-b border-gray-200">
+                <nav className="flex space-x-0">
+                  {['Daily', 'Weekly', 'Total'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-6 py-2 text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                        activeTab === tab
+                          ? 'border-gray-900 text-gray-900'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            )}
 
             {/* ランキングテーブル */}
             <div className="overflow-hidden px-8">
