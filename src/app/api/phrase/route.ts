@@ -102,7 +102,6 @@ export async function POST(request: NextRequest) {
         languageId,
         text,
         translation,
-        // @ts-ignore - nuanceフィールドはPrismaクライアント再生成後に利用可能になります
         nuance,
         phraseLevelId: finalPhraseLevelId,
       },
