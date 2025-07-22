@@ -71,7 +71,8 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 username: true,
-                iconUrl: true
+                iconUrl: true,
+                createdAt: true // ユーザー登録日時を取得
               }
             }
           }
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
 
     // ユーザー別に回数を集計（QuizResultはcorrect/incorrectの回数なので、総回答数をカウント）
     const userCountMap = new Map<string, { 
-      user: { id: string, username: string, iconUrl: string | null }, 
+      user: { id: string, username: string, iconUrl: string | null, createdAt: Date }, 
       totalCount: number 
     }>()
     
@@ -121,11 +122,17 @@ export async function GET(request: NextRequest) {
       userId,
       username: data.user.username,
       iconUrl: data.user.iconUrl,
-      count: data.totalCount
+      count: data.totalCount,
+      createdAt: data.user.createdAt
     }))
 
-    // カウント順でソート
-    rankingData.sort((a, b) => b.count - a.count)
+    // カウント順でソート（同数の場合は登録日時が古い方が上位）
+    rankingData.sort((a, b) => {
+      if (b.count === a.count) {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      }
+      return b.count - a.count
+    })
 
     // ランクを付与
     const topUsers = rankingData.map((user, index) => ({

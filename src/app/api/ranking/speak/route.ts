@@ -71,7 +71,8 @@ export async function GET(request: NextRequest) {
               select: {
                 id: true,
                 username: true,
-                iconUrl: true
+                iconUrl: true,
+                createdAt: true // ユーザー登録日時を取得
               }
             }
           }
@@ -123,12 +124,19 @@ export async function GET(request: NextRequest) {
     console.log('Speak logs without date filter (first 5):', speakLogsNoDateFilter)
 
     // ユーザーごとのSpeak回数を集計
-    const userCounts = new Map<string, { userId: string, username: string, iconUrl: string | null, count: number }>()
+    const userCounts = new Map<string, { 
+      userId: string, 
+      username: string, 
+      iconUrl: string | null, 
+      count: number,
+      createdAt: Date
+    }>()
 
     speakLogs.forEach((log) => {
       const userId = log.phrase.user.id
       const username = log.phrase.user.username
       const iconUrl = log.phrase.user.iconUrl
+      const createdAt = log.phrase.user.createdAt
       const speakCount = log.count || 1
 
       if (userCounts.has(userId)) {
@@ -138,14 +146,20 @@ export async function GET(request: NextRequest) {
           userId,
           username,
           iconUrl,
-          count: speakCount
+          count: speakCount,
+          createdAt
         })
       }
     })
 
-    // ランキング順にソート
+    // ランキング順にソート（同数の場合は登録日時が古い方が上位）
     const rankedUsers = Array.from(userCounts.values())
-      .sort((a, b) => b.count - a.count)
+      .sort((a, b) => {
+        if (b.count === a.count) {
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        }
+        return b.count - a.count
+      })
       .map((user, index) => ({
         rank: index + 1,
         userId: user.userId,

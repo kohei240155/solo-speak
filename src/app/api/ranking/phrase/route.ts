@@ -63,7 +63,8 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         username: true,
-        iconUrl: true
+        iconUrl: true,
+        createdAt: true // ユーザー登録日時を取得
       }
     })
 
@@ -76,12 +77,18 @@ export async function GET(request: NextRequest) {
         userId: pc.userId,
         username: userData?.username || 'Unknown User',
         iconUrl: userData?.iconUrl,
-        count: pc._count.id
+        count: pc._count.id,
+        createdAt: userData?.createdAt || new Date()
       }
     })
 
-    // カウント順でソート
-    rankingData.sort((a, b) => b.count - a.count)
+    // カウント順でソート（同数の場合は登録日時が古い方が上位）
+    rankingData.sort((a, b) => {
+      if (b.count === a.count) {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      }
+      return b.count - a.count
+    })
 
     // ランクを付与
     const topUsers = rankingData.map((user, index) => ({
