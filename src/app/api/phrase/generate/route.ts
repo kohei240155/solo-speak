@@ -15,7 +15,7 @@ const generatePhraseSchema = z.object({
 const phraseVariationsSchema = z.object({
   variations: z.array(z.object({
     text: z.string().describe("自然な話し言葉の表現"),
-    explanation: z.string().optional().describe("表現の説明やニュアンスの解説（必要に応じて）")
+    explanation: z.string().nullable().optional().describe("表現の説明やニュアンスの解説（必要に応じて）")
   })).length(3).describe("同じ意味を持つ3つの異なる表現パターン")
 })
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
         type: selectedStyle,
         text: variation.text,
-        explanation: variation.explanation
+        explanation: variation.explanation || undefined
       }))
 
       const result: GeneratePhraseResponse = {
