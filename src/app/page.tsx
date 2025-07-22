@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
+import Footer from '@/components/Footer'
 
 export default function Home() {
   const { loading } = useAuth()
@@ -214,6 +215,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   )
 }
