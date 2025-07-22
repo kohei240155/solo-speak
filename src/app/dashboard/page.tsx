@@ -4,11 +4,29 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/utils/spabase'
+import { useDashboardData } from '@/hooks/useDashboardData'
+import { useUserSettingsData } from '@/hooks/useUserSettingsData'
+import LanguageSelector from '@/components/LanguageSelector'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
+  const [selectedLanguage, setSelectedLanguage] = useState('')
+
+  // ユーザー設定を取得
+  const { 
+    userSettings, 
+    languages, 
+    loading: settingsLoading 
+  } = useUserSettingsData()
+
+  // ダッシュボードデータを取得
+  const { 
+    data: dashboardData, 
+    loading: dashboardLoading, 
+    error: dashboardError 
+  } = useDashboardData(selectedLanguage)
 
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
@@ -66,7 +84,14 @@ export default function DashboardPage() {
     }
   }, [user, checkUserSetupComplete])
 
-  if (loading || setupCheckLoading) {
+  // ユーザー設定が読み込まれたらデフォルト言語を設定
+  useEffect(() => {
+    if (userSettings && !selectedLanguage) {
+      setSelectedLanguage(userSettings.defaultLearningLanguage.code)
+    }
+  }, [userSettings, selectedLanguage])
+
+  if (loading || setupCheckLoading || settingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
         <div className="text-center">
@@ -83,87 +108,91 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              ダッシュボード
-            </h2>
-            <p className="text-gray-600 mb-4">
-              ようこそ、{user.email}さん！
-            </p>
+      <main className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+        <div className="space-y-6">
+          {/* ヘッダー */}
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            {userSettings && languages && (
+              <LanguageSelector
+                learningLanguage={selectedLanguage}
+                onLanguageChange={setSelectedLanguage}
+                languages={languages}
+                nativeLanguage={userSettings.nativeLanguage.code}
+              />
+            )}
           </div>
 
-          {/* 機能メニュー */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div 
-              onClick={() => router.push('/phrase/add')}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 hover:border-blue-300"
-            >
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🤖</span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  AI フレーズ生成
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  AIが話したいフレーズを3つのスタイルで提案します
-                </p>
-              </div>
+          {/* ダッシュボードエラー */}
+          {dashboardError && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+              <p className="text-red-800">エラー: {dashboardError}</p>
             </div>
+          )}
 
-            <div className="bg-white p-6 rounded-lg shadow-md opacity-50 cursor-not-allowed border border-gray-200">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">📚</span>
+          {/* ダッシュボード統計 */}
+          {dashboardLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">データ読み込み中...</p>
+            </div>
+          ) : dashboardData ? (
+            <div className="space-y-6">
+              {/* Speak Streak */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
+                <div className="flex items-baseline">
+                  <div className="text-6xl font-bold text-gray-900 mr-3">
+                    {dashboardData.speakStreak}
+                  </div>
+                  <div className="text-xl text-gray-600">days</div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  フレーズ学習
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  登録したフレーズを学習します（準備中）
-                </p>
               </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md opacity-50 cursor-not-allowed border border-gray-200">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🎯</span>
+              {/* Speak Count (Today) */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <div className="text-6xl font-bold text-gray-900">
+                  {dashboardData.speakCountToday}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  クイズ
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  フレーズの理解度をクイズで確認します（準備中）
-                </p>
               </div>
-            </div>
-          </div>
 
-          {/* ユーザー情報 */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">ユーザー情報</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600 mb-1">ID</p>
-                <p className="font-mono text-gray-900">{user.id}</p>
+              {/* Speak Count (Total) */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <div className="text-6xl font-bold text-gray-900">
+                  {dashboardData.speakCountTotal}
+                </div>
               </div>
-              <div>
-                <p className="text-gray-600 mb-1">メールアドレス</p>
-                <p className="text-gray-900">{user.email}</p>
-              </div>
-              <div>
-                <p className="text-gray-600 mb-1">登録日</p>
-                <p className="text-gray-900">{new Date(user.created_at).toLocaleDateString('ja-JP')}</p>
-              </div>
-              <div>
-                <p className="text-gray-600 mb-1">最終ログイン</p>
-                <p className="text-gray-900">{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('ja-JP') : '未設定'}</p>
+
+              {/* Quiz Mastery */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <div className="space-y-4">
+                  {dashboardData.quizMastery.map((level) => (
+                    <div key={level.level} className="flex items-center">
+                      <div 
+                        className="w-4 h-4 rounded mr-4"
+                        style={{ backgroundColor: level.color }}
+                      ></div>
+                      <div className="flex-1 flex justify-between items-center">
+                        <span className="text-lg font-medium text-gray-900">
+                          {level.level}
+                        </span>
+                        <span className="text-2xl font-bold text-gray-900">
+                          {level.score}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">データがありません</p>
+            </div>
+          )}
         </div>
       </main>
     </div>

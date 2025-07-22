@@ -20,8 +20,8 @@ model User {
   email                      String    @unique
   defaultQuizCount           Int       @default(10) @map("default_quiz_count")
   stripeCustomerId           String?   @map("stripe_customer_id")
-  remainingPhraseGenerations Int       @default(100) @map("remaining_phrase_generations")
-  consecutiveSpeakingDays   Int       @default(0) @map("consecutive_speaking_days")
+  remainingPhraseGenerations Int       @default(0) @map("remaining_phrase_generations")
+  lastPhraseGenerationDate   DateTime? @map("last_phrase_generation_date")
   lastSpeakingDate          DateTime? @map("last_speaking_date")
   createdAt                  DateTime  @default(now()) @map("created_at")
   updatedAt                  DateTime  @updatedAt @map("updated_at")
