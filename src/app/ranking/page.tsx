@@ -198,7 +198,7 @@ export default function RankingPage() {
               <div className="mb-4">
                 <div className="grid grid-cols-[50px_1fr_50px] gap-2 text-base md:text-lg font-bold text-gray-900 pb-2">
                   <div className="text-left">Rank</div>
-                  <div className="text-left ml-3">User</div>
+                  <div className="text-left ml-12">User</div>
                   <div className="text-right">Count</div>
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function RankingPage() {
                       </div>
 
                       {/* ユーザー */}
-                      <div className="flex items-center gap-2 ml-3">
+                      <div className="flex items-center gap-2 ml-10">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                           {rankUser.iconUrl ? (
                             <Image
