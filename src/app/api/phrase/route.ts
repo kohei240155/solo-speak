@@ -46,78 +46,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 1日5回制限のチェックと残り回数の更新
-    // 既存の日付変数を使用して重複を避ける
-    const currentTime = new Date()
-    const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate())
-    const tomorrowStart = new Date(todayStart)
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1)
-
-    // 今日作成したフレーズ数をチェック
-    const currentTodayPhrasesCount = await prisma.phrase.count({
-      where: {
-        userId,
-        createdAt: {
-          gte: todayStart,
-          lt: tomorrowStart
-        },
-        deletedAt: null
-      }
-    })
-
-    // 残り生成回数をチェック（翌日復活ロジック付き）
-    let updatedUser = user
-    if (user.lastPhraseGenerationDate) {
-      const lastGenerationDate = new Date(user.lastPhraseGenerationDate)
-      const lastGenerationDay = new Date(lastGenerationDate.getFullYear(), lastGenerationDate.getMonth(), lastGenerationDate.getDate())
-      
-      // 最後の生成日が今日より前の場合、残り回数をリセット
-      if (lastGenerationDay.getTime() < todayStart.getTime()) {
-        updatedUser = await prisma.user.update({
-          where: { id: userId },
-          data: {
-            remainingPhraseGenerations: 5, // 毎日5回にリセット
-            lastPhraseGenerationDate: currentTime
-          }
-        })
-      }
-    } else {
-      // 初回の場合も5回に設定
-      updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: {
-          remainingPhraseGenerations: 5,
-          lastPhraseGenerationDate: currentTime
-        }
-      })
-    }
-
-    // 1日5回制限のチェック
-    if (currentTodayPhrasesCount >= 5) {
-      return NextResponse.json(
-        { 
-          error: 'Daily phrase generation limit reached',
-          message: '1日のフレーズ生成回数の上限（5回）に達しました。明日またお試しください。',
-          remainingGenerations: 0,
-          nextResetTime: tomorrowStart.toISOString()
-        },
-        { status: 429 }
-      )
-    }
-
-    // 残り生成回数のチェック（冗長性のため）
-    if (updatedUser.remainingPhraseGenerations <= 0) {
-      return NextResponse.json(
-        { 
-          error: 'No remaining phrase generations',
-          message: '本日のフレーズ生成回数を使い切りました。明日またお試しください。',
-          remainingGenerations: 0,
-          nextResetTime: tomorrowStart.toISOString()
-        },
-        { status: 429 }
-      )
-    }
-
     // 言語が存在するかチェック
     const language = await prisma.language.findUnique({
       where: { id: languageId }
@@ -206,6 +134,12 @@ export async function POST(request: NextRequest) {
         remainingPhraseGenerations: true
       }
     })
+
+    // 翌日のリセット時間を計算（レスポンス用）
+    const currentTime = new Date()
+    const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate())
+    const tomorrowStart = new Date(todayStart)
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1)
 
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
