@@ -38,3 +38,44 @@ footer {
     transition: color 0.2s ease-in-out;
   }
 }
+
+/* Safari専用の修正 - フォーム要素の文字色問題を解決 */
+input, textarea, select {
+  /* Safari で自動フィルされた際の文字色を強制的に指定 */
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Safari の自動フィル時の背景色オーバーライド */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Safari でのプレースホルダー文字色修正 */
+input::placeholder,
+textarea::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1 !important;
+}
+
+/* Safari での select 要素の文字色修正 */
+select {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+select option {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* disabled状態の場合の文字色調整 */
+input:disabled, textarea:disabled, select:disabled {
+  color: #6B7280 !important;
+  -webkit-text-fill-color: #6B7280 !important;
+}

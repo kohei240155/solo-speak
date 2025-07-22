@@ -89,7 +89,7 @@ export default function UserSettingsForm({
           type="text"
           id="username"
           {...register('username')}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
           placeholder="Solo Ichiro"
           disabled={isDisabled}
         />
@@ -107,7 +107,7 @@ export default function UserSettingsForm({
           <select
             id="nativeLanguageId"
             {...register('nativeLanguageId')}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
           >
             <option value="">
@@ -141,7 +141,7 @@ export default function UserSettingsForm({
           <select
             id="defaultLearningLanguageId"
             {...register('defaultLearningLanguageId')}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
           >
             <option value="">
@@ -176,7 +176,7 @@ export default function UserSettingsForm({
             type="date"
             id="birthdate"
             {...register('birthdate')}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
           />
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -241,7 +241,7 @@ export default function UserSettingsForm({
           type="email"
           id="email"
           {...register('email')}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
           placeholder="solospeak@example.com"
           disabled={isDisabled}
         />
@@ -259,7 +259,7 @@ export default function UserSettingsForm({
           <select
             id="defaultQuizCount"
             {...register('defaultQuizCount', { valueAsNumber: true })}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white ${isDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
           >
             <option value="5">5</option>
