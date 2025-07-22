@@ -79,3 +79,23 @@ input:disabled, textarea:disabled, select:disabled {
   color: #6B7280 !important;
   -webkit-text-fill-color: #6B7280 !important;
 }
+
+/* モバイルSafariでのビューポート高さ修正 */
+@media screen and (max-width: 768px) {
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* コンテナの高さも調整 */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+}
