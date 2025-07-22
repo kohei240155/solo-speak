@@ -199,12 +199,11 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // フレーズ作成成功後、残り回数を1減らして日付を更新
-    updatedUser = await prisma.user.update({
+    // 最新のユーザー情報を取得（残り回数は /api/user/phrase-generations で既に減らされている）
+    const finalUser = await prisma.user.findUnique({
       where: { id: userId },
-      data: {
-        remainingPhraseGenerations: Math.max(0, updatedUser.remainingPhraseGenerations - 1),
-        lastPhraseGenerationDate: currentTime
+      select: {
+        remainingPhraseGenerations: true
       }
     })
 
@@ -225,7 +224,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       phrase: transformedPhrase,
-      remainingGenerations: updatedUser.remainingPhraseGenerations,
+      remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
       dailyLimit: 5,
       nextResetTime: tomorrowStart.toISOString()
     }, { status: 201 })
