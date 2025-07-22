@@ -137,9 +137,9 @@ export default function DashboardPage() {
               <p className="mt-2 text-gray-600">データ読み込み中...</p>
             </div>
           ) : dashboardData ? (
-            <div className="bg-white rounded-lg shadow-md p-8">
+            <div className="space-y-6">
               {/* Speak Streak */}
-              <div className="mb-8">
+              <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
                 <div className="flex items-baseline">
                   <div className="text-6xl font-bold text-gray-900 mr-3">
@@ -150,7 +150,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Speak Count (Today) */}
-              <div className="mb-8">
+              <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
                 <div className="text-6xl font-bold text-gray-900">
                   {dashboardData.speakCountToday}
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Speak Count (Total) */}
-              <div className="mb-8">
+              <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
                 <div className="text-6xl font-bold text-gray-900">
                   {dashboardData.speakCountTotal}
@@ -166,7 +166,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Quiz Mastery */}
-              <div>
+              <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
                 <div className="space-y-4">
                   {dashboardData.quizMastery.map((level) => (
