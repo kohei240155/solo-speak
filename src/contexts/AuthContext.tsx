@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 
 type AuthContextType = {
@@ -28,6 +29,7 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -109,6 +111,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // ヘッダー関連の状態をクリアするためのカスタムイベントを発行
       window.dispatchEvent(new Event('userSignedOut'))
     }
+    
+    // TOPページに遷移
+    router.push('/')
   }
 
   const signInWithGoogle = async () => {
