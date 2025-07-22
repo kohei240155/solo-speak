@@ -1,35 +1,9 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect, useRef, useState } from 'react'
 
 export default function Home() {
   const { loading } = useAuth()
-  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
-  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({})
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisibleSections(prev => new Set([...prev, entry.target.id]))
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-
-    Object.values(sectionRefs.current).forEach(ref => {
-      if (ref) observer.observe(ref)
-    })
-
-    return () => observer.disconnect()
-  }, [])
-
-  const setRef = (id: string) => (el: HTMLElement | null) => {
-    sectionRefs.current[id] = el
-  }
 
   if (loading) {
     return (
@@ -47,10 +21,7 @@ export default function Home() {
       {/* ヒーローセクション */}
       <section 
         id="hero" 
-        ref={setRef('hero')}
-        className={`py-20 md:py-32 transition-all duration-1000 ${
-          visibleSections.has('hero') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className="py-20 md:py-32"
       >
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
@@ -75,10 +46,7 @@ export default function Home() {
       {/* 機能紹介セクション */}
       <section 
         id="features" 
-        ref={setRef('features')}
-        className={`py-20 bg-white transition-all duration-1000 delay-200 ${
-          visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className="py-20 bg-white"
       >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -88,9 +56,7 @@ export default function Home() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className={`bg-gray-50 p-8 rounded-lg shadow-md transition-all duration-700 delay-300 ${
-              visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}>
+            <div className="bg-gray-50 p-8 rounded-lg shadow-md">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
                 <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
@@ -104,9 +70,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className={`bg-gray-50 p-8 rounded-lg shadow-md transition-all duration-700 delay-500 ${
-              visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}>
+            <div className="bg-gray-50 p-8 rounded-lg shadow-md">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mx-auto">
                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -120,9 +84,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className={`bg-gray-50 p-8 rounded-lg shadow-md transition-all duration-700 delay-700 ${
-              visibleSections.has('features') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}>
+            <div className="bg-gray-50 p-8 rounded-lg shadow-md">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6 mx-auto">
                 <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -142,10 +104,7 @@ export default function Home() {
       {/* 特徴セクション */}
       <section 
         id="benefits" 
-        ref={setRef('benefits')}
-        className={`py-20 transition-all duration-1000 delay-300 ${
-          visibleSections.has('benefits') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className="py-20"
         style={{ backgroundColor: '#F5F5F5' }}
       >
         <div className="container mx-auto px-4">
@@ -156,9 +115,7 @@ export default function Home() {
           </div>
           
           <div className="max-w-4xl mx-auto space-y-12">
-            <div className={`flex flex-col md:flex-row items-center gap-8 transition-all duration-700 delay-400 ${
-              visibleSections.has('benefits') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-            }`}>
+            <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="md:w-1/2">
                 <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
                   01
@@ -181,9 +138,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={`flex flex-col md:flex-row-reverse items-center gap-8 transition-all duration-700 delay-600 ${
-              visibleSections.has('benefits') ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-            }`}>
+            <div className="flex flex-col md:flex-row-reverse items-center gap-8">
               <div className="md:w-1/2">
                 <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
                   02
@@ -206,9 +161,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={`flex flex-col md:flex-row items-center gap-8 transition-all duration-700 delay-800 ${
-              visibleSections.has('benefits') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-            }`}>
+            <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="md:w-1/2">
                 <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">
                   03
@@ -237,10 +190,7 @@ export default function Home() {
       {/* CTA セクション */}
       <section 
         id="cta" 
-        ref={setRef('cta')}
-        className={`py-20 bg-gray-900 text-white transition-all duration-1000 delay-500 ${
-          visibleSections.has('cta') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className="py-20 bg-gray-900 text-white"
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
