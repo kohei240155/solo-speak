@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Footer() {
   return (
@@ -18,7 +19,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-gray-800">Solo Speak</span>
             </div>
             <p className="text-gray-600 mt-2 text-sm max-w-xs">
-              あなたのフレーズ暗記をサポートします
+              あなたのフレーズ暗記をサポートします。
             </p>
           </div>
 
@@ -28,12 +29,12 @@ export default function Footer() {
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="/about"
+                  <Link
+                    href="/"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     Solo Speakについて
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
