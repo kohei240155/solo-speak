@@ -46,6 +46,76 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // 1日5回制限のチェックと残り回数の更新
+    // 既存の日付変数を使用して重複を避ける
+    const currentTime = new Date()
+    const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate())
+    const tomorrowStart = new Date(todayStart)
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1)
+
+    // 今日作成したフレーズ数をチェック
+    const currentTodayPhrasesCount = await prisma.phrase.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: todayStart,
+          lt: tomorrowStart
+        },
+        deletedAt: null
+      }
+    })
+
+    // 残り生成回数をチェック（翌日復活ロジック付き）
+    let updatedUser = user
+    if (user.lastSpeakingDate) {
+      const lastSpeakingDate = new Date(user.lastSpeakingDate)
+      const lastSpeakingDay = new Date(lastSpeakingDate.getFullYear(), lastSpeakingDate.getMonth(), lastSpeakingDate.getDate())
+      
+      // 最後のスピーキング日が今日より前の場合、残り回数をリセット
+      if (lastSpeakingDay.getTime() < todayStart.getTime()) {
+        updatedUser = await prisma.user.update({
+          where: { id: userId },
+          data: {
+            remainingPhraseGenerations: 5 // 毎日5回にリセット
+          }
+        })
+      }
+    } else {
+      // 初回の場合も5回に設定
+      updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          remainingPhraseGenerations: 5
+        }
+      })
+    }
+
+    // 1日5回制限のチェック
+    if (currentTodayPhrasesCount >= 5) {
+      return NextResponse.json(
+        { 
+          error: 'Daily phrase generation limit reached',
+          message: '1日のフレーズ生成回数の上限（5回）に達しました。明日またお試しください。',
+          remainingGenerations: 0,
+          nextResetTime: tomorrowStart.toISOString()
+        },
+        { status: 429 }
+      )
+    }
+
+    // 残り生成回数のチェック（冗長性のため）
+    if (updatedUser.remainingPhraseGenerations <= 0) {
+      return NextResponse.json(
+        { 
+          error: 'No remaining phrase generations',
+          message: '本日のフレーズ生成回数を使い切りました。明日またお試しください。',
+          remainingGenerations: 0,
+          nextResetTime: tomorrowStart.toISOString()
+        },
+        { status: 429 }
+      )
+    }
+
     // 言語が存在するかチェック
     const language = await prisma.language.findUnique({
       where: { id: languageId }
@@ -207,15 +277,24 @@ export async function POST(request: NextRequest) {
         where: { id: userId },
         data: {
           consecutiveSpeakingDays: newConsecutiveDays,
-          lastSpeakingDate: now // 現在時刻で更新
+          lastSpeakingDate: now, // 現在時刻で更新
+          remainingPhraseGenerations: updatedUser.remainingPhraseGenerations - 1 // 残り回数を減らす
         }
       })
       console.log('Update result:', {
         consecutiveSpeakingDays: updateResult.consecutiveSpeakingDays,
-        lastSpeakingDate: updateResult.lastSpeakingDate
+        lastSpeakingDate: updateResult.lastSpeakingDate,
+        remainingPhraseGenerations: updateResult.remainingPhraseGenerations
       })
     } else {
-      console.log('Skipping consecutive days update')
+      console.log('Skipping consecutive days update, but updating remaining generations')
+      // 連続日数は更新しないが、残り生成回数は減らす
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          remainingPhraseGenerations: updatedUser.remainingPhraseGenerations - 1
+        }
+      })
     }
 
     // フロントエンドの期待する形式に変換
@@ -234,7 +313,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      phrase: transformedPhrase
+      phrase: transformedPhrase,
+      remainingGenerations: Math.max(0, updatedUser.remainingPhraseGenerations - 1),
+      dailyLimit: 5,
+      nextResetTime: tomorrowStart.toISOString()
     }, { status: 201 })
 
   } catch (error) {
