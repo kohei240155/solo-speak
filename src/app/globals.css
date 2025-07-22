@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+
+/* フッターのスタイル調整 */
+footer {
+  background: white;
+  margin-top: auto;
+}
+
+/* レスポンシブ対応でフッターリンクのホバー効果 */
+@media (hover: hover) {
+  footer a:hover {
+    color: #2563eb;
+    transition: color 0.2s ease-in-out;
+  }
+}
