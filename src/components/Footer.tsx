@@ -1,5 +1,6 @@
+'use client'
+
 import Image from 'next/image'
-import Link from 'next/link'
 
 export default function Footer() {
   return (
@@ -29,12 +30,14 @@ export default function Footer() {
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link
-                    href="/"
-                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  <button
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors text-left"
+                    onClick={() => {
+                      window.location.href = '/'
+                    }}
                   >
                     Solo Speakについて
-                  </Link>
+                  </button>
                 </li>
               </ul>
             </div>

@@ -80,6 +80,12 @@ const Header = memo(function Header() {
 
   // ロゴクリック時の処理
   const handleLogoClick = async (e: React.MouseEvent) => {
+    // 未ログイン状態の場合はクリックを無効化
+    if (!user) {
+      e.preventDefault()
+      return
+    }
+    
     e.preventDefault()
     
     // ユーザー設定が未完了の場合は自動ログアウト
@@ -89,11 +95,9 @@ const Header = memo(function Header() {
       return
     }
     
-    // ログインしている場合はフレーズ一覧、していない場合はTOP画面
+    // ログインしている場合はフレーズ一覧へ
     if (user && isUserSetupComplete) {
       window.location.href = '/phrase/list'
-    } else {
-      window.location.href = '/'
     }
   }
 
@@ -149,20 +153,33 @@ const Header = memo(function Header() {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
-            <Link 
-              href={user && isUserSetupComplete ? "/phrase/list" : "/"} 
-              className="flex items-center space-x-2" 
-              onClick={handleLogoClick}
-            >
-              <Image
-                src="/images/logo/Solo Speak Logo.png"
-                alt="Solo Speak"
-                width={150}
-                height={40}
-                className="h-8 w-auto"
-                priority
-              />
-            </Link>
+            {user && isUserSetupComplete ? (
+              <Link 
+                href="/phrase/list" 
+                className="flex items-center space-x-2" 
+                onClick={handleLogoClick}
+              >
+                <Image
+                  src="/images/logo/Solo Speak Logo.png"
+                  alt="Solo Speak"
+                  width={150}
+                  height={40}
+                  className="h-8 w-auto"
+                  priority
+                />
+              </Link>
+            ) : (
+              <div className="flex items-center space-x-2 cursor-default">
+                <Image
+                  src="/images/logo/Solo Speak Logo.png"
+                  alt="Solo Speak"
+                  width={150}
+                  height={40}
+                  className="h-8 w-auto"
+                  priority
+                />
+              </div>
+            )}
           </div>
 
           {/* デスクトップナビゲーション */}
