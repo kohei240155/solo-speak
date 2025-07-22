@@ -252,7 +252,7 @@ export default function RankingPage() {
 
             {/* ランキングテーブル */}
             <div className="overflow-hidden px-8">
-              <div className="mb-4">
+              <div className="mb-2">
                 <div className="grid grid-cols-[50px_1fr_50px] gap-2 text-base md:text-lg font-bold text-gray-900 pb-2">
                   <div className="text-left">Rank</div>
                   <div className="text-left ml-12">User</div>
