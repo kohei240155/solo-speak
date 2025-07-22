@@ -23,6 +23,14 @@ interface Language {
   code: string
 }
 
+interface SpeakUser {
+  rank: number
+  userId: string
+  username: string
+  iconUrl: string | null
+  count: number
+}
+
 export default function RankingPage() {
   const { user, loading } = useAuth()
   const [rankingData, setRankingData] = useState<RankingUser[]>([])
@@ -86,34 +94,54 @@ export default function RankingPage() {
         endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
       }
 
+      if (!endpoint) {
+        toast.error(`${activeRankingType}のランキングはまだ実装されていません`)
+        return
+      }
+
+      console.log('Fetching ranking:', { activeRankingType, activeTab, endpoint })
+
       const response = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`
         }
       })
 
+      console.log('Response status:', response.status, response.statusText)
+
       if (!response.ok) {
-        throw new Error('Failed to fetch ranking')
+        if (response.status === 404) {
+          toast.error(`${activeRankingType}ランキングのAPIが見つかりません`)
+        } else {
+          throw new Error(`Failed to fetch ranking: ${response.status} ${response.statusText}`)
+        }
+        return
       }
 
       const data = await response.json()
+      console.log('API Response:', data)
       
       if (data.success) {
         if (activeRankingType === 'Speak') {
           // Speak APIの形式に合わせてデータを変換
-          const transformedData = data.topUsers.map((user: any) => ({
-            userId: user.userId,
-            username: user.username,
-            iconUrl: user.iconUrl,
-            totalCount: user.count,
-            rank: user.rank
-          }))
-          setRankingData(transformedData)
+          if (data.topUsers && Array.isArray(data.topUsers)) {
+            const transformedData = data.topUsers.map((user: SpeakUser) => ({
+              userId: user.userId,
+              username: user.username,
+              iconUrl: user.iconUrl,
+              totalCount: user.count,
+              rank: user.rank
+            }))
+            setRankingData(transformedData)
+          } else {
+            setRankingData([])
+            toast.error('Speakランキングデータの形式が正しくありません')
+          }
         } else {
-          setRankingData(data.data)
+          setRankingData(data.data || [])
         }
       } else {
-        toast.error('ランキングデータの取得に失敗しました')
+        toast.error(data.message || 'ランキングデータの取得に失敗しました')
       }
     } catch (error) {
       console.error('Error fetching ranking:', error)
