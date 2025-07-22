@@ -18,7 +18,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-gray-800">Solo Speak</span>
             </div>
             <p className="text-gray-600 mt-2 text-sm max-w-xs">
-              地味なフレーズ暗記をサポートします
+              あなたのフレーズ暗記をサポートします
             </p>
           </div>
 
