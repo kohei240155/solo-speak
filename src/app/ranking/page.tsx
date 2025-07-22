@@ -91,10 +91,6 @@ export default function RankingPage() {
       
       if (data.success) {
         setRankingData(data.data)
-        
-        // 現在のユーザーのランクを検索
-        const userRank = data.data.find((rankUser: RankingUser) => rankUser.userId === user.id)
-        setCurrentUserRank(userRank || null)
       } else {
         toast.error('ランキングデータの取得に失敗しました')
       }
@@ -200,9 +196,9 @@ export default function RankingPage() {
             {/* ランキングテーブル */}
             <div className="overflow-hidden">
               <div className="mb-4">
-                <div className="grid grid-cols-3 gap-4 text-base md:text-lg font-bold text-gray-900 pb-2">
-                  <div>Rank</div>
-                  <div>User</div>
+                <div className="grid grid-cols-[80px_1fr_80px] gap-4 text-base md:text-lg font-bold text-gray-900 pb-2">
+                  <div className="text-left">Rank</div>
+                  <div className="text-left">User</div>
                   <div className="text-right">Count</div>
                 </div>
               </div>
@@ -221,12 +217,12 @@ export default function RankingPage() {
                   {rankingData.map((rankUser) => (
                     <div
                       key={rankUser.userId}
-                      className={`grid grid-cols-3 gap-4 py-3 px-2 rounded-lg ${
+                      className={`grid grid-cols-[80px_1fr_80px] gap-4 py-3 px-2 rounded-lg ${
                         rankUser.userId === user?.id ? 'bg-gray-100' : 'hover:bg-gray-50'
                       }`}
                     >
                       {/* 順位 */}
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-start">
                         {rankUser.rank <= 3 ? (
                           <div
                             className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
@@ -245,7 +241,7 @@ export default function RankingPage() {
                       </div>
 
                       {/* ユーザー */}
-                      <div className="flex items-center gap-2 -ml-4">
+                      <div className="flex items-center gap-6">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                           {rankUser.iconUrl ? (
                             <Image
@@ -267,7 +263,7 @@ export default function RankingPage() {
                       </div>
 
                       {/* 回数 */}
-                      <div className="text-right">
+                      <div className="flex items-center justify-end">
                         <p className="font-bold text-lg text-gray-900">{rankUser.totalCount}</p>
                       </div>
                     </div>
