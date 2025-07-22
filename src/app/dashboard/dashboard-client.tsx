@@ -83,8 +83,8 @@ export default function DashboardClient() {
 
   // 選択された言語の設定
   useEffect(() => {
-    if (userSettings?.learningLanguage && !selectedLanguage) {
-      setSelectedLanguage(userSettings.learningLanguage)
+    if (userSettings?.defaultLearningLanguage && !selectedLanguage) {
+      setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
   }, [userSettings, selectedLanguage])
 
@@ -109,9 +109,9 @@ export default function DashboardClient() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">学習言語を選択</h2>
           <LanguageSelector
             languages={languages}
-            selectedLanguage={selectedLanguage}
+            learningLanguage={selectedLanguage}
+            nativeLanguage={userSettings?.nativeLanguage?.code || ''}
             onLanguageChange={setSelectedLanguage}
-            disabled={settingsLoading}
           />
         </div>
       )}

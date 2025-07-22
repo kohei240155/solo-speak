@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import SecondaryNavigation from "@/components/SecondaryNavigation";
 import ViewportFix from "@/components/ViewportFix";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Solo Speak",
   description: "Language learning application",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
@@ -27,6 +29,25 @@ export const metadata: Metadata = {
     apple: [
       { url: '/images/logo/Solo Speak Icon.png', sizes: '180x180', type: 'image/png' },
     ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Solo Speak",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+  },
+  themeColor: "#1f2937",
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 
@@ -41,6 +62,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <ViewportFix />
+        <ServiceWorkerRegistration />
         <AuthProvider>
           <Header />
           <SecondaryNavigation />

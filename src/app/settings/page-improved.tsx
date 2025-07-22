@@ -1,7 +1,4 @@
 import { Metadata } from 'next'
-import { Suspense } from 'react'
-import SettingsClient from './settings-client'
-import LoadingSpinner from '@/components/LoadingSpinner'
 
 export const metadata: Metadata = {
   title: 'Settings - Solo Speak',
@@ -10,7 +7,7 @@ export const metadata: Metadata = {
 }
 
 // 静的な設定ページレイアウト（Server Component）
-function SettingsLayout() {
+export default function SettingsLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
@@ -24,17 +21,12 @@ function SettingsLayout() {
           </p>
         </div>
         
-        {/* クライアントサイドが必要な部分を Suspense でラップ */}
-        <Suspense fallback={
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <LoadingSpinner message="Loading settings..." />
-          </div>
-        }>
-          <SettingsClient />
-        </Suspense>
+        <div className="bg-white rounded-lg shadow-md p-8">
+          <p className="text-center text-gray-600">
+            設定機能は準備中です。しばらくお待ちください。
+          </p>
+        </div>
       </main>
     </div>
   )
 }
-
-export default SettingsLayout
