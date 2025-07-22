@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       totalCount: number 
     }>()
     
-    quizResults.forEach((result: any) => {
+    quizResults.forEach((result) => {
       const userId = result.phrase.user.id
       const currentData = userCountMap.get(userId)
       
