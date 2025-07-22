@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
+import LoadingSpinner from './LoadingSpinner'
 
 interface AuthGuardProps {
   user: User | null
@@ -24,14 +25,7 @@ export default function AuthGuard({ user, loading, children }: AuthGuardProps) {
   }, [loading, user, router])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Authenticating..." />
   }
 
   if (!user) {

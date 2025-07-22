@@ -12,6 +12,7 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 interface SpeakPhrase {
   id: string
@@ -274,14 +275,7 @@ export default function SpeakPage() {
 
   // 認証チェック
   if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-2 text-gray-600">認証情報を確認中...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Authenticating..." />
   }
 
   if (!user) {
