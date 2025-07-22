@@ -80,12 +80,21 @@ const Header = memo(function Header() {
 
   // ロゴクリック時の処理
   const handleLogoClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    
     // ユーザー設定が未完了の場合は自動ログアウト
-    if (!isUserSetupComplete) {
-      e.preventDefault()
+    if (user && !isUserSetupComplete) {
       await signOut()
+      window.location.href = '/'
+      return
     }
-    // 設定完了済みの場合は通常のリンク動作
+    
+    // ログインしている場合はフレーズ一覧、していない場合はTOP画面
+    if (user && isUserSetupComplete) {
+      window.location.href = '/phrase/list'
+    } else {
+      window.location.href = '/'
+    }
   }
 
   // クリック外でドロップダウンを閉じる
@@ -140,7 +149,11 @@ const Header = memo(function Header() {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2" onClick={handleLogoClick}>
+            <Link 
+              href={user && isUserSetupComplete ? "/phrase/list" : "/"} 
+              className="flex items-center space-x-2" 
+              onClick={handleLogoClick}
+            >
               <Image
                 src="/images/logo/Solo Speak Logo.png"
                 alt="Solo Speak"

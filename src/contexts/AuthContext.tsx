@@ -97,23 +97,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [user?.id, session]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const signOut = async () => {
-    // ローカル状態をクリア
+    // TOPページに即座に遷移
+    router.push('/')
+    
+    // その後でローカル状態をクリア
     setUser(null)
     setSession(null)
     setUserIconUrl(null)
     setIsUserSetupComplete(false)
     
-    // Supabaseからのログアウト
-    await supabase.auth.signOut()
+    // Supabaseからのログアウト（バックグラウンドで実行）
+    supabase.auth.signOut().catch(error => {
+      console.error('Supabase signOut error:', error)
+    })
     
     // ユーザー設定関連のローカルストレージをクリア（もしあれば）
     if (typeof window !== 'undefined') {
       // ヘッダー関連の状態をクリアするためのカスタムイベントを発行
       window.dispatchEvent(new Event('userSignedOut'))
     }
-    
-    // TOPページに遷移
-    router.push('/')
   }
 
   const signInWithGoogle = async () => {
