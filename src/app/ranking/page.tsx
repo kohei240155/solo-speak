@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
 import LanguageSelector from '@/components/LanguageSelector'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 interface RankingUser {
   userId: string
@@ -213,13 +214,7 @@ export default function RankingPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   return (
@@ -315,10 +310,7 @@ export default function RankingPage() {
               </div>
 
               {isLoading ? (
-                <div className="py-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">読み込み中...</p>
-                </div>
+                <LoadingSpinner message="Loading..." className="py-8" />
               ) : rankingData.length === 0 ? (
                 <div className="py-8 text-center text-gray-500">
                   この日のデータがありません

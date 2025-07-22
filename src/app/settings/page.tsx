@@ -12,6 +12,7 @@ import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
 import UserSettingsForm from '@/components/UserSettingsForm'
 import SubscriptionTab from '@/components/SubscriptionTab'
 import TabNavigation from '@/components/TabNavigation'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function UserSettingsPage() {
   const { user, loading } = useAuth()
@@ -57,11 +58,7 @@ export default function UserSettingsPage() {
   const { onSubmit, submitting } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
 
   if (loading || dataLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    )
+    return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   if (!user) {

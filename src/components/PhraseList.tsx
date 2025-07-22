@@ -11,6 +11,7 @@ import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/contexts/AuthContext'
+import LoadingSpinner from './LoadingSpinner'
 
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
@@ -340,12 +341,7 @@ export default function PhraseList({
   }
 
   if (isLoadingPhrases && savedPhrases.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading phrases...</p>
-      </div>
-    )
+    return <LoadingSpinner message="Loading phrases..." className="py-8" />
   }
 
   if (!Array.isArray(savedPhrases) || savedPhrases.length === 0) {
@@ -375,9 +371,7 @@ export default function PhraseList({
         
         {/* 無限スクロール用のローディング */}
         {isLoadingPhrases && savedPhrases.length > 0 && (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-          </div>
+          <LoadingSpinner size="sm" message="" className="py-4" />
         )}
       </div>
 
