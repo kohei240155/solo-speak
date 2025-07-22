@@ -89,7 +89,7 @@ export default function Footer() {
         </div>
 
         {/* コピーライト */}
-        <div className="border-t border-gray-200 mt-8 pt-6">
+        <div className="border-t border-gray-200 mt-4 pt-4">
           <p className="text-sm text-gray-500 text-center">
             © {new Date().getFullYear()} Solo Speak. All rights reserved.
           </p>
