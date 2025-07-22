@@ -21,6 +21,24 @@ export async function GET(request: NextRequest) {
     const user = authResult.user
     console.log('User authenticated:', user.id)
 
+    // 言語コードから言語IDを取得
+    const languageRecord = await prisma.language.findFirst({
+      where: {
+        code: language
+      }
+    })
+
+    if (!languageRecord) {
+      console.log('Language not found:', language)
+      return NextResponse.json({
+        success: false,
+        error: 'Language not found'
+      }, { status: 400 })
+    }
+
+    const languageId = languageRecord.id
+    console.log('Language mapping:', { code: language, id: languageId })
+
     // 期間に応じた日付条件を設定
     const now = new Date()
     let startDate: Date
@@ -43,7 +61,7 @@ export async function GET(request: NextRequest) {
           gte: startDate
         },
         phrase: {
-          languageId: language
+          languageId: languageId
         }
       },
       include: {
@@ -62,6 +80,47 @@ export async function GET(request: NextRequest) {
     })
 
     console.log('Prisma query result:', { count: speakLogs.length })
+    console.log('First few speak logs:', speakLogs.slice(0, 3))
+
+    // デバッグ: 全期間のデータも確認
+    const allSpeakLogs = await prisma.speakLog.count()
+    console.log('Total speak logs in database:', allSpeakLogs)
+
+    // デバッグ: 指定言語のフレーズ数も確認
+    const phrasesForLanguage = await prisma.phrase.count({
+      where: {
+        languageId: languageId
+      }
+    })
+    console.log('Phrases for language', language, ':', phrasesForLanguage)
+
+    // デバッグ: すべての言語を確認
+    const allLanguages = await prisma.language.findMany({
+      select: {
+        id: true,
+        code: true,
+        name: true
+      }
+    })
+    console.log('Available languages:', allLanguages)
+
+    // デバッグ: 期間を無視して該当言語のスピークログを取得
+    const speakLogsNoDateFilter = await prisma.speakLog.findMany({
+      where: {
+        phrase: {
+          languageId: languageId
+        }
+      },
+      include: {
+        phrase: {
+          select: {
+            languageId: true
+          }
+        }
+      },
+      take: 5
+    })
+    console.log('Speak logs without date filter (first 5):', speakLogsNoDateFilter)
 
     // ユーザーごとのSpeak回数を集計
     const userCounts = new Map<string, { userId: string, username: string, iconUrl: string | null, count: number }>()
