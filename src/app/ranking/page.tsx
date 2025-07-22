@@ -92,6 +92,9 @@ export default function RankingPage() {
       } else if (activeRankingType === 'Speak') {
         const period = activeTab.toLowerCase() // daily, weekly, total
         endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
+      } else if (activeRankingType === 'Quiz') {
+        const period = activeTab.toLowerCase() // daily, weekly, total
+        endpoint = `/api/ranking/quiz?language=${selectedLanguage}&period=${period}`
       }
 
       if (!endpoint) {
@@ -161,6 +164,21 @@ export default function RankingPage() {
           } else {
             setRankingData([])
             toast.error('Phraseランキングデータの形式が正しくありません')
+          }
+        } else if (activeRankingType === 'Quiz') {
+          // Quiz APIの形式に合わせてデータを変換
+          if (data.topUsers && Array.isArray(data.topUsers)) {
+            const transformedData = data.topUsers.map((user: SpeakUser) => ({
+              userId: user.userId,
+              username: user.username,
+              iconUrl: user.iconUrl,
+              totalCount: user.count,
+              rank: user.rank
+            }))
+            setRankingData(transformedData)
+          } else {
+            setRankingData([])
+            toast.error('Quizランキングデータの形式が正しくありません')
           }
         }
       } else {
