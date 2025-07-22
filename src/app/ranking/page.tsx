@@ -36,7 +36,7 @@ export default function RankingPage() {
   const [rankingData, setRankingData] = useState<RankingUser[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
-  const [activeRankingType, setActiveRankingType] = useState('Speak') // デフォルトをSpeakに変更
+  const [activeRankingType, setActiveRankingType] = useState('Phrase') // デフォルトをPhraseに変更
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
@@ -199,9 +199,12 @@ export default function RankingPage() {
   }, [user, fetchRanking, activeRankingType, activeTab, selectedLanguage])
 
   // Phraseタブに切り替えた時は自動的にTotalタブにする
+  // SpeakタブとQuizタブに切り替えた時は自動的にDailyタブにする
   useEffect(() => {
     if (activeRankingType === 'Phrase') {
       setActiveTab('Total')
+    } else if (activeRankingType === 'Speak' || activeRankingType === 'Quiz') {
+      setActiveTab('Daily')
     }
   }, [activeRankingType])
 
