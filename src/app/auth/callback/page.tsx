@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function AuthCallback() {
   const router = useRouter()
@@ -67,11 +68,9 @@ export default function AuthCallback() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-      <div className="text-center">
-        <h2 className="text-lg font-semibold mb-2">認証処理中...</h2>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-      </div>
-    </div>
+    <LoadingSpinner 
+      fullScreen 
+      message="Authenticating..." 
+    />
   )
 }
