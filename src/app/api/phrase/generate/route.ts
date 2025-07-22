@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateRequest } from '@/utils/api-helpers'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { zodResponseFormat } from 'openai/helpers/zod'
 
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(100),
   selectedStyle: z.enum(['common', 'business', 'casual']),
+})
+
+// Structured Outputs用のレスポンススキーマ
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const phraseVariationsSchema = z.object({
+  variations: z.array(z.object({
+    text: z.string().describe("自然な話し言葉の表現"),
+    explanation: z.string().optional().describe("表現の説明やニュアンスの解説（必要に応じて）")
+  })).length(3).describe("同じ意味を持つ3つの異なる表現パターン")
 })
 
 interface PhraseVariation {
@@ -38,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json(result)
 
-    // ===== ChatGPT API呼び出し (本番用) =====
+    // ===== ChatGPT API呼び出し (本番用) - Structured Outputs使用 =====
     // 下記のコメントアウトを解除してAPIを有効化
     /*
     if (!process.env.OPENAI_API_KEY) {
@@ -71,6 +82,8 @@ export async function POST(request: NextRequest) {
         ],
         temperature: 0.7,
         max_tokens: 1000,
+        // Structured Outputs使用
+        response_format: zodResponseFormat(phraseVariationsSchema, "phrase_variations")
       }),
     })
 
@@ -93,8 +106,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ChatGPTの応答をパースして構造化データに変換
-    const variations = parseGeneratedContent(generatedContent, selectedStyle)
+    // Structured Outputsなので直接パースできる
+    const parsedResponse = phraseVariationsSchema.parse(JSON.parse(generatedContent))
+    
+    // レスポンス形式を既存のインターフェースに変換
+    const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
+      type: selectedStyle,
+      text: variation.text,
+      explanation: variation.explanation
+    }))
 
     const result: GeneratePhraseResponse = {
       variations
@@ -161,20 +181,13 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
   const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
   const learningLangName = languageNames[learningLanguage as keyof typeof languageNames] || learningLanguage
 
-  return `次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。
+  return `あなたは言語学習のサポートを行う専門家です。次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。
 
 選択されたスタイル：${styleDescriptions[selectedStyle]}
 
-このスタイルで、同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した、最も自然な口語表現で出力してください。
+このスタイルに適した、同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した最も自然な口語表現で生成してください。
 
-出力形式（JSON）：
-{
-  "variation1": "～",
-  "variation2": "～", 
-  "variation3": "～"
-}
-
-JSON以外の文字は含めないでください。`
+各表現には、必要に応じてニュアンスや使用場面の説明を付けてください。`
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
