@@ -20,6 +20,50 @@ interface DashboardResponse {
   quizMastery: QuizMasteryLevel[]
 }
 
+// 言語ごとの連続スピーキング日数を計算する関数
+async function calculateConsecutiveSpeakingDays(userId: string, languageCode: string): Promise<number> {
+  // 指定言語のフレーズを作成日降順で取得
+  const phrases = await prisma.phrase.findMany({
+    where: {
+      userId,
+      language: { code: languageCode },
+      deletedAt: null,
+    },
+    select: { createdAt: true },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  if (phrases.length === 0) {
+    return 0
+  }
+
+  // 日付を YYYY-MM-DD 形式の文字列に変換してユニーク化し、Setに変換
+  const uniqueDatesSet = new Set(phrases.map(phrase => {
+    const date = new Date(phrase.createdAt)
+    return date.toISOString().split('T')[0]
+  }))
+
+  // 今日の日付を YYYY-MM-DD 形式で取得
+  const today = new Date()
+  let consecutiveDays = 0
+
+  // 今日から過去に向かって連続日数をカウント
+  for (let i = 0; i < 365; i++) { // 最大365日まで遡る
+    const checkDate = new Date(today)
+    checkDate.setDate(checkDate.getDate() - i)
+    const checkDateStr = checkDate.toISOString().split('T')[0]
+
+    if (uniqueDatesSet.has(checkDateStr)) {
+      consecutiveDays++
+    } else {
+      // 連続が途切れた場合は終了
+      break
+    }
+  }
+
+  return consecutiveDays
+}
+
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
@@ -52,8 +96,8 @@ export async function GET(request: NextRequest) {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    // 1. Speak Streak (連続話した日数)
-    const speakStreak = user.consecutiveSpeakingDays
+    // 1. Speak Streak (連続話した日数) - 言語ごとに計算
+    const speakStreak = await calculateConsecutiveSpeakingDays(user.id, language)
 
     // 2. Speak Count (Today) - 今日のスピーク回数
     const speakCountToday = await prisma.speakLog.aggregate({
@@ -92,21 +136,22 @@ export async function GET(request: NextRequest) {
     })
 
     // 4. Quiz Mastery - クイズマスタリー
-    // ユーザーのフレーズを取得し、各レベルの正解数を集計
-    const phrases = await prisma.phrase.findMany({
+    // quiz_resultsから直接正解数を集計
+    const quizResults = await prisma.quizResult.findMany({
       where: {
-        userId: user.id,
-        language: {
-          code: language,
+        phrase: {
+          userId: user.id,
+          language: {
+            code: language,
+          },
         },
+        correct: true,
         deletedAt: null,
       },
       include: {
-        phraseLevel: true,
-        quizResults: {
-          where: {
-            correct: true,
-            deletedAt: null,
+        phrase: {
+          include: {
+            phraseLevel: true,
           },
         },
       },
@@ -115,14 +160,13 @@ export async function GET(request: NextRequest) {
     // レベル別の正解数を集計
     const levelCorrectCounts = new Map<string, number>()
     
-    for (const phrase of phrases) {
-      const levelName = phrase.phraseLevel.name
-      const correctCount = phrase.quizResults.length
+    for (const result of quizResults) {
+      const levelName = result.phrase.phraseLevel.name
       
       if (levelCorrectCounts.has(levelName)) {
-        levelCorrectCounts.set(levelName, levelCorrectCounts.get(levelName)! + correctCount)
+        levelCorrectCounts.set(levelName, levelCorrectCounts.get(levelName)! + 1)
       } else {
-        levelCorrectCounts.set(levelName, correctCount)
+        levelCorrectCounts.set(levelName, 1)
       }
     }
 
