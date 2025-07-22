@@ -55,11 +55,11 @@ const PhraseItem = memo(({
 
   return (
     <div 
-      className="pl-4 pr-6 py-6 bg-white shadow-md relative cursor-pointer"
+      className="pl-4 pr-6 py-4 bg-white shadow-md relative cursor-pointer"
       style={{ 
         borderLeft: `4px solid ${borderColor}`,
         borderRadius: '5px',
-        minHeight: '140px' // 固定の最小高さを設定
+        minHeight: '120px' // パディング減少に合わせて最小高さも調整
       }}
       onClick={() => onCardClick(phrase.id)}
     >

@@ -14,7 +14,7 @@ import {
   checkUserExists, 
   checkUsernameConflict 
 } from '@/utils/database-helpers'
-import { Gender } from '@/generated/prisma/client'
+import { Gender } from '@/generated/prisma'
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
