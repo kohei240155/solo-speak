@@ -34,9 +34,10 @@ interface SpeakUser {
 export default function RankingPage() {
   const { user, loading } = useAuth()
   const [rankingData, setRankingData] = useState<RankingUser[]>([])
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
-  const [activeRankingType, setActiveRankingType] = useState('Speak') // デフォルトをSpeakに変更
+  const [activeRankingType, setActiveRankingType] = useState('Phrase') // デフォルトをPhraseに戻す
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
@@ -73,7 +74,7 @@ export default function RankingPage() {
     }
   }, [user])
 
-  const fetchRanking = useCallback(async () => {
+  const fetchRanking = useCallback(async (date: string) => {
     if (!user) return
 
     setIsLoading(true)
@@ -87,9 +88,8 @@ export default function RankingPage() {
 
       let endpoint = ''
       if (activeRankingType === 'Phrase') {
-        // Phraseランキングは後で実装予定
-        toast.error('Phraseランキングは準備中です')
-        return
+        // Phraseタブでは日付ベースのランキングを表示
+        endpoint = `/api/ranking/daily?date=${date}`
       } else if (activeRankingType === 'Speak') {
         const period = activeTab.toLowerCase() // daily, weekly, total
         endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
@@ -132,7 +132,7 @@ export default function RankingPage() {
       const data = await response.json()
       console.log('API Response:', data)
       
-      if (data.success) {
+      if (data.success || (activeRankingType === 'Phrase' && data.data)) {
         if (activeRankingType === 'Speak') {
           // Speak APIの形式に合わせてデータを変換
           if (data.topUsers && Array.isArray(data.topUsers)) {
@@ -148,7 +148,8 @@ export default function RankingPage() {
             setRankingData([])
             toast.error('Speakランキングデータの形式が正しくありません')
           }
-        } else {
+        } else if (activeRankingType === 'Phrase') {
+          // Phrase APIの形式（既存のdaily API）
           setRankingData(data.data || [])
         }
       } else {
@@ -164,9 +165,9 @@ export default function RankingPage() {
 
   useEffect(() => {
     if (user) {
-      fetchRanking()
+      fetchRanking(selectedDate)
     }
-  }, [user, fetchRanking, activeRankingType, activeTab, selectedLanguage])
+  }, [user, selectedDate, fetchRanking, activeRankingType, activeTab, selectedLanguage])
 
   const handleLanguageChange = (languageCode: string) => {
     setSelectedLanguage(languageCode)
