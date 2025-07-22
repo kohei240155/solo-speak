@@ -23,8 +23,8 @@ export default function Footer() {
           </div>
 
           {/* リンクセクション */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8">
-            <div className="col-span-2 md:col-span-1">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
+            <div>
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">
                 <li>
@@ -38,7 +38,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="col-span-2 md:col-span-1">
+            <div>
               <h3 className="text-sm font-semibold text-gray-800 mb-3">法的事項</h3>
               <ul className="space-y-2">
                 <li>
@@ -68,7 +68,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="col-span-2 md:col-span-1">
+            <div>
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サポート</h3>
               <ul className="space-y-2">
                 <li>
