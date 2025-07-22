@@ -24,6 +24,7 @@ export const usePhraseManager = () => {
   const [hasMorePhrases, setHasMorePhrases] = useState(true)
   const [phrasePage, setPhrasePage] = useState(1)
   const [totalPhrases, setTotalPhrases] = useState(0)
+  const [useChatGptApi, setUseChatGptApi] = useState(false)
   
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
@@ -225,7 +226,8 @@ export const usePhraseManager = () => {
           nativeLanguage,
           learningLanguage,
           desiredPhrase,
-          selectedStyle: selectedType
+          selectedStyle: selectedType,
+          useChatGptApi
         })
       })
 
@@ -395,6 +397,10 @@ export const usePhraseManager = () => {
     }
   }, [learningLanguage, user, fetchSavedPhrases])
 
+  const handleUseChatGptApiChange = (value: boolean) => {
+    setUseChatGptApi(value)
+  }
+
   return {
     // State
     nativeLanguage,
@@ -417,6 +423,7 @@ export const usePhraseManager = () => {
     totalPhrases,
     phraseValidationError,
     variationValidationErrors,
+    useChatGptApi,
     
     // Handlers
     handleEditVariation,
@@ -427,6 +434,7 @@ export const usePhraseManager = () => {
     fetchSavedPhrases,
     checkUnsavedChanges,
     handleTypeChange,
-    handleLearningLanguageChange
+    handleLearningLanguageChange,
+    handleUseChatGptApiChange
   }
 }
