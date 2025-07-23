@@ -59,7 +59,7 @@ input:-webkit-autofill:active {
 /* Safari でのプレースホルダー文字色修正 */
 input::placeholder,
 textarea::placeholder {
-  color: #9CA3AF !important;
+  color: #E5E7EB !important;
   opacity: 1 !important;
 }
 

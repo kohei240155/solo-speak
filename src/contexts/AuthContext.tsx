@@ -36,13 +36,79 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
 
+  // デバッグ用：認証状態をログ出力
   useEffect(() => {
+    console.log('AuthProvider State:', { 
+      user: user?.id || null, 
+      session: session?.access_token ? 'あり' : null, 
+      loading,
+      userIconUrl: userIconUrl ? 'あり' : null,
+      isUserSetupComplete 
+    })
+  }, [user, session, loading, userIconUrl, isUserSetupComplete])
+
+  useEffect(() => {
+    // タイムアウト設定（5秒後に強制的にローディング解除）
+    const loadingTimeout = setTimeout(() => {
+      console.warn('認証チェックがタイムアウトしました。ローディングを強制解除します。')
+      setLoading(false)
+      setSession(null)
+      setUser(null)
+      setUserIconUrl(null)
+      setIsUserSetupComplete(false)
+      
+      // ローカル認証情報もクリア
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('supabase.auth.token')
+        window.sessionStorage.removeItem('supabase.auth.token')
+      }
+    }, 5000)
+
     // 現在のセッションを取得
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
+      try {
+        console.log('認証セッションの取得を開始')
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('セッション取得エラー:', error)
+          // エラー時はローカル認証情報をクリア（サーバー通信なしで）
+          try {
+            await supabase.auth.signOut()
+          } catch (signOutError) {
+            console.warn('signOut通信エラー（ローカル情報はクリア済み）:', signOutError)
+            // ローカルストレージから認証情報を手動でクリア
+            if (typeof window !== 'undefined') {
+              window.localStorage.removeItem('supabase.auth.token')
+              window.sessionStorage.removeItem('supabase.auth.token')
+            }
+          }
+          setSession(null)
+          setUser(null)
+        } else {
+          console.log('セッション取得完了:', session ? 'セッション有り' : 'セッション無し')
+          setSession(session)
+          setUser(session?.user ?? null)
+        }
+      } catch (e) {
+        console.error('セッション取得で例外発生:', e)
+        // 例外時はローカル認証情報をクリア（サーバー通信なしで）
+        try {
+          await supabase.auth.signOut()
+        } catch (signOutError) {
+          console.warn('signOut通信エラー（ローカル情報はクリア済み）:', signOutError)
+          // ローカルストレージから認証情報を手動でクリア
+          if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('supabase.auth.token')
+            window.sessionStorage.removeItem('supabase.auth.token')
+          }
+        }
+        setSession(null)
+        setUser(null)
+      } finally {
+        clearTimeout(loadingTimeout)
+        setLoading(false)
+      }
     }
 
     getSession()
@@ -50,19 +116,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        setLoading(false)
-        
-        // ユーザー状態が変更されたらアイコンURLもリセット
-        if (!session?.user) {
+        try {
+          console.log('認証状態変更:', event, session ? 'セッション有り' : 'セッション無し')
+          setSession(session)
+          setUser(session?.user ?? null)
+          // ユーザー状態が変更されたらアイコンURLもリセット
+          if (!session?.user) {
+            setUserIconUrl(null)
+            setIsUserSetupComplete(false)
+          }
+        } catch (e) {
+          console.error('認証状態変更処理で例外:', e)
+          setSession(null)
+          setUser(null)
           setUserIconUrl(null)
           setIsUserSetupComplete(false)
+        } finally {
+          clearTimeout(loadingTimeout)
+          setLoading(false)
         }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(loadingTimeout)
+    }
   }, [])
 
   // ユーザーとセッションが利用可能になったらユーザー設定を取得
@@ -107,9 +186,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsUserSetupComplete(false)
     
     // Supabaseからのログアウト（バックグラウンドで実行）
-    supabase.auth.signOut().catch(error => {
-      console.error('Supabase signOut error:', error)
-    })
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.warn('Supabaseサインアウト通信エラー（ローカル情報はクリア済み）:', error)
+      // ローカルストレージから認証情報を手動でクリア
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('supabase.auth.token')
+        window.sessionStorage.removeItem('supabase.auth.token')
+      }
+    }
     
     // ユーザー設定関連のローカルストレージをクリア（もしあれば）
     if (typeof window !== 'undefined') {
@@ -152,13 +238,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
+      // タイムアウト付きでAPIリクエスト（10秒でタイムアウト）
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
+      
       const response = await fetch('/api/user/settings', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
           'Cache-Control': 'no-cache', // キャッシュを無効化
-        }
+        },
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
 
       if (response.ok) {
         const userData = await response.json()
@@ -197,6 +290,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error) {
       console.error('Error fetching user settings:', error)
+      
+      // タイムアウトエラーまたはネットワークエラーの場合
+      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
+        console.warn('ユーザー設定の取得がタイムアウトしました')
+      }
+      
       setIsUserSetupComplete(false)
       // エラー時は現在のアイコンを保持
       setUserIconUrl(prev => {
