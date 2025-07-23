@@ -126,7 +126,7 @@ export default function PhraseAdd({
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 ${
+          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-400 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-red-300 focus:ring-red-500' 
               : 'border-gray-300 focus:ring-blue-500'
@@ -164,7 +164,7 @@ export default function PhraseAdd({
           htmlFor="useChatGptApi" 
           className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}
         >
-          ChatGPT APIを使用する {!useChatGptApi && '(テスト用固定値を使用)'}
+          ChatGPT APIを使用する
         </label>
       </div>
 
@@ -212,6 +212,13 @@ export default function PhraseAdd({
           'AI Suggest'
         )}
       </button>
+
+      {/* エラー表示 */}
+      {error && !isLoading && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* 生成結果 */}
       <GeneratedVariations
