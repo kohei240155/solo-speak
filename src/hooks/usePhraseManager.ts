@@ -9,7 +9,7 @@ export const usePhraseManager = () => {
   const { user } = useAuth()
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
-  const [useChatGptApi, setUseChatGptApi] = useState(false)
+  const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -225,6 +225,12 @@ export const usePhraseManager = () => {
   }
 
   const handleGeneratePhrase = async () => {
+    console.log('=== handleGeneratePhrase called ===')
+    console.log('desiredPhrase:', desiredPhrase)
+    console.log('useChatGptApi:', useChatGptApi)
+    console.log('selectedType:', selectedType)
+    console.log('remainingGenerations:', remainingGenerations)
+    
     // バリデーション
     if (!desiredPhrase.trim()) {
       setPhraseValidationError('フレーズを入力してください')
@@ -245,6 +251,7 @@ export const usePhraseManager = () => {
     setPhraseValidationError('')
     setError('')
 
+    console.log('Starting API call...')
     setIsLoading(true)
     setGeneratedVariations([])
     setEditingVariations({}) // 編集状態をリセット
@@ -252,24 +259,40 @@ export const usePhraseManager = () => {
 
     try {
       // 実際のAPI呼び出し
+      console.log('Getting auth headers...')
       const headers = await getAuthHeaders()
+      console.log('Auth headers obtained')
+      
+      const requestBody = {
+        nativeLanguage,
+        learningLanguage,
+        desiredPhrase,
+        selectedStyle: selectedType,
+        useChatGptApi
+      }
+      console.log('Request body:', requestBody)
+      
+      console.log('Making API call to /api/phrase/generate...')
       const response = await fetch('/api/phrase/generate', {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          nativeLanguage,
-          learningLanguage,
-          desiredPhrase,
-          selectedStyle: selectedType,
-          useChatGptApi
-        })
+        body: JSON.stringify(requestBody)
       })
 
+      console.log('API response status:', response.status)
+      console.log('API response ok:', response.ok)
+
       if (!response.ok) {
-        throw new Error('フレーズの生成に失敗しました')
+        const errorText = await response.text()
+        console.error('API error response:', errorText)
+        throw new Error(`フレーズの生成に失敗しました: ${response.status}`)
       }
 
+      console.log('Parsing response...')
       const data = await response.json()
+      console.log('API response data:', data)
+      
+      console.log('Setting variations:', data.variations || [])
       setGeneratedVariations(data.variations || [])
       
       // AI Suggest成功時に生成回数を減らす
@@ -289,9 +312,13 @@ export const usePhraseManager = () => {
       }
 
     } catch (error) {
-      console.error('Error generating phrase:', error)
+      console.error('=== Error in handleGeneratePhrase ===')
+      console.error('Error type:', typeof error)
+      console.error('Error message:', error instanceof Error ? error.message : error)
+      console.error('Full error:', error)
       setError(error instanceof Error ? error.message : 'フレーズの生成に失敗しました')
     } finally {
+      console.log('Setting isLoading to false')
       setIsLoading(false)
     }
   }
@@ -366,6 +393,8 @@ export const usePhraseManager = () => {
         setGeneratedVariations([])  // これにより AI Suggest ボタンが活性になる
         setEditingVariations({})
         setVariationValidationErrors({})
+        setUseChatGptApi(true)  // デフォルトでChatGPT APIをONに
+        setDesiredPhrase('')    // フレーズを空に
       })
       
       // 保存されたフレーズリストを再取得
