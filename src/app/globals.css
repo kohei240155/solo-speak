@@ -99,3 +99,11 @@ input:disabled, textarea:disabled, select:disabled {
     min-height: calc(var(--vh, 1vh) * 100);
   }
 }
+
+/* 開発環境でのChunkLoadError対策 */
+@media (min-width: 1px) {
+  /* 開発環境でのエラー防止のためのダミースタイル */
+  .dev-chunk-fix {
+    content: "";
+  }
+}

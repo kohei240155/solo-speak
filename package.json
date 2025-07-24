@@ -11,6 +11,7 @@
     "build:production": "cp .env.production .env && next build",
     "start": "next start",
     "lint": "next lint",
+    "clean-start": "if exist .next rmdir /s /q .next && npm run dev",
     "db:push": "prisma db push",
     "db:push:local": "cp .env.local .env && prisma db push",
     "db:push:production": "cp .env.production .env && prisma db push",
