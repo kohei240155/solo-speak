@@ -144,37 +144,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [])
 
-  // ユーザーとセッションが利用可能になったらユーザー設定を取得
-  useEffect(() => {
-    if (user?.id && session && !loading) {
-      // Googleアバターがある場合は即座に設定（一度だけ）
-      const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                             googleAvatarUrl.includes('googleapis.com') || 
-                             googleAvatarUrl.includes('google.com'))) {
-        setUserIconUrl(prev => prev || googleAvatarUrl) // 既にセットされている場合は更新しない
-      }
-      
-      // その後でAPIから正式な設定を取得
-      refreshUserSettings()
-    }
-  }, [user?.id, session, loading, user?.user_metadata?.avatar_url, user?.user_metadata?.picture]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // カスタムイベントでユーザー設定の更新を監視
-  useEffect(() => {
-    const handleUserSettingsUpdate = () => {
-      if (user?.id && session) {
-        refreshUserSettings()
-      }
-    }
-
-    window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-    
-    return () => {
-      window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-    }
-  }, [user?.id, session]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const signOut = async () => {
     // TOPページに即座に遷移
     router.push('/')
@@ -308,6 +277,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
+
+  // ユーザーとセッションが利用可能になったらユーザー設定を取得
+  useEffect(() => {
+    if (user?.id && session && !loading) {
+      // Googleアバターがある場合は即座に設定（一度だけ）
+      const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
+                             googleAvatarUrl.includes('googleapis.com') || 
+                             googleAvatarUrl.includes('google.com'))) {
+        setUserIconUrl(prev => prev || googleAvatarUrl) // 既にセットされている場合は更新しない
+      }
+      
+      // その後でAPIから正式な設定を取得（初回のみ）
+      if (!isUserSetupComplete) {
+        refreshUserSettings()
+      }
+    }
+  }, [user?.id, session, loading, isUserSetupComplete, user?.user_metadata?.avatar_url, user?.user_metadata?.picture, refreshUserSettings])
+
+  // カスタムイベントでユーザー設定の更新を監視
+  useEffect(() => {
+    const handleUserSettingsUpdate = () => {
+      if (user?.id && session && !loading) {
+        refreshUserSettings()
+      }
+    }
+
+    window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    
+    return () => {
+      window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    }
+  }, [user?.id, session, loading, refreshUserSettings])
 
   const refreshUser = async () => {
     try {

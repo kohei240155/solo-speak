@@ -18,6 +18,26 @@ const getSupabaseHostname = () => {
 const supabaseHostname = getSupabaseHostname();
 
 const nextConfig: NextConfig = {
+  // 開発環境でのChunkLoadError対策
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // 開発環境でのチャンク読み込みを安定化
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization?.splitChunks,
+          cacheGroups: {
+            ...config.optimization?.splitChunks?.cacheGroups,
+            default: {
+              minChunks: 1,
+            },
+          },
+        },
+      };
+    }
+    return config;
+  },
+  
   images: {
     remotePatterns: [
       {

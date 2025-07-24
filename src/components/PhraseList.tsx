@@ -400,14 +400,14 @@ export default function PhraseList({
             />
             <div className="flex justify-between items-center mt-1">
               <span className={`text-xs ${
-                editedTranslation.length > 100 ? 'text-red-500' : 'text-gray-500'
+                editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
               }`}>
-                100文字以内で入力してください
+                200文字以内で入力してください
               </span>
               <span className={`text-xs ${
-                editedTranslation.length > 100 ? 'text-red-500' : 'text-gray-500'
+                editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
               }`}>
-                {editedTranslation.length} / 100
+                {editedTranslation.length} / 200
               </span>
             </div>
           </div>
@@ -427,14 +427,14 @@ export default function PhraseList({
             />
             <div className="flex justify-between items-center mt-1">
               <span className={`text-xs ${
-                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
+                editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
               }`}>
-                100文字以内で入力してください
+                200文字以内で入力してください
               </span>
               <span className={`text-xs ${
-                editedText.length > 100 ? 'text-red-500' : 'text-gray-500'
+                editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
               }`}>
-                {editedText.length} / 100
+                {editedText.length} / 200
               </span>
             </div>
           </div>
@@ -454,10 +454,10 @@ export default function PhraseList({
             </button>
             <button
               onClick={handleUpdatePhrase}
-              disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 100 || editedTranslation.length > 100}
+              disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
               className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
               style={{ 
-                backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 100 || editedTranslation.length > 100) ? '#9CA3AF' : '#616161'
+                backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161'
               }}
             >
               {isUpdating ? (

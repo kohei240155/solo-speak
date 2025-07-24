@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { UpdatePhraseRequestBody } from '@/types/phrase-api'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -29,24 +30,26 @@ export async function GET(
 
     if (!phrase) {
       return NextResponse.json(
-        { error: 'Phrase not found or access denied' },
+        { error: 'Phrase not found or access denied' } satisfies { error: string },
         { status: 404 }
       )
     }
 
-    return NextResponse.json({
+    const responseData = {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
       totalSpeakCount: phrase.totalSpeakCount,
       dailySpeakCount: phrase.dailySpeakCount,
       language: phrase.language
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error fetching phrase:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }
@@ -55,7 +58,7 @@ export async function GET(
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -64,20 +67,20 @@ export async function PUT(
     }
 
     const { id } = await params
-    const body = await request.json()
-    const { text, translation } = body
+    const body: unknown = await request.json()
+    const { text, translation }: UpdatePhraseRequestBody = body as UpdatePhraseRequestBody
 
     // バリデーション
     if (!text || !translation) {
       return NextResponse.json(
-        { error: 'text and translation are required' },
+        { error: 'text and translation are required' } satisfies { error: string },
         { status: 400 }
       )
     }
 
-    if (text.length > 100 || translation.length > 100) {
+    if (text.length > 200 || translation.length > 200) {
       return NextResponse.json(
-        { error: 'text and translation must be 100 characters or less' },
+        { error: 'text and translation must be 200 characters or less' } satisfies { error: string },
         { status: 400 }
       )
     }
@@ -115,7 +118,7 @@ export async function PUT(
       }
     })
 
-    return NextResponse.json({
+    const responseData = {
       id: updatedPhrase.id,
       text: updatedPhrase.text,
       translation: updatedPhrase.translation,
@@ -123,12 +126,14 @@ export async function PUT(
       practiceCount: updatedPhrase.totalSpeakCount,
       correctAnswers: updatedPhrase.correctQuizCount,
       language: updatedPhrase.language
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error updating phrase:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }
@@ -137,7 +142,7 @@ export async function PUT(
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -157,7 +162,7 @@ export async function DELETE(
 
     if (!existingPhrase) {
       return NextResponse.json(
-        { error: 'Phrase not found or access denied' },
+        { error: 'Phrase not found or access denied' } satisfies { error: string },
         { status: 404 }
       )
     }
@@ -172,12 +177,12 @@ export async function DELETE(
 
     return NextResponse.json({
       message: 'Phrase deleted successfully'
-    })
+    } satisfies { message: string })
 
   } catch (error) {
     console.error('Error deleting phrase:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }

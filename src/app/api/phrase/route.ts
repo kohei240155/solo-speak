@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
+import { CreatePhraseRequestBody } from '@/types/phrase-api'
 
 const prisma = new PrismaClient()
 
@@ -15,7 +16,7 @@ const createPhraseSchema = z.object({
   phraseLevelId: z.string().optional(),
 })
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -23,8 +24,8 @@ export async function POST(request: NextRequest) {
       return authResult.error
     }
 
-    const body = await request.json()
-    const { languageId, text, translation, nuance, level, phraseLevelId } = createPhraseSchema.parse(body)
+    const body: unknown = await request.json()
+    const { languageId, text, translation, nuance, level, phraseLevelId }: CreatePhraseRequestBody = createPhraseSchema.parse(body)
 
     // 認証されたユーザーIDを使用
     const userId = authResult.user.id
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'User not found' },
+        { error: 'User not found' } satisfies { error: string },
         { status: 404 }
       )
     }
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     if (!language) {
       return NextResponse.json(
-        { error: 'Language not found' },
+        { error: 'Language not found' } satisfies { error: string },
         { status: 404 }
       )
     }
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
         
         if (!defaultLevel) {
           return NextResponse.json(
-            { error: 'No phrase level found' },
+            { error: 'No phrase level found' } satisfies { error: string },
             { status: 500 }
           )
         }
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
       text: phrase.text,
       translation: phrase.translation,
       nuance: phrase.nuance,
-      createdAt: phrase.createdAt,
+      createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
@@ -152,32 +153,37 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      success: true,
+    const responseData = {
+      success: true as const,
       phrase: transformedPhrase,
       remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
       dailyLimit: 5,
       nextResetTime: tomorrowStart.toISOString()
-    }, { status: 201 })
+    }
+
+    return NextResponse.json(responseData, { status: 201 })
 
   } catch (error) {
     console.error('Error creating phrase:', error)
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.issues },
+        { 
+          error: 'Invalid request data', 
+          details: error.issues 
+        } satisfies { error: string; details: unknown },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -186,12 +192,12 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const languageId = searchParams.get('languageId')
-    const languageCode = searchParams.get('languageCode')
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const minimal = searchParams.get('minimal') === 'true' // 最小限のデータのみ取得するフラグ
-    const offset = (page - 1) * limit
+    const languageId: string | null = searchParams.get('languageId')
+    const languageCode: string | null = searchParams.get('languageCode')
+    const page: number = parseInt(searchParams.get('page') || '1')
+    const limit: number = parseInt(searchParams.get('limit') || '10')
+    const minimal: boolean = searchParams.get('minimal') === 'true' // 最小限のデータのみ取得するフラグ
+    const offset: number = (page - 1) * limit
 
     // 認証されたユーザーのIDを使用
     const userId = authResult.user.id
@@ -269,8 +275,8 @@ export async function GET(request: NextRequest) {
       }
     }))
 
-    return NextResponse.json({
-      success: true,
+    const responseData = {
+      success: true as const,
       phrases: transformedPhrases,
       pagination: {
         total,
@@ -278,12 +284,14 @@ export async function GET(request: NextRequest) {
         page,
         hasMore: offset + limit < total
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error fetching phrases:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }
