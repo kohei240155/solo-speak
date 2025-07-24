@@ -2,23 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
+import { 
+  DashboardData, 
+  QuizMasteryLevel
+} from '@/types/dashboard'
 
 const dashboardQuerySchema = z.object({
   language: z.string().min(1),
 })
-
-interface QuizMasteryLevel {
-  level: string
-  score: number
-  color: string
-}
-
-interface DashboardResponse {
-  speakStreak: number
-  speakCountToday: number
-  speakCountTotal: number
-  quizMastery: QuizMasteryLevel[]
-}
 
 // 言語ごとの連続スピーキング日数を計算する関数
 async function calculateConsecutiveSpeakingDays(userId: string, languageCode: string): Promise<number> {
@@ -64,7 +55,7 @@ async function calculateConsecutiveSpeakingDays(userId: string, languageCode: st
   return consecutiveDays
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -74,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     const { user: supabaseUser } = authResult
     const { searchParams } = new URL(request.url)
-    const { language } = dashboardQuerySchema.parse({
+    const { language }: { language: string } = dashboardQuerySchema.parse({
       language: searchParams.get('language'),
     })
 
@@ -85,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'User not found' },
+        { error: 'User not found' } satisfies { error: string },
         { status: 404 }
       )
     }
@@ -187,27 +178,30 @@ export async function GET(request: NextRequest) {
       color: level.color || '#6B7280', // デフォルトのグレー色
     }))
 
-    const result: DashboardResponse = {
+    const result: DashboardData = {
       speakStreak,
       speakCountToday: speakCountToday._sum.count || 0,
       speakCountTotal: speakCountTotal._sum.count || 0,
       quizMastery,
     }
 
-    return NextResponse.json(result)
+    return NextResponse.json(result satisfies DashboardData)
 
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request parameters', details: error.issues },
+        { 
+          error: 'Invalid request parameters', 
+          details: error.issues 
+        } satisfies { error: string; details: unknown },
         { status: 400 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error' } satisfies { error: string },
       { status: 500 }
     )
   }
