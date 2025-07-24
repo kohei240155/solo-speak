@@ -73,6 +73,15 @@ export default function GeneratedVariations({
             rows={3}
             disabled={isSaving}
           />
+          
+          {/* 文字数カウンター */}
+          <div className="flex justify-end mt-1">
+            <span className={`text-xs ${
+              (editingVariations[index] || variation.text).length > 200 ? 'text-red-500' : 'text-gray-500'
+            }`}>
+              {(editingVariations[index] || variation.text).length} / 200
+            </span>
+          </div>
 
           {/* ニュアンス・説明欄 */}
           {variation.explanation && (
@@ -83,20 +92,17 @@ export default function GeneratedVariations({
             </div>
           )}
           
-          {/* バリデーションメッセージと文字数カウンター - 100文字を超えた場合のみ表示 */}
-          {variationValidationErrors[index] && (editingVariations[index] || variation.text).length > 100 && (
-            <div className="flex justify-between items-center mt-1 mb-3">
+          {/* バリデーションエラーメッセージ */}
+          {variationValidationErrors[index] && (
+            <div className="mt-1 mb-3">
               <span className="text-sm text-red-600">
                 {variationValidationErrors[index]}
-              </span>
-              <span className="text-xs text-red-500">
-                {(editingVariations[index] || variation.text).length} / 100
               </span>
             </div>
           )}
           
           {/* 通常時のマージン */}
-          {(editingVariations[index] || variation.text).length <= 100 && (
+          {!variationValidationErrors[index] && (
             <div className="mb-3"></div>
           )}
           

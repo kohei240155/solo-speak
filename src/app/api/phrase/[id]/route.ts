@@ -78,9 +78,9 @@ export async function PUT(
       )
     }
 
-    if (text.length > 100 || translation.length > 100) {
+    if (text.length > 200 || translation.length > 200) {
       return NextResponse.json(
-        { error: 'text and translation must be 100 characters or less' } satisfies { error: string },
+        { error: 'text and translation must be 200 characters or less' } satisfies { error: string },
         { status: 400 }
       )
     }

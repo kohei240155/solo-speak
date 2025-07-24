@@ -14,7 +14,7 @@ const generatePhraseSchema = z.object({
 // Structured Outputs用のレスポンススキーマ
 const phraseVariationsSchema = z.object({
   variations: z.array(z.object({
-    text: z.string().describe("自然な話し言葉の表現"),
+    text: z.string().max(200).describe("自然な話し言葉の表現（200文字以内）"),
     explanation: z.string().describe("他の表現との違いを示すニュアンスの説明（30-50文字程度）")
   })).length(3).describe("同じ意味を持つ3つの異なる表現パターン")
 })
@@ -194,7 +194,9 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
 【重要】各表現には必ずニュアンスの説明を付けてください：
 - 他の2つの表現と比較してどのような違いがあるかを明確に説明する
 - 説明は30-50文字程度の簡潔な表現にする
-- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する${situation ? '\n- シチュエーションにおける使用場面や適切さも説明に含める' : ''}`
+- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する${situation ? '\n- シチュエーションにおける使用場面や適切さも説明に含める' : ''}
+
+【文字数制限】生成する各表現は200文字以内に収めてください。簡潔で自然な表現を心がけてください。`
 }
 
 function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string): { prompt: string; situation?: string } {

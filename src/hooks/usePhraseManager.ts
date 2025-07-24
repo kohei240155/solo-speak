@@ -203,10 +203,10 @@ export const usePhraseManager = () => {
     setEditingVariations(prev => ({ ...prev, [index]: newText }))
     
     // バリデーション
-    if (newText.length > 100) {
+    if (newText.length > 200) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
-        [index]: '100文字以内で入力してください' 
+        [index]: '200文字以内で入力してください' 
       }))
     } else {
       setVariationValidationErrors(prev => {
@@ -331,10 +331,10 @@ export const usePhraseManager = () => {
 
     // 編集されたテキストの文字数バリデーション
     const finalText = editingVariations[index] || variation.text
-    if (finalText.length > 100) {
+    if (finalText.length > 200) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
-        [index]: '100文字以内で入力してください' 
+        [index]: '200文字以内で入力してください' 
       }))
       return
     }
