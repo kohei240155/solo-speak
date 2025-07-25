@@ -27,20 +27,35 @@ export async function GET(request: NextRequest) {
       order
     }
 
-    // データベースからフレーズを取得（削除されていないもののみ）
-    // 認証されたユーザーのフレーズのみを取得
-    const phrases = await prisma.phrase.findMany({
-      where: {
-        userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
-        language: {
-          code: language
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [languageExists, phrases] = await Promise.all([
+      // 指定された言語が存在するか確認
+      prisma.language.findUnique({
+        where: { code: language }
+      }),
+      
+      // データベースからフレーズを取得（削除されていないもののみ）
+      // 認証されたユーザーのフレーズのみを取得
+      prisma.phrase.findMany({
+        where: {
+          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          language: {
+            code: language
+          },
+          deletedAt: null // 削除されていないフレーズのみ
         },
-        deletedAt: null // 削除されていないフレーズのみ
-      },
-      include: {
-        language: true
-      }
-    })
+        include: {
+          language: true
+        }
+      })
+    ])
+
+    if (!languageExists) {
+      return NextResponse.json({
+        success: false,
+        message: `Language with code '${language}' not found`
+      }, { status: 400 })
+    }
 
     if (phrases.length === 0) {
       return NextResponse.json({
