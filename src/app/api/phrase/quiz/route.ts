@@ -24,18 +24,47 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // ユーザー設定を取得（デフォルトクイズ出題数）
-    const userSettings = await prisma.user.findUnique({
-      where: { id: authResult.user.id },
-      select: { defaultQuizCount: true }
-    })
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [userSettings, languageExists, phrases, allUserPhrases] = await Promise.all([
+      // ユーザー設定を取得（デフォルトクイズ出題数）
+      prisma.user.findUnique({
+        where: { id: authResult.user.id },
+        select: { defaultQuizCount: true }
+      }),
+      
+      // 指定された言語が存在するか確認
+      prisma.language.findUnique({
+        where: { code: language }
+      }),
+      
+      // データベースからフレーズを取得（削除されていないもののみ）
+      // 認証されたユーザーのフレーズのみを取得
+      prisma.phrase.findMany({
+        where: {
+          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          language: {
+            code: language
+          },
+          deletedAt: null // 削除されていないフレーズのみ
+        },
+        include: {
+          language: true
+        }
+      }),
+      
+      // デバッグ用：ユーザーの全フレーズ数も確認
+      prisma.phrase.findMany({
+        where: {
+          userId: authResult.user.id,
+          deletedAt: null
+        },
+        include: {
+          language: true
+        }
+      })
+    ])
 
     const userDefaultQuizCount = userSettings?.defaultQuizCount || 10
-
-    // まず指定された言語が存在するか確認
-    const languageExists = await prisma.language.findUnique({
-      where: { code: language }
-    })
 
     console.log('Language exists check:', { language, exists: !!languageExists })
 
@@ -45,32 +74,6 @@ export async function GET(request: NextRequest) {
         message: `Language with code '${language}' not found`
       })
     }
-
-    // データベースからフレーズを取得（削除されていないもののみ）
-    // 認証されたユーザーのフレーズのみを取得
-    const phrases = await prisma.phrase.findMany({
-      where: {
-        userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
-        language: {
-          code: language
-        },
-        deletedAt: null // 削除されていないフレーズのみ
-      },
-      include: {
-        language: true
-      }
-    })
-
-    // デバッグ用：ユーザーの全フレーズ数も確認
-    const allUserPhrases = await prisma.phrase.findMany({
-      where: {
-        userId: authResult.user.id,
-        deletedAt: null
-      },
-      include: {
-        language: true
-      }
-    })
 
     console.log(`Quiz API: Found ${phrases.length} phrases for user ${authResult.user.id} and language ${language}`)
     console.log(`Quiz API: User has ${allUserPhrases.length} total phrases`)
