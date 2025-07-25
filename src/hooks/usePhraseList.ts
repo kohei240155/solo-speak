@@ -14,7 +14,8 @@ export const usePhraseList = () => {
     phrases: savedPhrases, 
     totalCount: totalPhrases, 
     hasMore: hasMorePhrases, 
-    isLoading: isLoadingPhrases,
+    isLoading,
+    isLoadingMore,
     size: phrasePage,
     setSize,
     refetch 
@@ -53,7 +54,8 @@ export const usePhraseList = () => {
     learningLanguage,
     languages: languages || [],
     savedPhrases: savedPhrases || [],
-    isLoadingPhrases,
+    isLoadingPhrases: isLoading || isLoadingMore, // 初回またはページ追加読み込み
+    isLoadingMore, // 追加ページ読み込み専用
     hasMorePhrases: hasMorePhrases || false,
     phrasePage,
     nativeLanguage: userSettings?.nativeLanguage?.code || 'ja',

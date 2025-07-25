@@ -221,7 +221,7 @@ export function useInfinitePhrases(language?: string) {
     return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
   }
 
-  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite(
+  const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
     fetcher,
     {
@@ -237,8 +237,14 @@ export function useInfinitePhrases(language?: string) {
       id: string
       text: string
       translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
+      nuance?: string
+      createdAt: string
+      practiceCount: number
+      correctAnswers: number
+      language: {
+        name: string
+        code: string
+      }
     }>
     pagination?: { hasMore: boolean; total: number }
   }
@@ -255,7 +261,8 @@ export function useInfinitePhrases(language?: string) {
     phrases,
     totalCount,
     hasMore,
-    isLoading,
+    isLoading, // 初回読み込み中
+    isLoadingMore: isValidating && !isLoading, // 追加ページ読み込み中
     error,
     size,
     setSize,

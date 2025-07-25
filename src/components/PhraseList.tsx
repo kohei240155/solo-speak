@@ -157,6 +157,7 @@ PhraseItem.displayName = 'PhraseItem'
 interface PhraseListProps {
   savedPhrases: SavedPhrase[]
   isLoadingPhrases: boolean
+  isLoadingMore?: boolean
   languages?: Language[]
   nativeLanguage?: string
   learningLanguage?: string
@@ -169,6 +170,7 @@ interface PhraseListProps {
 export default function PhraseList({ 
   savedPhrases, 
   isLoadingPhrases,
+  isLoadingMore = false,
   languages = [],
   nativeLanguage = 'ja',
   learningLanguage = 'en',
@@ -346,8 +348,10 @@ export default function PhraseList({
         ))}
         
         {/* 無限スクロール用のローディング */}
-        {isLoadingPhrases && savedPhrases.length > 0 && (
-          <LoadingSpinner size="sm" message="" className="py-4" />
+        {isLoadingMore && (
+          <div className="flex justify-center py-6">
+            <LoadingSpinner size="sm" message="Loading phrases..." className="" />
+          </div>
         )}
       </div>
 

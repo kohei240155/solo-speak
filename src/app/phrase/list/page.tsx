@@ -24,6 +24,7 @@ export default function PhraseListPage() {
     languages,
     savedPhrases,
     isLoadingPhrases,
+    isLoadingMore,
     hasMorePhrases,
     phrasePage,
     nativeLanguage,
@@ -131,6 +132,7 @@ export default function PhraseListPage() {
         <PhraseList
           savedPhrases={savedPhrases}
           isLoadingPhrases={isLoadingPhrases}
+          isLoadingMore={isLoadingMore}
           languages={languages}
           nativeLanguage={nativeLanguage}
           learningLanguage={learningLanguage}
