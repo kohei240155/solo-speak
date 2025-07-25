@@ -23,6 +23,8 @@ interface DropdownMenuProps {
   items: DropdownMenuItem[]
   /** トリガーボタンのアイコン（デフォルトは三点リーダー） */
   triggerIcon?: React.ComponentType<{ className?: string }>
+  /** カスタムトリガー要素（triggerIconよりも優先されます） */
+  customTrigger?: React.ReactNode
   /** トリガーボタンのサイズ */
   triggerSize?: 'sm' | 'md' | 'lg'
   /** メニューの位置 */
@@ -43,6 +45,7 @@ export default function DropdownMenu({
   onClose,
   items,
   triggerIcon: TriggerIcon = HiOutlineEllipsisHorizontalCircle,
+  customTrigger,
   triggerSize = 'md',
   position = 'bottom-right',
   width = 'w-28',
@@ -126,7 +129,7 @@ export default function DropdownMenu({
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <TriggerIcon className={getTriggerSize()} />
+        {customTrigger || <TriggerIcon className={getTriggerSize()} />}
       </button>
 
       {/* ドロップダウンメニュー */}

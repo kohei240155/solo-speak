@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useRef, useEffect, memo, useMemo } from 'react'
+import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
 import LoginModal from './LoginModal'
+import DropdownMenu from './DropdownMenu'
+import { HiOutlineHome, HiOutlineCog6Tooth, HiArrowLeftOnRectangle } from 'react-icons/hi2'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   // 表示するアイコンURLを決定（フォールバック機能付き）
   const getDisplayIconUrl = useMemo(() => {
@@ -44,11 +44,42 @@ const Header = memo(function Header() {
     }
   }, [user]) // ユーザーオブジェクト全体が変更されたときに実行
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await signOut()
     setIsDropdownOpen(false)
     setIsMobileDropdownOpen(false)
-  }
+  }, [signOut])
+
+  // ドロップダウンメニューのアイテムを生成
+  const getDropdownMenuItems = useMemo(() => {
+    const items = []
+    
+    if (isUserSetupComplete) {
+      items.push(
+        {
+          id: 'dashboard',
+          label: 'ダッシュボード',
+          icon: HiOutlineHome,
+          onClick: () => window.location.href = '/dashboard'
+        },
+        {
+          id: 'settings',
+          label: 'ユーザー設定',
+          icon: HiOutlineCog6Tooth,
+          onClick: () => window.location.href = '/settings'
+        }
+      )
+    }
+    
+    items.push({
+      id: 'logout',
+      label: 'ログアウト',
+      icon: HiArrowLeftOnRectangle,
+      onClick: handleSignOut
+    })
+    
+    return items
+  }, [isUserSetupComplete, handleSignOut])
 
   const handleLoginClick = () => {
     setIsLoginModalOpen(true)
@@ -58,26 +89,9 @@ const Header = memo(function Header() {
     setIsLoginModalOpen(false)
   }
 
-  // 画像読み込みエラーハンドラー
   const handleImageError = () => {
     // AuthContextでエラーハンドリングを行うため、ここでは何もしない
     console.warn('User icon failed to load')
-  }
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen)
-  }
-
-  const closeDropdown = () => {
-    setIsDropdownOpen(false)
-  }
-
-  const toggleMobileDropdown = () => {
-    setIsMobileDropdownOpen(!isMobileDropdownOpen)
-  }
-
-  const closeMobileDropdown = () => {
-    setIsMobileDropdownOpen(false)
   }
 
   // ロゴクリック時の処理
@@ -102,26 +116,6 @@ const Header = memo(function Header() {
       window.location.href = '/phrase/list'
     }
   }
-
-  // クリック外でドロップダウンを閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false)
-      }
-      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node)) {
-        setIsMobileDropdownOpen(false)
-      }
-    }
-
-    if (isDropdownOpen || isMobileDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isDropdownOpen, isMobileDropdownOpen])
 
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
@@ -187,12 +181,16 @@ const Header = memo(function Header() {
           {/* デスクトップナビゲーション */}
           <nav className="hidden md:flex items-center">
             {user ? (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={toggleDropdown}
-                  className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  {getDisplayIconUrl ? (
+              <DropdownMenu
+                isOpen={isDropdownOpen}
+                onToggle={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClose={() => setIsDropdownOpen(false)}
+                items={getDropdownMenuItems}
+                position="bottom-right"
+                width="w-48"
+                zIndex={60}
+                customTrigger={
+                  getDisplayIconUrl ? (
                     <Image
                       src={getDisplayIconUrl}
                       alt="User Avatar"
@@ -205,59 +203,10 @@ const Header = memo(function Header() {
                     />
                   ) : (
                     getDefaultUserIcon
-                  )}
-                </button>
-
-                {                /* ドロップダウンメニュー */}
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
-                    <div className="py-1">
-                      {isUserSetupComplete && (
-                        <>
-                          <Link
-                            href="/dashboard"
-                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                            onClick={closeDropdown}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#F3F4F6'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                          >
-                            ダッシュボード
-                          </Link>
-                          <Link
-                            href="/settings"
-                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                            onClick={closeDropdown}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#F3F4F6'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                          >
-                            ユーザー設定
-                          </Link>
-                        </>
-                      )}
-                      <button
-                        onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ログアウト
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  )
+                }
+                triggerClassName="p-1 rounded-full hover:bg-gray-100"
+              />
             ) : (
               <button
                 onClick={handleLoginClick}
@@ -278,12 +227,16 @@ const Header = memo(function Header() {
           {/* モバイルメニュー */}
           <div className="md:hidden">
             {user ? (
-              <div className="relative" ref={mobileDropdownRef}>
-                <button
-                  onClick={toggleMobileDropdown}
-                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
-                >
-                  {getDisplayIconUrl ? (
+              <DropdownMenu
+                isOpen={isMobileDropdownOpen}
+                onToggle={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                onClose={() => setIsMobileDropdownOpen(false)}
+                items={getDropdownMenuItems}
+                position="bottom-right"
+                width="w-48"
+                zIndex={60}
+                customTrigger={
+                  getDisplayIconUrl ? (
                     <Image
                       src={getDisplayIconUrl}
                       alt="User Avatar"
@@ -296,59 +249,10 @@ const Header = memo(function Header() {
                     />
                   ) : (
                     getDefaultUserIcon
-                  )}
-                </button>
-
-                {/* モバイル用ドロップダウンメニュー */}
-                {isMobileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-[60]">
-                    <div className="py-1">
-                      {isUserSetupComplete && (
-                        <>
-                          <Link
-                            href="/dashboard"
-                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                            onClick={closeMobileDropdown}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#F3F4F6'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                          >
-                            ダッシュボード
-                          </Link>
-                          <Link
-                            href="/settings"
-                            className="block px-4 py-2 text-sm text-gray-700 transition-colors"
-                            onClick={closeMobileDropdown}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#F3F4F6'
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                          >
-                            ユーザー設定
-                          </Link>
-                        </>
-                      )}
-                      <button
-                        onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 transition-colors"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#F3F4F6'
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        ログアウト
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  )
+                }
+                triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
+              />
             ) : (
               <button
                 onClick={handleLoginClick}

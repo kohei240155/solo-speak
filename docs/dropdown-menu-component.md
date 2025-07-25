@@ -57,6 +57,7 @@ function MyComponent() {
 ### オプションProps
 
 - `triggerIcon?: React.ComponentType` - トリガーボタンのアイコン（デフォルト: 三点リーダー）
+- `customTrigger?: React.ReactNode` - カスタムトリガー要素（triggerIconよりも優先されます）
 - `triggerSize?: 'sm' | 'md' | 'lg'` - トリガーボタンのサイズ（デフォルト: 'md'）
 - `position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'` - メニューの表示位置（デフォルト: 'bottom-right'）
 - `width?: string` - メニューの幅（デフォルト: 'w-28'）
@@ -104,6 +105,24 @@ interface DropdownMenuItem {
 }
 ```
 
+## カスタムトリガーの使用
+
+ユーザーアバターなど、アイコン以外の要素をトリガーとして使用する場合：
+
+```tsx
+<DropdownMenu
+  customTrigger={
+    <Image
+      src={userAvatar}
+      alt="User Avatar"
+      className="w-9 h-9 rounded-full"
+    />
+  }
+  triggerClassName="p-1 rounded-full hover:bg-gray-100"
+  // ... other props
+/>
+```
+
 ## カスタムアイコンの使用
 
 ```tsx
@@ -130,7 +149,7 @@ import { AiOutlineMore } from 'react-icons/ai'
 現在、以下のコンポーネントで使用されています：
 
 - `PhraseList.tsx` - フレーズアイテムの編集・削除・スピーク機能
-- 将来的に `Header.tsx` でも使用予定
+- `Header.tsx` - ユーザードロップダウンメニュー（デスクトップ・モバイル）
 
 ## メリット
 
