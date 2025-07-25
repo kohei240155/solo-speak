@@ -48,6 +48,15 @@ export default function PhraseAdd({
   onTypeChange,
   onUseChatGptApiChange
 }: PhraseAddProps) {
+  // ボタンが有効かどうかを判定する関数
+  const isGenerateButtonEnabled = () => {
+    return !isLoading && 
+           !isSaving && 
+           desiredPhrase.trim() && 
+           remainingGenerations > 0 && 
+           desiredPhrase.length <= 100 && 
+           generatedVariations.length === 0
+  }
   return (
     <>
       {/* Native Language表示とLeft情報 */}
@@ -179,27 +188,30 @@ export default function PhraseAdd({
           boxShadow: isLoading ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
         }}
         onMouseEnter={(e) => {
-          if (!isLoading && !isSaving && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && e.currentTarget) {
+          if (isGenerateButtonEnabled() && e.currentTarget) {
             e.currentTarget.style.backgroundColor = '#525252'
             e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
           }
         }}
         onMouseLeave={(e) => {
-          if (!isLoading && !isSaving && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && e.currentTarget) {
+          if (isGenerateButtonEnabled() && e.currentTarget) {
             e.currentTarget.style.backgroundColor = '#616161'
             e.currentTarget.style.boxShadow = 'none'
           }
         }}
         onClick={(e) => {
-          if (!isLoading && !isSaving && desiredPhrase.trim() && remainingGenerations > 0 && desiredPhrase.length <= 100 && generatedVariations.length === 0 && e.currentTarget) {
-            // より控えめなクリック効果
-            e.currentTarget.style.transform = 'scale(0.98)'
-            setTimeout(() => {
-              if (e.currentTarget) {
-                e.currentTarget.style.transform = 'scale(1)'
-              }
-            }, 150)
+          if (!isGenerateButtonEnabled() || !e.currentTarget) {
+            return
           }
+          
+          // より控えめなクリック効果
+          e.currentTarget.style.transform = 'scale(0.98)'
+          setTimeout(() => {
+            if (e.currentTarget) {
+              e.currentTarget.style.transform = 'scale(1)'
+            }
+          }, 150)
+          
           onGeneratePhrase()
         }}
       >

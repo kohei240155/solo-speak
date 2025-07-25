@@ -73,55 +73,65 @@ export default function RankingPage() {
       
       console.log('API Response:', data)
       
-      if (data.success) {
-        if (activeRankingType === 'Speak') {
-          // Speak APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Speakランキングデータの形式が正しくありません')
-          }
-        } else if (activeRankingType === 'Phrase') {
-          // Phrase APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Phraseランキングデータの形式が正しくありません')
-          }
-        } else if (activeRankingType === 'Quiz') {
-          // Quiz APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Quizランキングデータの形式が正しくありません')
-          }
-        }
-      } else {
+      if (!data.success) {
         toast.error(data.message || 'ランキングデータの取得に失敗しました')
+        return
+      }
+      
+      if (activeRankingType === 'Speak') {
+        // Speak APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Speakランキングデータの形式が正しくありません')
+          return
+        }
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
+        return
+      }
+      
+      if (activeRankingType === 'Phrase') {
+        // Phrase APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Phraseランキングデータの形式が正しくありません')
+          return
+        }
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
+        return
+      }
+      
+      if (activeRankingType === 'Quiz') {
+        // Quiz APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Quizランキングデータの形式が正しくありません')
+          return
+        }
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
       }
     } catch (error) {
       console.error('Error fetching ranking:', error)

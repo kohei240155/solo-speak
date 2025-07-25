@@ -21,13 +21,15 @@ const Header = memo(function Header() {
     }
     
     // AuthContextでまだロードされていない場合でも、Googleアバターがあればそれを使用
-    if (user?.user_metadata?.avatar_url || user?.user_metadata?.picture) {
-      const googleAvatarUrl = user.user_metadata.avatar_url || user.user_metadata.picture
-      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                             googleAvatarUrl.includes('googleapis.com') || 
-                             googleAvatarUrl.includes('google.com'))) {
-        return googleAvatarUrl
-      }
+    const googleAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
+    if (!googleAvatarUrl) {
+      return null
+    }
+    
+    if (googleAvatarUrl.includes('googleusercontent.com') || 
+        googleAvatarUrl.includes('googleapis.com') || 
+        googleAvatarUrl.includes('google.com')) {
+      return googleAvatarUrl
     }
     
     return null

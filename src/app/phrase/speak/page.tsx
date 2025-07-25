@@ -82,13 +82,20 @@ function PhraseSpeakPage() {
 
   // SWRから取得したデータを状態に反映
   useEffect(() => {
-    if (singlePhraseFromSWR && phraseId) {
+    if (!phraseId) {
+      return
+    }
+    
+    if (singlePhraseFromSWR) {
       setSinglePhrase(singlePhraseFromSWR)
       setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0)
       setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0)
       setSinglePhrasePendingCount(0)
       setIsLoadingSinglePhrase(false)
-    } else if (singlePhraseData && !singlePhraseData.success && phraseId) {
+      return
+    }
+    
+    if (singlePhraseData && !singlePhraseData.success) {
       toast.error('フレーズが見つかりませんでした')
       router.push('/phrase/list')
     }

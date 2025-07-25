@@ -89,14 +89,16 @@ export function useUserSettingsSubmit(
           } catch (uploadError) {
             console.error('Image upload failed:', uploadError)
             
-            if (uploadError instanceof Error) {
-              if (uploadError.message.includes('row-level security') || uploadError.message.includes('policy')) {
-                setError(`画像のアップロード権限がありません。\n解決方法：\n1. Supabase Dashboard > Storage > Settings でRLSを一時的に無効化\n2. または適切なポリシーを設定してください。\n\n詳細: ${uploadError.message}`)
-              } else {
-                setError(`画像のアップロードに失敗しました: ${uploadError.message}`)
-              }
-            } else {
+            if (!(uploadError instanceof Error)) {
               setError('画像のアップロードに失敗しました。')
+              setSubmitting(false)
+              return
+            }
+            
+            if (uploadError.message.includes('row-level security') || uploadError.message.includes('policy')) {
+              setError(`画像のアップロード権限がありません。\n解決方法：\n1. Supabase Dashboard > Storage > Settings でRLSを一時的に無効化\n2. または適切なポリシーを設定してください。\n\n詳細: ${uploadError.message}`)
+            } else {
+              setError(`画像のアップロードに失敗しました: ${uploadError.message}`)
             }
             
             setSubmitting(false)

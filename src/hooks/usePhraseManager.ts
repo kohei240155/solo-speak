@@ -75,16 +75,20 @@ export const usePhraseManager = () => {
   const fetchUserSettings = useCallback(async () => {
     try {
       const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings')
-      // 初期化時のみユーザー設定を適用
-      if (!userSettingsInitialized) {
-        if (userData.nativeLanguage?.code) {
-          setNativeLanguage(userData.nativeLanguage.code)
-        }
-        if (userData.defaultLearningLanguage?.code) {
-          setLearningLanguage(userData.defaultLearningLanguage.code)
-        }
-        setUserSettingsInitialized(true)
+      
+      // 初期化済みの場合は何もしない
+      if (userSettingsInitialized) {
+        return
       }
+      
+      // ユーザー設定を適用
+      if (userData.nativeLanguage?.code) {
+        setNativeLanguage(userData.nativeLanguage.code)
+      }
+      if (userData.defaultLearningLanguage?.code) {
+        setLearningLanguage(userData.defaultLearningLanguage.code)
+      }
+      setUserSettingsInitialized(true)
     } catch (error) {
       console.error('Error fetching user settings:', error)
     }
@@ -121,22 +125,26 @@ export const usePhraseManager = () => {
         console.warn('Duplicate phrase IDs detected in API response:', phraseIds)
       }
       
-      if (append) {
-        // 重複を避けるため、IDが既に存在しないアイテムのみを追加
-        setSavedPhrases(prev => {
-          const existingIds = new Set(prev.map(p => p.id))
-          const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
-          console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
-          return [...prev, ...newPhrases]
-        })
-      } else {
-        // 初回読み込み時も重複を除去
+      if (!append) {
+        // 初回読み込み時は重複を除去して設定
         const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
           self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
         )
         console.log(`Setting ${uniquePhrases.length} unique phrases out of ${phrases.length} fetched`)
         setSavedPhrases(uniquePhrases)
+        setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
+        setPhrasePage(page)
+        setTotalPhrases(data.pagination?.total || 0)
+        return
       }
+      
+      // 追加読み込み時は重複を避けるため、IDが既に存在しないアイテムのみを追加
+      setSavedPhrases(prev => {
+        const existingIds = new Set(prev.map(p => p.id))
+        const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
+        console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
+        return [...prev, ...newPhrases]
+      })
       
       setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
       setPhrasePage(page)

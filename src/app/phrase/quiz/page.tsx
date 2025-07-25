@@ -70,22 +70,25 @@ export default function PhraseQuizPage() {
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
-    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !isQuizCompleted) {
-      // URLパラメータがある場合は自動開始（モーダルは開かない）
-      const params = new URLSearchParams(window.location.search)
-      const language = params.get('language')
-      const mode = params.get('mode')
-      
-      if (language && mode && (mode === 'normal' || mode === 'random')) {
-        // URLパラメータから自動開始（useQuizModeで処理される）
-        console.log('Auto-starting quiz from URL parameters')
-        return
-      }
-      
-      // URLパラメータがない場合はモーダルを開く
-      if (!showQuizModal) {
-        setShowQuizModal(true)
-      }
+    // 前提条件をチェック
+    if (isLoadingPhrases || savedPhrases.length === 0 || quizMode.active || isQuizCompleted) {
+      return
+    }
+    
+    // URLパラメータがある場合は自動開始（モーダルは開かない）
+    const params = new URLSearchParams(window.location.search)
+    const language = params.get('language')
+    const mode = params.get('mode')
+    
+    if (language && mode && (mode === 'normal' || mode === 'random')) {
+      // URLパラメータから自動開始（useQuizModeで処理される）
+      console.log('Auto-starting quiz from URL parameters')
+      return
+    }
+    
+    // URLパラメータがない場合はモーダルを開く
+    if (!showQuizModal) {
+      setShowQuizModal(true)
     }
   }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal, isQuizCompleted])
 

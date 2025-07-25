@@ -36,7 +36,10 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   useEffect(() => {
     if (defaultLearningLanguage) {
       setSelectedLanguage(defaultLearningLanguage)
-    } else if (languages.length > 0 && !defaultLearningLanguage) {
+      return
+    }
+    
+    if (languages.length > 0 && !defaultLearningLanguage) {
       setSelectedLanguage(languages[0].code)
     }
   }, [defaultLearningLanguage, languages])

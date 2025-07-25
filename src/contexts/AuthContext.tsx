@@ -220,17 +220,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // 画像URLの有効性をチェック
       if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
-      } else {
-        // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
-        setUserIconUrl(prev => {
-          if (prev && (prev.includes('googleusercontent.com') || 
-                      prev.includes('googleapis.com') || 
-                      prev.includes('google.com'))) {
-            return prev // Googleアバターを保持
-          }
-          return null
-        })
+        return
       }
+      
+      // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
+      setUserIconUrl(prev => {
+        if (prev && (prev.includes('googleusercontent.com') || 
+                    prev.includes('googleapis.com') || 
+                    prev.includes('google.com'))) {
+          return prev // Googleアバターを保持
+        }
+        return null
+      })
     } catch (error) {
       console.error('Error fetching user settings:', error)
       
@@ -244,26 +245,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                                googleAvatarUrl.includes('googleapis.com') || 
                                googleAvatarUrl.includes('google.com'))) {
           setUserIconUrl(googleAvatarUrl)
-        } else {
-          setUserIconUrl(null)
-        }
-      } else {
-        // タイムアウトエラーまたはネットワークエラーの場合
-        if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
-          console.warn('ユーザー設定の取得がタイムアウトしました')
+          return
         }
         
-        setIsUserSetupComplete(false)
-        // エラー時は現在のアイコンを保持
-        setUserIconUrl(prev => {
-          if (prev && (prev.includes('googleusercontent.com') || 
-                      prev.includes('googleapis.com') || 
-                      prev.includes('google.com'))) {
-            return prev
-          }
-          return null
-        })
+        setUserIconUrl(null)
+        return
       }
+      
+      // タイムアウトエラーまたはネットワークエラーの場合
+      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
+        console.warn('ユーザー設定の取得がタイムアウトしました')
+      }
+      
+      setIsUserSetupComplete(false)
+      // エラー時は現在のアイコンを保持
+      setUserIconUrl(prev => {
+        if (prev && (prev.includes('googleusercontent.com') || 
+                    prev.includes('googleapis.com') || 
+                    prev.includes('google.com'))) {
+          return prev
+        }
+        return null
+      })
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
