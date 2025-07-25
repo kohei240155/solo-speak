@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
-import { Language } from '@/types/phrase'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { CiCirclePlus } from 'react-icons/ci'
@@ -13,6 +12,7 @@ import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import { useLanguages, useUserSettings } from '@/hooks/useSWRApi'
 
 interface SpeakPhrase {
   id: string
@@ -27,11 +27,16 @@ export default function SpeakPage() {
   const params = useParams()
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
-  const [languages, setLanguages] = useState<Language[]>([])
   const [learningLanguage, setLearningLanguage] = useState('')
-  const [defaultLearningLanguage, setDefaultLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // SWRフックを使用してデータを取得
+  const { languages } = useLanguages()
+  const { userSettings } = useUserSettings()
+
+  // URLパラメータから取得
+  const languageId = params.id as string
 
   // 認証チェック: ログインしていない場合はホームページにリダイレクト
   useEffect(() => {
@@ -48,8 +53,6 @@ export default function SpeakPage() {
     handleSpeakStart
   } = useSpeakModal()
 
-  const languageId = params.id as string
-
   useEffect(() => {
     setLearningLanguage(languageId)
   }, [languageId])
@@ -60,26 +63,6 @@ export default function SpeakPage() {
     // URLパラメータからphraseIdを取得
     const searchParams = new URLSearchParams(window.location.search)
     const phraseId = searchParams.get('phraseId')
-
-    // 言語情報を取得
-    const fetchLanguages = async () => {
-      try {
-        const data = await api.get('/api/languages') as { languages?: Language[] }
-        setLanguages(data.languages || [])
-      } catch (error) {
-        console.error('Error fetching languages:', error)
-      }
-    }
-
-    // ユーザー設定を取得
-    const fetchUserSettings = async () => {
-      try {
-        const data = await api.get('/api/user/settings') as { learningLanguage?: string }
-        setDefaultLearningLanguage(data.learningLanguage || 'en')
-      } catch (error) {
-        console.error('Error fetching user settings:', error)
-      }
-    }
 
     // フレーズを取得
     const fetchPhrase = async () => {
@@ -125,8 +108,6 @@ export default function SpeakPage() {
       }
     }
 
-    fetchLanguages()
-    fetchUserSettings()
     fetchPhrase()
   }, [languageId, user])
 
@@ -399,8 +380,8 @@ export default function SpeakPage() {
         isOpen={showSpeakModal}
         onClose={closeSpeakModal}
         onStart={handleSpeakStart}
-        languages={languages}
-        defaultLearningLanguage={defaultLearningLanguage || learningLanguage}
+        languages={languages || []}
+        defaultLearningLanguage={userSettings?.defaultLearningLanguage?.code || learningLanguage}
       />
       
       {/* Toaster for notifications */}

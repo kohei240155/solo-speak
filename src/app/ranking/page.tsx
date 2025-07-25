@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import Image from 'next/image'
 import LanguageSelector from '@/components/LanguageSelector'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import { useLanguages } from '@/hooks/useSWRApi'
 
 interface RankingUser {
   userId: string
@@ -16,12 +17,6 @@ interface RankingUser {
   iconUrl: string | null
   totalCount: number
   rank: number
-}
-
-interface Language {
-  id: string
-  name: string
-  code: string
 }
 
 interface SpeakUser {
@@ -38,28 +33,13 @@ export default function RankingPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
   const [activeRankingType, setActiveRankingType] = useState('Phrase') // デフォルトをPhraseに変更
-  const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
-  // 言語データの取得
-  useEffect(() => {
-    const fetchLanguages = async () => {
-      try {
-        const data = await api.get<Language[]>('/api/languages')
-        // APIは直接言語配列を返すか、フォールバックデータを返す
-        if (Array.isArray(data)) {
-          setLanguages(data)
-        }
-      } catch (error) {
-        console.error('Error fetching languages:', error)
-      }
-    }
+  // SWRフックを使用して言語データを取得
+  const { languages } = useLanguages()
 
-    if (user) {
-      fetchLanguages()
-    }
-  }, [user])
-
+  // 言語データの初期化（必要に応じてデフォルト値を設定）
+  
   const fetchRanking = useCallback(async () => {
     if (!user) return
 
@@ -190,7 +170,7 @@ export default function RankingPage() {
             <LanguageSelector
               learningLanguage={selectedLanguage}
               onLanguageChange={handleLanguageChange}
-              languages={languages}
+              languages={languages || []}
               nativeLanguage="ja"
             />
           </div>

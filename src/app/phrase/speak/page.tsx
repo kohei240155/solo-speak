@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import PhraseTabNavigation from '@/components/PhraseTabNavigation'
@@ -19,7 +19,7 @@ import { SpeakConfig } from '@/types/speak'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
-import { api } from '@/utils/api'
+import { useSpeakPhraseById } from '@/hooks/useSWRApi'
 
 interface SpeakPhrase {
   id: string
@@ -69,50 +69,46 @@ function PhraseSpeakPage() {
   const [singlePhraseTotalCount, setSinglePhraseTotalCount] = useState(0)
   const [singlePhrasePendingCount, setSinglePhrasePendingCount] = useState(0) // ペンディングカウント追加
 
+  // URLパラメータからphraseIdを取得
+  const phraseId = searchParams.get('phraseId')
+  
+  // SWRフックを使用して単一フレーズを取得
+  const { data: singlePhraseData, phrase: singlePhraseFromSWR, isLoading: isLoadingSinglePhraseSWR } = useSpeakPhraseById(phraseId || undefined)
+
   // 音声リストの初期化
   useEffect(() => {
     preloadVoices()
   }, [])
 
-  // 単一フレーズを取得する関数
-  const fetchSinglePhrase = useCallback(async (phraseId: string) => {
-    if (!user) return
-    
-    setIsLoadingSinglePhrase(true)
-    try {
-      const data = await api.get(`/api/phrase/${phraseId}/speak`) as {
-        success: boolean
-        phrase?: SpeakPhrase
-      }
-      
-      if (data.success && data.phrase) {
-        setSinglePhrase(data.phrase)
-        setSinglePhraseTodayCount(data.phrase.dailySpeakCount || 0)
-        setSinglePhraseTotalCount(data.phrase.totalSpeakCount || 0)
-        setSinglePhrasePendingCount(0) // ペンディングカウントを初期化
-      } else {
-        toast.error('フレーズが見つかりませんでした')
-        router.push('/phrase/list')
-      }
-    } catch (error) {
-      console.error('Error fetching single phrase:', error)
-      toast.error('フレーズの取得に失敗しました')
-      router.push('/phrase/list')
-    } finally {
+  // SWRから取得したデータを状態に反映
+  useEffect(() => {
+    if (singlePhraseFromSWR && phraseId) {
+      setSinglePhrase(singlePhraseFromSWR)
+      setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0)
+      setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0)
+      setSinglePhrasePendingCount(0)
       setIsLoadingSinglePhrase(false)
+    } else if (singlePhraseData && !singlePhraseData.success && phraseId) {
+      toast.error('フレーズが見つかりませんでした')
+      router.push('/phrase/list')
     }
-  }, [user, router])
+  }, [singlePhraseFromSWR, singlePhraseData, phraseId, router])
+
+  // ローディング状態の管理
+  useEffect(() => {
+    if (phraseId) {
+      setIsLoadingSinglePhrase(isLoadingSinglePhraseSWR)
+    }
+  }, [phraseId, isLoadingSinglePhraseSWR])
 
   // 単一フレーズモードのチェック
   useEffect(() => {
-    const phraseId = searchParams.get('phraseId')
     if (phraseId) {
       setIsSinglePhraseMode(true)
-      fetchSinglePhrase(phraseId)
     } else {
       setIsSinglePhraseMode(false)
     }
-  }, [searchParams, fetchSinglePhrase])
+  }, [phraseId])
 
   // 単一フレーズの音読回数を更新（ローカルのみ）
   const handleSinglePhraseCount = async () => {

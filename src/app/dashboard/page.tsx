@@ -3,8 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { useUserSettings, useDashboardData } from '@/hooks/useSWRApi'
-import { useUserSettingsData } from '@/hooks/useUserSettingsData'
+import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
 import LanguageSelector from '@/components/LanguageSelector'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
@@ -17,12 +16,7 @@ export default function DashboardPage() {
   // SWRを使用してデータを取得
   const { userSettings } = useUserSettings()
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
-
-  // ユーザー設定を取得（フォールバック用）
-  const { 
-    languages, 
-    loading: settingsLoading 
-  } = useUserSettingsData()
+  const { languages } = useLanguages()
 
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
@@ -64,7 +58,7 @@ export default function DashboardPage() {
     }
   }, [userSettings, selectedLanguage])
 
-  if (loading || setupCheckLoading || settingsLoading) {
+  if (loading || setupCheckLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 
@@ -83,7 +77,7 @@ export default function DashboardPage() {
               <LanguageSelector
                 learningLanguage={selectedLanguage}
                 onLanguageChange={setSelectedLanguage}
-                languages={languages}
+                languages={languages || []}
                 nativeLanguage={userSettings?.nativeLanguage?.code || ''}
               />
             )}
