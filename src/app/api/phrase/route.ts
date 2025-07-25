@@ -4,7 +4,7 @@ import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { 
-  CreatePhraseRequestBody, 
+  CreatePhraseRequest,
   CreatePhraseResponseData, 
   PhrasesListResponseData 
 } from '@/types/phrase-api'
@@ -170,8 +170,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(responseData, { status: 201 })
 
   } catch (error) {
-    console.error('Error creating phrase:', error)
-    
     if (error instanceof z.ZodError) {
       const errorResponse: ApiErrorResponse = {
         error: 'Invalid request data',
@@ -298,8 +296,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error fetching phrases:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

@@ -199,8 +199,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(result)
 
   } catch (error) {
-    console.error('Error fetching dashboard data:', error)
-    
     if (error instanceof z.ZodError) {
       const errorResponse: ApiErrorResponse = {
         error: 'Invalid request parameters',

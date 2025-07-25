@@ -52,8 +52,7 @@ export async function GET(
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error fetching phrase:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }
@@ -136,8 +135,7 @@ export async function PUT(
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error updating phrase:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }
@@ -187,8 +185,7 @@ export async function DELETE(
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error deleting phrase:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

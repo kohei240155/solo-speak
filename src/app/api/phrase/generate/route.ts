@@ -79,8 +79,6 @@ export async function POST(request: NextRequest) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('OpenAI API error:', errorData)
         return NextResponse.json(
           { error: 'Failed to generate phrases' },
           { status: 500 }
@@ -121,8 +119,6 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error generating phrases:', error)
-    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.issues },
