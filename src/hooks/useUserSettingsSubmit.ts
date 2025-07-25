@@ -26,14 +26,10 @@ export function useUserSettingsSubmit(
       try {
         const currentSettings = await api.get('/api/user/settings') as { iconUrl?: string }
         existingIconUrl = currentSettings.iconUrl || ''
-        console.log('UserSettingsSubmit: Existing iconUrl:', existingIconUrl)
       } catch (error) {
         if (error instanceof Error && error.message.includes('404')) {
           // 初回セットアップの場合
           isFirstTimeSetup = true
-          console.log('UserSettingsSubmit: First time setup detected')
-        } else {
-          console.log('UserSettingsSubmit: Could not fetch existing settings:', error)
         }
       }
 
@@ -43,52 +39,34 @@ export function useUserSettingsSubmit(
         if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
                                googleAvatarUrl.includes('googleapis.com') || 
                                googleAvatarUrl.includes('google.com'))) {
-          console.log('UserSettingsSubmit: Auto-setting Google avatar for first time setup:', googleAvatarUrl)
           
           try {
             // Google画像をSupabase Storageにダウンロード・アップロード
             const googleUploadResult = await api.post('/api/user/icon/google', { googleAvatarUrl }) as { iconUrl: string }
-            console.log('UserSettingsSubmit: Google avatar uploaded successfully:', googleUploadResult.iconUrl)
             finalData.iconUrl = googleUploadResult.iconUrl
-          } catch (googleError) {
-            console.log('UserSettingsSubmit: Failed to upload Google avatar:', googleError)
+          } catch {
             finalData.iconUrl = googleAvatarUrl
           }
         }
       }
 
       // 画像がある場合はSupabase Storageにアップロード
-      console.log('UserSettingsSubmit: Checking image upload conditions...')
-      console.log('UserSettingsSubmit: imageUploadRef.current:', !!imageUploadRef.current)
-      console.log('UserSettingsSubmit: user:', !!user)
-      
       if (imageUploadRef.current && user) {
-        console.log('UserSettingsSubmit: Attempting image upload...')
-        
         const imageFile = imageUploadRef.current.getImageFile()
-        console.log('UserSettingsSubmit: imageFile:', imageFile)
-        console.log('UserSettingsSubmit: imageFile type:', typeof imageFile)
-        console.log('UserSettingsSubmit: imageFile size:', imageFile?.size)
         
         if (imageFile) {
-          console.log('UserSettingsSubmit: Image file found, uploading to API...')
           
           try {
             // 1つ目のAPI: 画像をSupabase Storageにアップロード
             const formData = new FormData()
             formData.append('icon', imageFile)
             
-            console.log('UserSettingsSubmit: Making API call to /api/user/icon')
-            
             const uploadResult = await api.post('/api/user/icon', formData) as { iconUrl: string }
-            console.log('UserSettingsSubmit: Image uploaded successfully:', uploadResult.iconUrl)
             
             // アップロードしたURLをフォームデータに設定
             finalData.iconUrl = uploadResult.iconUrl
             
           } catch (uploadError) {
-            console.error('Image upload failed:', uploadError)
-            
             if (!(uploadError instanceof Error)) {
               setError('画像のアップロードに失敗しました。')
               setSubmitting(false)
@@ -105,41 +83,23 @@ export function useUserSettingsSubmit(
             return
           }
         } else {
-          console.log('UserSettingsSubmit: No image file to upload')
-          console.log('UserSettingsSubmit: imageFile is null or undefined')
-          console.log('UserSettingsSubmit: Current finalData.iconUrl:', finalData.iconUrl)
-          
           // 画像がない場合の処理：
           // 1. 空文字列('') → 明示的な削除意図なのでそのまま保持
           // 2. Blob URL → 画像が選択されているのでそのまま保持  
           // 3. undefined/null → 既存のURLを保持
           // 4. その他のURL → そのまま保持
           if (finalData.iconUrl === undefined || finalData.iconUrl === null) {
-            console.log('UserSettingsSubmit: iconUrl is undefined/null, using existing URL')
             finalData.iconUrl = existingIconUrl
-          } else {
-            console.log('UserSettingsSubmit: iconUrl has value, keeping as is:', finalData.iconUrl?.substring(0, 50) + '...')
           }
         }
       } else {
-        console.log('UserSettingsSubmit: No image upload component or user')
-        console.log('UserSettingsSubmit: imageUploadRef.current:', !!imageUploadRef.current)
-        console.log('UserSettingsSubmit: user:', !!user)
-        console.log('UserSettingsSubmit: Current finalData.iconUrl:', finalData.iconUrl)
-        
         // 画像コンポーネントがない場合も同様の処理
         if (finalData.iconUrl === undefined || finalData.iconUrl === null) {
-          console.log('UserSettingsSubmit: iconUrl is undefined/null, using existing URL')
           finalData.iconUrl = existingIconUrl
-        } else {
-          console.log('UserSettingsSubmit: iconUrl has value, keeping as is:', finalData.iconUrl?.substring(0, 50) + '...')
         }
       }
 
       // アイコンが削除された場合（空文字列に設定された場合）の処理
-      console.log('UserSettingsSubmit: Checking deletion conditions...')
-      console.log('UserSettingsSubmit: finalData.iconUrl:', JSON.stringify(finalData.iconUrl))
-      console.log('UserSettingsSubmit: existingIconUrl:', JSON.stringify(existingIconUrl))
       console.log('UserSettingsSubmit: finalData.iconUrl === "":', finalData.iconUrl === '')
       console.log('UserSettingsSubmit: existingIconUrl exists:', existingIconUrl && existingIconUrl.trim() !== '')
       

@@ -59,15 +59,13 @@ export const usePhraseManager = () => {
   const fetchLanguages = useCallback(async () => {
     // ユーザーがログインしていない場合は何もしない
     if (!user) {
-      console.log('User not logged in, skipping language fetch in usePhraseManager')
       return
     }
 
     try {
       const data = await api.get<Language[]>('/api/languages')
       setLanguages(data)
-    } catch (error) {
-      console.error('Error fetching languages in usePhraseManager:', error)
+    } catch {
       setLanguages([])
     }
   }, [user])
@@ -89,8 +87,8 @@ export const usePhraseManager = () => {
         setLearningLanguage(userData.defaultLearningLanguage.code)
       }
       setUserSettingsInitialized(true)
-    } catch (error) {
-      console.error('Error fetching user settings:', error)
+    } catch {
+      // エラーが発生した場合はスキップ
     }
   }, [userSettingsInitialized])
 
@@ -103,9 +101,8 @@ export const usePhraseManager = () => {
     try {
       const data = await api.get<{ remainingGenerations: number }>('/api/user/phrase-generations')
       setRemainingGenerations(data.remainingGenerations)
-    } catch (error) {
+    } catch {
       // ネットワークエラーや認証エラーの場合は静かに処理
-      console.log('Error fetching remaining generations (likely due to logout):', error)
       setRemainingGenerations(0)
     }
   }, [user])
@@ -118,19 +115,11 @@ export const usePhraseManager = () => {
       const data = await api.get<{ phrases: SavedPhrase[], pagination?: { hasMore: boolean, total: number } }>(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`)
       const phrases = Array.isArray(data.phrases) ? data.phrases : []
       
-      // デバッグ: 重複チェック
-      const phraseIds = phrases.map((p: SavedPhrase) => p.id)
-      const uniqueIds = new Set(phraseIds)
-      if (phraseIds.length !== uniqueIds.size) {
-        console.warn('Duplicate phrase IDs detected in API response:', phraseIds)
-      }
-      
       if (!append) {
         // 初回読み込み時は重複を除去して設定
         const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
           self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
         )
-        console.log(`Setting ${uniquePhrases.length} unique phrases out of ${phrases.length} fetched`)
         setSavedPhrases(uniquePhrases)
         setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
         setPhrasePage(page)
@@ -142,15 +131,13 @@ export const usePhraseManager = () => {
       setSavedPhrases(prev => {
         const existingIds = new Set(prev.map(p => p.id))
         const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
-        console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
         return [...prev, ...newPhrases]
       })
       
       setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
       setPhrasePage(page)
       setTotalPhrases(data.pagination?.total || 0)
-    } catch (error) {
-      console.error('Error fetching saved phrases:', error)
+    } catch {
       if (!append) {
         setSavedPhrases([]) // エラー時は空配列に設定
       }
@@ -185,12 +172,6 @@ export const usePhraseManager = () => {
   }
 
   const handleGeneratePhrase = async () => {
-    console.log('=== handleGeneratePhrase called ===')
-    console.log('desiredPhrase:', desiredPhrase)
-    console.log('useChatGptApi:', useChatGptApi)
-    console.log('selectedType:', selectedType)
-    console.log('remainingGenerations:', remainingGenerations)
-    
     // バリデーション
     if (!desiredPhrase.trim()) {
       setPhraseValidationError('フレーズを入力してください')
@@ -211,7 +192,6 @@ export const usePhraseManager = () => {
     setPhraseValidationError('')
     setError('')
 
-    console.log('Starting API call...')
     setIsLoading(true)
     setGeneratedVariations([])
     setEditingVariations({}) // 編集状態をリセット
@@ -219,8 +199,6 @@ export const usePhraseManager = () => {
 
     try {
       // 実際のAPI呼び出し
-      console.log('Making API call to /api/phrase/generate...')
-      
       const requestBody = {
         nativeLanguage,
         learningLanguage,
@@ -228,31 +206,22 @@ export const usePhraseManager = () => {
         selectedStyle: selectedType,
         useChatGptApi
       }
-      console.log('Request body:', requestBody)
       
       const data = await api.post<{ variations?: PhraseVariation[] }>('/api/phrase/generate', requestBody)
-      console.log('API response data:', data)
       
-      console.log('Setting variations:', data.variations || [])
       setGeneratedVariations(data.variations || [])
       
       // AI Suggest成功時に生成回数を減らす
       try {
         const generationsData = await api.post<{ remainingGenerations: number }>('/api/user/phrase-generations')
         setRemainingGenerations(generationsData.remainingGenerations)
-      } catch (generationsError) {
-        console.error('Error updating phrase generations:', generationsError)
+      } catch {
         // エラーが発生しても生成処理は成功しているので続行
       }
 
     } catch (error) {
-      console.error('=== Error in handleGeneratePhrase ===')
-      console.error('Error type:', typeof error)
-      console.error('Error message:', error instanceof Error ? error.message : error)
-      console.error('Full error:', error)
       setError(error instanceof Error ? error.message : 'フレーズの生成に失敗しました')
     } finally {
-      console.log('Setting isLoading to false')
       setIsLoading(false)
     }
   }
