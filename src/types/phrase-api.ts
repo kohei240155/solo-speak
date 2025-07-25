@@ -48,6 +48,39 @@ export interface PhrasesQueryParams {
   page?: string
 }
 
+// フレーズ詳細取得レスポンスの型
+export interface GetPhraseResponseData {
+  id: string
+  text: string
+  translation: string
+  totalSpeakCount: number
+  dailySpeakCount: number
+  language: {
+    id: string
+    name: string
+    code: string
+  }
+}
+
+// フレーズ更新レスポンスの型
+export interface UpdatePhraseResponseData {
+  id: string
+  text: string
+  translation: string
+  createdAt: string
+  practiceCount: number
+  correctAnswers: number
+  language: {
+    name: string
+    code: string
+  }
+}
+
+// フレーズ削除レスポンスの型
+export interface DeletePhraseResponseData {
+  message: string
+}
+
 // ページネーション情報の型
 export interface PaginationData {
   total: number

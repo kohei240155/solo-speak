@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { UpdatePhraseRequestBody } from '@/types/phrase-api'
+import { 
+  UpdatePhraseRequestBody, 
+  GetPhraseResponseData, 
+  UpdatePhraseResponseData, 
+  DeletePhraseResponseData 
+} from '@/types/phrase-api'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function GET(
   request: NextRequest,
@@ -29,13 +35,13 @@ export async function GET(
     })
 
     if (!phrase) {
-      return NextResponse.json(
-        { error: 'Phrase not found or access denied' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or access denied'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
-    const responseData = {
+    const responseData: GetPhraseResponseData = {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
@@ -48,10 +54,10 @@ export async function GET(
 
   } catch (error) {
     console.error('Error fetching phrase:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
@@ -72,17 +78,17 @@ export async function PUT(
 
     // バリデーション
     if (!text || !translation) {
-      return NextResponse.json(
-        { error: 'text and translation are required' } satisfies { error: string },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'text and translation are required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     if (text.length > 200 || translation.length > 200) {
-      return NextResponse.json(
-        { error: 'text and translation must be 200 characters or less' } satisfies { error: string },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'text and translation must be 200 characters or less'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // フレーズの存在確認（認証されたユーザーのフレーズのみ）
@@ -94,10 +100,10 @@ export async function PUT(
     })
 
     if (!existingPhrase) {
-      return NextResponse.json(
-        { error: 'Phrase not found or access denied' },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or access denied'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // フレーズの更新
@@ -118,7 +124,7 @@ export async function PUT(
       }
     })
 
-    const responseData = {
+    const responseData: UpdatePhraseResponseData = {
       id: updatedPhrase.id,
       text: updatedPhrase.text,
       translation: updatedPhrase.translation,
@@ -132,10 +138,10 @@ export async function PUT(
 
   } catch (error) {
     console.error('Error updating phrase:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
@@ -161,10 +167,10 @@ export async function DELETE(
     })
 
     if (!existingPhrase) {
-      return NextResponse.json(
-        { error: 'Phrase not found or access denied' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or access denied'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // フレーズの削除（ソフトデリート）
@@ -175,15 +181,17 @@ export async function DELETE(
       }
     })
 
-    return NextResponse.json({
+    const responseData: DeletePhraseResponseData = {
       message: 'Phrase deleted successfully'
-    } satisfies { message: string })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error deleting phrase:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
