@@ -6,7 +6,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import LoginModal from './LoginModal'
 import DropdownMenu from './DropdownMenu'
-import { HiOutlineHome, HiOutlineCog6Tooth, HiArrowLeftOnRectangle } from 'react-icons/hi2'
+import { BsClipboardData } from 'react-icons/bs'
+import { LuSettings } from 'react-icons/lu'
+import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings } = useAuth()
@@ -59,13 +61,13 @@ const Header = memo(function Header() {
         {
           id: 'dashboard',
           label: 'ダッシュボード',
-          icon: HiOutlineHome,
+          icon: BsClipboardData,
           onClick: () => window.location.href = '/dashboard'
         },
         {
           id: 'settings',
           label: 'ユーザー設定',
-          icon: HiOutlineCog6Tooth,
+          icon: LuSettings,
           onClick: () => window.location.href = '/settings'
         }
       )
@@ -74,7 +76,7 @@ const Header = memo(function Header() {
     items.push({
       id: 'logout',
       label: 'ログアウト',
-      icon: HiArrowLeftOnRectangle,
+      icon: MdLogout,
       onClick: handleSignOut
     })
     
