@@ -1,14 +1,13 @@
+import { LanguageInfo } from './common'
+
 export interface PhraseVariation {
   type: 'common' | 'business' | 'casual'
   text: string
   explanation?: string
 }
 
-export interface Language {
-  id: string
-  name: string
-  code: string
-}
+// 再エクスポート（後方互換性のため）
+export type Language = LanguageInfo
 
 export interface SavedPhrase {
   id: string
