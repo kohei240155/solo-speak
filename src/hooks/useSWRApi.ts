@@ -7,18 +7,41 @@ const fetcher = async (url: string) => {
   return await api.get(url)
 }
 
+// 共通のSWRオプション設定
+const SWR_CONFIGS = {
+  // 短期キャッシュ（動的データ用）
+  SHORT_CACHE: {
+    dedupingInterval: 1 * 60 * 1000, // 1分
+    revalidateOnFocus: true,
+    shouldRetryOnError: true,
+    errorRetryInterval: 10000,
+  },
+  // 中期キャッシュ（ユーザーデータ用）
+  MEDIUM_CACHE: {
+    dedupingInterval: 5 * 60 * 1000, // 5分
+    revalidateOnFocus: true,
+    shouldRetryOnError: true,
+    errorRetryInterval: 10000,
+  },
+  // 長期キャッシュ（静的データ用）
+  LONG_CACHE: {
+    dedupingInterval: 30 * 60 * 1000, // 30分
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    shouldRetryOnError: true,
+  },
+  // リアルタイムデータ用（自動更新あり）
+  REALTIME: {
+    dedupingInterval: 2 * 60 * 1000, // 2分
+    revalidateOnFocus: true,
+    refreshInterval: 30 * 1000, // 30秒間隔で自動更新
+    shouldRetryOnError: true,
+  }
+} as const
+
 // ユーザー設定を取得するSWRフック
 export function useUserSettings() {
-  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', fetcher, {
-    // 5分間キャッシュ
-    dedupingInterval: 5 * 60 * 1000,
-    // フォーカス時の再検証を有効
-    revalidateOnFocus: true,
-    // エラー時は再試行
-    shouldRetryOnError: true,
-    // 10秒でタイムアウト
-    errorRetryInterval: 10000,
-  })
+  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', fetcher, SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
     userSettings: data as {
@@ -39,14 +62,7 @@ export function useUserSettings() {
 
 // 言語リストを取得するSWRフック
 export function useLanguages() {
-  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher, {
-    // 30分間キャッシュ（言語データは変更頻度が低いため）
-    dedupingInterval: 30 * 60 * 1000,
-    // フォーカス時の再検証を無効（静的データのため）
-    revalidateOnFocus: false,
-    // 長期キャッシュ
-    revalidateOnReconnect: false,
-  })
+  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher, SWR_CONFIGS.LONG_CACHE)
 
   // APIは直接言語配列を返すため、dataをそのまま使用
   const languages = data as Array<{ id: string; name: string; code: string }> | undefined
@@ -63,14 +79,7 @@ export function useLanguages() {
 export function useDashboardData(language?: string) {
   const url = language ? `/api/dashboard?language=${language}` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
-    // 2分間キャッシュ
-    dedupingInterval: 2 * 60 * 1000,
-    // フォーカス時の再検証を有効
-    revalidateOnFocus: true,
-    // 30秒間隔で自動更新
-    refreshInterval: 30 * 1000,
-  })
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.REALTIME)
 
   return {
     dashboardData: data as {
@@ -93,12 +102,7 @@ export function useDashboardData(language?: string) {
 export function usePhrases(language?: string, page = 1) {
   const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
-    // 1分間キャッシュ
-    dedupingInterval: 1 * 60 * 1000,
-    // フォーカス時の再検証を有効
-    revalidateOnFocus: true,
-  })
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.SHORT_CACHE)
 
   const typedData = data as {
     phrases?: Array<{
@@ -125,12 +129,7 @@ export function usePhrases(language?: string, page = 1) {
 export function usePhrase(phraseId?: string) {
   const url = phraseId ? `/api/phrase/${phraseId}` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
-    // 5分間キャッシュ
-    dedupingInterval: 5 * 60 * 1000,
-    // フォーカス時の再検証を有効
-    revalidateOnFocus: true,
-  })
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
     phrase: data as {
@@ -184,12 +183,7 @@ export function useSpeakPhrase(language?: string) {
 export function useSpeakPhraseById(phraseId?: string) {
   const url = phraseId ? `/api/phrase/${phraseId}/speak` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
-    // 2分間キャッシュ
-    dedupingInterval: 2 * 60 * 1000,
-    // フォーカス時の再検証を有効
-    revalidateOnFocus: true,
-  })
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.REALTIME)
 
   const typedData = data as {
     success: boolean
@@ -224,12 +218,7 @@ export function useInfinitePhrases(language?: string) {
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
     fetcher,
-    {
-      // 1分間キャッシュ
-      dedupingInterval: 1 * 60 * 1000,
-      // フォーカス時の再検証を有効
-      revalidateOnFocus: true,
-    }
+    SWR_CONFIGS.SHORT_CACHE
   )
 
   type PageData = {
