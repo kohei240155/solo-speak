@@ -3,12 +3,12 @@ import { getPhraseLevelColorByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { RiSpeakLine, RiDeleteBin6Line } from 'react-icons/ri'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { BiCalendarAlt } from 'react-icons/bi'
-import { HiOutlineEllipsisHorizontalCircle } from 'react-icons/hi2'
 import { BsPencil } from 'react-icons/bs'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import Modal from './Modal'
 import SpeakModeModal from './SpeakModeModal'
+import DropdownMenu from './DropdownMenu'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/contexts/AuthContext'
 import LoadingSpinner from './LoadingSpinner'
@@ -78,42 +78,32 @@ const PhraseItem = memo(({
           {isShowingNuance ? (phrase.nuance || 'ニュアンス情報がありません') : phrase.text}
         </div>
         <div className="relative flex-shrink-0">
-          <button 
-            onClick={(e) => {
-              e.stopPropagation(); // カードクリックイベントの伝播を防ぐ
-              onMenuToggle(phrase.id);
-            }}
-            className="text-gray-900 hover:text-gray-700 flex-shrink-0 self-start"
-          >
-            <HiOutlineEllipsisHorizontalCircle className="w-5 h-5" />
-          </button>
-          
-          {/* ドロップダウンメニュー */}
-          {isMenuOpen && (
-            <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-28">
-              <button
-                onClick={() => onEdit(phrase)}
-                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <BsPencil className="w-3 h-3" />
-                Edit
-              </button>
-              <button
-                onClick={() => onSpeak(phrase.id)}
-                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <RiSpeakLine className="w-3 h-3" />
-                Speak
-              </button>
-              <button
-                onClick={() => onDelete(phrase.id)}
-                className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-              >
-                <RiDeleteBin6Line className="w-3 h-3" />
-                Delete
-              </button>
-            </div>
-          )}
+          <DropdownMenu
+            isOpen={isMenuOpen}
+            onToggle={() => onMenuToggle(phrase.id)}
+            onClose={() => onMenuToggle('')}
+            items={[
+              {
+                id: 'edit',
+                label: 'Edit',
+                icon: BsPencil,
+                onClick: () => onEdit(phrase)
+              },
+              {
+                id: 'speak',
+                label: 'Speak',
+                icon: RiSpeakLine,
+                onClick: () => onSpeak(phrase.id)
+              },
+              {
+                id: 'delete',
+                label: 'Delete',
+                icon: RiDeleteBin6Line,
+                onClick: () => onDelete(phrase.id),
+                variant: 'danger'
+              }
+            ]}
+          />
         </div>
       </div>
       <div className="flex justify-between mb-3">
@@ -195,7 +185,11 @@ export default function PhraseList({
   const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
 
   const handleMenuToggle = useCallback((phraseId: string) => {
-    setOpenMenuId(openMenuId === phraseId ? null : phraseId)
+    if (phraseId === '') {
+      setOpenMenuId(null)
+    } else {
+      setOpenMenuId(openMenuId === phraseId ? null : phraseId)
+    }
   }, [openMenuId])
 
   const handleEdit = useCallback((phrase: SavedPhrase) => {
@@ -213,10 +207,6 @@ export default function PhraseList({
 
   const handleDelete = useCallback((phraseId: string) => {
     setDeletingPhraseId(phraseId)
-    setOpenMenuId(null)
-  }, [])
-
-  const handleCloseMenu = useCallback(() => {
     setOpenMenuId(null)
   }, [])
 
@@ -518,7 +508,7 @@ export default function PhraseList({
       {openMenuId && (
         <div 
           className="fixed inset-0 z-0"
-          onClick={handleCloseMenu}
+          onClick={() => setOpenMenuId(null)}
         />
       )}
     </>
