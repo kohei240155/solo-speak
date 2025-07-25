@@ -3,8 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { api } from '@/utils/api'
-import { useDashboardData } from '@/hooks/useDashboardData'
+import { useUserSettings, useDashboardData } from '@/hooks/useSWRApi'
 import { useUserSettingsData } from '@/hooks/useUserSettingsData'
 import LanguageSelector from '@/components/LanguageSelector'
 import LoadingSpinner from '@/components/LoadingSpinner'
@@ -15,19 +14,15 @@ export default function DashboardPage() {
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
 
-  // ユーザー設定を取得
+  // SWRを使用してデータを取得
+  const { userSettings } = useUserSettings()
+  const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
+
+  // ユーザー設定を取得（フォールバック用）
   const { 
-    userSettings, 
     languages, 
     loading: settingsLoading 
   } = useUserSettingsData()
-
-  // ダッシュボードデータを取得
-  const { 
-    data: dashboardData, 
-    loading: dashboardLoading, 
-    error: dashboardError 
-  } = useDashboardData(selectedLanguage)
 
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
@@ -37,22 +32,18 @@ export default function DashboardPage() {
     }
 
     try {
-      await api.get(`/api/user/settings?t=${Date.now()}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-      
-      // ユーザー設定が存在する場合はそのまま継続
-      setSetupCheckLoading(false)
+      // SWRのデータが存在する場合は設定完了とみなす
+      if (userSettings) {
+        setSetupCheckLoading(false)
+      } else {
+        // 設定が存在しない場合は設定ページにリダイレクト
+        router.push('/settings')
+      }
     } catch (error) {
       console.error('Error checking user setup:', error)
-      // 404エラーまたはその他エラーの場合は設定ページにリダイレクト
       router.push('/settings')
     }
-  }, [user, router])
+  }, [user, router, userSettings])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -66,9 +57,9 @@ export default function DashboardPage() {
     }
   }, [user, checkUserSetupComplete])
 
-  // ユーザー設定が読み込まれたらデフォルト言語を設定
+  // 言語設定の初期化
   useEffect(() => {
-    if (userSettings && !selectedLanguage) {
+    if (userSettings?.defaultLearningLanguage?.code && !selectedLanguage) {
       setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
   }, [userSettings, selectedLanguage])
@@ -93,7 +84,7 @@ export default function DashboardPage() {
                 learningLanguage={selectedLanguage}
                 onLanguageChange={setSelectedLanguage}
                 languages={languages}
-                nativeLanguage={userSettings.nativeLanguage.code}
+                nativeLanguage={userSettings?.nativeLanguage?.code || ''}
               />
             )}
           </div>
@@ -141,7 +132,7 @@ export default function DashboardPage() {
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
                 <div className="space-y-4">
-                  {dashboardData.quizMastery.map((level) => (
+                  {dashboardData.quizMastery?.map((level: { level: string; score: number; color: string }) => (
                     <div key={level.level} className="flex items-center">
                       <div 
                         className="w-4 h-4 rounded mr-4"

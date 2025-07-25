@@ -1,65 +1,119 @@
 import useSWR from 'swr'
 import { api } from '@/utils/api'
 
-// 汎用のフェッチャー関数
-const fetcher = (url: string) => api.get(url)
+// SWR用のfetcher関数
+const fetcher = async (url: string) => {
+  return await api.get(url)
+}
 
-/**
- * ユーザー設定を取得・キャッシュするフック
- * SWRを使用してデータの状態管理とキャッシュを行う
- */
+// ユーザー設定を取得するSWRフック
 export function useUserSettings() {
   const { data, error, isLoading, mutate } = useSWR('/api/user/settings', fetcher, {
-    // 初回フォーカス時に再検証を行う
+    // 5分間キャッシュ
+    dedupingInterval: 5 * 60 * 1000,
+    // フォーカス時の再検証を有効
     revalidateOnFocus: true,
-    // ネットワーク復帰時に再検証を行う
-    revalidateOnReconnect: true,
-    // エラー時の再試行設定
-    errorRetryCount: 2,
-    errorRetryInterval: 1000,
+    // エラー時は再試行
+    shouldRetryOnError: true,
+    // 10秒でタイムアウト
+    errorRetryInterval: 10000,
   })
 
   return {
-    user: (data as { data?: unknown })?.data,
+    userSettings: data as {
+      username?: string
+      iconUrl?: string
+      nativeLanguage?: { id: string; name: string; code: string }
+      defaultLearningLanguage?: { id: string; name: string; code: string }
+      birthdate?: string
+      gender?: string
+      email?: string
+      defaultQuizCount?: number
+    } | undefined,
     isLoading,
     error,
-    // データを強制的に再取得する関数
-    refetch: mutate,
+    refetch: mutate
   }
 }
 
-/**
- * 言語リストを取得・キャッシュするフック
- * 言語データは変更頻度が低いため、長時間キャッシュする
- */
+// 言語リストを取得するSWRフック
 export function useLanguages() {
-  const { data, error, isLoading } = useSWR('/api/languages', fetcher, {
-    // 言語データは変更頻度が低いため、フォーカス時に再検証しない
+  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher, {
+    // 30分間キャッシュ（言語データは変更頻度が低いため）
+    dedupingInterval: 30 * 60 * 1000,
+    // フォーカス時の再検証を無効（静的データのため）
     revalidateOnFocus: false,
-    // 10分間キャッシュ
-    dedupingInterval: 10 * 60 * 1000,
+    // 長期キャッシュ
+    revalidateOnReconnect: false,
   })
 
+  const typedData = data as { languages?: Array<{ id: string; name: string; code: string }> } | undefined
+
   return {
-    languages: (data as { data?: unknown[] })?.data || [],
+    languages: typedData?.languages,
     isLoading,
     error,
+    refetch: mutate
   }
 }
 
-/**
- * ダッシュボード用の統合データを取得するフック
- * ユーザー設定と言語データを同時に取得
- */
-export function useDashboardData() {
-  const { user, isLoading: userLoading, error: userError, refetch: refetchUser } = useUserSettings()
-  const { languages, isLoading: languagesLoading, error: languagesError } = useLanguages()
+// ダッシュボードデータを取得するSWRフック
+export function useDashboardData(language?: string) {
+  const url = language ? `/api/dashboard?language=${language}` : null
+  
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
+    // 2分間キャッシュ
+    dedupingInterval: 2 * 60 * 1000,
+    // フォーカス時の再検証を有効
+    revalidateOnFocus: true,
+    // 30秒間隔で自動更新
+    refreshInterval: 30 * 1000,
+  })
 
   return {
-    user,
-    languages,
-    isLoading: userLoading || languagesLoading,
-    error: userError || languagesError,
-    refetch: refetchUser,
+    dashboardData: data as {
+      speakStreak?: number
+      speakCountToday?: number
+      speakCountTotal?: number
+      quizMastery?: Array<{
+        level: string
+        score: number
+        color: string
+      }>
+    } | undefined,
+    isLoading,
+    error,
+    refetch: mutate
+  }
+}
+
+// フレーズリストを取得するSWRフック
+export function usePhrases(language?: string, page = 1) {
+  const url = language ? `/api/phrase?language=${language}&page=${page}` : null
+  
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
+    // 1分間キャッシュ
+    dedupingInterval: 1 * 60 * 1000,
+    // フォーカス時の再検証を有効
+    revalidateOnFocus: true,
+  })
+
+  const typedData = data as {
+    phrases?: Array<{
+      id: string
+      text: string
+      translation: string
+      totalSpeakCount: number
+      dailySpeakCount: number
+    }>
+    totalCount?: number
+  } | undefined
+
+  return {
+    phrases: typedData?.phrases,
+    totalCount: typedData?.totalCount,
+    isLoading,
+    error,
+    refetch: mutate
   }
 }

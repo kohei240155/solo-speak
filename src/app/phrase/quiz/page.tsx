@@ -16,12 +16,13 @@ import { useQuizMode } from '@/hooks/useQuizMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
-import { api } from '@/utils/api'
+import { useUserSettings } from '@/hooks/useSWRApi'
 
 export default function PhraseQuizPage() {
   const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
+  const { userSettings } = useUserSettings()
   const router = useRouter()
 
   // 認証チェック: ログインしていない場合はログインページにリダイレクト
@@ -31,9 +32,6 @@ export default function PhraseQuizPage() {
     }
   }, [user, loading, router])
 
-  // ユーザー設定の状態
-  const [userSettings, setUserSettings] = useState<{ defaultQuizCount: number } | null>(null)
-  
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
 
@@ -69,25 +67,6 @@ export default function PhraseQuizPage() {
       fetchSavedPhrases(1, false)
     }
   }, [learningLanguage, fetchSavedPhrases])
-
-  // ユーザー設定を取得
-  useEffect(() => {
-    const fetchUserSettings = async () => {
-      if (!user) return
-
-      try {
-        const settings = await api.get('/api/user/settings') as { defaultQuizCount?: number }
-        setUserSettings({
-          defaultQuizCount: settings.defaultQuizCount || 10
-        })
-      } catch (error) {
-        console.error('Error fetching user settings:', error)
-        setUserSettings({ defaultQuizCount: 10 }) // デフォルト値
-      }
-    }
-
-    fetchUserSettings()
-  }, [user])
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
@@ -245,7 +224,7 @@ export default function PhraseQuizPage() {
         languages={languages}
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={savedPhrases.length}
-        defaultQuizCount={userSettings?.defaultQuizCount}
+        defaultQuizCount={userSettings?.defaultQuizCount || 10}
       />
       
       <Toaster />
