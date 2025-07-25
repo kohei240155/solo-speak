@@ -150,9 +150,8 @@ export default function PhraseListPage() {
               closeSpeakModal()
             }
           }}
-          onUpdatePhrase={(phrase) => {
-            // TODO: フレーズ更新の実装
-            console.log('Update phrase:', phrase)
+          onUpdatePhrase={(_phrase) => {
+            // フレーズ更新機能は今後実装予定
           }}
           onRefreshPhrases={() => {
             // リストを最初のページから再取得

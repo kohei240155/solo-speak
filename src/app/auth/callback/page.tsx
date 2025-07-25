@@ -24,7 +24,6 @@ export default function AuthCallback() {
 
         if (authData.session) {
           // 認証成功時の処理 - 以前のユーザー状態をクリア
-          console.log('New user session detected, clearing previous state')
           
           try {
             // ユーザーが既に設定済みかチェック
@@ -33,7 +32,6 @@ export default function AuthCallback() {
             const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
             
             // ユーザーが設定済みの場合はフレーズリストページへ
-            console.log('Existing user detected, redirecting to phrase list')
             window.location.href = `${redirectUrl}/phrase/list`
           } catch (apiError) {
             // 404エラー（ユーザー未設定）またはその他のエラー
@@ -41,7 +39,6 @@ export default function AuthCallback() {
             
             if (apiError instanceof Error && apiError.message.includes('404')) {
               // ユーザーが未設定の場合は設定画面へ
-              console.log('New user detected, redirecting to settings')
               window.location.href = `${redirectUrl}/settings`
             } else {
               // その他のエラー - とりあえずフレーズリストページへ

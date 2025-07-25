@@ -63,15 +63,11 @@ export default function RankingPage() {
         return
       }
 
-      console.log('Fetching ranking:', { activeRankingType, activeTab, endpoint })
-
       const data = await api.get<{ 
         success: boolean, 
         topUsers?: SpeakUser[], 
         message?: string 
       }>(endpoint)
-      
-      console.log('API Response:', data)
       
       if (!data.success) {
         toast.error(data.message || 'ランキングデータの取得に失敗しました')

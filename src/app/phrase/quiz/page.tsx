@@ -82,7 +82,6 @@ export default function PhraseQuizPage() {
     
     if (language && mode && (mode === 'normal' || mode === 'random')) {
       // URLパラメータから自動開始（useQuizModeで処理される）
-      console.log('Auto-starting quiz from URL parameters')
       return
     }
     
@@ -109,8 +108,6 @@ export default function PhraseQuizPage() {
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
-    console.log('Quiz modal start requested with config:', config)
-    
     try {
       const success = await handleQuizStart(config)
       if (success) {
@@ -138,15 +135,6 @@ export default function PhraseQuizPage() {
     handleQuizFinish()
     setShowQuizModal(true)
   }
-
-  // デバッグログ
-  console.log('Render conditions:', {
-    'quizMode.active': quizMode.active,
-    'quizMode.config': quizMode.config,
-    'currentPhrase': currentPhrase,
-    'session': session,
-    'all conditions met': quizMode.active && quizMode.config && currentPhrase && session
-  })
 
   return (
     <AuthGuard user={user} loading={loading}>
