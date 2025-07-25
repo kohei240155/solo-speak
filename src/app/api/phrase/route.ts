@@ -4,7 +4,7 @@ import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { 
-  CreatePhraseRequest,
+  CreatePhraseRequestBody,
   CreatePhraseResponseData, 
   PhrasesListResponseData 
 } from '@/types/phrase-api'
