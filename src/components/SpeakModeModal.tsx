@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { supabase } from '@/utils/spabase'
+import { getSpeakPhrase } from '@/hooks/useApi'
 import toast from 'react-hot-toast'
 
 interface SpeakModeModalProps {
@@ -46,28 +46,14 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
     
     setIsLoading(true)
     try {
-      // 認証トークンを取得
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。再度ログインしてください。')
-        setIsLoading(false)
-        return
-      }
-
-      // モード設定をクエリパラメータとして含めてGET APIを呼び出し
-      const params = new URLSearchParams({
+      // モード設定でAPI呼び出し
+      const params = {
         language: selectedLanguage,
         order: order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
-      })
+      }
 
-      const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-      const data = await response.json()
+      const data = await getSpeakPhrase(params)
 
       console.log('SpeakModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })
 
@@ -90,7 +76,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       }
     } catch (error) {
       console.error('SpeakModeModal - Error fetching phrase:', error)
-      toast.error('フレーズの取得中にエラーが発生しました')
+      // エラーは既にAPIクライアント内でハンドリングされているため、ここでは追加でトーストを表示しない
     } finally {
       console.log('SpeakModeModal - Setting loading to false')
       setIsLoading(false)

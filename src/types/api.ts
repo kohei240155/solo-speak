@@ -64,3 +64,27 @@ export type ApiResponseWithStatus<T> = {
   404: NotFoundErrorResponse
   500: InternalErrorResponse
 }
+
+// Speak API専用の型定義
+export interface SpeakPhraseApiResponse extends BaseApiResponse {
+  success: boolean
+  phrase?: {
+    id: string
+    japanese: string
+    english: string
+    pronunciation: string
+    language_id: string
+    level: number
+    created_at: string
+    updated_at: string
+    practice_count: number
+    correct_count: number
+    language?: {
+      id: string
+      code: string
+      name: string
+      flag: string
+    }
+  }
+  message?: string
+}
