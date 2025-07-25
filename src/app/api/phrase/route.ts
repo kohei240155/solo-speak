@@ -3,7 +3,12 @@ import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
-import { CreatePhraseRequestBody } from '@/types/phrase-api'
+import { 
+  CreatePhraseRequestBody, 
+  CreatePhraseResponseData, 
+  PhrasesListResponseData 
+} from '@/types/phrase-api'
+import { ApiErrorResponse } from '@/types/api'
 
 const prisma = new PrismaClient()
 
@@ -36,10 +41,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // 言語が存在するかチェック
@@ -48,10 +53,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     })
 
     if (!language) {
-      return NextResponse.json(
-        { error: 'Language not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Language not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // フレーズレベルIDを決定
@@ -86,10 +91,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         })
         
         if (!defaultLevel) {
-          return NextResponse.json(
-            { error: 'No phrase level found' } satisfies { error: string },
-            { status: 500 }
-          )
+          const errorResponse: ApiErrorResponse = {
+            error: 'No phrase level found'
+          }
+          return NextResponse.json(errorResponse, { status: 500 })
         }
         
         finalPhraseLevelId = defaultLevel.id
@@ -143,7 +148,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
-      nuance: phrase.nuance,
+      nuance: phrase.nuance || undefined,
       createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
@@ -153,8 +158,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    const responseData = {
-      success: true as const,
+    const responseData: CreatePhraseResponseData = {
+      success: true,
       phrase: transformedPhrase,
       remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
       dailyLimit: 5,
@@ -167,19 +172,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     console.error('Error creating phrase:', error)
     
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid request data', 
-          details: error.issues 
-        } satisfies { error: string; details: unknown },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Invalid request data',
+        details: error.issues
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
@@ -265,8 +268,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
-      nuance: phrase.nuance,
-      createdAt: phrase.createdAt,
+      nuance: phrase.nuance || undefined,
+      createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
@@ -275,8 +278,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }))
 
-    const responseData = {
-      success: true as const,
+    const responseData: PhrasesListResponseData = {
+      success: true,
       phrases: transformedPhrases,
       pagination: {
         total,
@@ -290,9 +293,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     console.error('Error fetching phrases:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

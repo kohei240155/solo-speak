@@ -4,8 +4,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { 
   DashboardData, 
-  QuizMasteryLevel
+  QuizMasteryLevel,
+  DashboardQueryParams
 } from '@/types/dashboard'
+import { ApiErrorResponse } from '@/types/api'
 
 const dashboardQuerySchema = z.object({
   language: z.string().min(1),
@@ -65,9 +67,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const { user: supabaseUser } = authResult
     const { searchParams } = new URL(request.url)
-    const { language }: { language: string } = dashboardQuerySchema.parse({
+    const queryParams: DashboardQueryParams = dashboardQuerySchema.parse({
       language: searchParams.get('language'),
     })
+    const { language } = queryParams
 
     // Prismaからユーザー情報を取得
     const user = await prisma.user.findUnique({
@@ -75,10 +78,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // 今日の日付（JST）
@@ -185,24 +188,22 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       quizMastery,
     }
 
-    return NextResponse.json(result satisfies DashboardData)
+    return NextResponse.json(result)
 
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
     
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid request parameters', 
-          details: error.issues 
-        } satisfies { error: string; details: unknown },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Invalid request parameters',
+        details: error.issues
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
