@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Header from "@/components/Header";
-import SecondaryNavigation from "@/components/SecondaryNavigation";
-import ViewportFix from "@/components/ViewportFix";
-import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import Header from "@/components/layout/Header";
+import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
+import ViewportFix from "@/components/common/ViewportFix";
+import ServiceWorkerRegistration from "@/components/common/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

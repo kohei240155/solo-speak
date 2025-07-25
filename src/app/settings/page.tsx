@@ -9,10 +9,10 @@ import { Toaster } from 'react-hot-toast'
 import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
 import { useUserSettings } from '@/hooks/useUserSettings'
 import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
-import UserSettingsForm from '@/components/UserSettingsForm'
-import SubscriptionTab from '@/components/SubscriptionTab'
-import TabNavigation from '@/components/TabNavigation'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import UserSettingsForm from '@/components/settings/UserSettingsForm'
+import SubscriptionTab from '@/components/settings/SubscriptionTab'
+import TabNavigation from '@/components/navigation/TabNavigation'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
   const { user, loading } = useAuth()

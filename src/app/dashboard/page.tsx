@@ -4,8 +4,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
-import LanguageSelector from '@/components/LanguageSelector'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()

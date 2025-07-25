@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import SpeakModeModal from '@/components/SpeakModeModal'
+import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
+import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { CiCirclePlus } from 'react-icons/ci'
@@ -11,7 +11,7 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useLanguages, useUserSettings } from '@/hooks/useSWRApi'
 
 interface SpeakPhrase {

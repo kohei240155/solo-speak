@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { api, ApiError } from '@/utils/api'
-import { ImageUploadRef } from '@/components/ImageUpload'
+import { ImageUploadRef } from '@/components/common/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'
 

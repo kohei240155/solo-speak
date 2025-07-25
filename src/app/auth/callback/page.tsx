@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api } from '@/utils/api'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function AuthCallback() {
   const router = useRouter()

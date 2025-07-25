@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
-import Modal from './Modal'
-import LoadingSpinner from './LoadingSpinner'
+import Modal from '../common/Modal'
+import LoadingSpinner from '../common/LoadingSpinner'
 
 interface LoginModalProps {
   isOpen: boolean

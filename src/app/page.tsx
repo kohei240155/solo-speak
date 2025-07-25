@@ -1,8 +1,8 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import Footer from '@/components/Footer'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import Footer from '@/components/layout/Footer'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function Home() {
   const { loading } = useAuth()

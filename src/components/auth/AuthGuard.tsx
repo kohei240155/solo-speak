@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
-import LoadingSpinner from './LoadingSpinner'
+import LoadingSpinner from '../common/LoadingSpinner'
 
 interface AuthGuardProps {
   user: User | null

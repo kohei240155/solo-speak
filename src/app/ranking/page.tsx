@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import AuthGuard from '@/components/AuthGuard'
+import AuthGuard from '@/components/auth/AuthGuard'
 import { api } from '@/utils/api'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
-import LanguageSelector from '@/components/LanguageSelector'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useLanguages } from '@/hooks/useSWRApi'
 
 interface RankingUser {
