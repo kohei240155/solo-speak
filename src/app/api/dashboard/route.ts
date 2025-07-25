@@ -90,66 +90,84 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    // 1. Speak Streak (連続話した日数) - 言語ごとに計算
-    const speakStreak = await calculateConsecutiveSpeakingDays(user.id, language)
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [
+      speakStreak,
+      speakCountToday,
+      speakCountTotal,
+      quizResults,
+      allPhraseLevels
+    ] = await Promise.all([
+      // 1. Speak Streak (連続話した日数) - 言語ごとに計算
+      calculateConsecutiveSpeakingDays(user.id, language),
 
-    // 2. Speak Count (Today) - 今日のスピーク回数
-    const speakCountToday = await prisma.speakLog.aggregate({
-      _sum: {
-        count: true,
-      },
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
+      // 2. Speak Count (Today) - 今日のスピーク回数
+      prisma.speakLog.aggregate({
+        _sum: {
+          count: true,
+        },
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
           },
+          date: {
+            gte: today,
+            lt: tomorrow,
+          },
+          deletedAt: null,
         },
-        date: {
-          gte: today,
-          lt: tomorrow,
-        },
-        deletedAt: null,
-      },
-    })
+      }),
 
-    // 3. Speak Count (Total) - 総スピーク回数
-    const speakCountTotal = await prisma.speakLog.aggregate({
-      _sum: {
-        count: true,
-      },
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
-          },
+      // 3. Speak Count (Total) - 総スピーク回数
+      prisma.speakLog.aggregate({
+        _sum: {
+          count: true,
         },
-        deletedAt: null,
-      },
-    })
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
+          },
+          deletedAt: null,
+        },
+      }),
 
-    // 4. Quiz Mastery - クイズマスタリー
-    // quiz_resultsから直接正解数を集計
-    const quizResults = await prisma.quizResult.findMany({
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
+      // 4. Quiz Results - クイズ結果
+      prisma.quizResult.findMany({
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
+          },
+          correct: true,
+          deletedAt: null,
+        },
+        include: {
+          phrase: {
+            include: {
+              phraseLevel: true,
+            },
           },
         },
-        correct: true,
-        deletedAt: null,
-      },
-      include: {
-        phrase: {
-          include: {
-            phraseLevel: true,
-          },
+      }),
+
+      // 5. 全てのフレーズレベルを取得
+      prisma.phraseLevel.findMany({
+        where: {
+          deletedAt: null,
         },
-      },
-    })
+        orderBy: {
+          score: 'asc',
+        },
+      })
+    ])
 
     // レベル別の正解数を集計
     const levelCorrectCounts = new Map<string, number>()
@@ -163,16 +181,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         levelCorrectCounts.set(levelName, 1)
       }
     }
-
-    // 全てのフレーズレベルを取得
-    const allPhraseLevels = await prisma.phraseLevel.findMany({
-      where: {
-        deletedAt: null,
-      },
-      orderBy: {
-        score: 'asc',
-      },
-    })
 
     // クイズマスタリーデータを構築
     const quizMastery: QuizMasteryLevel[] = allPhraseLevels.map((level) => ({

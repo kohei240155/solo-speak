@@ -21,12 +21,15 @@ export async function GET(request: NextRequest) {
     const user = authResult.user
     console.log('User authenticated:', user.id)
 
-    // 言語コードから言語IDを取得
-    const languageRecord = await prisma.language.findFirst({
-      where: {
-        code: language
-      }
-    })
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [languageRecord] = await Promise.all([
+      // 言語コードから言語IDを取得
+      prisma.language.findFirst({
+        where: {
+          code: language
+        }
+      })
+    ])
 
     if (!languageRecord) {
       console.log('Language not found:', language)

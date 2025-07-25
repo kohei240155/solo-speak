@@ -26,12 +26,27 @@ export async function GET(request: NextRequest) {
     const user = authResult.user
     console.log('User authenticated:', user.id)
 
-    // 言語コードから言語IDを取得
-    const languageRecord = await prisma.language.findFirst({
-      where: {
-        code: language
-      }
-    })
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [languageRecord, allSpeakLogs, allLanguages] = await Promise.all([
+      // 言語コードから言語IDを取得
+      prisma.language.findFirst({
+        where: {
+          code: language
+        }
+      }),
+      
+      // デバッグ: 全期間のデータも確認
+      prisma.speakLog.count(),
+      
+      // デバッグ: すべての言語を確認
+      prisma.language.findMany({
+        select: {
+          id: true,
+          code: true,
+          name: true
+        }
+      })
+    ])
 
     if (!languageRecord) {
       console.log('Language not found:', language)
@@ -43,6 +58,8 @@ export async function GET(request: NextRequest) {
 
     const languageId = languageRecord.id
     console.log('Language mapping:', { code: language, id: languageId })
+    console.log('Total speak logs in database:', allSpeakLogs)
+    console.log('Available languages:', allLanguages)
 
     // 期間に応じた日付条件を設定
     const now = new Date()
@@ -88,10 +105,6 @@ export async function GET(request: NextRequest) {
     console.log('Prisma query result:', { count: speakLogs.length })
     console.log('First few speak logs:', speakLogs.slice(0, 3))
 
-    // デバッグ: 全期間のデータも確認
-    const allSpeakLogs = await prisma.speakLog.count()
-    console.log('Total speak logs in database:', allSpeakLogs)
-
     // デバッグ: 指定言語のフレーズ数も確認
     const phrasesForLanguage = await prisma.phrase.count({
       where: {
@@ -99,16 +112,6 @@ export async function GET(request: NextRequest) {
       }
     })
     console.log('Phrases for language', language, ':', phrasesForLanguage)
-
-    // デバッグ: すべての言語を確認
-    const allLanguages = await prisma.language.findMany({
-      select: {
-        id: true,
-        code: true,
-        name: true
-      }
-    })
-    console.log('Available languages:', allLanguages)
 
     // デバッグ: 期間を無視して該当言語のスピークログを取得
     const speakLogsNoDateFilter = await prisma.speakLog.findMany({
