@@ -62,12 +62,6 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
           { value: 'random', label: 'Random' }
         ],
         onChange: (value: string) => setMode(value as 'normal' | 'random')
-      },
-      {
-        id: 'question-count',
-        label: 'Question Count',
-        type: 'info',
-        value: `${questionCount} questions (max: ${availablePhraseCount})`
       }
     ],
     onStart: handleStart,
