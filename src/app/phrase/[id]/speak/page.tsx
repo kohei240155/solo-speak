@@ -6,7 +6,7 @@ import PhraseTabNavigation from '@/components/PhraseTabNavigation'
 import SpeakModeModal from '@/components/SpeakModeModal'
 import { Language } from '@/types/phrase'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
@@ -64,22 +64,8 @@ export default function SpeakPage() {
     // 言語情報を取得
     const fetchLanguages = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) {
-          toast.error('認証情報が見つかりません。')
-          return
-        }
-
-        const response = await fetch('/api/languages', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setLanguages(data.languages || [])
-        }
+        const data = await api.get('/api/languages') as { languages?: Language[] }
+        setLanguages(data.languages || [])
       } catch (error) {
         console.error('Error fetching languages:', error)
       }
@@ -88,22 +74,8 @@ export default function SpeakPage() {
     // ユーザー設定を取得
     const fetchUserSettings = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) {
-          toast.error('認証情報が見つかりません。')
-          return
-        }
-
-        const response = await fetch('/api/user/settings', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setDefaultLearningLanguage(data.learningLanguage || 'en')
-        }
+        const data = await api.get('/api/user/settings') as { learningLanguage?: string }
+        setDefaultLearningLanguage(data.learningLanguage || 'en')
       } catch (error) {
         console.error('Error fetching user settings:', error)
       }
@@ -112,56 +84,42 @@ export default function SpeakPage() {
     // フレーズを取得
     const fetchPhrase = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) {
-          toast.error('認証情報が見つかりません。')
-          return
-        }
-
-        let response
         if (phraseId) {
           // phraseIdが指定されている場合は特定のフレーズを取得
-          response = await fetch(`/api/phrase/${phraseId}`, {
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`
-            }
+          const data = await api.get(`/api/phrase/${phraseId}`) as {
+            id: string
+            text: string
+            translation: string
+            totalSpeakCount?: number
+            dailySpeakCount?: number
+          }
+          setPhrase({
+            id: data.id,
+            text: data.text,
+            translation: data.translation,
+            totalSpeakCount: data.totalSpeakCount || 0,
+            dailySpeakCount: data.dailySpeakCount || 0
           })
         } else {
           // phraseIdがない場合は従来通りのAPIを呼び出し
-          response = await fetch(`/api/phrase/speak?language=${languageId}`, {
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`
-            }
-          })
-        }
-        
-        const data = await response.json()
-        
-        if (phraseId) {
-          // 特定フレーズ取得の場合
-          if (response.ok) {
-            setPhrase({
-              id: data.id,
-              text: data.text,
-              translation: data.translation,
-              totalSpeakCount: data.totalSpeakCount || 0,
-              dailySpeakCount: data.dailySpeakCount || 0
-            })
-          } else {
-            setError('フレーズが見つかりませんでした')
+          const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
+            success: boolean
+            phrase?: SpeakPhrase
+            message?: string
           }
-        } else {
-          // 音読API経由の場合
           if (data.success) {
-            setPhrase(data.phrase)
+            setPhrase(data.phrase!)
           } else {
             setError(data.message || 'フレーズが見つかりませんでした')
           }
         }
       } catch (error) {
         console.error('Error fetching phrase:', error)
-        setError('フレーズの取得に失敗しました')
+        if (phraseId) {
+          setError('フレーズが見つかりませんでした')
+        } else {
+          setError('フレーズの取得に失敗しました')
+        }
       } finally {
         setLoading(false)
       }
@@ -176,30 +134,15 @@ export default function SpeakPage() {
     if (!phrase) return
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。')
-        return
-      }
-
       // 音読回数を更新
-      const response = await fetch(`/api/phrase/${phrase.id}/count`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-
-      if (response.ok) {
-        // カウント更新成功（トーストは表示しない）
-        setPhrase(prev => prev ? {
-          ...prev,
-          totalSpeakCount: prev.totalSpeakCount + 1,
-          dailySpeakCount: prev.dailySpeakCount + 1
-        } : null)
-      }
+      await api.post(`/api/phrase/${phrase.id}/count`)
+      
+      // カウント更新成功（トーストは表示しない）
+      setPhrase(prev => prev ? {
+        ...prev,
+        totalSpeakCount: prev.totalSpeakCount + 1,
+        dailySpeakCount: prev.dailySpeakCount + 1
+      } : null)
     } catch (error) {
       console.error('Error updating count:', error)
     }
@@ -244,22 +187,13 @@ export default function SpeakPage() {
   const handleNext = async () => {
     // 次のフレーズを取得
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。')
-        return
+      const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
+        success: boolean
+        phrase?: SpeakPhrase
       }
-
-      const response = await fetch(`/api/phrase/speak?language=${languageId}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-      const data = await response.json()
       
       if (data.success) {
-        setPhrase(data.phrase)
+        setPhrase(data.phrase!)
       } else {
         toast.error('次のフレーズが見つかりませんでした')
       }
