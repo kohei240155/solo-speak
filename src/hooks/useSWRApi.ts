@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
 
 // SWR用のfetcher関数
@@ -90,7 +91,7 @@ export function useDashboardData(language?: string) {
 
 // フレーズリストを取得するSWRフック
 export function usePhrases(language?: string, page = 1) {
-  const url = language ? `/api/phrase?language=${language}&page=${page}` : null
+  const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
   
   const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
     // 1分間キャッシュ
@@ -107,12 +108,13 @@ export function usePhrases(language?: string, page = 1) {
       totalSpeakCount: number
       dailySpeakCount: number
     }>
-    totalCount?: number
+    pagination?: { hasMore: boolean; total: number }
   } | undefined
 
   return {
     phrases: typedData?.phrases,
-    totalCount: typedData?.totalCount,
+    hasMore: typedData?.pagination?.hasMore,
+    totalCount: typedData?.pagination?.total,
     isLoading,
     error,
     refetch: mutate
@@ -205,6 +207,58 @@ export function useSpeakPhraseById(phraseId?: string) {
     phrase: typedData?.phrase,
     isLoading,
     error,
+    refetch: mutate
+  }
+}
+
+// 無限スクロール対応のフレーズリストを取得するSWRフック
+export function useInfinitePhrases(language?: string) {
+  const getKey = (pageIndex: number, previousPageData: { pagination?: { hasMore: boolean } } | null) => {
+    // 最後のページに到達した場合
+    if (previousPageData && !previousPageData.pagination?.hasMore) return null
+    
+    // 最初のページ、または次のページ
+    return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
+  }
+
+  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite(
+    language ? getKey : () => null,
+    fetcher,
+    {
+      // 1分間キャッシュ
+      dedupingInterval: 1 * 60 * 1000,
+      // フォーカス時の再検証を有効
+      revalidateOnFocus: true,
+    }
+  )
+
+  type PageData = {
+    phrases?: Array<{
+      id: string
+      text: string
+      translation: string
+      totalSpeakCount: number
+      dailySpeakCount: number
+    }>
+    pagination?: { hasMore: boolean; total: number }
+  }
+
+  // 全ページのフレーズを平坦化
+  const phrases = data ? data.flatMap((page: unknown) => {
+    const typedPage = page as PageData
+    return typedPage.phrases || []
+  }) : []
+  const totalCount = (data?.[0] as PageData)?.pagination?.total || 0
+  const hasMore = (data?.[data.length - 1] as PageData)?.pagination?.hasMore || false
+
+  return {
+    phrases,
+    totalCount,
+    hasMore,
+    isLoading,
+    error,
+    size,
+    setSize,
     refetch: mutate
   }
 }
