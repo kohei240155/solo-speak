@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { QuizConfig, QuizPhrase, QuizSession } from '@/types/quiz'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 
 interface UseQuizPhraseReturn {
@@ -27,13 +27,6 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     setShowTranslation(false)
     
     try {
-      const { data: { session: authSession } } = await supabase.auth.getSession()
-      
-      if (!authSession) {
-        toast.error('認証情報が見つかりません。再度ログインしてください。')
-        return false
-      }
-
       const params = new URLSearchParams({
         language: config.language,
         mode: config.mode,
@@ -46,20 +39,14 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         count: config.questionCount || 10
       })
 
-      const response = await fetch(`/api/phrase/quiz?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${authSession.access_token}`
-        }
-      })
-      
-      const data = await response.json()
+      const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], message?: string, totalCount?: number, availablePhraseCount?: number }>(`/api/phrase/quiz?${params.toString()}`)
       console.log('Quiz API response:', data)
 
       if (data.success && data.phrases && data.phrases.length > 0) {
         const newSession: QuizSession = {
           phrases: data.phrases,
           currentIndex: 0,
-          totalCount: data.totalCount,
+          totalCount: data.totalCount || 0,
           availablePhraseCount: data.availablePhraseCount || data.phrases.length
         }
         setSession(newSession)
@@ -88,24 +75,10 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     if (!currentPhrase || !session) return
 
     try {
-      const { data: { session: authSession } } = await supabase.auth.getSession()
-      
-      if (!authSession) {
-        toast.error('認証情報が見つかりません。')
-        return
-      }
-
       // 回答をサーバーに送信
-      await fetch('/api/phrase/quiz/answer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authSession.access_token}`
-        },
-        body: JSON.stringify({
-          phraseId: currentPhrase.id,
-          isCorrect
-        })
+      await api.post('/api/phrase/quiz/answer', {
+        phraseId: currentPhrase.id,
+        isCorrect
       })
 
     } catch (error) {

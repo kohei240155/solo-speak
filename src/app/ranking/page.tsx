@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import AuthGuard from '@/components/AuthGuard'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
@@ -45,24 +45,10 @@ export default function RankingPage() {
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) return
-
-        const response = await fetch('/api/languages', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          // APIは直接言語配列を返すか、フォールバックデータを返す
-          if (Array.isArray(data)) {
-            setLanguages(data)
-          } else if (data.success && data.languages) {
-            setLanguages(data.languages)
-          }
+        const data = await api.get<Language[]>('/api/languages')
+        // APIは直接言語配列を返すか、フォールバックデータを返す
+        if (Array.isArray(data)) {
+          setLanguages(data)
         }
       } catch (error) {
         console.error('Error fetching languages:', error)
@@ -79,12 +65,6 @@ export default function RankingPage() {
 
     setIsLoading(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。')
-        return
-      }
 
       let endpoint = ''
       if (activeRankingType === 'Phrase') {
@@ -105,34 +85,12 @@ export default function RankingPage() {
 
       console.log('Fetching ranking:', { activeRankingType, activeTab, endpoint })
 
-      const response = await fetch(endpoint, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-
-      console.log('Response status:', response.status, response.statusText)
-
-      if (!response.ok) {
-        // エラーレスポンスの詳細を取得
-        let errorMessage = `Failed to fetch ranking: ${response.status} ${response.statusText}`
-        try {
-          const errorData = await response.json()
-          console.error('Error response:', errorData)
-          errorMessage = errorData.message || errorData.error || errorMessage
-        } catch {
-          console.error('Failed to parse error response')
-        }
-
-        if (response.status === 404) {
-          toast.error(`${activeRankingType}ランキングのAPIが見つかりません`)
-        } else {
-          toast.error(`エラー: ${errorMessage}`)
-        }
-        return
-      }
-
-      const data = await response.json()
+      const data = await api.get<{ 
+        success: boolean, 
+        topUsers?: SpeakUser[], 
+        message?: string 
+      }>(endpoint)
+      
       console.log('API Response:', data)
       
       if (data.success) {

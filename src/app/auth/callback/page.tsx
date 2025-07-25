@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function AuthCallback() {
@@ -27,30 +28,26 @@ export default function AuthCallback() {
           
           try {
             // ユーザーが既に設定済みかチェック
-            const userCheckResponse = await fetch('/api/user/settings', {
-              headers: {
-                'Authorization': `Bearer ${authData.session.access_token}`
-              }
-            })
+            await api.get('/api/user/settings')
             
             const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
             
-            if (userCheckResponse.status === 404) {
+            // ユーザーが設定済みの場合はフレーズリストページへ
+            console.log('Existing user detected, redirecting to phrase list')
+            window.location.href = `${redirectUrl}/phrase/list`
+          } catch (apiError) {
+            // 404エラー（ユーザー未設定）またはその他のエラー
+            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+            
+            if (apiError instanceof Error && apiError.message.includes('404')) {
               // ユーザーが未設定の場合は設定画面へ
               console.log('New user detected, redirecting to settings')
               window.location.href = `${redirectUrl}/settings`
-            } else if (userCheckResponse.ok) {
-              // ユーザーが設定済みの場合はフレーズリストページへ
-              console.log('Existing user detected, redirecting to phrase list')
-              window.location.href = `${redirectUrl}/phrase/list`
             } else {
               // その他のエラー - とりあえずフレーズリストページへ
+              console.error('API呼び出しエラー:', apiError)
               window.location.href = `${redirectUrl}/phrase/list`
             }
-          } catch (apiError) {
-            console.error('API呼び出しエラー:', apiError)
-            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
-            window.location.href = `${redirectUrl}/phrase/list`
           }
         } else {
           // セッション情報がない場合はホームページへ
