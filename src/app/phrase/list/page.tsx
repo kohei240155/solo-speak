@@ -81,11 +81,17 @@ export default function PhraseListPage() {
       }
       
       timeoutId = setTimeout(() => {
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100) {
-          if (hasMorePhrases && !isLoadingPhrases) {
-            fetchSavedPhrases(phrasePage + 1, true)
-          }
+        // スクロール位置が下部に達していない場合は何もしない
+        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 100) {
+          return
         }
+        
+        // 追加読み込みの条件を満たしていない場合は何もしない
+        if (!hasMorePhrases || isLoadingPhrases) {
+          return
+        }
+        
+        fetchSavedPhrases(phrasePage + 1, true)
       }, 100)
     }
 
