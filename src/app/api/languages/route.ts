@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createLanguageFallbackResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
+import { LanguagesResponseData } from '@/types/language-api'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
       return authResult.error
     }
 
-    const languages = await prisma.language.findMany({
+    const languages: LanguagesResponseData = await prisma.language.findMany({
       where: {
         deletedAt: null
       },

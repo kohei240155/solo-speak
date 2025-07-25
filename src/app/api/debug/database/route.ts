@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
+import { DatabaseDebugResponseData } from '@/types/debug-api'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function GET() {
   try {
@@ -78,7 +80,7 @@ export async function GET() {
     const totalUsers = await prisma.user.count()
     console.log('Total users:', totalUsers)
 
-    return NextResponse.json({
+    const responseData: DatabaseDebugResponseData = {
       success: true,
       data: {
         totalSpeakLogs,
@@ -90,14 +92,16 @@ export async function GET() {
         phrasesEn,
         totalUsers
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Database debug error:', error)
-    return NextResponse.json({ 
-      success: false, 
+    const errorResponse: ApiErrorResponse = {
       error: 'Database error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking-api'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function GET(request: NextRequest) {
   try {
     console.log('Speak ranking API called')
     
     const { searchParams } = new URL(request.url)
-    const language = searchParams.get('language') || 'en'
-    const period = searchParams.get('period') || 'daily'
+    const queryParams: RankingQueryParams = {
+      language: searchParams.get('language') || 'en',
+      period: (searchParams.get('period') as 'daily' | 'weekly' | 'monthly') || 'daily'
+    }
+    const { language, period } = queryParams
     
     console.log('Parameters:', { language, period })
 
@@ -30,10 +35,10 @@ export async function GET(request: NextRequest) {
 
     if (!languageRecord) {
       console.log('Language not found:', language)
-      return NextResponse.json({
-        success: false,
+      const errorResponse: ApiErrorResponse = {
         error: 'Language not found'
-      }, { status: 400 })
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     const languageId = languageRecord.id
@@ -171,18 +176,20 @@ export async function GET(request: NextRequest) {
     // 現在のユーザーの順位を取得
     const currentUserRank = rankedUsers.find(u => u.userId === user.id)
 
-    return NextResponse.json({
+    const responseData: SpeakRankingResponseData = {
       success: true,
       topUsers: rankedUsers,
       currentUser: currentUserRank || null
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('API error:', error)
-    return NextResponse.json({ 
-      success: false, 
+    const errorResponse: ApiErrorResponse = {
       error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
