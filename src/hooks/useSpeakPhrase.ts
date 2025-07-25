@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 import { SpeakPhrase, SpeakConfig } from '@/types/speak'
 
@@ -14,25 +14,12 @@ export const useSpeakPhrase = () => {
   const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
     setIsLoadingPhrase(true)
     try {
-      // 認証トークンを取得
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。再度ログインしてください。')
-        return false
-      }
-
       const params = new URLSearchParams({
         language: config.language,
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
       })
 
-      const response = await fetch(`/api/phrase/speak?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-      const data = await response.json()
+      const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {
         setCurrentPhrase(data.phrase)
@@ -58,24 +45,8 @@ export const useSpeakPhrase = () => {
     if (countToSend === 0) return true // 送信するカウントがない場合は成功として扱う
 
     try {
-      // 認証トークンを取得
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        console.error('No authentication session found')
-        return false
-      }
-
-      const response = await fetch(`/api/phrase/${phraseId}/count`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ count: countToSend })
-      })
-
-      return response.ok
+      await api.post(`/api/phrase/${phraseId}/count`, { count: countToSend })
+      return true
     } catch (error) {
       console.error('Error sending count:', error)
       return false

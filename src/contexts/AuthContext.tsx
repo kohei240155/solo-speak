@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 
 type AuthContextType = {
   user: User | null
@@ -207,41 +208,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      // タイムアウト付きでAPIリクエスト（10秒でタイムアウト）
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000)
-      
-      const response = await fetch('/api/user/settings', {
-        method: 'GET',
+      const userData = await api.get<{ iconUrl?: string }>('/api/user/settings', {
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': 'no-cache', // キャッシュを無効化
+          'Cache-Control': 'no-cache',
         },
-        signal: controller.signal
+        timeout: 10000
       })
       
-      clearTimeout(timeoutId)
-
-      if (response.ok) {
-        const userData = await response.json()
-        setIsUserSetupComplete(true)
-        
-        // 画像URLの有効性をチェック
-        if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
-          setUserIconUrl(userData.iconUrl)
-        } else {
-          // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
-          setUserIconUrl(prev => {
-            if (prev && (prev.includes('googleusercontent.com') || 
-                        prev.includes('googleapis.com') || 
-                        prev.includes('google.com'))) {
-              return prev // Googleアバターを保持
-            }
-            return null
-          })
-        }
-      } else if (response.status === 404) {
-        // 初回ログイン時：Googleアイコンを自動設定
+      setIsUserSetupComplete(true)
+      
+      // 画像URLの有効性をチェック
+      if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
+        setUserIconUrl(userData.iconUrl)
+      } else {
+        // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
+        setUserIconUrl(prev => {
+          if (prev && (prev.includes('googleusercontent.com') || 
+                      prev.includes('googleapis.com') || 
+                      prev.includes('google.com'))) {
+            return prev // Googleアバターを保持
+          }
+          return null
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching user settings:', error)
+      
+      // 404エラーの場合は初回ログイン時
+      if (error instanceof Error && error.message.includes('404')) {
         setIsUserSetupComplete(false)
         
         // Googleアバターがある場合は自動的に表示
@@ -254,27 +248,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUserIconUrl(null)
         }
       } else {
-        setIsUserSetupComplete(false)
-        setUserIconUrl(null)
-      }
-    } catch (error) {
-      console.error('Error fetching user settings:', error)
-      
-      // タイムアウトエラーまたはネットワークエラーの場合
-      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
-        console.warn('ユーザー設定の取得がタイムアウトしました')
-      }
-      
-      setIsUserSetupComplete(false)
-      // エラー時は現在のアイコンを保持
-      setUserIconUrl(prev => {
-        if (prev && (prev.includes('googleusercontent.com') || 
-                    prev.includes('googleapis.com') || 
-                    prev.includes('google.com'))) {
-          return prev
+        // タイムアウトエラーまたはネットワークエラーの場合
+        if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
+          console.warn('ユーザー設定の取得がタイムアウトしました')
         }
-        return null
-      })
+        
+        setIsUserSetupComplete(false)
+        // エラー時は現在のアイコンを保持
+        setUserIconUrl(prev => {
+          if (prev && (prev.includes('googleusercontent.com') || 
+                      prev.includes('googleapis.com') || 
+                      prev.includes('google.com'))) {
+            return prev
+          }
+          return null
+        })
+      }
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 

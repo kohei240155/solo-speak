@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 
 interface Language {
   id: string
@@ -36,46 +36,27 @@ export function useUserSettingsData(): UseUserSettingsDataReturn {
       setLoading(true)
       setError(null)
 
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        setError('認証が必要です')
-        return
-      }
-
       // 言語一覧を取得
-      const languagesResponse = await fetch('/api/languages', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (languagesResponse.ok) {
-        const languagesData = await languagesResponse.json()
-        setLanguages(languagesData)
-      }
+      const languagesData = await api.get<Language[]>('/api/languages')
+      setLanguages(languagesData)
 
       // ユーザー設定を取得
-      const settingsResponse = await fetch(`/api/user/settings?t=${Date.now()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-
-      if (settingsResponse.ok) {
-        const settingsData = await settingsResponse.json()
+      try {
+        const settingsData = await api.get<UserSettings>(`/api/user/settings?t=${Date.now()}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
         setUserSettings(settingsData)
-      } else if (settingsResponse.status === 404) {
-        // ユーザー設定が未作成の場合
-        setUserSettings(null)
-      } else {
-        throw new Error('ユーザー設定の取得に失敗しました')
+      } catch (settingsError) {
+        if (settingsError instanceof Error && settingsError.message.includes('404')) {
+          // ユーザー設定が未作成の場合
+          setUserSettings(null)
+        } else {
+          throw new Error('ユーザー設定の取得に失敗しました')
+        }
       }
 
     } catch (err) {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { Language, SavedPhrase, PhraseVariation } from '@/types/phrase'
 import toast from 'react-hot-toast'
 
@@ -54,17 +54,8 @@ export const usePhraseManager = () => {
     }
   }, [useChatGptApi])
 
-  // 認証ヘッダーを取得するヘルパー関数
-  const getAuthHeaders = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.access_token) {
-      throw new Error('No authentication token available')
-    }
-    return {
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json'
-    }
-  }, [])
+  // 認証ヘッダーを取得するヘルパー関数（削除予定）
+  
   const fetchLanguages = useCallback(async () => {
     // ユーザーがログインしていない場合は何もしない
     if (!user) {
@@ -73,38 +64,26 @@ export const usePhraseManager = () => {
     }
 
     try {
-      const headers = await getAuthHeaders()
-      const response = await fetch('/api/languages', {
-        method: 'GET',
-        headers
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setLanguages(data)
-      } else {
-        console.error('Failed to fetch languages:', response.status, response.statusText)
-      }
+      const data = await api.get<Language[]>('/api/languages')
+      setLanguages(data)
     } catch (error) {
       console.error('Error fetching languages in usePhraseManager:', error)
       setLanguages([])
     }
-  }, [getAuthHeaders, user])
+  }, [user])
 
   const fetchUserSettings = useCallback(async () => {
     try {
-      const response = await fetch('/api/user/settings')
-      if (response.ok) {
-        const userData = await response.json()
-        // 初期化時のみユーザー設定を適用
-        if (!userSettingsInitialized) {
-          if (userData.nativeLanguage?.code) {
-            setNativeLanguage(userData.nativeLanguage.code)
-          }
-          if (userData.defaultLearningLanguage?.code) {
-            setLearningLanguage(userData.defaultLearningLanguage.code)
-          }
-          setUserSettingsInitialized(true)
+      const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings')
+      // 初期化時のみユーザー設定を適用
+      if (!userSettingsInitialized) {
+        if (userData.nativeLanguage?.code) {
+          setNativeLanguage(userData.nativeLanguage.code)
         }
+        if (userData.defaultLearningLanguage?.code) {
+          setLearningLanguage(userData.defaultLearningLanguage.code)
+        }
+        setUserSettingsInitialized(true)
       }
     } catch (error) {
       console.error('Error fetching user settings:', error)
@@ -118,77 +97,50 @@ export const usePhraseManager = () => {
     }
     
     try {
-      const headers = await getAuthHeaders()
-      if (!headers.Authorization) {
-        // 認証ヘッダーがない場合は処理を停止
-        setRemainingGenerations(0)
-        return
-      }
-      
-      const response = await fetch('/api/user/phrase-generations', {
-        headers
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setRemainingGenerations(data.remainingGenerations)
-      } else if (response.status === 401) {
-        // 認証エラーの場合は静かに処理
-        console.log('User not authenticated, setting remaining generations to 0')
-        setRemainingGenerations(0)
-      } else {
-        console.error('Failed to fetch remaining generations:', response.statusText)
-        // フォールバック: 0に設定
-        setRemainingGenerations(0)
-      }
+      const data = await api.get<{ remainingGenerations: number }>('/api/user/phrase-generations')
+      setRemainingGenerations(data.remainingGenerations)
     } catch (error) {
       // ネットワークエラーや認証エラーの場合は静かに処理
       console.log('Error fetching remaining generations (likely due to logout):', error)
       setRemainingGenerations(0)
     }
-  }, [user, getAuthHeaders])
+  }, [user])
 
   const fetchSavedPhrases = useCallback(async (page = 1, append = false) => {
     if (!user) return
     
     setIsLoadingPhrases(true)
     try {
-      const headers = await getAuthHeaders()
-      const response = await fetch(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`, {
-        headers
-      })
-      if (response.ok) {
-        const data = await response.json()
-        const phrases = Array.isArray(data.phrases) ? data.phrases : []
-        
-        // デバッグ: 重複チェック
-        const phraseIds = phrases.map((p: SavedPhrase) => p.id)
-        const uniqueIds = new Set(phraseIds)
-        if (phraseIds.length !== uniqueIds.size) {
-          console.warn('Duplicate phrase IDs detected in API response:', phraseIds)
-        }
-        
-        if (append) {
-          // 重複を避けるため、IDが既に存在しないアイテムのみを追加
-          setSavedPhrases(prev => {
-            const existingIds = new Set(prev.map(p => p.id))
-            const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
-            console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
-            return [...prev, ...newPhrases]
-          })
-        } else {
-          // 初回読み込み時も重複を除去
-          const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
-            self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
-          )
-          console.log(`Setting ${uniquePhrases.length} unique phrases out of ${phrases.length} fetched`)
-          setSavedPhrases(uniquePhrases)
-        }
-        
-        setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
-        setPhrasePage(page)
-        setTotalPhrases(data.pagination?.total || 0)
+      const data = await api.get<{ phrases: SavedPhrase[], pagination?: { hasMore: boolean, total: number } }>(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`)
+      const phrases = Array.isArray(data.phrases) ? data.phrases : []
+      
+      // デバッグ: 重複チェック
+      const phraseIds = phrases.map((p: SavedPhrase) => p.id)
+      const uniqueIds = new Set(phraseIds)
+      if (phraseIds.length !== uniqueIds.size) {
+        console.warn('Duplicate phrase IDs detected in API response:', phraseIds)
       }
+      
+      if (append) {
+        // 重複を避けるため、IDが既に存在しないアイテムのみを追加
+        setSavedPhrases(prev => {
+          const existingIds = new Set(prev.map(p => p.id))
+          const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
+          console.log(`Appending ${newPhrases.length} new phrases out of ${phrases.length} fetched`)
+          return [...prev, ...newPhrases]
+        })
+      } else {
+        // 初回読み込み時も重複を除去
+        const uniquePhrases = phrases.filter((phrase: SavedPhrase, index: number, self: SavedPhrase[]) => 
+          self.findIndex((p: SavedPhrase) => p.id === phrase.id) === index
+        )
+        console.log(`Setting ${uniquePhrases.length} unique phrases out of ${phrases.length} fetched`)
+        setSavedPhrases(uniquePhrases)
+      }
+      
+      setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
+      setPhrasePage(page)
+      setTotalPhrases(data.pagination?.total || 0)
     } catch (error) {
       console.error('Error fetching saved phrases:', error)
       if (!append) {
@@ -197,7 +149,7 @@ export const usePhraseManager = () => {
     } finally {
       setIsLoadingPhrases(false)
     }
-  }, [user, learningLanguage, getAuthHeaders])
+  }, [user, learningLanguage])
 
   const handleEditVariation = (index: number, newText: string) => {
     setEditingVariations(prev => ({ ...prev, [index]: newText }))
@@ -259,9 +211,7 @@ export const usePhraseManager = () => {
 
     try {
       // 実際のAPI呼び出し
-      console.log('Getting auth headers...')
-      const headers = await getAuthHeaders()
-      console.log('Auth headers obtained')
+      console.log('Making API call to /api/phrase/generate...')
       
       const requestBody = {
         nativeLanguage,
@@ -272,24 +222,7 @@ export const usePhraseManager = () => {
       }
       console.log('Request body:', requestBody)
       
-      console.log('Making API call to /api/phrase/generate...')
-      const response = await fetch('/api/phrase/generate', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody)
-      })
-
-      console.log('API response status:', response.status)
-      console.log('API response ok:', response.ok)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API error response:', errorText)
-        throw new Error(`フレーズの生成に失敗しました: ${response.status}`)
-      }
-
-      console.log('Parsing response...')
-      const data = await response.json()
+      const data = await api.post<{ variations?: PhraseVariation[] }>('/api/phrase/generate', requestBody)
       console.log('API response data:', data)
       
       console.log('Setting variations:', data.variations || [])
@@ -297,15 +230,8 @@ export const usePhraseManager = () => {
       
       // AI Suggest成功時に生成回数を減らす
       try {
-        const generationsResponse = await fetch('/api/user/phrase-generations', {
-          method: 'POST',
-          headers: await getAuthHeaders()
-        })
-        
-        if (generationsResponse.ok) {
-          const generationsData = await generationsResponse.json()
-          setRemainingGenerations(generationsData.remainingGenerations)
-        }
+        const generationsData = await api.post<{ remainingGenerations: number }>('/api/user/phrase-generations')
+        setRemainingGenerations(generationsData.remainingGenerations)
       } catch (generationsError) {
         console.error('Error updating phrase generations:', generationsError)
         // エラーが発生しても生成処理は成功しているので続行
@@ -365,23 +291,14 @@ export const usePhraseManager = () => {
         throw new Error('学習言語が見つかりません')
       }
 
-      const response = await fetch('/api/phrase', {
-        method: 'POST',
-        headers: await getAuthHeaders(),
-        body: JSON.stringify({
-          userId: user.id,
-          languageId: learningLang.id,
-          text: finalText,      // 学習言語のフレーズ
-          translation: desiredPhrase, // 母国語の翻訳
-          nuance: variation.explanation, // ニュアンス説明
-          level: variation.type, // フレーズのレベル（common, polite, casual）を追加
-        }),
+      await api.post('/api/phrase', {
+        userId: user.id,
+        languageId: learningLang.id,
+        text: finalText,      // 学習言語のフレーズ
+        translation: desiredPhrase, // 母国語の翻訳
+        nuance: variation.explanation, // ニュアンス説明
+        level: variation.type, // フレーズのレベル（common, polite, casual）を追加
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'フレーズの登録に失敗しました')
-      }
 
       // 成功時の処理 - 即座に初期状態に戻す
       toast.success('Phrase registered successfully!')

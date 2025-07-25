@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { Language, SavedPhrase } from '@/types/phrase'
 
 export const usePhraseList = () => {
@@ -15,18 +15,6 @@ export const usePhraseList = () => {
   const [totalPhrases, setTotalPhrases] = useState(0)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
-  // 認証ヘッダーを取得するヘルパー関数
-  const getAuthHeaders = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.access_token) {
-      throw new Error('No authentication token available')
-    }
-    return {
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json'
-    }
-  }, [])
-
   const fetchLanguages = useCallback(async () => {
     // ユーザーがログインしていない場合は何もしない
     if (!user) {
@@ -35,22 +23,13 @@ export const usePhraseList = () => {
     }
 
     try {
-      const headers = await getAuthHeaders()
-      const response = await fetch('/api/languages', {
-        method: 'GET',
-        headers
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setLanguages(data)
-      } else {
-        console.error('Failed to fetch languages:', response.status, response.statusText)
-      }
+      const data = await api.get<Language[]>('/api/languages')
+      setLanguages(data)
     } catch (error) {
       console.error('Error fetching languages in usePhraseList:', error)
       setLanguages([])
     }
-  }, [getAuthHeaders, user])
+  }, [user])
 
   const fetchUserSettings = useCallback(async () => {
     // ユーザーがログインしていない場合は何もしない
@@ -59,58 +38,45 @@ export const usePhraseList = () => {
     }
 
     try {
-      const headers = await getAuthHeaders()
-      const response = await fetch('/api/user/settings', {
-        method: 'GET',
-        headers
-      })
-      if (response.ok) {
-        const userData = await response.json()
-        // 初期化時のみユーザー設定を適用
-        if (!userSettingsInitialized) {
-          if (userData.nativeLanguage?.code) {
-            setNativeLanguage(userData.nativeLanguage.code)
-          }
-          if (userData.defaultLearningLanguage?.code) {
-            setLearningLanguage(userData.defaultLearningLanguage.code)
-          }
-          setUserSettingsInitialized(true)
+      const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings')
+      // 初期化時のみユーザー設定を適用
+      if (!userSettingsInitialized) {
+        if (userData.nativeLanguage?.code) {
+          setNativeLanguage(userData.nativeLanguage.code)
         }
+        if (userData.defaultLearningLanguage?.code) {
+          setLearningLanguage(userData.defaultLearningLanguage.code)
+        }
+        setUserSettingsInitialized(true)
       }
     } catch (error) {
       console.error('Error fetching user settings:', error)
     }
-  }, [userSettingsInitialized, user, getAuthHeaders])
+  }, [userSettingsInitialized, user])
 
   const fetchSavedPhrases = useCallback(async (page = 1, append = false) => {
     if (!user) return
     
     setIsLoadingPhrases(true)
     try {
-      const headers = await getAuthHeaders()
-      const response = await fetch(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10&minimal=true`, {
-        headers
-      })
-      if (response.ok) {
-        const data = await response.json()
-        const phrases = Array.isArray(data.phrases) ? data.phrases : []
-        
-        if (append) {
-          // 重複を避けるため、IDが既に存在しないアイテムのみを追加
-          setSavedPhrases(prev => {
-            const existingIds = new Set(prev.map(p => p.id))
-            const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
-            return newPhrases.length > 0 ? [...prev, ...newPhrases] : prev
-          })
-        } else {
-          // 初回読み込み時は重複除去処理を簡略化
-          setSavedPhrases(phrases)
-        }
-        
-        setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
-        setPhrasePage(page)
-        setTotalPhrases(data.pagination?.total || 0)
+      const data = await api.get<{ phrases: SavedPhrase[], pagination?: { hasMore: boolean, total: number } }>(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10&minimal=true`)
+      const phrases = Array.isArray(data.phrases) ? data.phrases : []
+      
+      if (append) {
+        // 重複を避けるため、IDが既に存在しないアイテムのみを追加
+        setSavedPhrases(prev => {
+          const existingIds = new Set(prev.map(p => p.id))
+          const newPhrases = phrases.filter((phrase: SavedPhrase) => !existingIds.has(phrase.id))
+          return newPhrases.length > 0 ? [...prev, ...newPhrases] : prev
+        })
+      } else {
+        // 初回読み込み時は重複除去処理を簡略化
+        setSavedPhrases(phrases)
       }
+      
+      setHasMorePhrases(data.pagination?.hasMore || phrases.length === 10)
+      setPhrasePage(page)
+      setTotalPhrases(data.pagination?.total || 0)
     } catch (error) {
       console.error('Error fetching saved phrases:', error)
       if (!append) {
@@ -119,7 +85,7 @@ export const usePhraseList = () => {
     } finally {
       setIsLoadingPhrases(false)
     }
-  }, [user, learningLanguage, getAuthHeaders])
+  }, [user, learningLanguage])
 
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {

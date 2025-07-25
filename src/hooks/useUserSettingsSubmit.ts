@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { ImageUploadRef } from '@/components/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'

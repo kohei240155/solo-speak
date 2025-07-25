@@ -12,6 +12,7 @@ import SpeakModeModal from './SpeakModeModal'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/contexts/AuthContext'
 import LoadingSpinner from './LoadingSpinner'
+import { api } from '@/utils/api'
 
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
@@ -251,18 +252,7 @@ export default function PhraseList({
 
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/phrase/${deletingPhraseId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        }
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to delete phrase')
-      }
+      await api.delete(`/api/phrase/${deletingPhraseId}`)
 
       setDeletingPhraseId(null)
       
@@ -292,24 +282,10 @@ export default function PhraseList({
 
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/phrase/${editingPhrase.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          text: editedText.trim(),            // 学習言語（下のフォーム）
-          translation: editedTranslation.trim() // 母国語（上のフォーム）
-        })
+      const updatedPhrase = await api.put<SavedPhrase>(`/api/phrase/${editingPhrase.id}`, {
+        text: editedText.trim(),            // 学習言語（下のフォーム）
+        translation: editedTranslation.trim() // 母国語（上のフォーム）
       })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to update phrase')
-      }
-
-      const updatedPhrase = await response.json()
       
       // フレーズを更新してモーダルを閉じる
       if (onUpdatePhrase) {
