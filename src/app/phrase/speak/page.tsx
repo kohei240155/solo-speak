@@ -19,7 +19,7 @@ import { SpeakConfig } from '@/types/speak'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 
 interface SpeakPhrase {
   id: string
@@ -80,26 +80,12 @@ function PhraseSpeakPage() {
     
     setIsLoadingSinglePhrase(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。')
-        return
+      const data = await api.get(`/api/phrase/${phraseId}/speak`) as {
+        success: boolean
+        phrase?: SpeakPhrase
       }
-
-      const response = await fetch(`/api/phrase/${phraseId}/speak`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch phrase')
-      }
-
-      const data = await response.json()
       
-      if (data.success) {
+      if (data.success && data.phrase) {
         setSinglePhrase(data.phrase)
         setSinglePhraseTodayCount(data.phrase.dailySpeakCount || 0)
         setSinglePhraseTotalCount(data.phrase.totalSpeakCount || 0)

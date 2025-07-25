@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { useDashboardData } from '@/hooks/useDashboardData'
 import { useUserSettingsData } from '@/hooks/useUserSettingsData'
 import LanguageSelector from '@/components/LanguageSelector'
@@ -37,38 +37,19 @@ export default function DashboardPage() {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        router.push('/auth/login')
-        return
-      }
-
-      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
-        method: 'GET',
+      await api.get(`/api/user/settings?t=${Date.now()}`, {
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0'
         }
       })
-
-      if (response.status === 404) {
-        // ユーザー設定が存在しない場合は設定ページにリダイレクト
-        router.push('/settings')
-        return
-      } else if (!response.ok) {
-        console.error('Failed to check user settings:', response.status)
-        // エラーの場合も設定ページにリダイレクト
-        router.push('/settings')
-        return
-      }
       
       // ユーザー設定が存在する場合はそのまま継続
       setSetupCheckLoading(false)
     } catch (error) {
       console.error('Error checking user setup:', error)
+      // 404エラーまたはその他エラーの場合は設定ページにリダイレクト
       router.push('/settings')
     }
   }, [user, router])

@@ -63,8 +63,12 @@ class ApiClient {
     try {
       // リクエストヘッダーの準備
       const requestHeaders: Record<string, string> = {
-        'Content-Type': 'application/json',
         ...(headers as Record<string, string>),
+      }
+
+      // FormDataでない場合のみContent-Typeを設定
+      if (!(fetchOptions.body instanceof FormData)) {
+        requestHeaders['Content-Type'] = 'application/json'
       }
 
       // 認証トークンの取得と設定
@@ -180,7 +184,7 @@ class ApiClient {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : (body ? JSON.stringify(body) : undefined),
     })
   }
 
@@ -217,8 +221,16 @@ class ApiClient {
   /**
    * DELETEリクエスト
    */
-  async delete<T = unknown>(endpoint: string, options: Omit<ApiOptions, 'method' | 'body'> = {}): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' })
+  async delete<T = unknown>(
+    endpoint: string,
+    body?: unknown,
+    options: Omit<ApiOptions, 'method' | 'body'> = {}
+  ): Promise<T> {
+    return this.request<T>(endpoint, { 
+      ...options, 
+      method: 'DELETE',
+      body: body ? JSON.stringify(body) : undefined,
+    })
   }
 }
 

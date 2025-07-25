@@ -16,7 +16,7 @@ import { useQuizMode } from '@/hooks/useQuizMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 
 export default function PhraseQuizPage() {
   const { user, loading } = useAuth()
@@ -76,21 +76,10 @@ export default function PhraseQuizPage() {
       if (!user) return
 
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) return
-
-        const response = await fetch('/api/user/settings', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
+        const settings = await api.get('/api/user/settings') as { defaultQuizCount?: number }
+        setUserSettings({
+          defaultQuizCount: settings.defaultQuizCount || 10
         })
-
-        if (response.ok) {
-          const settings = await response.json()
-          setUserSettings({
-            defaultQuizCount: settings.defaultQuizCount || 10
-          })
-        }
       } catch (error) {
         console.error('Error fetching user settings:', error)
         setUserSettings({ defaultQuizCount: 10 }) // デフォルト値

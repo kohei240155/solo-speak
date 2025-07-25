@@ -4,7 +4,6 @@ import { api, ApiError } from '@/utils/api'
 import { ImageUploadRef } from '@/components/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'
-import { supabase } from '@/utils/spabase'
 
 export function useUserSettingsSubmit(
   setError: (error: string) => void,
@@ -81,27 +80,7 @@ export function useUserSettingsSubmit(
             
             console.log('UserSettingsSubmit: Making API call to /api/user/icon')
             
-            // FormDataの場合は直接fetchを使用（APIクライアントはFormDataをサポートしていない可能性があるため）
-            const { data: { session } } = await supabase.auth.getSession()
-            
-            if (!session) {
-              throw new Error('認証情報が見つかりません。再度ログインしてください。')
-            }
-            
-            const uploadResponse = await fetch('/api/user/icon', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${session.access_token}`
-              },
-              body: formData
-            })
-            
-            if (!uploadResponse.ok) {
-              const errorData = await uploadResponse.json()
-              throw new Error(errorData.error || 'アップロードに失敗しました')
-            }
-            
-            const uploadResult = await uploadResponse.json()
+            const uploadResult = await api.post('/api/user/icon', formData) as { iconUrl: string }
             console.log('UserSettingsSubmit: Image uploaded successfully:', uploadResult.iconUrl)
             
             // アップロードしたURLをフォームデータに設定
@@ -188,32 +167,8 @@ export function useUserSettingsSubmit(
           try {
             console.log('UserSettingsSubmit: Deleting icon from Supabase storage:', existingIconUrl.substring(0, 50) + '...')
             
-            // DELETEリクエストでボディを送る場合は直接fetchを使用
-            const { data: { session } } = await supabase.auth.getSession()
-            
-            if (!session) {
-              throw new Error('認証情報が見つかりません。')
-            }
-            
-            const deleteResponse = await fetch('/api/user/icon', {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session.access_token}`
-              },
-              body: JSON.stringify({ iconUrl: existingIconUrl })
-            })
-            
-            if (deleteResponse.ok) {
-              console.log('UserSettingsSubmit: Icon deleted from storage successfully')
-            } else {
-              const errorText = await deleteResponse.text()
-              console.error('UserSettingsSubmit: Failed to delete icon from storage:', {
-                status: deleteResponse.status,
-                statusText: deleteResponse.statusText,
-                error: errorText
-              })
-            }
+            await api.delete('/api/user/icon', { iconUrl: existingIconUrl })
+            console.log('UserSettingsSubmit: Icon deleted from storage successfully')
           } catch (deleteError) {
             console.error('UserSettingsSubmit: Error deleting icon from storage:', deleteError)
             // 削除に失敗してもユーザー設定の更新は続行
