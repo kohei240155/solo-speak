@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,16 +14,8 @@ import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
-  const { user, loading } = useAuth()
-  const router = useRouter()
+  const { loading } = useAuth()
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
-
-  // 認証チェック: ログインしていない場合はログインページにリダイレクト
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
 
   const {
     register,
@@ -59,10 +50,6 @@ export default function UserSettingsPage() {
 
   if (loading || dataLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
-  }
-
-  if (!user) {
-    return null // 認証チェックのuseEffectでリダイレクトされるので、何も表示しない
   }
 
   return (

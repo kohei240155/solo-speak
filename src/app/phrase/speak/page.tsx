@@ -7,13 +7,11 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
-import AuthGuard from '@/components/auth/AuthGuard'
 import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
 import { useSpeakMode } from '@/hooks/useSpeakMode'
-import { useAuth } from '@/contexts/AuthContext'
 import { speakText, preloadVoices } from '@/utils/speechSynthesis'
 import { SpeakConfig } from '@/types/speak'
 import { QuizConfig } from '@/types/quiz'
@@ -32,7 +30,6 @@ interface SpeakPhrase {
 function PhraseSpeakPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   
@@ -223,9 +220,8 @@ function PhraseSpeakPage() {
   }
 
   return (
-    <AuthGuard user={user} loading={loading}>
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
           {/* Phrase タイトル */}
           <div className="flex justify-between items-center mb-[18px]">
             <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
@@ -314,12 +310,11 @@ function PhraseSpeakPage() {
             languages={languages}
             defaultLearningLanguage={learningLanguage}
             availablePhraseCount={savedPhrases.length}
-          />
-        </div>
-        
-        <Toaster />
+        />
       </div>
-    </AuthGuard>
+      
+      <Toaster />
+    </div>
   )
 }
 

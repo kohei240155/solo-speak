@@ -8,7 +8,7 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
@@ -40,12 +40,6 @@ export default function DashboardPage() {
   }, [user, router, userSettings])
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
-
-  useEffect(() => {
     if (user) {
       checkUserSetupComplete()
     }
@@ -58,12 +52,8 @@ export default function DashboardPage() {
     }
   }, [userSettings, selectedLanguage])
 
-  if (loading || setupCheckLoading) {
+  if (setupCheckLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
-  }
-
-  if (!user) {
-    return null
   }
 
   return (

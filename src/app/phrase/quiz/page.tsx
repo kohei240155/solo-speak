@@ -7,30 +7,20 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
 import QuizComplete from '@/components/quiz/QuizComplete'
-import AuthGuard from '@/components/auth/AuthGuard'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/useQuizPhrase'
 import { useQuizMode } from '@/hooks/useQuizMode'
-import { useAuth } from '@/contexts/AuthContext'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 import { useUserSettings } from '@/hooks/useSWRApi'
 
 export default function PhraseQuizPage() {
-  const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   const { userSettings } = useUserSettings()
   const router = useRouter()
-
-  // 認証チェック: ログインしていない場合はログインページにリダイレクト
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login')
-    }
-  }, [user, loading, router])
 
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
@@ -137,21 +127,20 @@ export default function PhraseQuizPage() {
   }
 
   return (
-    <AuthGuard user={user} loading={loading}>
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-          {/* Phrase タイトル */}
-          <div className="flex justify-between items-center mb-[18px]">
-            <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
-              Phrase
-            </h1>
-          </div>
-          {/* タブメニュー */}
-          <PhraseTabNavigation 
-            activeTab="Quiz" 
-            onSpeakModalOpen={openSpeakModal}
-            onQuizModalOpen={quizMode.active ? undefined : () => setShowQuizModal(true)}
-          />
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+        {/* Phrase タイトル */}
+        <div className="flex justify-between items-center mb-[18px]">
+          <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+            Phrase
+          </h1>
+        </div>
+        {/* タブメニュー */}
+        <PhraseTabNavigation 
+          activeTab="Quiz" 
+          onSpeakModalOpen={openSpeakModal}
+          onQuizModalOpen={quizMode.active ? undefined : () => setShowQuizModal(true)}
+        />
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -219,7 +208,6 @@ export default function PhraseQuizPage() {
       />
       
       <Toaster />
-      </div>
-    </AuthGuard>
+    </div>
   )
 }
