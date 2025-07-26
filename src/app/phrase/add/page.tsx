@@ -7,21 +7,11 @@ import { useQuizModal } from '@/hooks/useQuizModal'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
+import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Toaster } from 'react-hot-toast'
-import dynamic from 'next/dynamic'
-
-// PhraseAddコンポーネントを動的インポート
-const PhraseAdd = dynamic(() => import('@/components/phrase/PhraseAdd'), {
-  ssr: false,
-  loading: () => (
-    <div className="text-center py-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-      <p className="mt-2 text-gray-600">Loading...</p>
-    </div>
-  )
-})
 
 export default function PhraseAddPage() {
   // 認証ガード - ログインしていない場合はホームページにリダイレクト
@@ -117,10 +107,7 @@ export default function PhraseAddPage() {
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {authLoading || !isAuthenticated ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading...</p>
-            </div>
+            <LoadingSpinner message="Loading..." />
           ) : (
             <PhraseAdd
               languages={languages}
