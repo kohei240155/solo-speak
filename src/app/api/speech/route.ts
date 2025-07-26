@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { SpeechRequestBody, SpeechResponseData } from '@/types/speech-api'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,14 +11,14 @@ export async function POST(request: NextRequest) {
       return authResult.error
     }
 
-    const body = await request.json()
-    const { text, language } = body
+    const body: unknown = await request.json()
+    const { text, language }: SpeechRequestBody = body as SpeechRequestBody
 
     if (!text) {
-      return NextResponse.json(
-        { error: 'Text is required' },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Text is required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // 言語コードを適切なBCP 47形式に変換
@@ -102,18 +104,20 @@ export async function POST(request: NextRequest) {
     const languageCode = getLanguageCode(language || 'en')
 
     // 音声合成のレスポンス形式を返す
-    return NextResponse.json({
+    const responseData: SpeechResponseData = {
       success: true,
       text,
       language: languageCode,
       message: 'Speech synthesis parameters prepared'
-    })
+    }
+    
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error in speech API:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

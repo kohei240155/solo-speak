@@ -1,23 +1,21 @@
 'use client'
 
 import { useEffect } from 'react'
-// import { useRouter } from 'next/navigation' // 現在未使用
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import LanguageSelector from '@/components/LanguageSelector'
-import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import PhraseAdd from '@/components/PhraseAdd'
-import SpeakModeModal from '@/components/SpeakModeModal'
-import QuizModeModal from '@/components/QuizModeModal'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
+import PhraseAdd from '@/components/phrase/PhraseAdd'
+import SpeakModeModal from '@/components/modals/SpeakModeModal'
+import QuizModeModal from '@/components/modals/QuizModeModal'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
   // 認証ガード - ログインしていない場合はホームページにリダイレクト
   const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
-  
-  // const router = useRouter() // 現在未使用
   
   const {
     // State
@@ -109,10 +107,7 @@ export default function PhraseAddPage() {
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {authLoading || !isAuthenticated ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading...</p>
-            </div>
+            <LoadingSpinner message="Loading..." />
           ) : (
             <PhraseAdd
               languages={languages}

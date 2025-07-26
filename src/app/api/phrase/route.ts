@@ -3,7 +3,12 @@ import { z } from 'zod'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
-import { CreatePhraseRequestBody } from '@/types/phrase-api'
+import { 
+  CreatePhraseRequestBody,
+  CreatePhraseResponseData, 
+  PhrasesListResponseData 
+} from '@/types/phrase-api'
+import { ApiErrorResponse } from '@/types/api'
 
 const prisma = new PrismaClient()
 
@@ -30,28 +35,29 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // 認証されたユーザーIDを使用
     const userId = authResult.user.id
 
-    // ユーザーが存在するかチェック
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    })
+    // Promise.allを使用してユーザーと言語の存在チェックを並列処理
+    const [user, language] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId }
+      }),
+      
+      prisma.language.findUnique({
+        where: { id: languageId }
+      })
+    ])
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
-    // 言語が存在するかチェック
-    const language = await prisma.language.findUnique({
-      where: { id: languageId }
-    })
-
     if (!language) {
-      return NextResponse.json(
-        { error: 'Language not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Language not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // フレーズレベルIDを決定
@@ -86,10 +92,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         })
         
         if (!defaultLevel) {
-          return NextResponse.json(
-            { error: 'No phrase level found' } satisfies { error: string },
-            { status: 500 }
-          )
+          const errorResponse: ApiErrorResponse = {
+            error: 'No phrase level found'
+          }
+          return NextResponse.json(errorResponse, { status: 500 })
         }
         
         finalPhraseLevelId = defaultLevel.id
@@ -143,7 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
-      nuance: phrase.nuance,
+      nuance: phrase.nuance || undefined,
       createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
@@ -153,8 +159,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    const responseData = {
-      success: true as const,
+    const responseData: CreatePhraseResponseData = {
+      success: true,
       phrase: transformedPhrase,
       remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
       dailyLimit: 5,
@@ -164,22 +170,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(responseData, { status: 201 })
 
   } catch (error) {
-    console.error('Error creating phrase:', error)
-    
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid request data', 
-          details: error.issues 
-        } satisfies { error: string; details: unknown },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Invalid request data',
+        details: error.issues
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
@@ -213,60 +215,66 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     
     if (languageId) {
       where.languageId = languageId
-    } else if (languageCode) {
-      // languageCodeが指定されている場合、対応するlanguageIdを取得
-      const language = await prisma.language.findUnique({
+    }
+    
+    // languageCodeが指定されている場合の処理を並列化
+    let languageForCode = null
+    if (languageCode && !languageId) {
+      languageForCode = await prisma.language.findUnique({
         where: { code: languageCode }
       })
-      if (language) {
-        where.languageId = language.id
+      if (languageForCode) {
+        where.languageId = languageForCode.id
       }
     }
 
-    const phrases = await prisma.phrase.findMany({
-      where,
-      include: minimal ? {
-        // 最小限のデータのみ
-        language: {
-          select: {
-            id: true,
-            name: true,
-            code: true
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [phrases, total] = await Promise.all([
+      prisma.phrase.findMany({
+        where,
+        include: minimal ? {
+          // 最小限のデータのみ
+          language: {
+            select: {
+              id: true,
+              name: true,
+              code: true
+            }
           }
-        }
-      } : {
-        // 完全なデータ
-        language: {
-          select: {
-            id: true,
-            name: true,
-            code: true
+        } : {
+          // 完全なデータ
+          language: {
+            select: {
+              id: true,
+              name: true,
+              code: true
+            }
+          },
+          phraseLevel: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+            }
           }
         },
-        phraseLevel: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: limit,
-      skip: offset,
-    })
-
-    const total = await prisma.phrase.count({ where })
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: limit,
+        skip: offset,
+      }),
+      
+      prisma.phrase.count({ where })
+    ])
 
     // フロントエンドの期待する形式に変換
     const transformedPhrases = phrases.map(phrase => ({
       id: phrase.id,
       text: phrase.text,
       translation: phrase.translation,
-      nuance: phrase.nuance,
-      createdAt: phrase.createdAt,
+      nuance: phrase.nuance || undefined,
+      createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
       language: {
@@ -275,8 +283,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }))
 
-    const responseData = {
-      success: true as const,
+    const responseData: PhrasesListResponseData = {
+      success: true,
       phrases: transformedPhrases,
       pagination: {
         total,
@@ -288,11 +296,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error fetching phrases:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+  } catch {
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 import { UseFormSetValue } from 'react-hook-form'
 import { UserSetupFormData, Language } from '@/types/userSettings'
 
@@ -13,47 +13,44 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 
   const fetchUserSettings = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        return
-      }
-
       // ユーザー設定データの取得（常にキャッシュをバイパス）
-      const headers: HeadersInit = {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-
-      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
-        method: 'GET',
-        headers
+      const userData = await api.get<{
+        username?: string,
+        iconUrl?: string,
+        nativeLanguageId?: string,
+        defaultLearningLanguageId?: string,
+        birthdate?: string,
+        gender?: string,
+        email?: string,
+        defaultQuizCount?: number
+      }>(`/api/user/settings?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       })
-
-      if (response.ok) {
-        const userData = await response.json()
-        
-        // 既存ユーザーの場合は設定完了とみなす
-        setIsUserSetupComplete(true)
-        
-        // フォームに既存データを設定
-        setValue('username', userData.username || '')
-        setValue('iconUrl', userData.iconUrl || '')
-        console.log('Settings: Setting iconUrl in form:', {
-          iconUrl: userData.iconUrl,
-          type: typeof userData.iconUrl,
-          length: userData.iconUrl?.length,
-          timestamp: new Date().toISOString()
-        })
-        setValue('nativeLanguageId', userData.nativeLanguageId || '')
-        setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
-        setValue('birthdate', userData.birthdate ? userData.birthdate.split('T')[0] : '')
-        setValue('gender', userData.gender || '')
-        setValue('email', userData.email || '')
-        setValue('defaultQuizCount', userData.defaultQuizCount || 10)
-      } else if (response.status === 404) {
+      
+      // 既存ユーザーの場合は設定完了とみなす
+      setIsUserSetupComplete(true)
+      
+      // フォームに既存データを設定
+      setValue('username', userData.username || '')
+      setValue('iconUrl', userData.iconUrl || '')
+      console.log('Settings: Setting iconUrl in form:', {
+        iconUrl: userData.iconUrl,
+        type: typeof userData.iconUrl,
+        length: userData.iconUrl?.length,
+        timestamp: new Date().toISOString()
+      })
+      setValue('nativeLanguageId', userData.nativeLanguageId || '')
+      setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
+      setValue('birthdate', userData.birthdate ? userData.birthdate.split('T')[0] : '')
+      setValue('gender', userData.gender || '')
+      setValue('email', userData.email || '')
+      setValue('defaultQuizCount', userData.defaultQuizCount || 10)
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('404')) {
         // 新規ユーザーの場合は設定未完了
         setIsUserSetupComplete(false)
         
@@ -94,52 +91,21 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
           setValue('email', user.email)
         }
       } else {
-        console.error('Failed to fetch user settings:', response.status)
+        console.error('Error fetching user settings:', error)
         setIsUserSetupComplete(false)
       }
-    } catch (error) {
-      console.error('Error fetching user settings:', error)
-      setIsUserSetupComplete(false)
     }
   }, [setValue, user, setIsUserSetupComplete])
 
   const fetchLanguages = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const data = await api.get<Language[]>('/api/languages')
       
-      if (!session) {
-        setError('認証情報が見つかりません。再度ログインしてください。')
-        return
-      }
-
-      const response = await fetch('/api/languages', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        // キャッシュを活用してパフォーマンス改善
-        next: { revalidate: 3600 }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        
-        // フォールバックデータが使用されているかチェック
-        const isFallbackData = response.headers.get('X-Fallback-Data') === 'true'
-        if (isFallbackData) {
-          setError('データベースに接続できないため、制限された言語リストを表示しています。')
-        }
-        
-        if (Array.isArray(data) && data.length > 0) {
-          setLanguages(data)
-          if (!isFallbackData) {
-            setError('') // エラーをクリア（フォールバックでない場合のみ）
-          }
-        } else {
-          setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
-        }
+      if (Array.isArray(data) && data.length > 0) {
+        setLanguages(data)
+        setError('') // エラーをクリア
       } else {
-        setError('言語データの取得に失敗しました。データベース接続を確認してください。')
+        setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
       }
     } catch (error) {
       console.error('Error fetching languages:', error)

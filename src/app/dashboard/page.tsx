@@ -3,11 +3,9 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/utils/spabase'
-import { useDashboardData } from '@/hooks/useDashboardData'
-import { useUserSettingsData } from '@/hooks/useUserSettingsData'
-import LanguageSelector from '@/components/LanguageSelector'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
@@ -15,19 +13,10 @@ export default function DashboardPage() {
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
 
-  // ユーザー設定を取得
-  const { 
-    userSettings, 
-    languages, 
-    loading: settingsLoading 
-  } = useUserSettingsData()
-
-  // ダッシュボードデータを取得
-  const { 
-    data: dashboardData, 
-    loading: dashboardLoading, 
-    error: dashboardError 
-  } = useDashboardData(selectedLanguage)
+  // SWRを使用してデータを取得
+  const { userSettings } = useUserSettings()
+  const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
+  const { languages } = useLanguages()
 
   // ユーザー設定の完了状態をチェック
   const checkUserSetupComplete = useCallback(async () => {
@@ -37,41 +26,18 @@ export default function DashboardPage() {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        router.push('/auth/login')
-        return
-      }
-
-      const response = await fetch(`/api/user/settings?t=${Date.now()}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-
-      if (response.status === 404) {
-        // ユーザー設定が存在しない場合は設定ページにリダイレクト
+      // SWRのデータが存在する場合は設定完了とみなす
+      if (userSettings) {
+        setSetupCheckLoading(false)
+      } else {
+        // 設定が存在しない場合は設定ページにリダイレクト
         router.push('/settings')
-        return
-      } else if (!response.ok) {
-        console.error('Failed to check user settings:', response.status)
-        // エラーの場合も設定ページにリダイレクト
-        router.push('/settings')
-        return
       }
-      
-      // ユーザー設定が存在する場合はそのまま継続
-      setSetupCheckLoading(false)
     } catch (error) {
       console.error('Error checking user setup:', error)
       router.push('/settings')
     }
-  }, [user, router])
+  }, [user, router, userSettings])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -85,14 +51,14 @@ export default function DashboardPage() {
     }
   }, [user, checkUserSetupComplete])
 
-  // ユーザー設定が読み込まれたらデフォルト言語を設定
+  // 言語設定の初期化
   useEffect(() => {
-    if (userSettings && !selectedLanguage) {
+    if (userSettings?.defaultLearningLanguage?.code && !selectedLanguage) {
       setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
   }, [userSettings, selectedLanguage])
 
-  if (loading || setupCheckLoading || settingsLoading) {
+  if (loading || setupCheckLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 
@@ -111,8 +77,8 @@ export default function DashboardPage() {
               <LanguageSelector
                 learningLanguage={selectedLanguage}
                 onLanguageChange={setSelectedLanguage}
-                languages={languages}
-                nativeLanguage={userSettings.nativeLanguage.code}
+                languages={languages || []}
+                nativeLanguage={userSettings?.nativeLanguage?.code || ''}
               />
             )}
           </div>
@@ -160,7 +126,7 @@ export default function DashboardPage() {
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
                 <div className="space-y-4">
-                  {dashboardData.quizMastery.map((level) => (
+                  {dashboardData.quizMastery?.map((level: { level: string; score: number; color: string }) => (
                     <div key={level.level} className="flex items-center">
                       <div 
                         className="w-4 h-4 rounded mr-4"

@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import AuthGuard from '@/components/AuthGuard'
-import { supabase } from '@/utils/spabase'
+import AuthGuard from '@/components/auth/AuthGuard'
+import { api } from '@/utils/api'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
-import LanguageSelector from '@/components/LanguageSelector'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useLanguages } from '@/hooks/useSWRApi'
 
 interface RankingUser {
   userId: string
@@ -16,12 +17,6 @@ interface RankingUser {
   iconUrl: string | null
   totalCount: number
   rank: number
-}
-
-interface Language {
-  id: string
-  name: string
-  code: string
 }
 
 interface SpeakUser {
@@ -38,53 +33,18 @@ export default function RankingPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('Daily')
   const [activeRankingType, setActiveRankingType] = useState('Phrase') // デフォルトをPhraseに変更
-  const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState('en')
 
-  // 言語データの取得
-  useEffect(() => {
-    const fetchLanguages = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        
-        if (!session) return
+  // SWRフックを使用して言語データを取得
+  const { languages } = useLanguages()
 
-        const response = await fetch('/api/languages', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          // APIは直接言語配列を返すか、フォールバックデータを返す
-          if (Array.isArray(data)) {
-            setLanguages(data)
-          } else if (data.success && data.languages) {
-            setLanguages(data.languages)
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching languages:', error)
-      }
-    }
-
-    if (user) {
-      fetchLanguages()
-    }
-  }, [user])
-
+  // 言語データの初期化（必要に応じてデフォルト値を設定）
+  
   const fetchRanking = useCallback(async () => {
     if (!user) return
 
     setIsLoading(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        toast.error('認証情報が見つかりません。')
-        return
-      }
 
       let endpoint = ''
       if (activeRankingType === 'Phrase') {
@@ -103,87 +63,71 @@ export default function RankingPage() {
         return
       }
 
-      console.log('Fetching ranking:', { activeRankingType, activeTab, endpoint })
-
-      const response = await fetch(endpoint, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      })
-
-      console.log('Response status:', response.status, response.statusText)
-
-      if (!response.ok) {
-        // エラーレスポンスの詳細を取得
-        let errorMessage = `Failed to fetch ranking: ${response.status} ${response.statusText}`
-        try {
-          const errorData = await response.json()
-          console.error('Error response:', errorData)
-          errorMessage = errorData.message || errorData.error || errorMessage
-        } catch {
-          console.error('Failed to parse error response')
-        }
-
-        if (response.status === 404) {
-          toast.error(`${activeRankingType}ランキングのAPIが見つかりません`)
-        } else {
-          toast.error(`エラー: ${errorMessage}`)
-        }
+      const data = await api.get<{ 
+        success: boolean, 
+        topUsers?: SpeakUser[], 
+        message?: string 
+      }>(endpoint)
+      
+      if (!data.success) {
+        toast.error(data.message || 'ランキングデータの取得に失敗しました')
         return
       }
-
-      const data = await response.json()
-      console.log('API Response:', data)
       
-      if (data.success) {
-        if (activeRankingType === 'Speak') {
-          // Speak APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Speakランキングデータの形式が正しくありません')
-          }
-        } else if (activeRankingType === 'Phrase') {
-          // Phrase APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Phraseランキングデータの形式が正しくありません')
-          }
-        } else if (activeRankingType === 'Quiz') {
-          // Quiz APIの形式に合わせてデータを変換
-          if (data.topUsers && Array.isArray(data.topUsers)) {
-            const transformedData = data.topUsers.map((user: SpeakUser) => ({
-              userId: user.userId,
-              username: user.username,
-              iconUrl: user.iconUrl,
-              totalCount: user.count,
-              rank: user.rank
-            }))
-            setRankingData(transformedData)
-          } else {
-            setRankingData([])
-            toast.error('Quizランキングデータの形式が正しくありません')
-          }
+      if (activeRankingType === 'Speak') {
+        // Speak APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Speakランキングデータの形式が正しくありません')
+          return
         }
-      } else {
-        toast.error(data.message || 'ランキングデータの取得に失敗しました')
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
+        return
+      }
+      
+      if (activeRankingType === 'Phrase') {
+        // Phrase APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Phraseランキングデータの形式が正しくありません')
+          return
+        }
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
+        return
+      }
+      
+      if (activeRankingType === 'Quiz') {
+        // Quiz APIの形式に合わせてデータを変換
+        if (!data.topUsers || !Array.isArray(data.topUsers)) {
+          setRankingData([])
+          toast.error('Quizランキングデータの形式が正しくありません')
+          return
+        }
+        
+        const transformedData = data.topUsers.map((user: SpeakUser) => ({
+          userId: user.userId,
+          username: user.username,
+          iconUrl: user.iconUrl,
+          totalCount: user.count,
+          rank: user.rank
+        }))
+        setRankingData(transformedData)
       }
     } catch (error) {
       console.error('Error fetching ranking:', error)
@@ -232,7 +176,7 @@ export default function RankingPage() {
             <LanguageSelector
               learningLanguage={selectedLanguage}
               onLanguageChange={handleLanguageChange}
-              languages={languages}
+              languages={languages || []}
               nativeLanguage="ja"
             />
           </div>

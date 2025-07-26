@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import SpeakModeModal from '@/components/SpeakModeModal'
-import QuizModeModal from '@/components/QuizModeModal'
-import QuizPractice from '@/components/QuizPractice'
-import QuizComplete from '@/components/QuizComplete'
-import AuthGuard from '@/components/AuthGuard'
+import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
+import SpeakModeModal from '@/components/modals/SpeakModeModal'
+import QuizModeModal from '@/components/modals/QuizModeModal'
+import QuizPractice from '@/components/quiz/QuizPractice'
+import QuizComplete from '@/components/quiz/QuizComplete'
+import AuthGuard from '@/components/auth/AuthGuard'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
@@ -16,12 +16,13 @@ import { useQuizMode } from '@/hooks/useQuizMode'
 import { useAuth } from '@/contexts/AuthContext'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
-import { supabase } from '@/utils/spabase'
+import { useUserSettings } from '@/hooks/useSWRApi'
 
 export default function PhraseQuizPage() {
   const { user, loading } = useAuth()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
+  const { userSettings } = useUserSettings()
   const router = useRouter()
 
   // 認証チェック: ログインしていない場合はログインページにリダイレクト
@@ -31,9 +32,6 @@ export default function PhraseQuizPage() {
     }
   }, [user, loading, router])
 
-  // ユーザー設定の状態
-  const [userSettings, setUserSettings] = useState<{ defaultQuizCount: number } | null>(null)
-  
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
 
@@ -70,54 +68,26 @@ export default function PhraseQuizPage() {
     }
   }, [learningLanguage, fetchSavedPhrases])
 
-  // ユーザー設定を取得
-  useEffect(() => {
-    const fetchUserSettings = async () => {
-      if (!user) return
-
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) return
-
-        const response = await fetch('/api/user/settings', {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`
-          }
-        })
-
-        if (response.ok) {
-          const settings = await response.json()
-          setUserSettings({
-            defaultQuizCount: settings.defaultQuizCount || 10
-          })
-        }
-      } catch (error) {
-        console.error('Error fetching user settings:', error)
-        setUserSettings({ defaultQuizCount: 10 }) // デフォルト値
-      }
-    }
-
-    fetchUserSettings()
-  }, [user])
-
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
-    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !isQuizCompleted) {
-      // URLパラメータがある場合は自動開始（モーダルは開かない）
-      const params = new URLSearchParams(window.location.search)
-      const language = params.get('language')
-      const mode = params.get('mode')
-      
-      if (language && mode && (mode === 'normal' || mode === 'random')) {
-        // URLパラメータから自動開始（useQuizModeで処理される）
-        console.log('Auto-starting quiz from URL parameters')
-        return
-      }
-      
-      // URLパラメータがない場合はモーダルを開く
-      if (!showQuizModal) {
-        setShowQuizModal(true)
-      }
+    // 前提条件をチェック
+    if (isLoadingPhrases || savedPhrases.length === 0 || quizMode.active || isQuizCompleted) {
+      return
+    }
+    
+    // URLパラメータがある場合は自動開始（モーダルは開かない）
+    const params = new URLSearchParams(window.location.search)
+    const language = params.get('language')
+    const mode = params.get('mode')
+    
+    if (language && mode && (mode === 'normal' || mode === 'random')) {
+      // URLパラメータから自動開始（useQuizModeで処理される）
+      return
+    }
+    
+    // URLパラメータがない場合はモーダルを開く
+    if (!showQuizModal) {
+      setShowQuizModal(true)
     }
   }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal, isQuizCompleted])
 
@@ -138,8 +108,6 @@ export default function PhraseQuizPage() {
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
-    console.log('Quiz modal start requested with config:', config)
-    
     try {
       const success = await handleQuizStart(config)
       if (success) {
@@ -167,15 +135,6 @@ export default function PhraseQuizPage() {
     handleQuizFinish()
     setShowQuizModal(true)
   }
-
-  // デバッグログ
-  console.log('Render conditions:', {
-    'quizMode.active': quizMode.active,
-    'quizMode.config': quizMode.config,
-    'currentPhrase': currentPhrase,
-    'session': session,
-    'all conditions met': quizMode.active && quizMode.config && currentPhrase && session
-  })
 
   return (
     <AuthGuard user={user} loading={loading}>
@@ -256,7 +215,7 @@ export default function PhraseQuizPage() {
         languages={languages}
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={savedPhrases.length}
-        defaultQuizCount={userSettings?.defaultQuizCount}
+        defaultQuizCount={userSettings?.defaultQuizCount || 10}
       />
       
       <Toaster />

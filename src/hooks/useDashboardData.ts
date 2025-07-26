@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/utils/spabase'
+import { api } from '@/utils/api'
 
 interface QuizMasteryLevel {
   level: string
@@ -31,27 +31,7 @@ export function useDashboardData(language: string): UseDashboardDataReturn {
       setLoading(true)
       setError(null)
 
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        setError('認証が必要です')
-        return
-      }
-
-      const response = await fetch(`/api/dashboard?language=${encodeURIComponent(language)}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'データの取得に失敗しました')
-      }
-
-      const dashboardData = await response.json()
+      const dashboardData = await api.get<DashboardData>(`/api/dashboard?language=${encodeURIComponent(language)}`)
       setData(dashboardData)
     } catch (err) {
       console.error('Error fetching dashboard data:', err)

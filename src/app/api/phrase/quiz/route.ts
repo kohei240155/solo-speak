@@ -13,9 +13,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const mode = searchParams.get('mode') || 'normal'
-    const requestedQuestionCount = parseInt(searchParams.get('count') || '10', 10)
-
-    console.log('Quiz API request params:', { language, mode, requestedQuestionCount, userId: authResult.user.id })
 
     if (!language) {
       return NextResponse.json(
@@ -24,20 +21,36 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // ユーザー設定を取得（デフォルトクイズ出題数）
-    const userSettings = await prisma.user.findUnique({
-      where: { id: authResult.user.id },
-      select: { defaultQuizCount: true }
-    })
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [userSettings, languageExists, phrases] = await Promise.all([
+      // ユーザー設定を取得（デフォルトクイズ出題数）
+      prisma.user.findUnique({
+        where: { id: authResult.user.id },
+        select: { defaultQuizCount: true }
+      }),
+      
+      // 指定された言語が存在するか確認
+      prisma.language.findUnique({
+        where: { code: language }
+      }),
+      
+      // データベースからフレーズを取得（削除されていないもののみ）
+      // 認証されたユーザーのフレーズのみを取得
+      prisma.phrase.findMany({
+        where: {
+          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          language: {
+            code: language
+          },
+          deletedAt: null // 削除されていないフレーズのみ
+        },
+        include: {
+          language: true
+        }
+      })
+    ])
 
     const userDefaultQuizCount = userSettings?.defaultQuizCount || 10
-
-    // まず指定された言語が存在するか確認
-    const languageExists = await prisma.language.findUnique({
-      where: { code: language }
-    })
-
-    console.log('Language exists check:', { language, exists: !!languageExists })
 
     if (!languageExists) {
       return NextResponse.json({
@@ -46,41 +59,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // データベースからフレーズを取得（削除されていないもののみ）
-    // 認証されたユーザーのフレーズのみを取得
-    const phrases = await prisma.phrase.findMany({
-      where: {
-        userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
-        language: {
-          code: language
-        },
-        deletedAt: null // 削除されていないフレーズのみ
-      },
-      include: {
-        language: true
-      }
-    })
-
-    // デバッグ用：ユーザーの全フレーズ数も確認
-    const allUserPhrases = await prisma.phrase.findMany({
-      where: {
-        userId: authResult.user.id,
-        deletedAt: null
-      },
-      include: {
-        language: true
-      }
-    })
-
-    console.log(`Quiz API: Found ${phrases.length} phrases for user ${authResult.user.id} and language ${language}`)
-    console.log(`Quiz API: User has ${allUserPhrases.length} total phrases`)
-    console.log('User phrases by language:', allUserPhrases.reduce((acc, phrase) => {
-      acc[phrase.language.code] = (acc[phrase.language.code] || 0) + 1
-      return acc
-    }, {} as Record<string, number>))
-
     if (phrases.length === 0) {
-      console.log(`Quiz API: No phrases found for language ${language}`)
       return NextResponse.json({
         success: false,
         message: `No phrases found for the specified language: ${language}`
@@ -89,12 +68,6 @@ export async function GET(request: NextRequest) {
 
     // 実際の問題数を決定（フレーズ数とユーザー設定の小さい方）
     const actualQuestionCount = Math.min(userDefaultQuizCount, phrases.length)
-    
-    console.log('Quiz count decision:', {
-      userDefaultQuizCount,
-      availablePhrases: phrases.length,
-      actualQuestionCount
-    })
 
     let selectedPhrases
 
@@ -148,8 +121,7 @@ export async function GET(request: NextRequest) {
       availablePhraseCount: phrases.length // 登録されているフレーズの総数
     })
 
-  } catch (error) {
-    console.error('Error fetching quiz phrases:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

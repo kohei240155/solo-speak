@@ -44,15 +44,12 @@ export async function GET(request: NextRequest) {
 // ユーザー設定登録
 export async function POST(request: NextRequest) {
   try {
-    console.log('POST /api/user/settings called')
-    
     const authResult = await authenticateRequest(request)
     if ('error' in authResult) {
       return authResult.error
     }
 
     const body = await request.json()
-    console.log('Request body:', body)
     
     const {
       username,
@@ -68,7 +65,6 @@ export async function POST(request: NextRequest) {
     // 必須フィールドのバリデーション
     const requiredValidation = validateRequiredFields(body, ['username', 'nativeLanguageId', 'defaultLearningLanguageId'])
     if (!requiredValidation.isValid) {
-      console.log('Missing required fields')
       return NextResponse.json({ error: requiredValidation.error }, { status: 400 })
     }
 
@@ -77,7 +73,6 @@ export async function POST(request: NextRequest) {
 
     let result
     if (existingUser) {
-      console.log('User already exists, updating...')
       result = await updateUserSettings(authResult.user.id, {
         username,
         iconUrl,
@@ -88,9 +83,7 @@ export async function POST(request: NextRequest) {
         email: authResult.user.email || email,
         defaultQuizCount: defaultQuizCount || 10,
       })
-      console.log('User updated successfully')
     } else {
-      console.log('Creating new user...')
       result = await createUserSettings(authResult.user, {
         username,
         iconUrl,
@@ -101,7 +94,6 @@ export async function POST(request: NextRequest) {
         email,
         defaultQuizCount: defaultQuizCount || 10,
       })
-      console.log('User created successfully')
     }
 
     return NextResponse.json(result, { status: existingUser ? 200 : 201 })
@@ -140,7 +132,6 @@ export async function PUT(request: NextRequest) {
       // ユーザー名の重複チェック
       const hasConflict = await checkUsernameConflict(username, authResult.user.id)
       if (hasConflict) {
-        console.log('Username already exists for another user')
         return NextResponse.json({ 
           error: 'このユーザー名は既に使用されています。別のユーザー名を選択してください。' 
         }, { status: 400 })

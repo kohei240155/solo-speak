@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { LanguageInfo } from './common'
 
 // バリデーションスキーマ
 export const userSetupSchema = z.object({
@@ -14,8 +15,5 @@ export const userSetupSchema = z.object({
 
 export type UserSetupFormData = z.infer<typeof userSetupSchema>
 
-export interface Language {
-  id: string
-  name: string
-  code: string
-}
+// 再エクスポート（後方互換性のため）
+export type Language = LanguageInfo

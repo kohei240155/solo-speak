@@ -4,12 +4,8 @@ import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Phrase ranking API called')
-    
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language') || 'en'
-    
-    console.log('Parameters:', { language })
 
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -18,17 +14,29 @@ export async function GET(request: NextRequest) {
     }
 
     const user = authResult.user
-    console.log('User authenticated:', user.id)
 
-    // 言語コードから言語IDを取得
-    const languageRecord = await prisma.language.findFirst({
-      where: {
-        code: language
-      }
-    })
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [languageRecord, allPhraseCounts] = await Promise.all([
+      // 言語コードから言語IDを取得
+      prisma.language.findFirst({
+        where: {
+          code: language
+        }
+      }),
+      
+      // 全言語のフレーズ数を事前に取得（後でフィルタリング）
+      prisma.phrase.groupBy({
+        by: ['userId', 'languageId'],
+        where: {
+          deletedAt: null // 削除されていないフレーズのみ
+        },
+        _count: {
+          id: true
+        }
+      })
+    ])
 
     if (!languageRecord) {
-      console.log('Language not found:', language)
       return NextResponse.json({
         success: false,
         error: 'Language not found'
@@ -36,21 +44,9 @@ export async function GET(request: NextRequest) {
     }
 
     const languageId = languageRecord.id
-    console.log('Language mapping:', { code: language, id: languageId })
 
-    // 指定された言語のフレーズ数をユーザー別に集計
-    const phraseCounts = await prisma.phrase.groupBy({
-      by: ['userId'],
-      where: {
-        languageId: languageId,
-        deletedAt: null // 削除されていないフレーズのみ
-      },
-      _count: {
-        id: true
-      }
-    })
-
-    console.log('Phrase counts:', phraseCounts)
+    // 指定された言語のフレーズ数のみをフィルタリング
+    const phraseCounts = allPhraseCounts.filter(pc => pc.languageId === languageId)
 
     // ユーザー情報を取得してランキングデータを作成
     const userIds = phraseCounts.map(pc => pc.userId)
@@ -67,8 +63,6 @@ export async function GET(request: NextRequest) {
         createdAt: true // ユーザー登録日時を取得
       }
     })
-
-    console.log('Users found:', users.length)
 
     // ランキングデータを作成
     const rankingData = phraseCounts.map(pc => {
@@ -99,12 +93,8 @@ export async function GET(request: NextRequest) {
       count: user.count
     }))
 
-    console.log('Top users:', topUsers)
-
     // 現在のユーザーの情報を取得
     const currentUser = topUsers.find(u => u.userId === user.id) || null
-
-    console.log('Current user ranking:', currentUser)
 
     return NextResponse.json({
       success: true,
@@ -112,12 +102,10 @@ export async function GET(request: NextRequest) {
       currentUser
     })
 
-  } catch (error) {
-    console.error('Phrase ranking error:', error)
+  } catch {
     return NextResponse.json({ 
       success: false, 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Internal server error'
     }, { status: 500 })
   }
 }

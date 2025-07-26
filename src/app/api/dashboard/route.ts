@@ -4,8 +4,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { 
   DashboardData, 
-  QuizMasteryLevel
+  QuizMasteryLevel,
+  DashboardQueryParams
 } from '@/types/dashboard'
+import { ApiErrorResponse } from '@/types/api'
 
 const dashboardQuerySchema = z.object({
   language: z.string().min(1),
@@ -65,9 +67,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const { user: supabaseUser } = authResult
     const { searchParams } = new URL(request.url)
-    const { language }: { language: string } = dashboardQuerySchema.parse({
+    const queryParams: DashboardQueryParams = dashboardQuerySchema.parse({
       language: searchParams.get('language'),
     })
+    const { language } = queryParams
 
     // Prismaからユーザー情報を取得
     const user = await prisma.user.findUnique({
@@ -75,10 +78,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' } satisfies { error: string },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // 今日の日付（JST）
@@ -87,66 +90,84 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    // 1. Speak Streak (連続話した日数) - 言語ごとに計算
-    const speakStreak = await calculateConsecutiveSpeakingDays(user.id, language)
+    // Promise.allを使用して並列処理でパフォーマンスを向上
+    const [
+      speakStreak,
+      speakCountToday,
+      speakCountTotal,
+      quizResults,
+      allPhraseLevels
+    ] = await Promise.all([
+      // 1. Speak Streak (連続話した日数) - 言語ごとに計算
+      calculateConsecutiveSpeakingDays(user.id, language),
 
-    // 2. Speak Count (Today) - 今日のスピーク回数
-    const speakCountToday = await prisma.speakLog.aggregate({
-      _sum: {
-        count: true,
-      },
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
+      // 2. Speak Count (Today) - 今日のスピーク回数
+      prisma.speakLog.aggregate({
+        _sum: {
+          count: true,
+        },
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
           },
+          date: {
+            gte: today,
+            lt: tomorrow,
+          },
+          deletedAt: null,
         },
-        date: {
-          gte: today,
-          lt: tomorrow,
-        },
-        deletedAt: null,
-      },
-    })
+      }),
 
-    // 3. Speak Count (Total) - 総スピーク回数
-    const speakCountTotal = await prisma.speakLog.aggregate({
-      _sum: {
-        count: true,
-      },
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
-          },
+      // 3. Speak Count (Total) - 総スピーク回数
+      prisma.speakLog.aggregate({
+        _sum: {
+          count: true,
         },
-        deletedAt: null,
-      },
-    })
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
+          },
+          deletedAt: null,
+        },
+      }),
 
-    // 4. Quiz Mastery - クイズマスタリー
-    // quiz_resultsから直接正解数を集計
-    const quizResults = await prisma.quizResult.findMany({
-      where: {
-        phrase: {
-          userId: user.id,
-          language: {
-            code: language,
+      // 4. Quiz Results - クイズ結果
+      prisma.quizResult.findMany({
+        where: {
+          phrase: {
+            userId: user.id,
+            language: {
+              code: language,
+            },
+          },
+          correct: true,
+          deletedAt: null,
+        },
+        include: {
+          phrase: {
+            include: {
+              phraseLevel: true,
+            },
           },
         },
-        correct: true,
-        deletedAt: null,
-      },
-      include: {
-        phrase: {
-          include: {
-            phraseLevel: true,
-          },
+      }),
+
+      // 5. 全てのフレーズレベルを取得
+      prisma.phraseLevel.findMany({
+        where: {
+          deletedAt: null,
         },
-      },
-    })
+        orderBy: {
+          score: 'asc',
+        },
+      })
+    ])
 
     // レベル別の正解数を集計
     const levelCorrectCounts = new Map<string, number>()
@@ -160,16 +181,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         levelCorrectCounts.set(levelName, 1)
       }
     }
-
-    // 全てのフレーズレベルを取得
-    const allPhraseLevels = await prisma.phraseLevel.findMany({
-      where: {
-        deletedAt: null,
-      },
-      orderBy: {
-        score: 'asc',
-      },
-    })
 
     // クイズマスタリーデータを構築
     const quizMastery: QuizMasteryLevel[] = allPhraseLevels.map((level) => ({
@@ -185,24 +196,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       quizMastery,
     }
 
-    return NextResponse.json(result satisfies DashboardData)
+    return NextResponse.json(result)
 
   } catch (error) {
-    console.error('Error fetching dashboard data:', error)
-    
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid request parameters', 
-          details: error.issues 
-        } satisfies { error: string; details: unknown },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Invalid request parameters',
+        details: error.issues
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' } satisfies { error: string },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

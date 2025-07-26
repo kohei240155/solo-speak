@@ -1,15 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    console.log('Mock Speak ranking API called')
-    
-    const { searchParams } = new URL(request.url)
-    const language = searchParams.get('language') || 'en'
-    const period = searchParams.get('period') || 'weekly'
-    
-    console.log('Mock Parameters:', { language, period })
-
     // モックデータを返す
     const mockData = {
       success: true,
@@ -58,17 +50,13 @@ export async function GET(request: NextRequest) {
         count: 10
       }
     }
-
-    console.log('Returning mock data:', mockData)
     
     return NextResponse.json(mockData)
 
-  } catch (error) {
-    console.error('Mock API error:', error)
+  } catch {
     return NextResponse.json({ 
       success: false, 
-      error: 'Internal server error',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Internal server error'
     }, { status: 500 })
   }
 }

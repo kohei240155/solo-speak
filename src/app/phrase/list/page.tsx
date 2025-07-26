@@ -5,12 +5,12 @@ import { usePhraseList } from '@/hooks/usePhraseList'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
-import LanguageSelector from '@/components/LanguageSelector'
-import PhraseTabNavigation from '@/components/PhraseTabNavigation'
-import PhraseList from '@/components/PhraseList'
-import SpeakModeModal from '@/components/SpeakModeModal'
-import QuizModeModal from '@/components/QuizModeModal'
-import { AuthLoading } from '@/components/AuthLoading'
+import LanguageSelector from '@/components/common/LanguageSelector'
+import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
+import PhraseList from '@/components/phrase/PhraseList'
+import SpeakModeModal from '@/components/modals/SpeakModeModal'
+import QuizModeModal from '@/components/modals/QuizModeModal'
+import { AuthLoading } from '@/components/auth/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 import { TabType } from '@/types/phrase'
 
@@ -24,6 +24,7 @@ export default function PhraseListPage() {
     languages,
     savedPhrases,
     isLoadingPhrases,
+    isLoadingMore,
     hasMorePhrases,
     phrasePage,
     nativeLanguage,
@@ -80,11 +81,17 @@ export default function PhraseListPage() {
       }
       
       timeoutId = setTimeout(() => {
-        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100) {
-          if (hasMorePhrases && !isLoadingPhrases) {
-            fetchSavedPhrases(phrasePage + 1, true)
-          }
+        // スクロール位置が下部に達していない場合は何もしない
+        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 100) {
+          return
         }
+        
+        // 追加読み込みの条件を満たしていない場合は何もしない
+        if (!hasMorePhrases || isLoadingPhrases) {
+          return
+        }
+        
+        fetchSavedPhrases(phrasePage + 1, true)
       }, 100)
     }
 
@@ -131,6 +138,7 @@ export default function PhraseListPage() {
         <PhraseList
           savedPhrases={savedPhrases}
           isLoadingPhrases={isLoadingPhrases}
+          isLoadingMore={isLoadingMore}
           languages={languages}
           nativeLanguage={nativeLanguage}
           learningLanguage={learningLanguage}
@@ -141,10 +149,6 @@ export default function PhraseListPage() {
             } else {
               closeSpeakModal()
             }
-          }}
-          onUpdatePhrase={(phrase) => {
-            // TODO: フレーズ更新の実装
-            console.log('Update phrase:', phrase)
           }}
           onRefreshPhrases={() => {
             // リストを最初のページから再取得
