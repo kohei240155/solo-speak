@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import { usePhraseList } from '@/hooks/usePhraseList'
-import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/common/LanguageSelector'
@@ -10,14 +9,10 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseList from '@/components/phrase/PhraseList'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
-import { AuthLoading } from '@/components/auth/AuthLoading'
 import { Toaster } from 'react-hot-toast'
 import { TabType } from '@/types/phrase'
 
 export default function PhraseListPage() {
-  // 認証ガード - ログインしていない場合はホームページにリダイレクト
-  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
-  
   const {
     // State
     learningLanguage,
@@ -103,11 +98,6 @@ export default function PhraseListPage() {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
-
-  // 認証チェック中またはログインしていない場合は早期リターン
-  if (authLoading || !isAuthenticated) {
-    return <AuthLoading />
-  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
