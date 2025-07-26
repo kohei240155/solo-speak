@@ -1,19 +1,11 @@
 import { Language, PhraseVariation } from '@/types/phrase'
 import dynamic from 'next/dynamic'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
   ssr: false,
-  loading: () => (
-    <div className="animate-pulse">
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-      <div className="space-y-3">
-        <div className="h-16 bg-gray-200 rounded"></div>
-        <div className="h-16 bg-gray-200 rounded"></div>
-        <div className="h-16 bg-gray-200 rounded"></div>
-      </div>
-    </div>
-  )
+  loading: () => <LoadingSpinner size="md" message="Loading variations..." />
 })
 
 interface PhraseAddProps {
