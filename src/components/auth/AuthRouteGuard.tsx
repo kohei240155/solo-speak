@@ -44,13 +44,15 @@ export default function AuthRouteGuard({ children }: AuthRouteGuardProps) {
     }
   }, [user, loading, pathname, router])
 
-  // ローディング中は全画面ローディングを表示
-  if (loading) {
+  // 初回ローディング中のみ全画面ローディングを表示
+  // ただし、認証済みユーザーの場合は表示しない（保護されたルート間の遷移をスムーズにするため）
+  if (loading && !user) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   // 保護されたルートで未認証の場合はローディングを表示（リダイレクト中）
-  if (isProtectedRoute(pathname) && !user) {
+  // ただし、これも初回認証時のみ
+  if (isProtectedRoute(pathname) && !user && !loading) {
     return <LoadingSpinner fullScreen message="Redirecting to login..." />
   }
 

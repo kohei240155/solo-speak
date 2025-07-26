@@ -10,7 +10,6 @@ import PhraseList from '@/components/phrase/PhraseList'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import { Toaster } from 'react-hot-toast'
-import { TabType } from '@/types/phrase'
 
 export default function PhraseListPage() {
   const {
@@ -44,26 +43,6 @@ export default function PhraseListPage() {
     closeQuizModal,
     handleQuizStart
   } = useQuizModal()
-
-  // タブの変更ハンドリング
-  const handleTabChange = (tab: TabType) => {
-    if (tab === 'Speak') {
-      // Speakタブがクリックされた場合はモーダルを表示するだけ
-      openSpeakModal()
-    } else if (tab === 'Quiz') {
-      // Quizタブがクリックされた場合はモーダルを表示するだけ
-      openQuizModal()
-    } else {
-      // 他のタブの場合は通常の遷移
-      switch (tab) {
-        case 'Add':
-          window.location.href = '/phrase/add'
-          break
-        default:
-          break
-      }
-    }
-  }
 
   // 無限スクロール機能（スロットリング付き）
   useEffect(() => {
@@ -119,7 +98,6 @@ export default function PhraseListPage() {
         {/* タブメニュー */}
         <PhraseTabNavigation 
           activeTab="List" 
-          onTabChange={handleTabChange}
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={openQuizModal}
         />
