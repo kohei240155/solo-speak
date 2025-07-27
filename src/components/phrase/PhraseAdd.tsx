@@ -5,6 +5,7 @@ import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
+import { api } from '@/utils/api'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -79,25 +80,13 @@ export default function PhraseAdd({
   // シチュエーション追加のハンドラー
   const handleAddContext = async (contextName: string) => {
     try {
-      const response = await fetch('/api/situations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: contextName
-        })
+      const data = await api.post('/api/situations', {
+        name: contextName
       })
       
-      if (response.ok) {
-        const data = await response.json()
-        console.log('新しいシチュエーション追加:', data)
-        // TODO: 実際のシチュエーション管理を実装する際は、ここでリストを更新
-        // 成功メッセージを表示したい場合はtoast.successなどを使用
-      } else {
-        const errorData = await response.json()
-        console.error('Error adding situation:', errorData.error)
-      }
+      console.log('新しいシチュエーション追加:', data)
+      // TODO: 実際のシチュエーション管理を実装する際は、ここでリストを更新
+      // 成功メッセージを表示したい場合はtoast.successなどを使用
     } catch (error) {
       console.error('Error adding situation:', error)
     }
