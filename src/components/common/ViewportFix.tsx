@@ -4,6 +4,8 @@ import { useEffect } from 'react'
 
 export default function ViewportFix() {
   useEffect(() => {
+    let savedScrollPosition = 0;
+
     // Safari iOS でのビューポート問題を修正
     function fixViewportHeight() {
       const vh = window.innerHeight * 0.01;
@@ -22,14 +24,19 @@ export default function ViewportFix() {
     const handleFocusIn = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
-        // フォーカス時の処理（必要に応じて拡張）
+        // フォーカス時に現在のスクロール位置を保存
+        savedScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
       }
     };
 
     const handleFocusOut = () => {
       setTimeout(() => {
         fixViewportHeight();
-        window.scrollTo(0, 0);
+        // スクロール位置を保持するため、window.scrollTo(0, 0) を削除
+        // 必要に応じて保存した位置に復元（iOS Safariの場合のみ）
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && savedScrollPosition > 0) {
+          window.scrollTo(0, savedScrollPosition);
+        }
       }, 300);
     };
 

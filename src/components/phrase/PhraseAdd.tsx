@@ -7,6 +7,7 @@ import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
 import { useSituations } from '@/hooks/useSituations'
+import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -68,6 +69,9 @@ export default function PhraseAdd({
   
   // Situationsを取得
   const { situations, addSituation, deleteSituation } = useSituations()
+  
+  // スクロール位置保持機能
+  const scrollPreservation = useScrollPreservation()
   
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
@@ -193,6 +197,8 @@ export default function PhraseAdd({
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
+          onFocus={scrollPreservation.onFocus}
+          onBlur={scrollPreservation.onBlur}
           placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0

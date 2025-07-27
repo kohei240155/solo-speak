@@ -13,6 +13,7 @@ import toast from 'react-hot-toast'
 import { useAuth } from '@/contexts/AuthContext'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { api } from '@/utils/api'
+import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
@@ -180,6 +181,9 @@ export default function PhraseList({
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
   const [nuanceViewingIds, setNuanceViewingIds] = useState<Set<string>>(new Set())
+
+  // スクロール位置保持機能
+  const scrollPreservation = useScrollPreservation()
 
   // 外部からのSpeakモーダル制御
   const actualShowSpeakModal = externalShowSpeakModal || showSpeakModal
@@ -363,6 +367,8 @@ export default function PhraseList({
             <textarea
               value={editedTranslation}
               onChange={(e) => setEditedTranslation(e.target.value)}
+              onFocus={scrollPreservation.onFocus}
+              onBlur={scrollPreservation.onBlur}
               placeholder={`${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
               className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
@@ -390,6 +396,8 @@ export default function PhraseList({
             <textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
+              onFocus={scrollPreservation.onFocus}
+              onBlur={scrollPreservation.onBlur}
               placeholder="Enter phrase"
               className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}

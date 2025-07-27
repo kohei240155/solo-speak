@@ -31,7 +31,7 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
         {/* ヘッダー部分 */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-            Add Context
+            Add Situation
           </h2>
         </div>
 
