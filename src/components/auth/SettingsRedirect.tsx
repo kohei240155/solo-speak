@@ -1,21 +1,33 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
 export const SettingsRedirect = () => {
   const router = useRouter()
-  const { shouldRedirectToSettings, clearSettingsRedirect } = useAuth()
+  const pathname = usePathname()
+  const { shouldRedirectToSettings, clearSettingsRedirect, loading, user } = useAuth()
 
   useEffect(() => {
-    console.log('SettingsRedirect - shouldRedirectToSettings:', shouldRedirectToSettings)
-    if (shouldRedirectToSettings) {
-      console.log('Redirecting to settings page for initial setup')
+    // ローディング中は何もしない
+    if (loading) return
+
+    // ユーザーがいて、Settings画面への遷移フラグが立っている場合
+    if (user && shouldRedirectToSettings) {
+      console.log('Initial user setup detected - redirecting to settings')
+      
+      // 既にSettings画面にいる場合は遷移せずにフラグだけクリア
+      if (pathname === '/settings') {
+        clearSettingsRedirect()
+        return
+      }
+
+      // Settings画面に遷移
       clearSettingsRedirect()
       router.push('/settings')
     }
-  }, [shouldRedirectToSettings, clearSettingsRedirect, router])
+  }, [shouldRedirectToSettings, user, loading, pathname, router, clearSettingsRedirect])
 
   return null // このコンポーネントは何もレンダリングしません
 }

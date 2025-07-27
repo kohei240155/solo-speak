@@ -199,103 +199,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const userData = await api.get<{ iconUrl?: string }>('/api/user/settings', {
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-        timeout: 10000
+        showErrorToast: false // 404エラー時のトーストを無効化
       })
       
+      // ユーザーが存在する場合
       setIsUserSetupComplete(true)
       
-      // 画像URLの有効性をチェック
-      if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
+      // DBのアイコンURLがある場合は使用
+      if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
-        return
-      }
-      
-      // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
-      setUserIconUrl(prev => {
-        if (prev && (prev.includes('googleusercontent.com') || 
-                    prev.includes('googleapis.com') || 
-                    prev.includes('google.com'))) {
-          return prev // Googleアバターを保持
-        }
-        return null
-      })
-    } catch (error) {
-      console.error('Error fetching user settings:', error)
-      console.log('Error type:', typeof error, error.constructor.name)
-      console.log('Error instanceof ApiError:', error instanceof ApiError)
-      if (error instanceof ApiError) {
-        console.log('ApiError status:', error.status)
-        console.log('ApiError message:', error.message)
-      }
-      
-      // 404エラーまたは初回ログイン時の判定を改善
-      const isInitialSetup = (
-        (error instanceof ApiError && error.status === 404) ||
-        (error instanceof Error && (
-          error.message.includes('404') || 
-          error.message.includes('User not found') ||
-          error.message.includes('Not Found')
-        ))
-      )
-      
-      console.log('isInitialSetup:', isInitialSetup)
-      
-      if (isInitialSetup) {
-        console.log('Initial user setup detected - redirecting to settings')
-        setIsUserSetupComplete(false)
-        setShouldRedirectToSettings(true) // Settings画面への遷移フラグを設定
-        
-        // Googleアバターがある場合は自動的に表示
+      } else {
+        // DBにアイコンURLがない場合はGoogleアバターを使用
         const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                               googleAvatarUrl.includes('googleapis.com') || 
-                               googleAvatarUrl.includes('google.com'))) {
+        if (googleAvatarUrl) {
           setUserIconUrl(googleAvatarUrl)
-          return
+        } else {
+          setUserIconUrl(null)
         }
+      }
+    } catch (error) {
+      // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
+      if (error instanceof ApiError && error.status === 404) {
+        console.log('Initial user setup required - user not found in database')
+        setIsUserSetupComplete(false)
+        setShouldRedirectToSettings(true)
         
-        setUserIconUrl(null)
-        return
+        // Googleアバターがある場合は表示
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        setUserIconUrl(googleAvatarUrl || null)
+      } else {
+        // その他のエラーの場合
+        console.error('Error fetching user settings:', error)
+        setIsUserSetupComplete(false)
+        
+        // Googleアバターがある場合は保持
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        setUserIconUrl(googleAvatarUrl || null)
       }
-      
-      // タイムアウトエラーまたはネットワークエラーの場合
-      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
-        console.warn('ユーザー設定の取得がタイムアウトしました')
-      }
-      
-      setIsUserSetupComplete(false)
-      // エラー時は現在のアイコンを保持
-      setUserIconUrl(prev => {
-        if (prev && (prev.includes('googleusercontent.com') || 
-                    prev.includes('googleapis.com') || 
-                    prev.includes('google.com'))) {
-          return prev
-        }
-        return null
-      })
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
   // ユーザーとセッションが利用可能になったらユーザー設定を取得
   useEffect(() => {
     if (user?.id && session && !loading) {
-      // Googleアバターがある場合は即座に設定（一度だけ）
+      // Googleアバターを即座に設定
       const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                             googleAvatarUrl.includes('googleapis.com') || 
-                             googleAvatarUrl.includes('google.com'))) {
-        setUserIconUrl(prev => prev || googleAvatarUrl) // 既にセットされている場合は更新しない
+      if (googleAvatarUrl) {
+        setUserIconUrl(googleAvatarUrl)
       }
       
-      // その後でAPIから正式な設定を取得（初回のみ）
-      if (!isUserSetupComplete) {
-        refreshUserSettings()
-      }
+      // ユーザー設定を取得（初回セットアップの確認）
+      refreshUserSettings()
     }
-  }, [user?.id, session, loading, isUserSetupComplete, user?.user_metadata?.avatar_url, user?.user_metadata?.picture, refreshUserSettings])
+  }, [user?.id, session, loading, user?.user_metadata?.avatar_url, user?.user_metadata?.picture, refreshUserSettings])
 
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
