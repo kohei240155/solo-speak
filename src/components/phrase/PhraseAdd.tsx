@@ -77,11 +77,30 @@ export default function PhraseAdd({
   }
 
   // シチュエーション追加のハンドラー
-  const handleAddContext = (contextName: string) => {
-    // TODO: ここで新しいシチュエーションをバックエンドに保存する処理を実装
-    console.log('新しいシチュエーション:', contextName)
-    // 仮で現在のコンテキストとして設定（実際の実装では、新しく追加されたコンテキストのIDを使用）
-    // onContextChange?.(contextName as 'friend' | 'sns')
+  const handleAddContext = async (contextName: string) => {
+    try {
+      const response = await fetch('/api/situations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: contextName
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('新しいシチュエーション追加:', data)
+        // TODO: 実際のシチュエーション管理を実装する際は、ここでリストを更新
+        // 成功メッセージを表示したい場合はtoast.successなどを使用
+      } else {
+        const errorData = await response.json()
+        console.error('Error adding situation:', errorData.error)
+      }
+    } catch (error) {
+      console.error('Error adding situation:', error)
+    }
   }
   return (
     <>
