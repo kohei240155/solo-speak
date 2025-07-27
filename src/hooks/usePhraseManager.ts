@@ -12,7 +12,7 @@ export const usePhraseManager = () => {
   const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
-  const [selectedContext, setSelectedContext] = useState<'friend' | 'sns' | null>(null)
+  const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -318,7 +318,7 @@ export const usePhraseManager = () => {
     setSelectedType(type)
   }
 
-  const handleContextChange = (context: 'friend' | 'sns') => {
+  const handleContextChange = (context: string | null) => {
     // 同じコンテキストが選択された場合は選択を解除（null に設定）
     setSelectedContext(prevContext => prevContext === context ? null : context)
   }

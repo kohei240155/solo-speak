@@ -5,7 +5,7 @@ import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
-import { api } from '@/utils/api'
+import { useSituations } from '@/hooks/useSituations'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -28,7 +28,7 @@ interface PhraseAddProps {
   error: string
   selectedType: 'common' | 'business' | 'casual'
   useChatGptApi: boolean
-  selectedContext: 'friend' | 'sns' | null
+  selectedContext: 'friend' | 'sns' | string | null
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
@@ -36,7 +36,7 @@ interface PhraseAddProps {
   onResetVariations: () => void
   onTypeChange: (type: 'common' | 'business' | 'casual') => void
   onUseChatGptApiChange: (value: boolean) => void
-  onContextChange?: (context: 'friend' | 'sns') => void
+  onContextChange?: (context: string | null) => void
 }
 
 export default function PhraseAdd({
@@ -67,6 +67,9 @@ export default function PhraseAdd({
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
   
+  // Situationsを取得
+  const { situations, addSituation } = useSituations()
+  
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
     return !isLoading && 
@@ -80,13 +83,8 @@ export default function PhraseAdd({
   // シチュエーション追加のハンドラー
   const handleAddContext = async (contextName: string) => {
     try {
-      const data = await api.post('/api/situations', {
-        name: contextName
-      })
-      
-      console.log('新しいシチュエーション追加:', data)
-      // TODO: 実際のシチュエーション管理を実装する際は、ここでリストを更新
-      // 成功メッセージを表示したい場合はtoast.successなどを使用
+      await addSituation(contextName)
+      console.log('新しいシチュエーション追加:', contextName)
     } catch (error) {
       console.error('Error adding situation:', error)
     }
@@ -180,49 +178,31 @@ export default function PhraseAdd({
               <BsPlusSquare size={18} />
             </button>
           </div>
-          <div className="flex gap-2">
-            <button 
-              onClick={() => {
-                if (generatedVariations.length === 0 && onContextChange) {
-                  onContextChange('friend')
-                }
-              }}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
-                selectedContext === 'friend'
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedContext === 'friend' ? '#616161' : undefined
-              }}
-            >
-              友達との会話で
-              <AiOutlineClose size={14} />
-            </button>
-            <button 
-              onClick={() => {
-                if (generatedVariations.length === 0 && onContextChange) {
-                  onContextChange('sns')
-                }
-              }}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
-                selectedContext === 'sns'
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedContext === 'sns' ? '#616161' : undefined
-              }}
-            >
-              SNSの投稿で
-              <AiOutlineClose size={14} />
-            </button>
+          <div className="flex gap-2 flex-wrap">
+            {situations.map((situation) => (
+              <button 
+                key={situation.id}
+                onClick={() => {
+                  if (generatedVariations.length === 0 && onContextChange) {
+                    onContextChange(selectedContext === situation.name ? null : situation.name)
+                  }
+                }}
+                disabled={generatedVariations.length > 0}
+                className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
+                  selectedContext === situation.name
+                    ? 'text-white' 
+                    : generatedVariations.length > 0
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                style={{ 
+                  backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                }}
+              >
+                {situation.name}
+                <AiOutlineClose size={14} />
+              </button>
+            ))}
           </div>
         </div>
       </div>

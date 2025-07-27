@@ -1,6 +1,7 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
 import { Gender } from '@/generated/prisma/client'
+import { createDefaultSituations } from './create-default-situations'
 
 /**
  * ユーザー名の重複チェック
@@ -107,6 +108,14 @@ export async function createUserSettings(
         defaultLearningLanguage: true,
       }
     })
+
+    // ユーザー作成後、ネイティブ言語に応じたデフォルトシチュエーションを作成
+    try {
+      await createDefaultSituations(prisma, result.id, result.nativeLanguage.code)
+    } catch (situationError) {
+      console.error('Failed to create default situations:', situationError)
+      // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
+    }
 
     console.log('createUserSettings - Success:', {
       userId: result.id,
