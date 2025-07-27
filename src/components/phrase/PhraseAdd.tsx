@@ -122,13 +122,10 @@ export default function PhraseAdd({
   }
   return (
     <>
-      {/* Native Language表示とLeft情報 */}
+      {/* Add Phrase見出しとLeft情報 */}
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          {languages.length > 0 
-            ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
-            : 'Loading...'
-          }
+          Add Phrase
         </h2>
         <div className="text-sm text-gray-600">
           Left: {remainingGenerations} / 5
@@ -139,54 +136,58 @@ export default function PhraseAdd({
       <div className="mb-4">
         <div className="flex flex-col gap-3">
           <h3 className="text-base font-semibold text-gray-900">Situation</h3>
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsAddContextModalOpen(true)}
-              disabled={generatedVariations.length > 0}
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                generatedVariations.length > 0
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-              }`}
-              title="新しいシチュエーションを追加"
-            >
-              <BsPlusSquare size={16} />
-            </button>
-            
-            <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
-              {situations.map((situation) => (
-                <button 
-                  key={situation.id}
-                  onClick={() => {
-                    if (generatedVariations.length === 0 && onContextChange) {
-                      onContextChange(selectedContext === situation.name ? null : situation.name)
-                    }
-                  }}
-                  disabled={generatedVariations.length > 0}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
-                    selectedContext === situation.name
-                      ? 'text-white border-transparent shadow-sm' 
-                      : generatedVariations.length > 0
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
-                  }`}
-                  style={{ 
-                    backgroundColor: selectedContext === situation.name ? '#616161' : undefined
-                  }}
-                >
-                  <span className="truncate">{situation.name}</span>
-                  <AiOutlineClose 
-                    size={12} 
-                    className="flex-shrink-0 hover:text-red-500 transition-colors" 
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      if (generatedVariations.length === 0) {
-                        handleDeleteSituation(situation.id)
+          
+          {/* シチュエーション表示エリア全体を囲む */}
+          <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsAddContextModalOpen(true)}
+                disabled={generatedVariations.length > 0}
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                  generatedVariations.length > 0
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                title="新しいシチュエーションを追加"
+              >
+                <BsPlusSquare size={16} />
+              </button>
+              
+              <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
+                {situations.map((situation) => (
+                  <button 
+                    key={situation.id}
+                    onClick={() => {
+                      if (generatedVariations.length === 0 && onContextChange) {
+                        onContextChange(selectedContext === situation.name ? null : situation.name)
                       }
                     }}
-                  />
-                </button>
-              ))}
+                    disabled={generatedVariations.length > 0}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+                      selectedContext === situation.name
+                        ? 'text-white border-transparent shadow-sm' 
+                        : generatedVariations.length > 0
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                    }`}
+                    style={{ 
+                      backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                    }}
+                  >
+                    <span className="truncate">{situation.name}</span>
+                    <AiOutlineClose 
+                      size={12} 
+                      className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (generatedVariations.length === 0) {
+                          handleDeleteSituation(situation.id)
+                        }
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -194,6 +195,7 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">Phrase</h3>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
