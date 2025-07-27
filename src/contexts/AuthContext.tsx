@@ -17,6 +17,7 @@ type AuthContextType = {
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
   refreshUser: () => Promise<void>
   refreshUserSettings: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -36,17 +37,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
-
-  // デバッグ用：認証状態をログ出力
-  useEffect(() => {
-    console.log('AuthProvider State:', { 
-      user: user?.id || null, 
-      session: session?.access_token ? 'あり' : null, 
-      loading,
-      userIconUrl: userIconUrl ? 'あり' : null,
-      isUserSetupComplete 
-    })
-  }, [user, session, loading, userIconUrl, isUserSetupComplete])
 
   useEffect(() => {
     // タイムアウト設定（5秒後に強制的にローディング解除）
@@ -68,7 +58,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // 現在のセッションを取得
     const getSession = async () => {
       try {
-        console.log('認証セッションの取得を開始')
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
@@ -87,7 +76,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setSession(null)
           setUser(null)
         } else {
-          console.log('セッション取得完了:', session ? 'セッション有り' : 'セッション無し')
           setSession(session)
           setUser(session?.user ?? null)
         }
@@ -118,7 +106,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         try {
-          console.log('認証状態変更:', event, session ? 'セッション有り' : 'セッション無し')
           setSession(session)
           setUser(session?.user ?? null)
           // ユーザー状態が変更されたらアイコンURLもリセット
@@ -314,6 +301,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const refreshSession = async () => {
+    try {
+      const { data: { session: newSession }, error } = await supabase.auth.refreshSession()
+      
+      if (error) {
+        console.error('Session refresh error:', error)
+        // セッション更新に失敗した場合、現在のセッションを取得
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        if (currentSession) {
+          setSession(currentSession)
+          setUser(currentSession.user)
+        }
+        return
+      }
+      
+      if (newSession) {
+        setSession(newSession)
+        setUser(newSession.user)
+      }
+    } catch (error) {
+      console.error('Failed to refresh session:', error)
+    }
+  }
+
   const value = {
     user,
     session,
@@ -325,6 +336,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     updateUserMetadata,
     refreshUser,
     refreshUserSettings,
+    refreshSession,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -2,7 +2,6 @@ import { Language, PhraseVariation } from '@/types/phrase'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
-import { AiOutlineClose } from 'react-icons/ai'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -33,7 +32,7 @@ interface PhraseAddProps {
   onResetVariations: () => void
   onTypeChange: (type: 'common' | 'business' | 'casual') => void
   onUseChatGptApiChange: (value: boolean) => void
-  onContextChange?: (context: 'friend' | 'sns' | null) => void
+  onContextChange?: (context: 'friend' | 'sns') => void
 }
 
 export default function PhraseAdd({
@@ -152,11 +151,11 @@ export default function PhraseAdd({
             <button 
               onClick={() => {
                 if (generatedVariations.length === 0 && onContextChange) {
-                  onContextChange(selectedContext === 'friend' ? null : 'friend')
+                  onContextChange('friend')
                 }
               }}
               disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors ${
                 selectedContext === 'friend'
                   ? 'text-white' 
                   : generatedVariations.length > 0
@@ -168,16 +167,15 @@ export default function PhraseAdd({
               }}
             >
               友達との会話で
-              <AiOutlineClose size={14} />
             </button>
             <button 
               onClick={() => {
                 if (generatedVariations.length === 0 && onContextChange) {
-                  onContextChange(selectedContext === 'sns' ? null : 'sns')
+                  onContextChange('sns')
                 }
               }}
               disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors ${
                 selectedContext === 'sns'
                   ? 'text-white' 
                   : generatedVariations.length > 0
@@ -189,7 +187,6 @@ export default function PhraseAdd({
               }}
             >
               SNSの投稿で
-              <AiOutlineClose size={14} />
             </button>
           </div>
         </div>

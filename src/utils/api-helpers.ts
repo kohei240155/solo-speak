@@ -16,18 +16,38 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
     }
 
     const token = authHeader.replace('Bearer ', '')
-    console.log('認証トークンを受信:', token.substring(0, 20) + '...')
     
     const serverSupabase = createServerSupabaseClient()
-    const { data: { user }, error } = await serverSupabase.auth.getUser(token)
-
-    if (error || !user) {
-      console.log('認証エラー:', error)
-      console.log('ユーザー情報:', user)
-      return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
+    
+    let authResponse = null
+    let retryCount = 0
+    const maxRetries = 3
+    
+    while (retryCount < maxRetries) {
+      try {
+        authResponse = await serverSupabase.auth.getUser(token)
+        break // 成功した場合はループを抜ける
+      } catch {
+        retryCount++
+        
+        if (retryCount >= maxRetries) {
+          return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
+        }
+        
+        // 1秒待ってからリトライ
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
     }
 
-    console.log('認証成功 - ユーザーID:', user.id)
+    if (!authResponse) {
+      return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
+    }
+
+    const { data: { user }, error } = authResponse
+
+    if (error || !user) {
+      return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
+    }
     return { user }
   } catch (error) {
     console.error('Authentication error:', error)
