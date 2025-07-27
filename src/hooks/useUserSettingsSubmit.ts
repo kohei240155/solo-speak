@@ -9,7 +9,7 @@ export function useUserSettingsSubmit(
   setError: (error: string) => void,
   setIsUserSetupComplete: (complete: boolean) => void
 ) {
-  const { user, updateUserMetadata } = useAuth()
+  const { user, updateUserMetadata, refreshUserSettings, clearSettingsRedirect } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const imageUploadRef = useRef<ImageUploadRef>(null)
 
@@ -166,6 +166,12 @@ export function useUserSettingsSubmit(
       
       // 設定完了状態を更新
       setIsUserSetupComplete(true)
+      
+      // AuthContextの状態も更新
+      await refreshUserSettings()
+      
+      // Settings画面への遷移フラグをクリア
+      clearSettingsRedirect()
       
       // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
       console.log('Settings: Dispatching userSettingsUpdated event')

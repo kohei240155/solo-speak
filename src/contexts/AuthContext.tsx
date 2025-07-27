@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
-import { api } from '@/utils/api'
+import { api, ApiError } from '@/utils/api'
 
 type AuthContextType = {
   user: User | null
@@ -12,12 +12,14 @@ type AuthContextType = {
   loading: boolean
   userIconUrl: string | null
   isUserSetupComplete: boolean
+  shouldRedirectToSettings: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
   refreshUser: () => Promise<void>
   refreshUserSettings: () => Promise<void>
   refreshSession: () => Promise<void>
+  clearSettingsRedirect: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -37,6 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
+  const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
 
   useEffect(() => {
     // タイムアウト設定（5秒後に強制的にローディング解除）
@@ -221,10 +224,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       })
     } catch (error) {
       console.error('Error fetching user settings:', error)
+      console.log('Error type:', typeof error, error.constructor.name)
+      console.log('Error instanceof ApiError:', error instanceof ApiError)
+      if (error instanceof ApiError) {
+        console.log('ApiError status:', error.status)
+        console.log('ApiError message:', error.message)
+      }
       
-      // 404エラーの場合は初回ログイン時
-      if (error instanceof Error && error.message.includes('404')) {
+      // 404エラーまたは初回ログイン時の判定を改善
+      const isInitialSetup = (
+        (error instanceof ApiError && error.status === 404) ||
+        (error instanceof Error && (
+          error.message.includes('404') || 
+          error.message.includes('User not found') ||
+          error.message.includes('Not Found')
+        ))
+      )
+      
+      console.log('isInitialSetup:', isInitialSetup)
+      
+      if (isInitialSetup) {
+        console.log('Initial user setup detected - redirecting to settings')
         setIsUserSetupComplete(false)
+        setShouldRedirectToSettings(true) // Settings画面への遷移フラグを設定
         
         // Googleアバターがある場合は自動的に表示
         const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
@@ -325,18 +347,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const clearSettingsRedirect = () => {
+    setShouldRedirectToSettings(false)
+  }
+
   const value = {
     user,
     session,
     loading,
     userIconUrl,
     isUserSetupComplete,
+    shouldRedirectToSettings,
     signOut,
     signInWithGoogle,
     updateUserMetadata,
     refreshUser,
     refreshUserSettings,
     refreshSession,
+    clearSettingsRedirect,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
