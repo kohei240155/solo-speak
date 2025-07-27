@@ -5,6 +5,7 @@ import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
+import Modal from '@/components/common/Modal'
 import { useSituations } from '@/hooks/useSituations'
 
 // GeneratedVariationsコンポーネントを動的インポート
@@ -62,9 +63,11 @@ export default function PhraseAdd({
 }: PhraseAddProps) {
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
+  const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   // Situationsを取得
-  const { situations, addSituation } = useSituations()
+  const { situations, addSituation, deleteSituation } = useSituations()
   
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
@@ -84,6 +87,34 @@ export default function PhraseAdd({
     } catch (error) {
       console.error('Error adding situation:', error)
     }
+  }
+
+  // シチュエーション削除のハンドラー
+  const handleDeleteSituation = (situationId: string) => {
+    setDeletingSituationId(situationId)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingSituationId) return
+
+    setIsDeleting(true)
+    try {
+      await deleteSituation(deletingSituationId)
+      setDeletingSituationId(null)
+      
+      // 削除したシチュエーションが選択されていた場合、選択を解除
+      if (selectedContext && situations.find(s => s.id === deletingSituationId)?.name === selectedContext) {
+        onContextChange?.(null)
+      }
+    } catch (error) {
+      console.error('Error deleting situation:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setDeletingSituationId(null)
   }
   return (
     <>
@@ -140,7 +171,16 @@ export default function PhraseAdd({
                   }}
                 >
                   <span className="truncate">{situation.name}</span>
-                  <AiOutlineClose size={12} className="flex-shrink-0" />
+                  <AiOutlineClose 
+                    size={12} 
+                    className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (generatedVariations.length === 0) {
+                        handleDeleteSituation(situation.id)
+                      }
+                    }}
+                  />
                 </button>
               ))}
             </div>
@@ -271,6 +311,58 @@ export default function PhraseAdd({
         onClose={() => setIsAddContextModalOpen(false)}
         onAdd={handleAddContext}
       />
+
+      {/* シチュエーション削除確認モーダル */}
+      <Modal isOpen={!!deletingSituationId} onClose={handleCancelDelete}>
+        <div className="p-6">
+          {/* ヘッダー部分 */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              Delete Situation
+            </h2>
+          </div>
+
+          {/* 確認メッセージ */}
+          <div className="mb-6">
+            <p className="text-gray-700">
+              このシチュエーションを削除してもよろしいですか？<br />
+              この操作は取り消すことができません。
+            </p>
+          </div>
+
+          {/* ボタン */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancelDelete}
+              disabled={isDeleting}
+              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+              }}
+            >
+              {isDeleting ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </div>
+              ) : (
+                'Delete'
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   )
 }

@@ -8,6 +8,7 @@ export interface UseSituationsReturn {
   error: string | null
   refetch: () => void
   addSituation: (name: string) => Promise<void>
+  deleteSituation: (id: string) => Promise<void>
 }
 
 /**
@@ -43,6 +44,16 @@ export function useSituations(): UseSituationsReturn {
     }
   }, [])
 
+  const deleteSituation = useCallback(async (id: string) => {
+    try {
+      await api.delete(`/api/situations/${id}`)
+      setSituations(prev => prev.filter(situation => situation.id !== id))
+    } catch (err) {
+      console.error('Failed to delete situation:', err)
+      throw err
+    }
+  }, [])
+
   useEffect(() => {
     fetchSituations()
   }, [fetchSituations])
@@ -52,6 +63,7 @@ export function useSituations(): UseSituationsReturn {
     isLoading,
     error,
     refetch: fetchSituations,
-    addSituation
+    addSituation,
+    deleteSituation
   }
 }
