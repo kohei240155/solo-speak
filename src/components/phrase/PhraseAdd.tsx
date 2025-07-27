@@ -87,7 +87,6 @@ export default function PhraseAdd({
   const handleAddContext = async (contextName: string) => {
     try {
       await addSituation(contextName)
-      console.log('新しいシチュエーション追加:', contextName)
     } catch (error) {
       console.error('Error adding situation:', error)
     }

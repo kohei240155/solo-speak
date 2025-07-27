@@ -9,16 +9,12 @@ import { User } from '@supabase/supabase-js'
  */
 export async function authenticateRequest(request: NextRequest): Promise<{ user: User } | { error: NextResponse }> {
   try {
-    console.log('authenticateRequest - Starting authentication')
-    
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      console.log('authenticateRequest - 認証ヘッダーが見つかりません')
       return { error: NextResponse.json({ error: 'Authorization header required' }, { status: 401 }) }
     }
 
     const token = authHeader.replace('Bearer ', '')
-    console.log('authenticateRequest - Token received:', token.substring(0, 20) + '...')
     
     const serverSupabase = createServerSupabaseClient()
     
@@ -28,7 +24,6 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
     
     while (retryCount < maxRetries) {
       try {
-        console.log(`authenticateRequest - Attempting authentication (try ${retryCount + 1}/${maxRetries})`)
         authResponse = await serverSupabase.auth.getUser(token)
         break // 成功した場合はループを抜ける
       } catch (authError) {
@@ -57,7 +52,6 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
       return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
     }
     
-    console.log('authenticateRequest - Authentication successful:', { userId: user.id, email: user.email })
     return { user }
   } catch (error) {
     console.error('authenticateRequest - Exception:', {
