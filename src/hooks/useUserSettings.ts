@@ -100,16 +100,25 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 
   const fetchLanguages = useCallback(async () => {
     try {
+      console.log('fetchLanguages: Fetching languages from API...')
       const data = await api.get<Language[]>('/api/languages')
+      
+      console.log('fetchLanguages: Received data:', {
+        dataType: Array.isArray(data) ? 'array' : typeof data,
+        length: Array.isArray(data) ? data.length : 'N/A',
+        firstFewItems: Array.isArray(data) ? data.slice(0, 3) : data
+      })
       
       if (Array.isArray(data) && data.length > 0) {
         setLanguages(data)
         setError('') // エラーをクリア
+        console.log('fetchLanguages: Languages set successfully, count:', data.length)
       } else {
+        console.warn('fetchLanguages: No languages received or invalid data')
         setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
       }
     } catch (error) {
-      console.error('Error fetching languages:', error)
+      console.error('fetchLanguages: Error fetching languages:', error)
       setError('言語データの取得に失敗しました。ネットワーク接続を確認してください。')
     }
   }, [])

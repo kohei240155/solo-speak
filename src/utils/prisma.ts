@@ -18,7 +18,7 @@ export const prisma = (() => {
   } else {
     if (!global.prisma) {
       global.prisma = new PrismaClient({
-        log: ['error', 'warn']
+        log: ['error', 'warn', 'info', 'query']
       })
     }
     return global.prisma
