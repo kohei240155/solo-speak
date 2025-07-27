@@ -168,9 +168,7 @@ export default function PhraseAdd({
               }}
             >
               友達との会話で
-              {selectedContext === 'friend' && (
-                <AiOutlineClose size={14} />
-              )}
+              <AiOutlineClose size={14} />
             </button>
             <button 
               onClick={() => {
@@ -191,9 +189,7 @@ export default function PhraseAdd({
               }}
             >
               SNSの投稿で
-              {selectedContext === 'sns' && (
-                <AiOutlineClose size={14} />
-              )}
+              <AiOutlineClose size={14} />
             </button>
           </div>
         </div>
