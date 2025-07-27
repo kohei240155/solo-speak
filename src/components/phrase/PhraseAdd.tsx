@@ -2,6 +2,7 @@ import { Language, PhraseVariation } from '@/types/phrase'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
+import { AiOutlineClose } from 'react-icons/ai'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -155,7 +156,7 @@ export default function PhraseAdd({
                 }
               }}
               disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors ${
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
                 selectedContext === 'friend'
                   ? 'text-white' 
                   : generatedVariations.length > 0
@@ -167,6 +168,9 @@ export default function PhraseAdd({
               }}
             >
               友達との会話で
+              {selectedContext === 'friend' && (
+                <AiOutlineClose size={14} />
+              )}
             </button>
             <button 
               onClick={() => {
@@ -175,7 +179,7 @@ export default function PhraseAdd({
                 }
               }}
               disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors ${
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
                 selectedContext === 'sns'
                   ? 'text-white' 
                   : generatedVariations.length > 0
@@ -187,6 +191,9 @@ export default function PhraseAdd({
               }}
             >
               SNSの投稿で
+              {selectedContext === 'sns' && (
+                <AiOutlineClose size={14} />
+              )}
             </button>
           </div>
         </div>
