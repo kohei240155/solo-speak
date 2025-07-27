@@ -64,11 +64,25 @@ export default function SpeakPractice({
         </div>
       </div>
 
-      {/* Count と Sound ボタン */}
+      {/* Sound と Count ボタン */}
       <div className="mb-8">
         <div className="flex items-center justify-center">
-          {/* Count ボタン */}
+          {/* Sound ボタン */}
           <div className="flex flex-col items-center mr-8">
+            <button
+              onClick={onSound}
+              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
+            >
+              <RiSpeakLine className="w-7 h-7 text-gray-900" />
+            </button>
+            <span className="text-gray-900 font-medium text-sm">Sound</span>
+          </div>
+
+          {/* 区切り線 */}
+          <div className="w-px h-20 bg-gray-300 mx-8"></div>
+
+          {/* Count ボタン */}
+          <div className="flex flex-col items-center ml-8">
             <button
               onClick={onCount}
               className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
@@ -78,20 +92,6 @@ export default function SpeakPractice({
               </div>
             </button>
             <span className="text-gray-900 font-medium text-sm">Count</span>
-          </div>
-
-          {/* 区切り線 */}
-          <div className="w-px h-20 bg-gray-300 mx-8"></div>
-
-          {/* Sound ボタン */}
-          <div className="flex flex-col items-center ml-8">
-            <button
-              onClick={onSound}
-              className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 mb-3 transition-colors"
-            >
-              <RiSpeakLine className="w-7 h-7 text-gray-900" />
-            </button>
-            <span className="text-gray-900 font-medium text-sm">Sound</span>
           </div>
         </div>
       </div>

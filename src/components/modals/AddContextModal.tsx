@@ -36,9 +36,9 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
         </div>
 
         {/* シチュエーション名入力 */}
-        <div className="mb-6">
+        <div className="mb-8">
           <h3 className="text-base font-semibold text-gray-900 mb-3">
-            Context Name
+            Situation
           </h3>
           <input
             type="text"
