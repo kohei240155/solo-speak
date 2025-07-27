@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await authenticateRequest(request)
@@ -15,7 +15,7 @@ export async function DELETE(
     }
 
     const { user } = authResult
-    const { id } = params
+    const { id } = await params
 
     // シチュエーションの存在確認とユーザー権限チェック
     const situation = await prisma.situation.findFirst({

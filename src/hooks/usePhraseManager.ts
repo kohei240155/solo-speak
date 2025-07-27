@@ -11,7 +11,6 @@ export const usePhraseManager = () => {
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
-  const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -211,7 +210,6 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        selectedStyle: selectedType,
         useChatGptApi
       }
       
@@ -314,10 +312,6 @@ export const usePhraseManager = () => {
     }
   }
 
-  const handleTypeChange = (type: 'common' | 'business' | 'casual') => {
-    setSelectedType(type)
-  }
-
   const handleContextChange = (context: string | null) => {
     // 同じコンテキストが選択された場合は選択を解除（null に設定）
     setSelectedContext(prevContext => prevContext === context ? null : context)
@@ -378,7 +372,6 @@ export const usePhraseManager = () => {
     learningLanguage,
     setLearningLanguage,
     desiredPhrase,
-    selectedType,
     generatedVariations,
     isLoading,
     error,
@@ -405,7 +398,6 @@ export const usePhraseManager = () => {
     handleResetVariations,
     fetchSavedPhrases,
     checkUnsavedChanges,
-    handleTypeChange,
     handleLearningLanguageChange,
     handleUseChatGptApiChange,
     handleContextChange

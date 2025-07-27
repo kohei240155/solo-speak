@@ -81,6 +81,7 @@ class ApiClient {
           
           if (!refreshError && refreshedSession) {
             session = refreshedSession
+            sessionError = null // エラーをクリア
           }
         }
         
