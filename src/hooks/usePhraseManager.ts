@@ -332,13 +332,6 @@ export const usePhraseManager = () => {
     })
   }
 
-  useEffect(() => {
-    // ユーザーがログインしている場合のみ言語一覧を取得
-    if (user) {
-      fetchLanguages()
-    }
-  }, [fetchLanguages, user])
-
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {
     setLearningLanguage(language)
@@ -354,13 +347,18 @@ export const usePhraseManager = () => {
   }, [generatedVariations.length])
 
   useEffect(() => {
-    // ユーザーの残り生成回数を取得
+    // ユーザーの初期データを並列取得
     if (user) {
-      fetchUserRemainingGenerations()
-      fetchUserSettings()
-      fetchSavedPhrases(1, false)
+      Promise.all([
+        fetchLanguages(),
+        fetchUserRemainingGenerations(),
+        fetchUserSettings(),
+        fetchSavedPhrases(1, false)
+      ]).catch(error => {
+        console.error('初期データ取得エラー:', error)
+      })
     }
-  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations])
+  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {

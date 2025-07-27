@@ -7,6 +7,7 @@ export interface UseSituationsReturn {
   isLoading: boolean
   error: string | null
   refetch: () => void
+  fetchSituations: () => Promise<void>
   addSituation: (name: string) => Promise<void>
   deleteSituation: (id: string) => Promise<void>
 }
@@ -63,6 +64,7 @@ export function useSituations(): UseSituationsReturn {
     isLoading,
     error,
     refetch: fetchSituations,
+    fetchSituations,
     addSituation,
     deleteSituation
   }
