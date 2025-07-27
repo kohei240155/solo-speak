@@ -26,7 +26,6 @@ interface PhraseAddProps {
   variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
   error: string
-  selectedType: 'common' | 'business' | 'casual'
   useChatGptApi: boolean
   selectedContext: 'friend' | 'sns' | string | null
   onPhraseChange: (value: string) => void
@@ -34,7 +33,6 @@ interface PhraseAddProps {
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
-  onTypeChange: (type: 'common' | 'business' | 'casual') => void
   onUseChatGptApiChange: (value: boolean) => void
   onContextChange?: (context: string | null) => void
 }
@@ -52,7 +50,6 @@ export default function PhraseAdd({
   variationValidationErrors,
   savingVariationIndex,
   error,
-  selectedType,
   useChatGptApi,
   selectedContext,
   onPhraseChange,
@@ -60,7 +57,6 @@ export default function PhraseAdd({
   onEditVariation,
   onSelectVariation,
   onResetVariations,
-  onTypeChange,
   onUseChatGptApiChange,
   onContextChange
 }: PhraseAddProps) {
@@ -104,74 +100,18 @@ export default function PhraseAdd({
         </div>
       </div>
 
-      {/* Expression Type section */}
-      <div className="mb-4">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-          <h3 className="text-base font-semibold text-gray-900">Expression Type</h3>
-          <div className="flex gap-2">
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('common')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'common' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'common' ? '#616161' : undefined
-              }}
-            >
-              Common
-            </button>
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('business')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'business' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'business' ? '#616161' : undefined
-              }}
-            >
-              Business
-            </button>
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('casual')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'casual' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'casual' ? '#616161' : undefined
-              }}
-            >
-              Casual
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Options section */}
       <div className="mb-4">
-        <div className="border border-gray-200 rounded-full px-4 py-3 bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-3">
+          <h3 className="text-base font-semibold text-gray-900">Situation</h3>
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
-              className={`flex-shrink-0 w-8 h-8 rounded-full border-2 border-dashed flex items-center justify-center transition-all ${
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                 generatedVariations.length > 0
-                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
-                  : 'border-gray-400 text-gray-600 hover:border-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
               }`}
               title="新しいシチュエーションを追加"
             >
@@ -200,9 +140,7 @@ export default function PhraseAdd({
                   }}
                 >
                   <span className="truncate">{situation.name}</span>
-                  {selectedContext === situation.name && (
-                    <AiOutlineClose size={12} className="flex-shrink-0" />
-                  )}
+                  <AiOutlineClose size={12} className="flex-shrink-0" />
                 </button>
               ))}
             </div>
