@@ -163,46 +163,49 @@ export default function PhraseAdd({
 
       {/* Options section */}
       <div className="mb-4">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-          <div className="flex items-center gap-2">
+        <div className="border border-gray-200 rounded-full px-4 py-3 bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-3">
             <button 
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
-              className={`p-1 rounded transition-colors ${
+              className={`flex-shrink-0 w-8 h-8 rounded-full border-2 border-dashed flex items-center justify-center transition-all ${
                 generatedVariations.length > 0
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                  ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-400 text-gray-600 hover:border-gray-600 hover:text-gray-800 hover:bg-gray-50'
               }`}
               title="新しいシチュエーションを追加"
             >
-              <BsPlusSquare size={18} />
+              <BsPlusSquare size={16} />
             </button>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {situations.map((situation) => (
-              <button 
-                key={situation.id}
-                onClick={() => {
-                  if (generatedVariations.length === 0 && onContextChange) {
-                    onContextChange(selectedContext === situation.name ? null : situation.name)
-                  }
-                }}
-                disabled={generatedVariations.length > 0}
-                className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
-                  selectedContext === situation.name
-                    ? 'text-white' 
-                    : generatedVariations.length > 0
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                style={{ 
-                  backgroundColor: selectedContext === situation.name ? '#616161' : undefined
-                }}
-              >
-                {situation.name}
-                <AiOutlineClose size={14} />
-              </button>
-            ))}
+            
+            <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
+              {situations.map((situation) => (
+                <button 
+                  key={situation.id}
+                  onClick={() => {
+                    if (generatedVariations.length === 0 && onContextChange) {
+                      onContextChange(selectedContext === situation.name ? null : situation.name)
+                    }
+                  }}
+                  disabled={generatedVariations.length > 0}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+                    selectedContext === situation.name
+                      ? 'text-white border-transparent shadow-sm' 
+                      : generatedVariations.length > 0
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                  }`}
+                  style={{ 
+                    backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                  }}
+                >
+                  <span className="truncate">{situation.name}</span>
+                  {selectedContext === situation.name && (
+                    <AiOutlineClose size={12} className="flex-shrink-0" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
