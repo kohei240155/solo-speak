@@ -3,6 +3,8 @@ import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
+import { useState } from 'react'
+import AddContextModal from '@/components/modals/AddContextModal'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -61,6 +63,9 @@ export default function PhraseAdd({
   onUseChatGptApiChange,
   onContextChange
 }: PhraseAddProps) {
+  // モーダルの状態管理
+  const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
+  
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
     return !isLoading && 
@@ -69,6 +74,14 @@ export default function PhraseAdd({
            remainingGenerations > 0 && 
            desiredPhrase.length <= 100 && 
            generatedVariations.length === 0
+  }
+
+  // シチュエーション追加のハンドラー
+  const handleAddContext = (contextName: string) => {
+    // TODO: ここで新しいシチュエーションをバックエンドに保存する処理を実装
+    console.log('新しいシチュエーション:', contextName)
+    // 仮で現在のコンテキストとして設定（実際の実装では、新しく追加されたコンテキストのIDを使用）
+    // onContextChange?.(contextName as 'friend' | 'sns')
   }
   return (
     <>
@@ -146,7 +159,18 @@ export default function PhraseAdd({
       <div className="mb-4">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
           <div className="flex items-center gap-2">
-            <BsPlusSquare className="text-gray-600" size={18} />
+            <button 
+              onClick={() => setIsAddContextModalOpen(true)}
+              disabled={generatedVariations.length > 0}
+              className={`p-1 rounded transition-colors ${
+                generatedVariations.length > 0
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+              title="新しいシチュエーションを追加"
+            >
+              <BsPlusSquare size={18} />
+            </button>
           </div>
           <div className="flex gap-2">
             <button 
@@ -310,6 +334,13 @@ export default function PhraseAdd({
         onSelectVariation={onSelectVariation}
         onReset={onResetVariations}
         error={error}
+      />
+
+      {/* シチュエーション追加モーダル */}
+      <AddContextModal
+        isOpen={isAddContextModalOpen}
+        onClose={() => setIsAddContextModalOpen(false)}
+        onAdd={handleAddContext}
       />
     </>
   )
