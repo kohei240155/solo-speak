@@ -1,6 +1,8 @@
 import { Language, PhraseVariation } from '@/types/phrase'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { BsPlusSquare } from 'react-icons/bs'
+import { AiOutlineClose } from 'react-icons/ai'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -23,6 +25,7 @@ interface PhraseAddProps {
   error: string
   selectedType: 'common' | 'business' | 'casual'
   useChatGptApi: boolean
+  selectedContext: 'friend' | 'sns' | null
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
@@ -30,6 +33,7 @@ interface PhraseAddProps {
   onResetVariations: () => void
   onTypeChange: (type: 'common' | 'business' | 'casual') => void
   onUseChatGptApiChange: (value: boolean) => void
+  onContextChange?: (context: 'friend' | 'sns' | null) => void
 }
 
 export default function PhraseAdd({
@@ -47,13 +51,15 @@ export default function PhraseAdd({
   error,
   selectedType,
   useChatGptApi,
+  selectedContext,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
   onResetVariations,
   onTypeChange,
-  onUseChatGptApiChange
+  onUseChatGptApiChange,
+  onContextChange
 }: PhraseAddProps) {
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
@@ -131,6 +137,59 @@ export default function PhraseAdd({
               }}
             >
               Casual
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Options section */}
+      <div className="mb-4">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+          <div className="flex items-center gap-2">
+            <BsPlusSquare className="text-gray-600" size={18} />
+          </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => {
+                if (generatedVariations.length === 0 && onContextChange) {
+                  onContextChange(selectedContext === 'friend' ? null : 'friend')
+                }
+              }}
+              disabled={generatedVariations.length > 0}
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
+                selectedContext === 'friend'
+                  ? 'text-white' 
+                  : generatedVariations.length > 0
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              style={{ 
+                backgroundColor: selectedContext === 'friend' ? '#616161' : undefined
+              }}
+            >
+              友達との会話で
+              <AiOutlineClose size={14} />
+            </button>
+            <button 
+              onClick={() => {
+                if (generatedVariations.length === 0 && onContextChange) {
+                  onContextChange(selectedContext === 'sns' ? null : 'sns')
+                }
+              }}
+              disabled={generatedVariations.length > 0}
+              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[90px] text-center transition-colors flex items-center gap-1 ${
+                selectedContext === 'sns'
+                  ? 'text-white' 
+                  : generatedVariations.length > 0
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+              style={{ 
+                backgroundColor: selectedContext === 'sns' ? '#616161' : undefined
+              }}
+            >
+              SNSの投稿で
+              <AiOutlineClose size={14} />
             </button>
           </div>
         </div>
