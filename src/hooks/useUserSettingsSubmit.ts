@@ -9,7 +9,7 @@ export function useUserSettingsSubmit(
   setError: (error: string) => void,
   setIsUserSetupComplete: (complete: boolean) => void
 ) {
-  const { user, updateUserMetadata } = useAuth()
+  const { user, updateUserMetadata, refreshUserSettings, clearSettingsRedirect } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const imageUploadRef = useRef<ImageUploadRef>(null)
 
@@ -24,12 +24,20 @@ export function useUserSettingsSubmit(
       let existingIconUrl = ''
       let isFirstTimeSetup = false
       try {
-        const currentSettings = await api.get('/api/user/settings') as { iconUrl?: string }
+        const currentSettings = await api.get('/api/user/settings', {
+          showErrorToast: false // 404エラー時のトーストを無効化
+        }) as { iconUrl?: string }
         existingIconUrl = currentSettings.iconUrl || ''
       } catch (error) {
-        if (error instanceof Error && error.message.includes('404')) {
+        if (error instanceof ApiError && error.status === 404) {
           // 初回セットアップの場合
           isFirstTimeSetup = true
+        } else if (error instanceof Error && error.message.includes('404')) {
+          // 初回セットアップの場合（メッセージベースの判定）
+          isFirstTimeSetup = true
+        } else {
+          // その他のエラーの場合はログに記録するがトーストは表示しない
+          console.warn('Failed to fetch current user settings:', error)
         }
       }
 
@@ -151,9 +159,16 @@ export function useUserSettingsSubmit(
 
       console.log('Final data being sent to API:', {
         ...finalData,
-        iconUrl: finalData.iconUrl ? `${finalData.iconUrl.substring(0, 50)}...` : 'null'
+        iconUrl: finalData.iconUrl ? `${finalData.iconUrl.substring(0, 50)}...` : 'null',
+        nativeLanguageId: finalData.nativeLanguageId,
+        defaultLearningLanguageId: finalData.defaultLearningLanguageId
       })
       console.log('Full iconUrl being sent:', finalData.iconUrl)
+      console.log('Language IDs being sent:', {
+        nativeLanguageId: finalData.nativeLanguageId,
+        defaultLearningLanguageId: finalData.defaultLearningLanguageId
+      })
+      console.log('Is first time setup:', isFirstTimeSetup)
 
       // 2つ目のAPI: ユーザー設定を保存
       const result = await api.post('/api/user/settings', finalData) as { iconUrl?: string }
@@ -166,6 +181,19 @@ export function useUserSettingsSubmit(
       
       // 設定完了状態を更新
       setIsUserSetupComplete(true)
+      
+      // AuthContextの状態も更新（初回セットアップの場合は少し遅延）
+      if (isFirstTimeSetup) {
+        // 初回セットアップの場合は少し遅延してから更新
+        setTimeout(async () => {
+          await refreshUserSettings()
+        }, 500)
+      } else {
+        await refreshUserSettings()
+      }
+      
+      // Settings画面への遷移フラグをクリア
+      clearSettingsRedirect()
       
       // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
       console.log('Settings: Dispatching userSettingsUpdated event')
@@ -190,7 +218,12 @@ export function useUserSettingsSubmit(
       })
       
       if (error instanceof ApiError) {
-        setError(`ユーザー設定の保存に失敗しました: ${error.message}`)
+        // 初回ユーザーの404エラーではない場合のみエラーメッセージを表示
+        if (error.status === 404 && error.message.includes('User not found')) {
+          setError('ユーザー設定の初期化に失敗しました。ページを再読み込みして再試行してください。')
+        } else {
+          setError(`ユーザー設定の保存に失敗しました: ${error.message}`)
+        }
       } else {
         setError(`ユーザー設定の保存に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }

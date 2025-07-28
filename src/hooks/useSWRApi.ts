@@ -7,6 +7,11 @@ const fetcher = async (url: string) => {
   return await api.get(url)
 }
 
+// ユーザー設定用のカスタムfetcher（404エラーでトーストを表示しない）
+const userSettingsFetcher = async (url: string) => {
+  return await api.get(url, { showErrorToast: false })
+}
+
 // 共通のSWRオプション設定
 const SWR_CONFIGS = {
   // 短期キャッシュ（動的データ用）
@@ -41,7 +46,7 @@ const SWR_CONFIGS = {
 
 // ユーザー設定を取得するSWRフック
 export function useUserSettings() {
-  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', fetcher, SWR_CONFIGS.MEDIUM_CACHE)
+  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', userSettingsFetcher, SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
     userSettings: data as {

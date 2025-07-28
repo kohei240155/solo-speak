@@ -109,6 +109,12 @@ export default function UserSettingsForm({
             {...register('nativeLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
+            onChange={(e) => {
+              console.log('Native language selected:', {
+                selectedId: e.target.value,
+                selectedOption: languages.find(lang => lang.id === e.target.value)
+              })
+            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -143,6 +149,12 @@ export default function UserSettingsForm({
             {...register('defaultLearningLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
+            onChange={(e) => {
+              console.log('Learning language selected:', {
+                selectedId: e.target.value,
+                selectedOption: languages.find(lang => lang.id === e.target.value)
+              })
+            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}

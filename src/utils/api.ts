@@ -73,19 +73,26 @@ class ApiClient {
 
       // 認証トークンの取得と設定
       if (useAuth) {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        let { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
-        if (error) {
-          console.error('Session error:', error)
-          if (showErrorToast) {
-            toast.error('認証エラーが発生しました')
+        // セッションが無効またはエラーの場合、リフレッシュを試行
+        if (sessionError || !session?.access_token) {
+          const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
+          
+          if (!refreshError && refreshedSession) {
+            session = refreshedSession
+            sessionError = null // エラーをクリア
           }
-          throw new ApiError('認証エラー', 401)
         }
-
-        if (!session?.access_token) {
+        
+        const finalError = sessionError
+        if (finalError || !session?.access_token) {
           if (showErrorToast) {
-            toast.error('認証情報が見つかりません。再度ログインしてください。')
+            // より詳細なメッセージに変更
+            toast.error('認証情報が期限切れです。ページを再読み込みしてください。', {
+              duration: 8000, // 8秒間表示
+              id: 'auth-error', // 重複トーストを防ぐ
+            })
           }
           throw new ApiError('認証情報なし', 401)
         }
@@ -118,7 +125,18 @@ class ApiClient {
             errorMessage = response.statusText || errorMessage
           }
 
-          if (showErrorToast) {
+          // 401エラーの場合は特別なメッセージを表示
+          if (response.status === 401 && showErrorToast) {
+            toast.error('認証が失効しました。ページを再読み込みしてください。', {
+              duration: 8000,
+              id: 'auth-expired'
+            })
+          } else if (response.status === 503 && showErrorToast) {
+            toast.error('認証サービスが一時的に利用できません。しばらく待ってから再試行してください。', {
+              duration: 8000,
+              id: 'service-unavailable'
+            })
+          } else if (showErrorToast) {
             toast.error(errorMessage)
           }
 
@@ -148,19 +166,49 @@ class ApiClient {
           throw new ApiError(message, 408)
         }
 
+        // ネットワークエラーやその他の接続エラー
+        if (error instanceof Error) {
+          let message = 'ネットワークエラーが発生しました'
+          
+          // Fetch failed エラーの場合
+          if (error.message.includes('fetch failed') || error.message.includes('Failed to fetch')) {
+            message = 'サーバーに接続できません。インターネット接続を確認してから再試行してください。'
+          }
+          
+          if (showErrorToast) {
+            toast.error(message, {
+              duration: 8000,
+              id: 'network-error'
+            })
+          }
+          throw new ApiError(message, 0)
+        }
+
         throw error
       }
 
     } catch (error) {
-      console.error('API request failed:', { endpoint, error })
-      
       if (error instanceof ApiError) {
         throw error
       }
 
-      const message = error instanceof Error ? error.message : 'ネットワークエラーが発生しました'
+      let message = 'ネットワークエラーが発生しました'
+      if (error instanceof Error) {
+        message = error.message
+        
+        // 特定のエラーパターンに対応
+        if (error.message.includes('ENOTFOUND') || error.message.includes('fetch failed')) {
+          message = 'サーバーに接続できません。インターネット接続を確認してください。'
+        } else if (error.message.includes('Auth session missing')) {
+          message = '認証セッションが無効です。ページを再読み込みしてください。'
+        }
+      }
+      
       if (showErrorToast) {
-        toast.error(message)
+        toast.error(message, {
+          duration: 6000,
+          id: 'api-error'
+        })
       }
       throw new ApiError(message, 0)
     }

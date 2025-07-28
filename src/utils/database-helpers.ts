@@ -1,6 +1,7 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
 import { Gender } from '@/generated/prisma/client'
+import { createDefaultSituations } from './create-default-situations'
 
 /**
  * ユーザー名の重複チェック
@@ -28,11 +29,22 @@ export async function checkUsernameConflict(
  * @returns ユーザーが存在するかどうか
  */
 export async function checkUserExists(userId: string): Promise<boolean> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId }
-  })
-
-  return !!user
+  try {
+    console.log('checkUserExists - Checking user:', userId)
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+    const exists = !!user
+    console.log('checkUserExists - Result:', { userId, exists })
+    return exists
+  } catch (error) {
+    console.error('checkUserExists - Error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      userId
+    })
+    throw error
+  }
 }
 
 /**
@@ -69,23 +81,62 @@ export async function createUserSettings(
     defaultQuizCount?: number
   }
 ) {
-  return await prisma.user.create({
-    data: {
-      id: user.id,
-      email: user.email || userData.email || '',
-      username: userData.username,
-      iconUrl: userData.iconUrl,
-      nativeLanguageId: userData.nativeLanguageId,
-      defaultLearningLanguageId: userData.defaultLearningLanguageId,
-      birthdate: userData.birthdate ? new Date(userData.birthdate) : null,
-      gender: userData.gender,
-      defaultQuizCount: userData.defaultQuizCount || 10,
-    },
-    include: {
-      nativeLanguage: true,
-      defaultLearningLanguage: true,
+  try {
+    console.log('createUserSettings - Input data:', {
+      userId: user.id,
+      email: user.email,
+      userData: {
+        ...userData,
+        iconUrl: userData.iconUrl ? `${userData.iconUrl.substring(0, 50)}...` : userData.iconUrl
+      }
+    })
+
+    const result = await prisma.user.create({
+      data: {
+        id: user.id,
+        email: user.email || userData.email || '',
+        username: userData.username,
+        iconUrl: userData.iconUrl,
+        nativeLanguageId: userData.nativeLanguageId,
+        defaultLearningLanguageId: userData.defaultLearningLanguageId,
+        birthdate: userData.birthdate ? new Date(userData.birthdate) : null,
+        gender: userData.gender,
+        defaultQuizCount: userData.defaultQuizCount || 10,
+      },
+      include: {
+        nativeLanguage: true,
+        defaultLearningLanguage: true,
+      }
+    })
+
+    // ユーザー作成後、ネイティブ言語に応じたデフォルトシチュエーションを作成
+    try {
+      await createDefaultSituations(prisma, result.id, result.nativeLanguage.code)
+    } catch (situationError) {
+      console.error('Failed to create default situations:', situationError)
+      // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
     }
-  })
+
+    console.log('createUserSettings - Success:', {
+      userId: result.id,
+      username: result.username,
+      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
+    })
+
+    return result
+  } catch (error) {
+    console.error('createUserSettings - Error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      userId: user.id,
+      userData: {
+        ...userData,
+        iconUrl: userData.iconUrl ? `${userData.iconUrl.substring(0, 50)}...` : userData.iconUrl
+      }
+    })
+    throw error
+  }
 }
 
 /**

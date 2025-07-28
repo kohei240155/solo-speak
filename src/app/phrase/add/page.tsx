@@ -18,7 +18,6 @@ export default function PhraseAddPage() {
     learningLanguage,
     handleLearningLanguageChange,
     desiredPhrase,
-    selectedType,
     generatedVariations,
     isLoading,
     error,
@@ -31,6 +30,7 @@ export default function PhraseAddPage() {
     variationValidationErrors,
     totalPhrases,
     useChatGptApi,
+    selectedContext,
     
     // Handlers
     handleEditVariation,
@@ -38,9 +38,9 @@ export default function PhraseAddPage() {
     handleGeneratePhrase,
     handleSelectVariation,
     handleResetVariations,
-    handleTypeChange,
     checkUnsavedChanges,
-    handleUseChatGptApiChange
+    handleUseChatGptApiChange,
+    handleContextChange
   } = usePhraseManager()
 
   // Modal functionality
@@ -114,15 +114,15 @@ export default function PhraseAddPage() {
               variationValidationErrors={variationValidationErrors}
               savingVariationIndex={savingVariationIndex}
               error={error}
-              selectedType={selectedType}
               useChatGptApi={useChatGptApi}
+              selectedContext={selectedContext}
               onPhraseChange={handlePhraseChange}
               onGeneratePhrase={handleGeneratePhrase}
               onEditVariation={handleEditVariation}
               onSelectVariation={handleSelectVariation}
               onResetVariations={handleResetVariations}
-              onTypeChange={handleTypeChange}
               onUseChatGptApiChange={handleUseChatGptApiChange}
+              onContextChange={handleContextChange}
             />
         </div>
       </div>

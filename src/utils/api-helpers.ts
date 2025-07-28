@@ -11,26 +11,54 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
   try {
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      console.log('認証ヘッダーが見つかりません')
       return { error: NextResponse.json({ error: 'Authorization header required' }, { status: 401 }) }
     }
 
     const token = authHeader.replace('Bearer ', '')
-    console.log('認証トークンを受信:', token.substring(0, 20) + '...')
     
     const serverSupabase = createServerSupabaseClient()
-    const { data: { user }, error } = await serverSupabase.auth.getUser(token)
-
-    if (error || !user) {
-      console.log('認証エラー:', error)
-      console.log('ユーザー情報:', user)
-      return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
+    
+    let authResponse = null
+    let retryCount = 0
+    const maxRetries = 3
+    
+    while (retryCount < maxRetries) {
+      try {
+        authResponse = await serverSupabase.auth.getUser(token)
+        break // 成功した場合はループを抜ける
+      } catch (authError) {
+        console.error(`authenticateRequest - Auth attempt ${retryCount + 1} failed:`, authError)
+        retryCount++
+        
+        if (retryCount >= maxRetries) {
+          console.error('authenticateRequest - Max retries exceeded')
+          return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
+        }
+        
+        // 1秒待ってからリトライ
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
     }
 
-    console.log('認証成功 - ユーザーID:', user.id)
+    if (!authResponse) {
+      console.error('authenticateRequest - No auth response received')
+      return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
+    }
+
+    const { data: { user }, error } = authResponse
+
+    if (error || !user) {
+      console.error('authenticateRequest - Invalid token or user not found:', { error, userId: user?.id })
+      return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
+    }
+    
     return { user }
   } catch (error) {
-    console.error('Authentication error:', error)
+    console.error('authenticateRequest - Exception:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     return { error: NextResponse.json({ error: 'Internal server error' }, { status: 500 }) }
   }
 }
@@ -113,32 +141,16 @@ export function createErrorResponse(error: unknown, context: string): NextRespon
  * @param isError エラー時のフォールバックかどうか
  * @returns フォールバック言語データのレスポンス
  */
-export function createLanguageFallbackResponse(isError: boolean = false): NextResponse {
-  const fallbackLanguages = [
-    { id: 'fallback-ja', name: 'Japanese', code: 'ja' },
-    { id: 'fallback-en', name: 'English', code: 'en' },
-    { id: 'fallback-zh', name: 'Chinese', code: 'zh' },
-    { id: 'fallback-ko', name: 'Korean', code: 'ko' },
-    { id: 'fallback-es', name: 'Spanish', code: 'es' },
-    { id: 'fallback-fr', name: 'French', code: 'fr' },
-    { id: 'fallback-de', name: 'German', code: 'de' },
-    { id: 'fallback-it', name: 'Italian', code: 'it' },
-    { id: 'fallback-pt', name: 'Portuguese', code: 'pt' },
-    { id: 'fallback-ru', name: 'Russian', code: 'ru' }
-  ]
+export function createLanguageFallbackResponse(): NextResponse {
+  // フォールバックではなく、エラーレスポンスを返すようにする
+  console.error('Language data not available, returning error instead of fallback')
   
-  if (isError) {
-    console.warn('Database error occurred, returning fallback language data')
-  } else {
-    console.warn('No languages found in database, returning fallback data')
-  }
-  
-  return new NextResponse(JSON.stringify(fallbackLanguages), {
-    status: 200,
+  return new NextResponse(JSON.stringify({ 
+    error: 'Language data not available. Please ensure the database is properly seeded.' 
+  }), {
+    status: 500,
     headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'X-Fallback-Data': 'true',
-      'Cache-Control': 'public, max-age=1800' // 30分間キャッシュ
+      'Content-Type': 'application/json; charset=utf-8'
     },
   })
 }

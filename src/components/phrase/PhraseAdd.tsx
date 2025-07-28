@@ -1,6 +1,13 @@
 import { Language, PhraseVariation } from '@/types/phrase'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { BsPlusSquare } from 'react-icons/bs'
+import { AiOutlineClose } from 'react-icons/ai'
+import { useState } from 'react'
+import AddContextModal from '@/components/modals/AddContextModal'
+import Modal from '@/components/common/Modal'
+import { useSituations } from '@/hooks/useSituations'
+import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -21,15 +28,15 @@ interface PhraseAddProps {
   variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
   error: string
-  selectedType: 'common' | 'business' | 'casual'
   useChatGptApi: boolean
+  selectedContext: 'friend' | 'sns' | string | null
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
-  onTypeChange: (type: 'common' | 'business' | 'casual') => void
   onUseChatGptApiChange: (value: boolean) => void
+  onContextChange?: (context: string | null) => void
 }
 
 export default function PhraseAdd({
@@ -45,16 +52,27 @@ export default function PhraseAdd({
   variationValidationErrors,
   savingVariationIndex,
   error,
-  selectedType,
   useChatGptApi,
+  selectedContext,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
   onResetVariations,
-  onTypeChange,
-  onUseChatGptApiChange
+  onUseChatGptApiChange,
+  onContextChange
 }: PhraseAddProps) {
+  // モーダルの状態管理
+  const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
+  const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Situationsを取得
+  const { situations, addSituation, deleteSituation } = useSituations()
+  
+  // スクロール位置保持機能
+  const scrollPreservation = useScrollPreservation()
+  
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
     return !isLoading && 
@@ -64,83 +82,124 @@ export default function PhraseAdd({
            desiredPhrase.length <= 100 && 
            generatedVariations.length === 0
   }
+
+  // シチュエーション追加のハンドラー
+  const handleAddContext = async (contextName: string) => {
+    try {
+      await addSituation(contextName)
+    } catch (error) {
+      console.error('Error adding situation:', error)
+    }
+  }
+
+  // シチュエーション削除のハンドラー
+  const handleDeleteSituation = (situationId: string) => {
+    setDeletingSituationId(situationId)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingSituationId) return
+
+    setIsDeleting(true)
+    try {
+      await deleteSituation(deletingSituationId)
+      setDeletingSituationId(null)
+      
+      // 削除したシチュエーションが選択されていた場合、選択を解除
+      if (selectedContext && situations.find(s => s.id === deletingSituationId)?.name === selectedContext) {
+        onContextChange?.(null)
+      }
+    } catch (error) {
+      console.error('Error deleting situation:', error)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setDeletingSituationId(null)
+  }
   return (
     <>
-      {/* Native Language表示とLeft情報 */}
+      {/* Add Phrase見出しとLeft情報 */}
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          {languages.length > 0 
-            ? (languages.find(lang => lang.code === nativeLanguage)?.name || 'Japanese')
-            : 'Loading...'
-          }
+          Add Phrase
         </h2>
         <div className="text-sm text-gray-600">
           Left: {remainingGenerations} / 5
         </div>
       </div>
 
-      {/* Expression Type section */}
+      {/* Options section */}
       <div className="mb-4">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-          <h3 className="text-base font-semibold text-gray-900">Expression Type</h3>
-          <div className="flex gap-2">
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('common')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'common' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'common' ? '#616161' : undefined
-              }}
-            >
-              Common
-            </button>
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('business')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'business' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'business' ? '#616161' : undefined
-              }}
-            >
-              Business
-            </button>
-            <button 
-              onClick={() => generatedVariations.length === 0 && onTypeChange('casual')}
-              disabled={generatedVariations.length > 0}
-              className={`px-3 py-1 rounded-full text-sm font-medium min-w-[70px] text-center transition-colors ${
-                selectedType === 'casual' 
-                  ? 'text-white' 
-                  : generatedVariations.length > 0
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              style={{ 
-                backgroundColor: selectedType === 'casual' ? '#616161' : undefined
-              }}
-            >
-              Casual
-            </button>
+        <div className="flex flex-col gap-3">
+          <h3 className="text-base font-semibold text-gray-900">Situation</h3>
+          
+          {/* シチュエーション表示エリア全体を囲む */}
+          <div className="border border-gray-200 rounded-lg p-2">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsAddContextModalOpen(true)}
+                disabled={generatedVariations.length > 0}
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                  generatedVariations.length > 0
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                title="新しいシチュエーションを追加"
+              >
+                <BsPlusSquare size={16} />
+              </button>
+              
+              <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
+                {situations.map((situation) => (
+                  <button 
+                    key={situation.id}
+                    onClick={() => {
+                      if (generatedVariations.length === 0 && onContextChange) {
+                        onContextChange(selectedContext === situation.name ? null : situation.name)
+                      }
+                    }}
+                    disabled={generatedVariations.length > 0}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+                      selectedContext === situation.name
+                        ? 'text-white border-transparent shadow-sm' 
+                        : generatedVariations.length > 0
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                    }`}
+                    style={{ 
+                      backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                    }}
+                  >
+                    <span className="truncate">{situation.name}</span>
+                    <AiOutlineClose 
+                      size={12} 
+                      className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (generatedVariations.length === 0) {
+                          handleDeleteSituation(situation.id)
+                        }
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">Phrase</h3>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
+          onFocus={scrollPreservation.onFocus}
+          onBlur={scrollPreservation.onBlur}
           placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
@@ -252,6 +311,65 @@ export default function PhraseAdd({
         onReset={onResetVariations}
         error={error}
       />
+
+      {/* シチュエーション追加モーダル */}
+      <AddContextModal
+        isOpen={isAddContextModalOpen}
+        onClose={() => setIsAddContextModalOpen(false)}
+        onAdd={handleAddContext}
+      />
+
+      {/* シチュエーション削除確認モーダル */}
+      <Modal isOpen={!!deletingSituationId} onClose={handleCancelDelete}>
+        <div className="p-6">
+          {/* ヘッダー部分 */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+              Delete Situation
+            </h2>
+          </div>
+
+          {/* 確認メッセージ */}
+          <div className="mb-6">
+            <p className="text-gray-700">
+              このシチュエーションを削除してもよろしいですか？<br />
+              この操作は取り消すことができません。
+            </p>
+          </div>
+
+          {/* ボタン */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancelDelete}
+              disabled={isDeleting}
+              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                borderColor: '#616161',
+                color: '#616161'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+              }}
+            >
+              {isDeleting ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </div>
+              ) : (
+                'Delete'
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   )
 }

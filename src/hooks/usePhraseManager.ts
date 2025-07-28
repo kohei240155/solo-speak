@@ -11,7 +11,7 @@ export const usePhraseManager = () => {
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
-  const [selectedType, setSelectedType] = useState<'common' | 'business' | 'casual'>('common')
+  const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -72,7 +72,9 @@ export const usePhraseManager = () => {
 
   const fetchUserSettings = useCallback(async () => {
     try {
-      const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings')
+      const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings', {
+        showErrorToast: false // LP画面のエラーはトーストを表示しない
+      })
       
       // 初期化済みの場合は何もしない
       if (userSettingsInitialized) {
@@ -99,7 +101,9 @@ export const usePhraseManager = () => {
     }
     
     try {
-      const data = await api.get<{ remainingGenerations: number }>('/api/user/phrase-generations')
+      const data = await api.get<{ remainingGenerations: number }>('/api/user/phrase-generations', {
+        showErrorToast: false // LP画面のエラーはトーストを表示しない
+      })
       setRemainingGenerations(data.remainingGenerations)
     } catch {
       // ネットワークエラーや認証エラーの場合は静かに処理
@@ -112,7 +116,9 @@ export const usePhraseManager = () => {
     
     setIsLoadingPhrases(true)
     try {
-      const data = await api.get<{ phrases: SavedPhrase[], pagination?: { hasMore: boolean, total: number } }>(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`)
+      const data = await api.get<{ phrases: SavedPhrase[], pagination?: { hasMore: boolean, total: number } }>(`/api/phrase?userId=${user.id}&languageCode=${learningLanguage}&page=${page}&limit=10`, {
+        showErrorToast: false // LP画面のエラーはトーストを表示しない
+      })
       const phrases = Array.isArray(data.phrases) ? data.phrases : []
       
       if (!append) {
@@ -141,6 +147,7 @@ export const usePhraseManager = () => {
       if (!append) {
         setSavedPhrases([]) // エラー時は空配列に設定
       }
+      // ネットワークエラーや認証エラーの場合、サイレントに処理する
     } finally {
       setIsLoadingPhrases(false)
     }
@@ -203,7 +210,6 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        selectedStyle: selectedType,
         useChatGptApi
       }
       
@@ -289,6 +295,7 @@ export const usePhraseManager = () => {
         setVariationValidationErrors({})
         setUseChatGptApi(true)  // デフォルトでChatGPT APIをONに
         setDesiredPhrase('')    // フレーズを空に
+        setSelectedContext(null) // コンテキスト選択をリセット
       })
       
       // 保存されたフレーズリストを再取得
@@ -305,8 +312,9 @@ export const usePhraseManager = () => {
     }
   }
 
-  const handleTypeChange = (type: 'common' | 'business' | 'casual') => {
-    setSelectedType(type)
+  const handleContextChange = (context: string | null) => {
+    // 同じコンテキストが選択された場合は選択を解除（null に設定）
+    setSelectedContext(prevContext => prevContext === context ? null : context)
   }
 
   const handleResetVariations = () => {
@@ -317,13 +325,6 @@ export const usePhraseManager = () => {
       setError('') // エラーメッセージもクリア
     })
   }
-
-  useEffect(() => {
-    // ユーザーがログインしている場合のみ言語一覧を取得
-    if (user) {
-      fetchLanguages()
-    }
-  }, [fetchLanguages, user])
 
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {
@@ -340,13 +341,18 @@ export const usePhraseManager = () => {
   }, [generatedVariations.length])
 
   useEffect(() => {
-    // ユーザーの残り生成回数を取得
+    // ユーザーの初期データを並列取得
     if (user) {
-      fetchUserRemainingGenerations()
-      fetchUserSettings()
-      fetchSavedPhrases(1, false)
+      Promise.all([
+        fetchLanguages(),
+        fetchUserRemainingGenerations(),
+        fetchUserSettings(),
+        fetchSavedPhrases(1, false)
+      ]).catch(error => {
+        console.error('初期データ取得エラー:', error)
+      })
     }
-  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations])
+  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {
@@ -366,7 +372,6 @@ export const usePhraseManager = () => {
     learningLanguage,
     setLearningLanguage,
     desiredPhrase,
-    selectedType,
     generatedVariations,
     isLoading,
     error,
@@ -383,6 +388,7 @@ export const usePhraseManager = () => {
     phraseValidationError,
     variationValidationErrors,
     useChatGptApi,
+    selectedContext,
     
     // Handlers
     handleEditVariation,
@@ -392,8 +398,8 @@ export const usePhraseManager = () => {
     handleResetVariations,
     fetchSavedPhrases,
     checkUnsavedChanges,
-    handleTypeChange,
     handleLearningLanguageChange,
-    handleUseChatGptApiChange
+    handleUseChatGptApiChange,
+    handleContextChange
   }
 }

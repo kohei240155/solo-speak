@@ -107,3 +107,30 @@ input:disabled, textarea:disabled, select:disabled {
     content: "";
   }
 }
+
+/* フォーム要素のスクロール位置保持対策 */
+input, textarea, select {
+  /* iOS Safari でのオートスクロール防止 */
+  scroll-behavior: auto;
+}
+
+/* ページ全体のスクロール動作を制御 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* フォーカス時のスクロール位置変更を防ぐ */
+input:focus, textarea:focus, select:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* モバイルでのビューポート調整 */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  input, textarea, select {
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}

@@ -15,6 +15,7 @@ import {
   checkUsernameConflict 
 } from '@/utils/database-helpers'
 import { Gender } from '@/generated/prisma'
+import { prisma } from '@/utils/prisma'
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
@@ -68,6 +69,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: requiredValidation.error }, { status: 400 })
     }
 
+    // 言語IDの存在確認
+    try {
+      const [nativeLanguage, learningLanguage] = await Promise.all([
+        prisma.language.findUnique({ where: { id: nativeLanguageId } }),
+        prisma.language.findUnique({ where: { id: defaultLearningLanguageId } })
+      ])
+
+      if (!nativeLanguage) {
+        return NextResponse.json({ 
+          error: `Native language with ID '${nativeLanguageId}' not found. Please select a valid language.` 
+        }, { status: 400 })
+      }
+
+      if (!learningLanguage) {
+        return NextResponse.json({ 
+          error: `Learning language with ID '${defaultLearningLanguageId}' not found. Please select a valid language.` 
+        }, { status: 400 })
+      }
+    } catch (error) {
+      console.error('Error validating language IDs:', error)
+      return NextResponse.json({ 
+        error: 'Failed to validate language selection. Please try again.' 
+      }, { status: 500 })
+    }
+
     // ユーザーが既に存在するかチェック
     const existingUser = await checkUserExists(authResult.user.id)
 
@@ -98,6 +124,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result, { status: existingUser ? 200 : 201 })
   } catch (error) {
+    console.error('POST /api/user/settings - Detailed error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+      timestamp: new Date().toISOString()
+    })
     return createErrorResponse(error, 'POST /api/user/settings')
   }
 }

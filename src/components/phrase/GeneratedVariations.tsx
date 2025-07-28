@@ -1,6 +1,7 @@
 import { PhraseVariation } from '@/types/phrase'
 import { GrPowerReset } from 'react-icons/gr'
 import { AiOutlineCaretRight } from 'react-icons/ai'
+import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
@@ -27,6 +28,9 @@ export default function GeneratedVariations({
   onReset,
   error
 }: GeneratedVariationsProps) {
+  // スクロール位置保持機能
+  const scrollPreservation = useScrollPreservation()
+  
   if (generatedVariations.length === 0) {
     return null
   }
@@ -65,6 +69,8 @@ export default function GeneratedVariations({
           <textarea
             value={editingVariations[index] || variation.text}
             onChange={(e) => onEditVariation(index, e.target.value)}
+            onFocus={scrollPreservation.onFocus}
+            onBlur={scrollPreservation.onBlur}
             className={`w-full border rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 ${
               variationValidationErrors[index]
                 ? 'border-red-300 focus:ring-red-500'

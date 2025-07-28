@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
-import { api } from '@/utils/api'
+import { api, ApiError } from '@/utils/api'
 
 type AuthContextType = {
   user: User | null
@@ -12,11 +12,14 @@ type AuthContextType = {
   loading: boolean
   userIconUrl: string | null
   isUserSetupComplete: boolean
+  shouldRedirectToSettings: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
   refreshUser: () => Promise<void>
   refreshUserSettings: () => Promise<void>
+  refreshSession: () => Promise<void>
+  clearSettingsRedirect: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -36,6 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
+  const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
 
   useEffect(() => {
     // タイムアウト設定（5秒後に強制的にローディング解除）
@@ -188,82 +192,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const userData = await api.get<{ iconUrl?: string }>('/api/user/settings', {
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-        timeout: 10000
+        showErrorToast: false // 404エラー時のトーストを無効化
       })
       
+      // ユーザーが存在する場合
       setIsUserSetupComplete(true)
       
-      // 画像URLの有効性をチェック
-      if (userData.iconUrl && typeof userData.iconUrl === 'string' && userData.iconUrl.trim() !== '') {
+      // DBのアイコンURLがある場合は使用
+      if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
-        return
-      }
-      
-      // DBにアイコンURLがない場合、現在の値を保持（Googleアバターなど）
-      setUserIconUrl(prev => {
-        if (prev && (prev.includes('googleusercontent.com') || 
-                    prev.includes('googleapis.com') || 
-                    prev.includes('google.com'))) {
-          return prev // Googleアバターを保持
+      } else {
+        // DBにアイコンURLがない場合はGoogleアバターを使用
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        if (googleAvatarUrl) {
+          setUserIconUrl(googleAvatarUrl)
+        } else {
+          setUserIconUrl(null)
         }
-        return null
-      })
+      }
     } catch (error) {
-      // 404エラーの場合は初回ログイン時
-      if (error instanceof Error && error.message.includes('404')) {
+      // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
+      if (error instanceof ApiError && error.status === 404) {
+        console.log('Initial user setup required - user not found in database')
+        setIsUserSetupComplete(false)
+        setShouldRedirectToSettings(true)
+        
+        // Googleアバターがある場合は表示
+        const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        setUserIconUrl(googleAvatarUrl || null)
+      } else {
+        // その他のエラーの場合
+        console.error('Error fetching user settings:', error)
         setIsUserSetupComplete(false)
         
-        // Googleアバターがある場合は自動的に表示
+        // Googleアバターがある場合は保持
         const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-        if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                               googleAvatarUrl.includes('googleapis.com') || 
-                               googleAvatarUrl.includes('google.com'))) {
-          setUserIconUrl(googleAvatarUrl)
-          return
-        }
-        
-        setUserIconUrl(null)
-        return
+        setUserIconUrl(googleAvatarUrl || null)
       }
-      
-      // タイムアウトエラーまたはネットワークエラーの場合
-      if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
-        // タイムアウト時の処理（ログなし）
-      }
-      
-      setIsUserSetupComplete(false)
-      // エラー時は現在のアイコンを保持
-      setUserIconUrl(prev => {
-        if (prev && (prev.includes('googleusercontent.com') || 
-                    prev.includes('googleapis.com') || 
-                    prev.includes('google.com'))) {
-          return prev
-        }
-        return null
-      })
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
   // ユーザーとセッションが利用可能になったらユーザー設定を取得
   useEffect(() => {
     if (user?.id && session && !loading) {
-      // Googleアバターがある場合は即座に設定（一度だけ）
+      // Googleアバターを即座に設定
       const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-      if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
-                             googleAvatarUrl.includes('googleapis.com') || 
-                             googleAvatarUrl.includes('google.com'))) {
-        setUserIconUrl(prev => prev || googleAvatarUrl) // 既にセットされている場合は更新しない
+      if (googleAvatarUrl) {
+        setUserIconUrl(googleAvatarUrl)
       }
       
-      // その後でAPIから正式な設定を取得（初回のみ）
-      if (!isUserSetupComplete) {
-        refreshUserSettings()
-      }
+      // ユーザー設定を取得（初回セットアップの確認）
+      refreshUserSettings()
     }
-  }, [user?.id, session, loading, isUserSetupComplete, user?.user_metadata?.avatar_url, user?.user_metadata?.picture, refreshUserSettings])
+  }, [user?.id, session, loading, user?.user_metadata?.avatar_url, user?.user_metadata?.picture, refreshUserSettings])
 
   // カスタムイベントでユーザー設定の更新を監視
   useEffect(() => {
@@ -291,17 +272,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const refreshSession = async () => {
+    try {
+      const { data: { session: newSession }, error } = await supabase.auth.refreshSession()
+      
+      if (error) {
+        console.error('Session refresh error:', error)
+        // セッション更新に失敗した場合、現在のセッションを取得
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        if (currentSession) {
+          setSession(currentSession)
+          setUser(currentSession.user)
+        }
+        return
+      }
+      
+      if (newSession) {
+        setSession(newSession)
+        setUser(newSession.user)
+      }
+    } catch (error) {
+      console.error('Failed to refresh session:', error)
+    }
+  }
+
+  const clearSettingsRedirect = () => {
+    setShouldRedirectToSettings(false)
+  }
+
   const value = {
     user,
     session,
     loading,
     userIconUrl,
     isUserSetupComplete,
+    shouldRedirectToSettings,
     signOut,
     signInWithGoogle,
     updateUserMetadata,
     refreshUser,
     refreshUserSettings,
+    refreshSession,
+    clearSettingsRedirect,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
