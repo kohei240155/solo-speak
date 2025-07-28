@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import { usePhraseList } from '@/hooks/usePhraseList'
-import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/common/LanguageSelector'
@@ -10,14 +9,9 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseList from '@/components/phrase/PhraseList'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
-import { AuthLoading } from '@/components/auth/AuthLoading'
 import { Toaster } from 'react-hot-toast'
-import { TabType } from '@/types/phrase'
 
 export default function PhraseListPage() {
-  // 認証ガード - ログインしていない場合はホームページにリダイレクト
-  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
-  
   const {
     // State
     learningLanguage,
@@ -49,26 +43,6 @@ export default function PhraseListPage() {
     closeQuizModal,
     handleQuizStart
   } = useQuizModal()
-
-  // タブの変更ハンドリング
-  const handleTabChange = (tab: TabType) => {
-    if (tab === 'Speak') {
-      // Speakタブがクリックされた場合はモーダルを表示するだけ
-      openSpeakModal()
-    } else if (tab === 'Quiz') {
-      // Quizタブがクリックされた場合はモーダルを表示するだけ
-      openQuizModal()
-    } else {
-      // 他のタブの場合は通常の遷移
-      switch (tab) {
-        case 'Add':
-          window.location.href = '/phrase/add'
-          break
-        default:
-          break
-      }
-    }
-  }
 
   // 無限スクロール機能（スロットリング付き）
   useEffect(() => {
@@ -104,11 +78,6 @@ export default function PhraseListPage() {
     }
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
 
-  // 認証チェック中またはログインしていない場合は早期リターン
-  if (authLoading || !isAuthenticated) {
-    return <AuthLoading />
-  }
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
@@ -129,7 +98,6 @@ export default function PhraseListPage() {
         {/* タブメニュー */}
         <PhraseTabNavigation 
           activeTab="List" 
-          onTabChange={handleTabChange}
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={openQuizModal}
         />

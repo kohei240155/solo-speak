@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
 import ViewportFix from "@/components/common/ViewportFix";
 import ServiceWorkerRegistration from "@/components/common/ServiceWorkerRegistration";
+import AuthRouteGuard from "@/components/auth/AuthRouteGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,11 +66,13 @@ export default function RootLayout({
         <ViewportFix />
         <ServiceWorkerRegistration />
         <AuthProvider>
-          <Header />
-          <SecondaryNavigation />
-          <main className="flex-1">
-            {children}
-          </main>
+          <AuthRouteGuard>
+            <Header />
+            <SecondaryNavigation />
+            <main className="flex-1">
+              {children}
+            </main>
+          </AuthRouteGuard>
         </AuthProvider>
       </body>
     </html>
