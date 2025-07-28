@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // タイムアウト設定（5秒後に強制的にローディング解除）
     const loadingTimeout = setTimeout(() => {
-      console.warn('認証チェックがタイムアウトしました。ローディングを強制解除します。')
       setLoading(false)
       setSession(null)
       setUser(null)
@@ -64,12 +63,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.error('セッション取得エラー:', error)
           // エラー時はローカル認証情報をクリア（サーバー通信なしで）
           try {
             await supabase.auth.signOut()
-          } catch (signOutError) {
-            console.warn('signOut通信エラー（ローカル情報はクリア済み）:', signOutError)
+          } catch {
             // ローカルストレージから認証情報を手動でクリア
             if (typeof window !== 'undefined') {
               window.localStorage.removeItem('supabase.auth.token')
@@ -82,13 +79,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setSession(session)
           setUser(session?.user ?? null)
         }
-      } catch (e) {
-        console.error('セッション取得で例外発生:', e)
+      } catch {
         // 例外時はローカル認証情報をクリア（サーバー通信なしで）
         try {
           await supabase.auth.signOut()
-        } catch (signOutError) {
-          console.warn('signOut通信エラー（ローカル情報はクリア済み）:', signOutError)
+        } catch {
           // ローカルストレージから認証情報を手動でクリア
           if (typeof window !== 'undefined') {
             window.localStorage.removeItem('supabase.auth.token')
@@ -116,8 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUserIconUrl(null)
             setIsUserSetupComplete(false)
           }
-        } catch (e) {
-          console.error('認証状態変更処理で例外:', e)
+        } catch {
           setSession(null)
           setUser(null)
           setUserIconUrl(null)
@@ -148,8 +142,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Supabaseからのログアウト（バックグラウンドで実行）
     try {
       await supabase.auth.signOut()
-    } catch (error) {
-      console.warn('Supabaseサインアウト通信エラー（ローカル情報はクリア済み）:', error)
+    } catch {
       // ローカルストレージから認証情報を手動でクリア
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('supabase.auth.token')
@@ -186,7 +179,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     if (error) {
-      console.error('Failed to update user metadata:', error)
+      throw error
     }
   }
 
@@ -274,8 +267,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (refreshedUser && !error) {
         setUser(refreshedUser)
       }
-    } catch (error) {
-      console.error('Failed to refresh user:', error)
+    } catch {
+      // エラー時は何もしない
     }
   }
 

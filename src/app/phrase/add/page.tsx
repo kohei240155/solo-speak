@@ -4,19 +4,14 @@ import { useEffect } from 'react'
 import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
-import { useAuthGuard } from '@/hooks/useAuthGuard'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
-  // 認証ガード - ログインしていない場合はホームページにリダイレクト
-  const { loading: authLoading, isAuthenticated } = useAuthGuard('/')
-  
   const {
     // State
     nativeLanguage,
@@ -106,17 +101,14 @@ export default function PhraseAddPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {authLoading || !isAuthenticated ? (
-            <LoadingSpinner message="Loading..." />
-          ) : (
-            <PhraseAdd
-              languages={languages}
-              nativeLanguage={nativeLanguage}
-              remainingGenerations={remainingGenerations}
-              desiredPhrase={desiredPhrase}
-              phraseValidationError={phraseValidationError}
-              isLoading={isLoading}
-              isSaving={isSaving}
+          <PhraseAdd
+            languages={languages}
+            nativeLanguage={nativeLanguage}
+            remainingGenerations={remainingGenerations}
+            desiredPhrase={desiredPhrase}
+            phraseValidationError={phraseValidationError}
+            isLoading={isLoading}
+            isSaving={isSaving}
               generatedVariations={generatedVariations}
               editingVariations={editingVariations}
               variationValidationErrors={variationValidationErrors}
@@ -132,7 +124,6 @@ export default function PhraseAddPage() {
               onUseChatGptApiChange={handleUseChatGptApiChange}
               onContextChange={handleContextChange}
             />
-          )}
         </div>
       </div>
       

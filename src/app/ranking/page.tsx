@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import AuthGuard from '@/components/auth/AuthGuard'
 import { api } from '@/utils/api'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
@@ -162,9 +161,8 @@ export default function RankingPage() {
   }
 
   return (
-    <AuthGuard user={user} loading={loading}>
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-2 sm:px-4 md:px-6">
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-2 sm:px-4 md:px-6">
           <Toaster />
           
           {/* Ranking タイトルと言語選択を同じ行に配置 */}
@@ -326,6 +324,5 @@ export default function RankingPage() {
           </div>
         </div>
       </div>
-    </AuthGuard>
   )
 }
