@@ -18,7 +18,7 @@ export async function DELETE(
     const { id } = await params
 
     // シチュエーションの存在確認とユーザー権限チェック
-    const situation = await prisma.situation.findFirst({
+    const situation = await prisma.situation.findUnique({
       where: {
         id,
         userId: user.id

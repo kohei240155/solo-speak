@@ -22,6 +22,12 @@ export async function GET(request: NextRequest) {
         userId: user.id,
         deletedAt: null
       },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true
+      },
       orderBy: {
         createdAt: 'desc'
       }
