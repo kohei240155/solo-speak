@@ -1,7 +1,6 @@
 import { PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
@@ -13,8 +12,7 @@ import ScrollableContainer from '@/components/common/ScrollableContainer'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
-  ssr: false,
-  loading: () => <LoadingSpinner size="md" message="Loading variations..." />
+  ssr: false
 })
 
 interface PhraseAddProps {
