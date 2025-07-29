@@ -21,6 +21,13 @@ export const usePhraseList = () => {
     refetch 
   } = useInfinitePhrases(learningLanguage)
 
+  // ページ表示時に最新データを取得
+  useEffect(() => {
+    if (learningLanguage && !isLoading) {
+      refetch() // キャッシュを無視して最新データを取得
+    }
+  }, [learningLanguage, refetch, isLoading])
+
   // ユーザー設定から言語情報を初期化
   useEffect(() => {
     if (userSettings && !userSettingsInitialized) {
@@ -49,6 +56,11 @@ export const usePhraseList = () => {
     }
   }, [setSize, refetch])
 
+  // 手動リフレッシュ関数
+  const refreshPhrases = useCallback(() => {
+    refetch()
+  }, [refetch])
+
   return {
     // State
     learningLanguage,
@@ -64,5 +76,6 @@ export const usePhraseList = () => {
     // Handlers
     handleLearningLanguageChange,
     fetchSavedPhrases,
+    refreshPhrases,
   }
 }

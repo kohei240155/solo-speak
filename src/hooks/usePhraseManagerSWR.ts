@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation } from '@/types/phrase'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/useSWRApi'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
 
 // 型定義
@@ -181,11 +181,12 @@ export const usePhraseManagerSWR = () => {
 
     try {
       const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', {
-        phrase: desiredPhrase,
+        desiredPhrase,
         nativeLanguage,
         learningLanguage,
+        selectedStyle: 'common' as const,
         useChatGptApi,
-        context: selectedContext
+        selectedContext
       })
 
       if (response.variations && response.variations.length > 0) {
@@ -235,12 +236,11 @@ export const usePhraseManagerSWR = () => {
 
     try {
       await api.post('/api/phrase', {
-        japanese: desiredPhrase,
-        english: textToSave,
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
+        text: textToSave,
         translation: desiredPhrase,
         nuance: variation.explanation || '',
-        level: variation.type || 'common',
+        level: 'common',
         context: selectedContext
       })
 
@@ -253,6 +253,9 @@ export const usePhraseManagerSWR = () => {
         setPhraseValidationError('')
         setVariationValidationErrors({})
       })
+
+      // フレーズリストのキャッシュを無効化して最新データを取得
+      mutate((key) => typeof key === 'string' && key.includes('/api/phrase'))
 
       toast.success('フレーズを保存しました')
     } catch (error) {

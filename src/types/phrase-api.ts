@@ -9,6 +9,7 @@ export interface CreatePhraseRequestBody {
   nuance?: string
   level?: 'common' | 'polite' | 'casual'
   phraseLevelId?: string
+  context?: string
 }
 
 // フレーズ更新リクエストボディの型

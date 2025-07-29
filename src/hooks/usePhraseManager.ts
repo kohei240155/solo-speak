@@ -301,7 +301,7 @@ export const usePhraseManager = () => {
         text: finalText,      // 学習言語のフレーズ
         translation: desiredPhrase, // 母国語の翻訳
         nuance: variation.explanation, // ニュアンス説明
-        level: variation.type, // フレーズのレベル（common, polite, casual）を追加
+        level: 'common', // フレーズのレベル（デフォルトcommon）
       })
 
       // 成功時の処理 - 即座に初期状態に戻す
