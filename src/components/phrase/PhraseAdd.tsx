@@ -1,4 +1,5 @@
 import { Language, PhraseVariation } from '@/types/phrase'
+import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
@@ -6,7 +7,6 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
-import { useSituations } from '@/hooks/useSituations'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 // GeneratedVariationsコンポーネントを動的インポート
@@ -30,6 +30,7 @@ interface PhraseAddProps {
   error: string
   useChatGptApi: boolean
   selectedContext: 'friend' | 'sns' | string | null
+  situations: SituationResponse[]
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
@@ -37,6 +38,8 @@ interface PhraseAddProps {
   onResetVariations: () => void
   onUseChatGptApiChange: (value: boolean) => void
   onContextChange?: (context: string | null) => void
+  addSituation: (name: string) => Promise<void>
+  deleteSituation: (id: string) => Promise<void>
 }
 
 export default function PhraseAdd({
@@ -54,21 +57,21 @@ export default function PhraseAdd({
   error,
   useChatGptApi,
   selectedContext,
+  situations,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
   onResetVariations,
   onUseChatGptApiChange,
-  onContextChange
+  onContextChange,
+  addSituation,
+  deleteSituation
 }: PhraseAddProps) {
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  
-  // Situationsを取得
-  const { situations, addSituation, deleteSituation } = useSituations()
   
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -106,7 +109,7 @@ export default function PhraseAdd({
       setDeletingSituationId(null)
       
       // 削除したシチュエーションが選択されていた場合、選択を解除
-      if (selectedContext && situations.find(s => s.id === deletingSituationId)?.name === selectedContext) {
+      if (selectedContext && situations.find((s: SituationResponse) => s.id === deletingSituationId)?.name === selectedContext) {
         onContextChange?.(null)
       }
     } catch (error) {
@@ -133,60 +136,58 @@ export default function PhraseAdd({
 
       {/* Options section */}
       <div className="mb-4">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <h3 className="text-base font-semibold text-gray-900">Situation</h3>
           
           {/* シチュエーション表示エリア全体を囲む */}
-          <div className="border border-gray-200 rounded-lg p-2">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => setIsAddContextModalOpen(true)}
-                disabled={generatedVariations.length > 0}
-                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  generatedVariations.length > 0
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-                }`}
-                title="新しいシチュエーションを追加"
-              >
-                <BsPlusSquare size={16} />
-              </button>
-              
-              <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
-                {situations.map((situation) => (
-                  <button 
-                    key={situation.id}
-                    onClick={() => {
-                      if (generatedVariations.length === 0 && onContextChange) {
-                        onContextChange(selectedContext === situation.name ? null : situation.name)
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsAddContextModalOpen(true)}
+              disabled={generatedVariations.length > 0}
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                generatedVariations.length > 0
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+              title="新しいシチュエーションを追加"
+            >
+              <BsPlusSquare size={16} />
+            </button>
+            
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide min-w-0 flex-1">
+              {situations.map((situation: SituationResponse) => (
+                <button 
+                  key={situation.id}
+                  onClick={() => {
+                    if (generatedVariations.length === 0 && onContextChange) {
+                      onContextChange(selectedContext === situation.name ? null : situation.name)
+                    }
+                  }}
+                  disabled={generatedVariations.length > 0}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                    selectedContext === situation.name
+                      ? 'text-white border-transparent shadow-sm' 
+                      : generatedVariations.length > 0
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                  }`}
+                  style={{ 
+                    backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                  }}
+                >
+                  <span className="whitespace-nowrap">{situation.name}</span>
+                  <AiOutlineClose 
+                    size={12} 
+                    className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (generatedVariations.length === 0) {
+                        handleDeleteSituation(situation.id)
                       }
                     }}
-                    disabled={generatedVariations.length > 0}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
-                      selectedContext === situation.name
-                        ? 'text-white border-transparent shadow-sm' 
-                        : generatedVariations.length > 0
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
-                    }`}
-                    style={{ 
-                      backgroundColor: selectedContext === situation.name ? '#616161' : undefined
-                    }}
-                  >
-                    <span className="truncate">{situation.name}</span>
-                    <AiOutlineClose 
-                      size={12} 
-                      className="flex-shrink-0 hover:text-red-500 transition-colors" 
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (generatedVariations.length === 0) {
-                          handleDeleteSituation(situation.id)
-                        }
-                      }}
-                    />
-                  </button>
-                ))}
-              </div>
+                  />
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -194,7 +195,7 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
-        <h3 className="text-base font-semibold text-gray-900 mb-3">Phrase</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Phrase</h3>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}

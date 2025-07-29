@@ -5,6 +5,7 @@ import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
@@ -23,6 +24,8 @@ export default function PhraseAddPage() {
     error,
     remainingGenerations,
     languages,
+    situations,
+    isInitializing,
     isSaving,
     savingVariationIndex,
     editingVariations,
@@ -40,7 +43,9 @@ export default function PhraseAddPage() {
     handleResetVariations,
     checkUnsavedChanges,
     handleUseChatGptApiChange,
-    handleContextChange
+    handleContextChange,
+    addSituation,
+    deleteSituation
   } = usePhraseManager()
 
   // Modal functionality
@@ -101,29 +106,40 @@ export default function PhraseAddPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <PhraseAdd
-            languages={languages}
-            nativeLanguage={nativeLanguage}
-            remainingGenerations={remainingGenerations}
-            desiredPhrase={desiredPhrase}
-            phraseValidationError={phraseValidationError}
-            isLoading={isLoading}
-            isSaving={isSaving}
-              generatedVariations={generatedVariations}
-              editingVariations={editingVariations}
-              variationValidationErrors={variationValidationErrors}
-              savingVariationIndex={savingVariationIndex}
-              error={error}
-              useChatGptApi={useChatGptApi}
-              selectedContext={selectedContext}
-              onPhraseChange={handlePhraseChange}
-              onGeneratePhrase={handleGeneratePhrase}
-              onEditVariation={handleEditVariation}
-              onSelectVariation={handleSelectVariation}
-              onResetVariations={handleResetVariations}
-              onUseChatGptApiChange={handleUseChatGptApiChange}
-              onContextChange={handleContextChange}
+          {isInitializing ? (
+            <LoadingSpinner 
+              size="md" 
+              message="データを読み込んでいます..." 
+              className="py-12"
             />
+          ) : (
+            <PhraseAdd
+              languages={languages}
+              nativeLanguage={nativeLanguage}
+              remainingGenerations={remainingGenerations}
+              desiredPhrase={desiredPhrase}
+              phraseValidationError={phraseValidationError}
+              isLoading={isLoading}
+              isSaving={isSaving}
+                generatedVariations={generatedVariations}
+                editingVariations={editingVariations}
+                variationValidationErrors={variationValidationErrors}
+                savingVariationIndex={savingVariationIndex}
+                error={error}
+                useChatGptApi={useChatGptApi}
+                selectedContext={selectedContext}
+                situations={situations}
+                onPhraseChange={handlePhraseChange}
+                onGeneratePhrase={handleGeneratePhrase}
+                onEditVariation={handleEditVariation}
+                onSelectVariation={handleSelectVariation}
+                onResetVariations={handleResetVariations}
+                onUseChatGptApiChange={handleUseChatGptApiChange}
+                onContextChange={handleContextChange}
+                addSituation={addSituation}
+                deleteSituation={deleteSituation}
+              />
+          )}
         </div>
       </div>
       

@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { Language, SavedPhrase, PhraseVariation } from '@/types/phrase'
+import { SituationResponse } from '@/types/situation'
 import toast from 'react-hot-toast'
 
 export const usePhraseManager = () => {
@@ -17,6 +18,8 @@ export const usePhraseManager = () => {
   const [error, setError] = useState('')
   const [remainingGenerations, setRemainingGenerations] = useState(0)
   const [languages, setLanguages] = useState<Language[]>([])
+  const [situations, setSituations] = useState<SituationResponse[]>([])
+  const [isInitializing, setIsInitializing] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [savingVariationIndex, setSavingVariationIndex] = useState<number | null>(null)
   const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
@@ -40,8 +43,10 @@ export const usePhraseManager = () => {
       setRemainingGenerations(0)
       setSavedPhrases([])
       setLanguages([])
+      setSituations([])
       setUserSettingsInitialized(false)
       setLearningLanguage('en')
+      setIsInitializing(true)
     }
   }, [user])
 
@@ -67,6 +72,20 @@ export const usePhraseManager = () => {
       setLanguages(data)
     } catch {
       setLanguages([])
+    }
+  }, [user])
+
+  const fetchSituations = useCallback(async () => {
+    // ユーザーがログインしていない場合は何もしない
+    if (!user) {
+      return
+    }
+
+    try {
+      const data = await api.get<{ situations: SituationResponse[] }>('/api/situations')
+      setSituations(data.situations)
+    } catch {
+      setSituations([])
     }
   }, [user])
 
@@ -210,7 +229,9 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        useChatGptApi
+        selectedStyle: 'common' as const,
+        useChatGptApi,
+        selectedContext
       }
       
       const data = await api.post<{ variations?: PhraseVariation[] }>('/api/phrase/generate', requestBody)
@@ -317,6 +338,26 @@ export const usePhraseManager = () => {
     setSelectedContext(prevContext => prevContext === context ? null : context)
   }
 
+  const addSituation = useCallback(async (name: string) => {
+    try {
+      const newSituation = await api.post<SituationResponse>('/api/situations', { name })
+      setSituations(prev => [newSituation, ...prev])
+    } catch (err) {
+      console.error('Failed to add situation:', err)
+      throw err
+    }
+  }, [])
+
+  const deleteSituation = useCallback(async (id: string) => {
+    try {
+      await api.delete(`/api/situations/${id}`)
+      setSituations(prev => prev.filter(situation => situation.id !== id))
+    } catch (err) {
+      console.error('Failed to delete situation:', err)
+      throw err
+    }
+  }, [])
+
   const handleResetVariations = () => {
     // ユーザーの編集内容のみをリセット（生成されたフレーズは残す）
     flushSync(() => {
@@ -343,16 +384,21 @@ export const usePhraseManager = () => {
   useEffect(() => {
     // ユーザーの初期データを並列取得
     if (user) {
+      setIsInitializing(true)
       Promise.all([
         fetchLanguages(),
+        fetchSituations(),
         fetchUserRemainingGenerations(),
         fetchUserSettings(),
         fetchSavedPhrases(1, false)
-      ]).catch(error => {
+      ]).then(() => {
+        setIsInitializing(false)
+      }).catch(error => {
         console.error('初期データ取得エラー:', error)
+        setIsInitializing(false)
       })
     }
-  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages])
+  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages, fetchSituations])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {
@@ -377,6 +423,8 @@ export const usePhraseManager = () => {
     error,
     remainingGenerations,
     languages,
+    situations,
+    isInitializing,
     isSaving,
     savingVariationIndex,
     editingVariations,
@@ -400,6 +448,8 @@ export const usePhraseManager = () => {
     checkUnsavedChanges,
     handleLearningLanguageChange,
     handleUseChatGptApiChange,
-    handleContextChange
+    handleContextChange,
+    addSituation,
+    deleteSituation
   }
 }
