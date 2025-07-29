@@ -213,7 +213,7 @@ export default function UserSettingsForm({
               type="radio"
               value="male"
               {...register('gender')}
-              className="mr-2"
+              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
               disabled={isDisabled}
             />
             Male
@@ -223,7 +223,7 @@ export default function UserSettingsForm({
               type="radio"
               value="female"
               {...register('gender')}
-              className="mr-2"
+              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
               disabled={isDisabled}
             />
             Female
@@ -233,7 +233,7 @@ export default function UserSettingsForm({
               type="radio"
               value="unspecified"
               {...register('gender')}
-              className="mr-2"
+              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
               disabled={isDisabled}
             />
             Unspecified
