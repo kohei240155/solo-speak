@@ -19,6 +19,7 @@ const createPhraseSchema = z.object({
   nuance: z.string().optional(),
   level: z.enum(['common', 'polite', 'casual']).optional(),
   phraseLevelId: z.string().optional(),
+  context: z.string().optional(),
 })
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -30,7 +31,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body: unknown = await request.json()
-    const { languageId, text, translation, nuance, level, phraseLevelId }: CreatePhraseRequestBody = createPhraseSchema.parse(body)
+    const { languageId, text, translation, nuance, level, phraseLevelId, context }: CreatePhraseRequestBody = createPhraseSchema.parse(body)
+
+    // contextは現在保存されませんが、将来の拡張用に受け取り
 
     // 認証されたユーザーIDを使用
     const userId = authResult.user.id

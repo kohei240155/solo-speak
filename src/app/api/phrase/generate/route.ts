@@ -7,7 +7,6 @@ const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(100),
-  selectedStyle: z.enum(['common', 'business', 'casual']),
   useChatGptApi: z.boolean().default(false),
   selectedContext: z.string().optional()
 })
@@ -21,7 +20,6 @@ const phraseVariationsSchema = z.object({
 })
 
 interface PhraseVariation {
-  type: 'common' | 'business' | 'casual'
   text: string
   explanation?: string
 }
@@ -39,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle, useChatGptApi, selectedContext } = generatePhraseSchema.parse(body)
+    const { nativeLanguage, learningLanguage, desiredPhrase, useChatGptApi, selectedContext } = generatePhraseSchema.parse(body)
 
     // ChatGPT APIを使用するかどうかで分岐
     if (useChatGptApi) {
@@ -65,7 +63,7 @@ export async function POST(request: NextRequest) {
           messages: [
             {
               role: 'system',
-              content: getSystemPrompt(nativeLanguage, learningLanguage, selectedStyle, situation)
+              content: getSystemPrompt(nativeLanguage, learningLanguage, situation)
             },
             {
               role: 'user',
@@ -101,7 +99,6 @@ export async function POST(request: NextRequest) {
       
       // レスポンス形式を既存のインターフェースに変換
       const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
-        type: selectedStyle,
         text: variation.text,
         explanation: variation.explanation
       }))
@@ -114,7 +111,7 @@ export async function POST(request: NextRequest) {
     } else {
       // テスト用: 固定の応答を返す
       const result: GeneratePhraseResponse = {
-        variations: getMockVariations(selectedStyle)
+        variations: getMockVariations()
       }
       return NextResponse.json(result)
     }
@@ -135,20 +132,17 @@ export async function POST(request: NextRequest) {
 }
 
 // テスト用の固定レスポンス関数
-function getMockVariations(selectedStyle: 'common' | 'business' | 'casual'): PhraseVariation[] {
+function getMockVariations(): PhraseVariation[] {
   return [
     {
-      type: selectedStyle,
       text: 'I want to go see fireworks tomorrow.',
       explanation: '最も直接的な表現。自分の意思をはっきりと伝える標準的な言い回し。'
     },
     {
-      type: selectedStyle,
       text: "I'm thinking of going to see the fireworks tomorrow.",
       explanation: '少し控えめな表現。「考えている」という言葉で、まだ完全には決めていないニュアンスを含む。'
     },
     {
-      type: selectedStyle,
       text: "I'd like to check out the fireworks tomorrow.",
       explanation: 'カジュアルで親しみやすい表現。「check out」を使うことでよりリラックスした雰囲気を演出。'
     }
@@ -157,7 +151,7 @@ function getMockVariations(selectedStyle: 'common' | 'business' | 'casual'): Phr
 
 // ===== ChatGPT API関連関数 (本番用に保持) =====
 
-function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selectedStyle: 'common' | 'business' | 'casual', situation?: string): string {
+function getSystemPrompt(nativeLanguage: string, learningLanguage: string, situation?: string): string {
   const languageNames = {
     ja: '日本語',
     en: '英語',
@@ -168,12 +162,6 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
     de: 'ドイツ語'
   }
 
-  const styleDescriptions = {
-    common: '誰にでも使える自然な言い方（バランスの取れた日常表現）',
-    business: 'ビジネスシーンで使える表現（職場で適切だが堅すぎない、話しやすい表現）',
-    casual: '友達とのラフな会話向けの、砕けた口調'
-  }
-
   const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
   const learningLangName = languageNames[learningLanguage as keyof typeof languageNames] || learningLanguage
 
@@ -182,16 +170,14 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
     ? `\n\n【特定シチュエーション】：${situation}\n上記のシチュエーションに最適で、その場面で実際に使われる自然な表現を生成してください。そのシチュエーションの文脈や雰囲気を十分に考慮し、その場面にふさわしい言葉選びや話し方を反映させてください。`
     : '';
 
-  return `あなたは言語学習のサポートを行う専門家です。次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。
+  return `あなたは言語学習のサポートを行う専門家です。次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。${situationInstruction}
 
-選択されたスタイル：${styleDescriptions[selectedStyle]}${situationInstruction}
-
-このスタイル${situation ? 'とシチュエーション' : ''}に適した、同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した最も自然な口語表現で生成してください。
+${situation ? 'このシチュエーションに最適で、その場面で実際に使われる' : ''}同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した最も自然な口語表現で生成してください。${situation ? 'シチュエーションの文脈や雰囲気を十分に考慮し、その場面にふさわしい言葉選びや話し方を反映させてください。' : ''}
 
 【重要】各表現には必ずニュアンスの説明を付けてください：
 - 他の2つの表現と比較してどのような違いがあるかを明確に説明する
 - 説明は30-50文字程度の簡潔な表現にする
-- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する${situation ? '\n- シチュエーションにおける使用場面や適切さも説明に含める' : ''}
+- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する${situation ? '\n- このシチュエーションでの使用場面や適切さも説明に含める' : ''}
 
 【文字数制限】生成する各表現は200文字以内に収めてください。簡潔で自然な表現を心がけてください。`
 }

@@ -181,11 +181,12 @@ export const usePhraseManagerSWR = () => {
 
     try {
       const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', {
-        phrase: desiredPhrase,
+        desiredPhrase,
         nativeLanguage,
         learningLanguage,
+        selectedStyle: 'common' as const,
         useChatGptApi,
-        context: selectedContext
+        selectedContext
       })
 
       if (response.variations && response.variations.length > 0) {
@@ -235,12 +236,11 @@ export const usePhraseManagerSWR = () => {
 
     try {
       await api.post('/api/phrase', {
-        japanese: desiredPhrase,
-        english: textToSave,
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
+        text: textToSave,
         translation: desiredPhrase,
         nuance: variation.explanation || '',
-        level: variation.type || 'common',
+        level: 'common',
         context: selectedContext
       })
 

@@ -1,7 +1,6 @@
 import { LanguageInfo } from './common'
 
 export interface PhraseVariation {
-  type: 'common' | 'business' | 'casual'
   text: string
   explanation?: string
 }
