@@ -210,7 +210,8 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        useChatGptApi
+        useChatGptApi,
+        selectedContext
       }
       
       const data = await api.post<{ variations?: PhraseVariation[] }>('/api/phrase/generate', requestBody)

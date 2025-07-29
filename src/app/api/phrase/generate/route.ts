@@ -8,7 +8,8 @@ const generatePhraseSchema = z.object({
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(100),
   selectedStyle: z.enum(['common', 'business', 'casual']),
-  useChatGptApi: z.boolean().default(false)
+  useChatGptApi: z.boolean().default(false),
+  selectedContext: z.string().optional()
 })
 
 // Structured Outputs用のレスポンススキーマ
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle, useChatGptApi } = generatePhraseSchema.parse(body)
+    const { nativeLanguage, learningLanguage, desiredPhrase, selectedStyle, useChatGptApi, selectedContext } = generatePhraseSchema.parse(body)
 
     // ChatGPT APIを使用するかどうかで分岐
     if (useChatGptApi) {
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       }
 
       // ChatGPT APIに送信するプロンプトを構築
-      const { prompt, situation } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase)
+      const { prompt, situation } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -195,7 +196,7 @@ function getSystemPrompt(nativeLanguage: string, learningLanguage: string, selec
 【文字数制限】生成する各表現は200文字以内に収めてください。簡潔で自然な表現を心がけてください。`
 }
 
-function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string): { prompt: string; situation?: string } {
+function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string): { prompt: string; situation?: string } {
   const languageNames = {
     ja: '日本語',
     en: '英語',
@@ -210,7 +211,10 @@ function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPh
   
   // 括弧内のシチュエーションを抽出
   const situationMatch = desiredPhrase.match(/\(([^)]+)\)/);
-  const situation = situationMatch ? situationMatch[1] : undefined;
+  const bracketSituation = situationMatch ? situationMatch[1] : undefined;
+  
+  // selectedContextを優先し、なければ括弧内のシチュエーションを使用
+  const situation = selectedContext || bracketSituation;
   
   // シチュエーション部分を除いたフレーズを取得
   const cleanPhrase = desiredPhrase.replace(/\([^)]*\)/g, '').trim();

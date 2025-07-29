@@ -6,6 +6,7 @@ export interface GeneratePhraseRequestBody {
   desiredPhrase: string
   selectedStyle: 'common' | 'business' | 'casual'
   useChatGptApi?: boolean
+  selectedContext?: string
 }
 
 export interface PhraseVariation {
