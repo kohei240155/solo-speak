@@ -37,7 +37,7 @@ export default function RadioButton({
         <div className={`
           w-4 h-4 rounded-full border-2 transition-all duration-200
           ${checked 
-            ? 'border-blue-600 bg-blue-600' 
+            ? 'border-gray-600 bg-gray-600' 
             : 'border-gray-300 bg-white hover:border-gray-400'
           }
           ${disabled ? 'opacity-50' : ''}
