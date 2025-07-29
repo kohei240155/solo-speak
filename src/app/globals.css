@@ -134,3 +134,15 @@ input:focus, textarea:focus, select:focus {
     appearance: none;
   }
 }
+
+/* スクロールバーを非表示にするカスタムクラス */
+.scrollbar-hide {
+  /* Firefox */
+  scrollbar-width: none;
+  /* Safari and Chrome */
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

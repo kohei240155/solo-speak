@@ -154,7 +154,7 @@ export default function PhraseAdd({
               <BsPlusSquare size={16} />
             </button>
             
-            <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide min-w-0 flex-1">
               {situations.map((situation: SituationResponse) => (
                 <button 
                   key={situation.id}
@@ -164,7 +164,7 @@ export default function PhraseAdd({
                     }
                   }}
                   disabled={generatedVariations.length > 0}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
                       ? 'text-white border-transparent shadow-sm' 
                       : generatedVariations.length > 0
@@ -175,7 +175,7 @@ export default function PhraseAdd({
                     backgroundColor: selectedContext === situation.name ? '#616161' : undefined
                   }}
                 >
-                  <span className="truncate">{situation.name}</span>
+                  <span className="whitespace-nowrap">{situation.name}</span>
                   <AiOutlineClose 
                     size={12} 
                     className="flex-shrink-0 hover:text-red-500 transition-colors" 
