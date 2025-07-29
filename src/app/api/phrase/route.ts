@@ -31,9 +31,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body: unknown = await request.json()
-    const { languageId, text, translation, nuance, level, phraseLevelId, context }: CreatePhraseRequestBody = createPhraseSchema.parse(body)
+    const { languageId, text, translation, nuance, level, phraseLevelId }: Omit<CreatePhraseRequestBody, 'context'> = createPhraseSchema.parse(body)
 
-    // contextは現在保存されませんが、将来の拡張用に受け取り
+    // contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
 
     // 認証されたユーザーIDを使用
     const userId = authResult.user.id
