@@ -1,4 +1,4 @@
-import { Language, PhraseVariation } from '@/types/phrase'
+import { PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
@@ -18,8 +18,6 @@ const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
 })
 
 interface PhraseAddProps {
-  languages: Language[]
-  nativeLanguage: string
   remainingGenerations: number
   desiredPhrase: string
   phraseValidationError: string
@@ -45,8 +43,6 @@ interface PhraseAddProps {
 }
 
 export default function PhraseAdd({
-  languages,
-  nativeLanguage,
   remainingGenerations,
   desiredPhrase,
   phraseValidationError,
@@ -203,7 +199,7 @@ export default function PhraseAdd({
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
+          placeholder="例：この料理はなんですか？"
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-red-300 focus:ring-red-500' 
