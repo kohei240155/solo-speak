@@ -8,6 +8,8 @@ import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
+import Checkbox from '@/components/common/Checkbox'
+import ScrollableContainer from '@/components/common/ScrollableContainer'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -154,7 +156,7 @@ export default function PhraseAdd({
               <BsPlusSquare size={16} />
             </button>
             
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide min-w-0 flex-1">
+            <ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1">
               {situations.map((situation: SituationResponse) => (
                 <button 
                   key={situation.id}
@@ -188,7 +190,7 @@ export default function PhraseAdd({
                   />
                 </button>
               ))}
-            </div>
+            </ScrollableContainer>
           </div>
         </div>
       </div>
@@ -227,21 +229,18 @@ export default function PhraseAdd({
       </div>
 
       {/* ChatGPT API使用チェックボックス */}
-      <div className="mb-4 flex items-center space-x-2">
-        <input
-          type="checkbox"
+      <div className="mb-4">
+        <Checkbox
           id="useChatGptApi"
           checked={useChatGptApi}
-          onChange={(e) => onUseChatGptApiChange(e.target.checked)}
+          onChange={onUseChatGptApiChange}
           disabled={generatedVariations.length > 0}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
-        />
-        <label 
-          htmlFor="useChatGptApi" 
-          className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}
+          className="space-x-2"
         >
-          ChatGPT APIを使用する
-        </label>
+          <span className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}>
+            ChatGPT APIを使用する
+          </span>
+        </Checkbox>
       </div>
 
       {/* AI Suggest ボタン */}
