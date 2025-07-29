@@ -24,6 +24,7 @@ export default function PhraseAddPage() {
     remainingGenerations,
     languages,
     situations,
+    isInitializing,
     isSaving,
     savingVariationIndex,
     editingVariations,
@@ -104,32 +105,39 @@ export default function PhraseAddPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <PhraseAdd
-            languages={languages}
-            nativeLanguage={nativeLanguage}
-            remainingGenerations={remainingGenerations}
-            desiredPhrase={desiredPhrase}
-            phraseValidationError={phraseValidationError}
-            isLoading={isLoading}
-            isSaving={isSaving}
-              generatedVariations={generatedVariations}
-              editingVariations={editingVariations}
-              variationValidationErrors={variationValidationErrors}
-              savingVariationIndex={savingVariationIndex}
-              error={error}
-              useChatGptApi={useChatGptApi}
-              selectedContext={selectedContext}
-              situations={situations}
-              onPhraseChange={handlePhraseChange}
-              onGeneratePhrase={handleGeneratePhrase}
-              onEditVariation={handleEditVariation}
-              onSelectVariation={handleSelectVariation}
-              onResetVariations={handleResetVariations}
-              onUseChatGptApiChange={handleUseChatGptApiChange}
-              onContextChange={handleContextChange}
-              addSituation={addSituation}
-              deleteSituation={deleteSituation}
-            />
+          {isInitializing ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">データを読み込んでいます...</span>
+            </div>
+          ) : (
+            <PhraseAdd
+              languages={languages}
+              nativeLanguage={nativeLanguage}
+              remainingGenerations={remainingGenerations}
+              desiredPhrase={desiredPhrase}
+              phraseValidationError={phraseValidationError}
+              isLoading={isLoading}
+              isSaving={isSaving}
+                generatedVariations={generatedVariations}
+                editingVariations={editingVariations}
+                variationValidationErrors={variationValidationErrors}
+                savingVariationIndex={savingVariationIndex}
+                error={error}
+                useChatGptApi={useChatGptApi}
+                selectedContext={selectedContext}
+                situations={situations}
+                onPhraseChange={handlePhraseChange}
+                onGeneratePhrase={handleGeneratePhrase}
+                onEditVariation={handleEditVariation}
+                onSelectVariation={handleSelectVariation}
+                onResetVariations={handleResetVariations}
+                onUseChatGptApiChange={handleUseChatGptApiChange}
+                onContextChange={handleContextChange}
+                addSituation={addSituation}
+                deleteSituation={deleteSituation}
+              />
+          )}
         </div>
       </div>
       

@@ -19,6 +19,7 @@ export const usePhraseManager = () => {
   const [remainingGenerations, setRemainingGenerations] = useState(0)
   const [languages, setLanguages] = useState<Language[]>([])
   const [situations, setSituations] = useState<SituationResponse[]>([])
+  const [isInitializing, setIsInitializing] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [savingVariationIndex, setSavingVariationIndex] = useState<number | null>(null)
   const [editingVariations, setEditingVariations] = useState<{[key: number]: string}>({})
@@ -45,6 +46,7 @@ export const usePhraseManager = () => {
       setSituations([])
       setUserSettingsInitialized(false)
       setLearningLanguage('en')
+      setIsInitializing(true)
     }
   }, [user])
 
@@ -382,14 +384,18 @@ export const usePhraseManager = () => {
   useEffect(() => {
     // ユーザーの初期データを並列取得
     if (user) {
+      setIsInitializing(true)
       Promise.all([
         fetchLanguages(),
         fetchSituations(),
         fetchUserRemainingGenerations(),
         fetchUserSettings(),
         fetchSavedPhrases(1, false)
-      ]).catch(error => {
+      ]).then(() => {
+        setIsInitializing(false)
+      }).catch(error => {
         console.error('初期データ取得エラー:', error)
+        setIsInitializing(false)
       })
     }
   }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages, fetchSituations])
@@ -418,6 +424,7 @@ export const usePhraseManager = () => {
     remainingGenerations,
     languages,
     situations,
+    isInitializing,
     isSaving,
     savingVariationIndex,
     editingVariations,
