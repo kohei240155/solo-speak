@@ -5,6 +5,7 @@ import { usePhraseManager } from '@/hooks/usePhraseManager'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/common/LanguageSelector'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
@@ -106,10 +107,11 @@ export default function PhraseAddPage() {
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {isInitializing ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">データを読み込んでいます...</span>
-            </div>
+            <LoadingSpinner 
+              size="md" 
+              message="データを読み込んでいます..." 
+              className="py-12"
+            />
           ) : (
             <PhraseAdd
               languages={languages}
