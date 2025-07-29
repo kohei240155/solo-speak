@@ -1,4 +1,5 @@
 import { Language, PhraseVariation } from '@/types/phrase'
+import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
@@ -6,7 +7,6 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
-import { useSituations } from '@/hooks/useSituations'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 // GeneratedVariationsコンポーネントを動的インポート
@@ -30,6 +30,7 @@ interface PhraseAddProps {
   error: string
   useChatGptApi: boolean
   selectedContext: 'friend' | 'sns' | string | null
+  situations: SituationResponse[]
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
@@ -37,6 +38,8 @@ interface PhraseAddProps {
   onResetVariations: () => void
   onUseChatGptApiChange: (value: boolean) => void
   onContextChange?: (context: string | null) => void
+  addSituation: (name: string) => Promise<void>
+  deleteSituation: (id: string) => Promise<void>
 }
 
 export default function PhraseAdd({
@@ -54,21 +57,21 @@ export default function PhraseAdd({
   error,
   useChatGptApi,
   selectedContext,
+  situations,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
   onResetVariations,
   onUseChatGptApiChange,
-  onContextChange
+  onContextChange,
+  addSituation,
+  deleteSituation
 }: PhraseAddProps) {
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  
-  // Situationsを取得
-  const { situations, addSituation, deleteSituation } = useSituations()
   
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -106,7 +109,7 @@ export default function PhraseAdd({
       setDeletingSituationId(null)
       
       // 削除したシチュエーションが選択されていた場合、選択を解除
-      if (selectedContext && situations.find(s => s.id === deletingSituationId)?.name === selectedContext) {
+      if (selectedContext && situations.find((s: SituationResponse) => s.id === deletingSituationId)?.name === selectedContext) {
         onContextChange?.(null)
       }
     } catch (error) {
@@ -152,7 +155,7 @@ export default function PhraseAdd({
             </button>
             
             <div className="flex gap-1.5 flex-wrap min-w-0 flex-1">
-              {situations.map((situation) => (
+              {situations.map((situation: SituationResponse) => (
                 <button 
                   key={situation.id}
                   onClick={() => {

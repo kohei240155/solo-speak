@@ -23,6 +23,7 @@ export default function PhraseAddPage() {
     error,
     remainingGenerations,
     languages,
+    situations,
     isSaving,
     savingVariationIndex,
     editingVariations,
@@ -40,7 +41,9 @@ export default function PhraseAddPage() {
     handleResetVariations,
     checkUnsavedChanges,
     handleUseChatGptApiChange,
-    handleContextChange
+    handleContextChange,
+    addSituation,
+    deleteSituation
   } = usePhraseManager()
 
   // Modal functionality
@@ -116,6 +119,7 @@ export default function PhraseAddPage() {
               error={error}
               useChatGptApi={useChatGptApi}
               selectedContext={selectedContext}
+              situations={situations}
               onPhraseChange={handlePhraseChange}
               onGeneratePhrase={handleGeneratePhrase}
               onEditVariation={handleEditVariation}
@@ -123,6 +127,8 @@ export default function PhraseAddPage() {
               onResetVariations={handleResetVariations}
               onUseChatGptApiChange={handleUseChatGptApiChange}
               onContextChange={handleContextChange}
+              addSituation={addSituation}
+              deleteSituation={deleteSituation}
             />
         </div>
       </div>
