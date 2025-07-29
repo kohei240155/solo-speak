@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation } from '@/types/phrase'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/useSWRApi'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
 
 // 型定義
@@ -253,6 +253,9 @@ export const usePhraseManagerSWR = () => {
         setPhraseValidationError('')
         setVariationValidationErrors({})
       })
+
+      // フレーズリストのキャッシュを無効化して最新データを取得
+      mutate((key) => typeof key === 'string' && key.includes('/api/phrase'))
 
       toast.success('フレーズを保存しました')
     } catch (error) {

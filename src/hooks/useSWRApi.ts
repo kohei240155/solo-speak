@@ -223,7 +223,12 @@ export function useInfinitePhrases(language?: string) {
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
     fetcher,
-    SWR_CONFIGS.SHORT_CACHE
+    {
+      ...SWR_CONFIGS.SHORT_CACHE,
+      revalidateOnMount: true, // マウント時に再検証
+      revalidateOnFocus: true, // フォーカス時に再検証
+      refreshInterval: 0, // 自動更新は無効
+    }
   )
 
   type PageData = {
