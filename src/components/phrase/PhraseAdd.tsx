@@ -139,7 +139,7 @@ export default function PhraseAdd({
       {/* Options section */}
       <div className="mb-4">
         <div className="flex flex-col gap-2">
-          <h3 className="text-base font-semibold text-gray-900">Situation</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
           
           {/* シチュエーション表示エリア全体を囲む */}
           <div className="flex items-center gap-3">
@@ -166,7 +166,7 @@ export default function PhraseAdd({
                     }
                   }}
                   disabled={generatedVariations.length > 0}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
                       ? 'text-white border-transparent shadow-sm' 
                       : generatedVariations.length > 0
@@ -179,7 +179,7 @@ export default function PhraseAdd({
                 >
                   <span className="whitespace-nowrap">{situation.name}</span>
                   <AiOutlineClose 
-                    size={12} 
+                    size={14} 
                     className="flex-shrink-0 hover:text-red-500 transition-colors" 
                     onClick={(e) => {
                       e.stopPropagation()
@@ -197,7 +197,7 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Phrase</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Phrase</h3>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
