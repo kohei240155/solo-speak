@@ -1,23 +1,21 @@
-import { Language, PhraseVariation } from '@/types/phrase'
+import { PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
+import Checkbox from '@/components/common/Checkbox'
+import ScrollableContainer from '@/components/common/ScrollableContainer'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
-  ssr: false,
-  loading: () => <LoadingSpinner size="md" message="Loading variations..." />
+  ssr: false
 })
 
 interface PhraseAddProps {
-  languages: Language[]
-  nativeLanguage: string
   remainingGenerations: number
   desiredPhrase: string
   phraseValidationError: string
@@ -43,8 +41,6 @@ interface PhraseAddProps {
 }
 
 export default function PhraseAdd({
-  languages,
-  nativeLanguage,
   remainingGenerations,
   desiredPhrase,
   phraseValidationError,
@@ -137,7 +133,7 @@ export default function PhraseAdd({
       {/* Options section */}
       <div className="mb-4">
         <div className="flex flex-col gap-2">
-          <h3 className="text-base font-semibold text-gray-900">Situation</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
           
           {/* シチュエーション表示エリア全体を囲む */}
           <div className="flex items-center gap-3">
@@ -154,7 +150,7 @@ export default function PhraseAdd({
               <BsPlusSquare size={16} />
             </button>
             
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide min-w-0 flex-1">
+            <ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1">
               {situations.map((situation: SituationResponse) => (
                 <button 
                   key={situation.id}
@@ -164,7 +160,7 @@ export default function PhraseAdd({
                     }
                   }}
                   disabled={generatedVariations.length > 0}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
                       ? 'text-white border-transparent shadow-sm' 
                       : generatedVariations.length > 0
@@ -177,7 +173,7 @@ export default function PhraseAdd({
                 >
                   <span className="whitespace-nowrap">{situation.name}</span>
                   <AiOutlineClose 
-                    size={12} 
+                    size={14} 
                     className="flex-shrink-0 hover:text-red-500 transition-colors" 
                     onClick={(e) => {
                       e.stopPropagation()
@@ -188,20 +184,20 @@ export default function PhraseAdd({
                   />
                 </button>
               ))}
-            </div>
+            </ScrollableContainer>
           </div>
         </div>
       </div>
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Phrase</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Phrase</h3>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder={`知りたいフレーズを${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
+          placeholder="例：この料理はなんですか？"
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-red-300 focus:ring-red-500' 
@@ -227,21 +223,18 @@ export default function PhraseAdd({
       </div>
 
       {/* ChatGPT API使用チェックボックス */}
-      <div className="mb-4 flex items-center space-x-2">
-        <input
-          type="checkbox"
+      <div className="mb-4">
+        <Checkbox
           id="useChatGptApi"
           checked={useChatGptApi}
-          onChange={(e) => onUseChatGptApiChange(e.target.checked)}
+          onChange={onUseChatGptApiChange}
           disabled={generatedVariations.length > 0}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
-        />
-        <label 
-          htmlFor="useChatGptApi" 
-          className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}
+          className="space-x-2"
         >
-          ChatGPT APIを使用する
-        </label>
+          <span className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}>
+            ChatGPT APIを使用する
+          </span>
+        </Checkbox>
       </div>
 
       {/* AI Suggest ボタン */}

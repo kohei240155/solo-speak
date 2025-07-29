@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { usePhraseManager } from '@/hooks/usePhraseManager'
+import { usePhraseManagerSWR } from '@/hooks/usePhraseManagerSWR'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
 import LanguageSelector from '@/components/common/LanguageSelector'
@@ -31,9 +31,9 @@ export default function PhraseAddPage() {
     editingVariations,
     phraseValidationError,
     variationValidationErrors,
-    totalPhrases,
     useChatGptApi,
     selectedContext,
+    availablePhraseCount,
     
     // Handlers
     handleEditVariation,
@@ -46,7 +46,7 @@ export default function PhraseAddPage() {
     handleContextChange,
     addSituation,
     deleteSituation
-  } = usePhraseManager()
+  } = usePhraseManagerSWR()
 
   // Modal functionality
   const {
@@ -114,8 +114,6 @@ export default function PhraseAddPage() {
             />
           ) : (
             <PhraseAdd
-              languages={languages}
-              nativeLanguage={nativeLanguage}
               remainingGenerations={remainingGenerations}
               desiredPhrase={desiredPhrase}
               phraseValidationError={phraseValidationError}
@@ -159,7 +157,7 @@ export default function PhraseAddPage() {
         onStart={handleQuizStart}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={totalPhrases}
+        availablePhraseCount={availablePhraseCount}
       />
       
       {/* Toaster for notifications */}

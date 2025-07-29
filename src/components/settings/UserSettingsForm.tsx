@@ -2,6 +2,7 @@ import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHan
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
 import ImageUpload from '@/components/common/ImageUpload'
+import RadioButton from '@/components/common/RadioButton'
 
 interface UserSettingsFormProps {
   register: UseFormRegister<UserSetupFormData>
@@ -35,6 +36,7 @@ export default function UserSettingsForm({
     setIsUserSetupComplete
   )
   const watchIconUrl = watch('iconUrl')
+  const watchGender = watch('gender')
   const isDisabled = dataLoading || submitting || submittingProp
   
   // 実際に使用するsubmitting状態を統一
@@ -208,36 +210,33 @@ export default function UserSettingsForm({
           Gender
         </label>
         <div className="flex space-x-6">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              value="male"
-              {...register('gender')}
-              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
-              disabled={isDisabled}
-            />
+          <RadioButton
+            name="gender"
+            value="male" 
+            checked={watchGender === 'male'}
+            onChange={(value) => setValue('gender', value)}
+            disabled={isDisabled}
+          >
             Male
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              value="female"
-              {...register('gender')}
-              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
-              disabled={isDisabled}
-            />
+          </RadioButton>
+          <RadioButton
+            name="gender"
+            value="female"
+            checked={watchGender === 'female'}
+            onChange={(value) => setValue('gender', value)}
+            disabled={isDisabled}
+          >
             Female
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              value="unspecified"
-              {...register('gender')}
-              className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
-              disabled={isDisabled}
-            />
+          </RadioButton>
+          <RadioButton
+            name="gender"
+            value="unspecified"
+            checked={watchGender === 'unspecified'}
+            onChange={(value) => setValue('gender', value)}
+            disabled={isDisabled}
+          >
             Unspecified
-          </label>
+          </RadioButton>
         </div>
         {errors.gender && (
           <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>

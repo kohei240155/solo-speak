@@ -27,8 +27,12 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
 
     // 未保存の変更チェック（Addタブから離脱する場合）
     if (activeTab === 'Add' && tab.key !== 'Add' && checkUnsavedChanges) {
-      if (!checkUnsavedChanges()) {
-        return // ユーザーがキャンセルした場合は何もしない
+      if (checkUnsavedChanges()) {
+        // 未保存の変更がある場合、ユーザーに確認を求める
+        const confirmLeave = window.confirm('生成されたフレーズが保存されていません。このページを離れますか？')
+        if (!confirmLeave) {
+          return // ユーザーがキャンセルした場合は何もしない
+        }
       }
     }
 
