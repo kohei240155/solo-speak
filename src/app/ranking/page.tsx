@@ -1,160 +1,38 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { api } from '@/utils/api'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useLanguages } from '@/hooks/useSWRApi'
-
-interface RankingUser {
-  userId: string
-  username: string
-  iconUrl: string | null
-  totalCount: number
-  rank: number
-}
-
-interface SpeakUser {
-  rank: number
-  userId: string
-  username: string
-  iconUrl: string | null
-  count: number
-}
+import { useRankingData } from '@/hooks/useRankingData'
+import { useEffect } from 'react'
 
 export default function RankingPage() {
   const { user, loading } = useAuth()
-  const [rankingData, setRankingData] = useState<RankingUser[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState('Daily')
-  const [activeRankingType, setActiveRankingType] = useState('Phrase') // デフォルトをPhraseに変更
-  const [selectedLanguage, setSelectedLanguage] = useState('en')
-
-  // SWRフックを使用して言語データを取得
-  const { languages } = useLanguages()
-
-  // 言語データの初期化（必要に応じてデフォルト値を設定）
   
-  const fetchRanking = useCallback(async () => {
-    if (!user) return
+  // カスタムフックを使用してランキングデータを管理
+  const {
+    selectedLanguage,
+    activeTab,
+    activeRankingType,
+    languages,
+    rankingData,
+    isLoading,
+    error,
+    message,
+    handleLanguageChange,
+    handleTabChange,
+    handleRankingTypeChange,
+  } = useRankingData()
 
-    setIsLoading(true)
-    try {
-
-      let endpoint = ''
-      if (activeRankingType === 'Phrase') {
-        // Phraseランキングは期間指定なし（総合のみ）
-        endpoint = `/api/ranking/phrase?language=${selectedLanguage}`
-      } else if (activeRankingType === 'Speak') {
-        const period = activeTab.toLowerCase() // daily, weekly, total
-        endpoint = `/api/ranking/speak?language=${selectedLanguage}&period=${period}`
-      } else if (activeRankingType === 'Quiz') {
-        const period = activeTab.toLowerCase() // daily, weekly, total
-        endpoint = `/api/ranking/quiz?language=${selectedLanguage}&period=${period}`
-      }
-
-      if (!endpoint) {
-        toast.error(`${activeRankingType}のランキングはまだ実装されていません`)
-        return
-      }
-
-      const data = await api.get<{ 
-        success: boolean, 
-        topUsers?: SpeakUser[], 
-        message?: string 
-      }>(endpoint)
-      
-      if (!data.success) {
-        toast.error(data.message || 'ランキングデータの取得に失敗しました')
-        return
-      }
-      
-      if (activeRankingType === 'Speak') {
-        // Speak APIの形式に合わせてデータを変換
-        if (!data.topUsers || !Array.isArray(data.topUsers)) {
-          setRankingData([])
-          toast.error('Speakランキングデータの形式が正しくありません')
-          return
-        }
-        
-        const transformedData = data.topUsers.map((user: SpeakUser) => ({
-          userId: user.userId,
-          username: user.username,
-          iconUrl: user.iconUrl,
-          totalCount: user.count,
-          rank: user.rank
-        }))
-        setRankingData(transformedData)
-        return
-      }
-      
-      if (activeRankingType === 'Phrase') {
-        // Phrase APIの形式に合わせてデータを変換
-        if (!data.topUsers || !Array.isArray(data.topUsers)) {
-          setRankingData([])
-          toast.error('Phraseランキングデータの形式が正しくありません')
-          return
-        }
-        
-        const transformedData = data.topUsers.map((user: SpeakUser) => ({
-          userId: user.userId,
-          username: user.username,
-          iconUrl: user.iconUrl,
-          totalCount: user.count,
-          rank: user.rank
-        }))
-        setRankingData(transformedData)
-        return
-      }
-      
-      if (activeRankingType === 'Quiz') {
-        // Quiz APIの形式に合わせてデータを変換
-        if (!data.topUsers || !Array.isArray(data.topUsers)) {
-          setRankingData([])
-          toast.error('Quizランキングデータの形式が正しくありません')
-          return
-        }
-        
-        const transformedData = data.topUsers.map((user: SpeakUser) => ({
-          userId: user.userId,
-          username: user.username,
-          iconUrl: user.iconUrl,
-          totalCount: user.count,
-          rank: user.rank
-        }))
-        setRankingData(transformedData)
-      }
-    } catch (error) {
-      console.error('Error fetching ranking:', error)
-      toast.error('ランキングデータの取得中にエラーが発生しました')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user, activeRankingType, activeTab, selectedLanguage])
-
+  // エラーハンドリング
   useEffect(() => {
-    if (user) {
-      fetchRanking()
+    if (error && message) {
+      toast.error(message)
     }
-  }, [user, fetchRanking, activeRankingType, activeTab, selectedLanguage])
-
-  // Phraseタブに切り替えた時は自動的にTotalタブにする
-  // SpeakタブとQuizタブに切り替えた時は自動的にDailyタブにする
-  useEffect(() => {
-    if (activeRankingType === 'Phrase') {
-      setActiveTab('Total')
-    } else if (activeRankingType === 'Speak' || activeRankingType === 'Quiz') {
-      setActiveTab('Daily')
-    }
-  }, [activeRankingType])
-
-  const handleLanguageChange = (languageCode: string) => {
-    setSelectedLanguage(languageCode)
-  }
+  }, [error, message])
 
   if (loading) {
     return <LoadingSpinner fullScreen message="Loading..." />
@@ -182,14 +60,14 @@ export default function RankingPage() {
           {/* Phrase、Speak、Quizタブメニュー */}
           <div className="flex mb-[18px]">
             {[
-              { key: 'Phrase', label: 'Phrase' },
-              { key: 'Speak', label: 'Speak' },
-              { key: 'Quiz', label: 'Quiz' }
+              { key: 'phrase' as const, label: 'Phrase' },
+              { key: 'speak' as const, label: 'Speak' },
+              { key: 'quiz' as const, label: 'Quiz' }
             ].map((tab, index) => (
               <button 
                 key={tab.key}
                 onClick={() => {
-                  setActiveRankingType(tab.key)
+                  handleRankingTypeChange(tab.key)
                 }}
                 className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
                   index === 0 ? 'rounded-l-[20px]' : ''
@@ -211,7 +89,7 @@ export default function RankingPage() {
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
             {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotalのみ表示） */}
-            {activeRankingType === 'Phrase' ? (
+            {activeRankingType === 'phrase' ? (
               <div className="mb-4 border-b border-gray-200">
                 <nav className="flex space-x-0">
                   <button
@@ -227,7 +105,7 @@ export default function RankingPage() {
                   {['Daily', 'Weekly', 'Total'].map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setActiveTab(tab)}
+                      onClick={() => handleTabChange(tab)}
                       className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
                         activeTab === tab
                           ? 'border-gray-900 text-gray-900'

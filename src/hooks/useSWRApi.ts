@@ -268,3 +268,82 @@ export function useInfinitePhrases(language?: string) {
     refetch: mutate
   }
 }
+
+// ランキングデータを取得するSWRフック
+export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string, period?: 'daily' | 'weekly' | 'total') {
+  // エンドポイントを構築
+  let url: string | null = null
+  if (type && language) {
+    if (type === 'phrase') {
+      // Phraseランキングは常にtotal（期間指定なし）
+      url = `/api/ranking/phrase?language=${language}`
+    } else if (type === 'speak' || type === 'quiz') {
+      const validPeriod = period || 'daily'
+      url = `/api/ranking/${type}?language=${language}&period=${validPeriod}`
+    }
+  }
+
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.SHORT_CACHE)
+
+  // レスポンスの型定義
+  type RankingResponse = {
+    success: boolean
+    topUsers?: Array<{
+      userId: string
+      username: string
+      iconUrl: string | null
+      count: number
+      rank: number
+    }>
+    rankings?: Array<{
+      userId: string
+      username: string
+      iconUrl?: string
+      totalCorrect?: number
+      totalPhrases?: number
+      rank: number
+    }>
+    message?: string
+  }
+
+  const typedData = data as RankingResponse | undefined
+
+  // データを統一形式に変換
+  let transformedData: Array<{
+    userId: string
+    username: string
+    iconUrl: string | null
+    totalCount: number
+    rank: number
+  }> = []
+
+  if (typedData?.success) {
+    if (typedData.topUsers) {
+      // speak/quiz API形式
+      transformedData = typedData.topUsers.map(user => ({
+        userId: user.userId,
+        username: user.username,
+        iconUrl: user.iconUrl,
+        totalCount: user.count,
+        rank: user.rank
+      }))
+    } else if (typedData.rankings) {
+      // phrase/quiz API形式
+      transformedData = typedData.rankings.map(user => ({
+        userId: user.userId,
+        username: user.username,
+        iconUrl: user.iconUrl || null,
+        totalCount: user.totalCorrect || user.totalPhrases || 0,
+        rank: user.rank
+      }))
+    }
+  }
+
+  return {
+    rankingData: transformedData,
+    isLoading,
+    error,
+    message: typedData?.message,
+    refetch: mutate
+  }
+}
