@@ -153,8 +153,9 @@ export default function RankingPage() {
                                 ? 'bg-yellow-500'
                                 : rankUser.rank === 2
                                 ? 'bg-gray-400'
-                                : 'bg-orange-700'
+                                : 'bg-orange-800'
                             }`}
+                            style={rankUser.rank === 3 ? { backgroundColor: '#B87333' } : {}}
                           >
                             {rankUser.rank}
                           </div>
