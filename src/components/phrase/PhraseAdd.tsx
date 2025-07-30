@@ -136,7 +136,7 @@ export default function PhraseAdd({
           <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
           
           {/* シチュエーション表示エリア全体を囲む */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
