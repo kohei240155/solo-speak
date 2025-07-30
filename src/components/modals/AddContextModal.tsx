@@ -46,7 +46,6 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
             onChange={(e) => setContextName(e.target.value)}
             placeholder="例: カフェで注文する時"
             className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none"
-            maxLength={20}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 handleSubmit()
@@ -54,11 +53,11 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
             }}
           />
           
-          {/* 20文字を超えた場合のバリデーションメッセージ */}
-          {contextName.length > 20 && (
+          {/* 50文字を超えた場合のバリデーションメッセージ */}
+          {contextName.length > 50 && (
             <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
               <p className="text-sm text-gray-600">
-                20文字以内で入力してください（現在: {contextName.length}文字）
+                50文字以内で入力してください（現在: {contextName.length}文字）
               </p>
             </div>
           )}
@@ -78,10 +77,10 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!contextName.trim() || contextName.length > 20}
+            disabled={!contextName.trim() || contextName.length > 50}
             className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
             style={{ 
-              backgroundColor: (!contextName.trim() || contextName.length > 20) ? '#9CA3AF' : '#616161'
+              backgroundColor: (!contextName.trim() || contextName.length > 50) ? '#9CA3AF' : '#616161'
             }}
           >
             Add
