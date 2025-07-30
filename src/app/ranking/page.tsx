@@ -153,7 +153,7 @@ export default function RankingPage() {
                                 ? 'bg-yellow-500'
                                 : rankUser.rank === 2
                                 ? 'bg-gray-400'
-                                : 'bg-orange-600'
+                                : 'bg-orange-700'
                             }`}
                           >
                             {rankUser.rank}
