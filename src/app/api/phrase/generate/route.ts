@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { zodResponseFormat } from 'openai/helpers/zod'
+import { prisma } from '@/utils/prisma'
 
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
@@ -39,8 +40,67 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { nativeLanguage, learningLanguage, desiredPhrase, useChatGptApi, selectedContext } = generatePhraseSchema.parse(body)
 
+    const userId = authResult.user.id
+
     // ChatGPT APIを使用するかどうかで分岐
     if (useChatGptApi) {
+      // 生成前に残り回数をチェック
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          remainingPhraseGenerations: true,
+          lastPhraseGenerationDate: true
+        }
+      })
+
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        )
+      }
+
+      // 日付リセットロジック
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      let remainingGenerations = user.remainingPhraseGenerations
+
+      if (!user.lastPhraseGenerationDate) {
+        // 初回の場合は5回に設定
+        remainingGenerations = 5
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            remainingPhraseGenerations: 5,
+            lastPhraseGenerationDate: new Date()
+          }
+        })
+      } else {
+        const lastGenerationDay = new Date(user.lastPhraseGenerationDate)
+        lastGenerationDay.setHours(0, 0, 0, 0)
+        
+        // 最後の生成日が今日より前の場合のみリセット
+        if (lastGenerationDay.getTime() < today.getTime()) {
+          remainingGenerations = 5
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              remainingPhraseGenerations: 5,
+              lastPhraseGenerationDate: new Date()
+            }
+          })
+        }
+      }
+
+      // 残り回数が0の場合はエラーを返す
+      if (remainingGenerations <= 0) {
+        return NextResponse.json(
+          { error: '本日の生成回数を超過しました。明日再度お試しください。' },
+          { status: 403 }
+        )
+      }
+
       // ===== ChatGPT API呼び出し (Structured Outputs使用) =====
       if (!process.env.OPENAI_API_KEY) {
         return NextResponse.json(
@@ -102,6 +162,20 @@ export async function POST(request: NextRequest) {
         text: variation.text,
         explanation: variation.explanation
       }))
+
+      // ChatGPT APIを使用した場合のみ、フレーズ生成回数を減らす
+      try {
+        // 回数を1減らして更新
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            remainingPhraseGenerations: remainingGenerations - 1,
+            lastPhraseGenerationDate: new Date()
+          }
+        })
+      } catch (error) {
+        console.warn('Error updating phrase generation count:', error)
+      }
 
       const result: GeneratePhraseResponse = {
         variations
