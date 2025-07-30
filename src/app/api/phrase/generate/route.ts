@@ -8,7 +8,7 @@ const generatePhraseSchema = z.object({
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(100),
   useChatGptApi: z.boolean().default(false),
-  selectedContext: z.string().optional()
+  selectedContext: z.string().nullable().optional()
 })
 
 // Structured Outputs用のレスポンススキーマ
@@ -182,7 +182,7 @@ ${situation ? 'このシチュエーションに最適で、その場面で実�
 【文字数制限】生成する各表現は200文字以内に収めてください。簡潔で自然な表現を心がけてください。`
 }
 
-function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string): { prompt: string; situation?: string } {
+function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string; situation?: string } {
   const languageNames = {
     ja: '日本語',
     en: '英語',
@@ -200,6 +200,7 @@ function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPh
   const bracketSituation = situationMatch ? situationMatch[1] : undefined;
   
   // selectedContextを優先し、なければ括弧内のシチュエーションを使用
+  // nullの場合はundefinedとして扱う
   const situation = selectedContext || bracketSituation;
   
   // シチュエーション部分を除いたフレーズを取得

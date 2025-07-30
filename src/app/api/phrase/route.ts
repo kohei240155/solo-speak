@@ -19,7 +19,7 @@ const createPhraseSchema = z.object({
   nuance: z.string().optional(),
   level: z.enum(['common', 'polite', 'casual']).optional(),
   phraseLevelId: z.string().optional(),
-  context: z.string().optional(),
+  context: z.string().nullable().optional(),
 })
 
 export async function POST(request: NextRequest): Promise<NextResponse> {

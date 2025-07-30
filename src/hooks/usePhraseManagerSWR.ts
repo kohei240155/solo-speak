@@ -235,14 +235,28 @@ export const usePhraseManagerSWR = () => {
     setIsSaving(true)
 
     try {
-      await api.post('/api/phrase', {
+      // contextがnullの場合は送信しない
+      const requestBody: {
+        languageId: string
+        text: string
+        translation: string
+        nuance: string
+        level: string
+        context?: string
+      } = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
         text: textToSave,
         translation: desiredPhrase,
         nuance: variation.explanation || '',
-        level: 'common',
-        context: selectedContext
-      })
+        level: 'common'
+      }
+
+      // selectedContextが存在する場合のみcontextを追加
+      if (selectedContext) {
+        requestBody.context = selectedContext
+      }
+
+      await api.post('/api/phrase', requestBody)
 
       flushSync(() => {
         setGeneratedVariations([])
