@@ -4,13 +4,9 @@ import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Quiz ranking API called')
-    
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language') || 'en'
     const period = searchParams.get('period') || 'daily'
-    
-    console.log('Parameters:', { language, period })
 
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -19,7 +15,6 @@ export async function GET(request: NextRequest) {
     }
 
     const user = authResult.user
-    console.log('User authenticated:', user.id)
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageRecord] = await Promise.all([
@@ -32,7 +27,6 @@ export async function GET(request: NextRequest) {
     ])
 
     if (!languageRecord) {
-      console.log('Language not found:', language)
       return NextResponse.json({
         success: false,
         error: 'Language not found'
@@ -40,7 +34,6 @@ export async function GET(request: NextRequest) {
     }
 
     const languageId = languageRecord.id
-    console.log('Language mapping:', { code: language, id: languageId })
 
     // 期間に応じた日付条件を設定
     const now = new Date()
@@ -54,8 +47,6 @@ export async function GET(request: NextRequest) {
       // total の場合は全期間
       startDate = new Date('1970-01-01')
     }
-
-    console.log('Date filter:', { period, startDate })
 
     // Prismaを使用してQuiz Resultsデータを取得
     const quizResults = await prisma.quizResult.findMany({
@@ -82,21 +73,6 @@ export async function GET(request: NextRequest) {
         }
       }
     })
-
-    console.log('Prisma query result:', { count: quizResults.length })
-    console.log('First few quiz results:', quizResults.slice(0, 3))
-
-    // デバッグ: 全期間のデータも確認
-    const allQuizResults = await prisma.quizResult.count()
-    console.log('Total quiz results in database:', allQuizResults)
-
-    // デバッグ: 指定言語のフレーズ数も確認
-    const phrasesForLanguage = await prisma.phrase.count({
-      where: {
-        languageId: languageId
-      }
-    })
-    console.log('Phrases for language', language, ':', phrasesForLanguage)
 
     // ユーザー別に回数を集計（QuizResultはcorrect/incorrectの回数なので、総回答数をカウント）
     const userCountMap = new Map<string, { 
@@ -137,21 +113,34 @@ export async function GET(request: NextRequest) {
       return b.count - a.count
     })
 
-    // ランクを付与
-    const topUsers = rankingData.map((user, index) => ({
-      rank: index + 1,
-      userId: user.userId,
-      username: user.username,
-      iconUrl: user.iconUrl,
-      count: user.count
-    }))
+    // ランクを付与（上位50位まで）
+    const topUsers = rankingData
+      .slice(0, 50) // 上位50位まで制限
+      .map((user, index) => ({
+        rank: index + 1,
+        userId: user.userId,
+        username: user.username,
+        iconUrl: user.iconUrl,
+        count: user.count
+      }))
 
-    console.log('Top users:', topUsers)
-
-    // 現在のユーザーの情報を取得
-    const currentUser = topUsers.find(u => u.userId === user.id) || null
-
-    console.log('Current user ranking:', currentUser)
+    // 現在のユーザーの情報を取得（50位圏外でも取得）
+    let currentUser = topUsers.find(u => u.userId === user.id) || null
+    
+    // 50位圏外の場合、全データから該当ユーザーの順位を取得
+    if (!currentUser) {
+      const userIndex = rankingData.findIndex(u => u.userId === user.id)
+      if (userIndex !== -1) {
+        const userData = rankingData[userIndex]
+        currentUser = {
+          rank: userIndex + 1,
+          userId: userData.userId,
+          username: userData.username,
+          iconUrl: userData.iconUrl,
+          count: userData.count
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -160,15 +149,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Quiz ranking error:', error)
-    
-    // 詳細なエラー情報をログに出力
-    if (error instanceof Error) {
-      console.error('Error name:', error.name)
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
-    }
-    
     return NextResponse.json({ 
       success: false, 
       error: 'Internal server error',

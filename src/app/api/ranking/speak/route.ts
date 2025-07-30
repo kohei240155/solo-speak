@@ -6,16 +6,12 @@ import { ApiErrorResponse } from '@/types/api'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Speak ranking API called')
-    
     const { searchParams } = new URL(request.url)
     const queryParams: RankingQueryParams = {
       language: searchParams.get('language') || 'en',
       period: (searchParams.get('period') as 'daily' | 'weekly' | 'monthly') || 'daily'
     }
     const { language, period } = queryParams
-    
-    console.log('Parameters:', { language, period })
 
     // 認証チェック
     const authResult = await authenticateRequest(request)
@@ -24,32 +20,18 @@ export async function GET(request: NextRequest) {
     }
 
     const user = authResult.user
-    console.log('User authenticated:', user.id)
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageRecord, allSpeakLogs, allLanguages] = await Promise.all([
+    const [languageRecord] = await Promise.all([
       // 言語コードから言語IDを取得
       prisma.language.findFirst({
         where: {
           code: language
         }
-      }),
-      
-      // デバッグ: 全期間のデータも確認
-      prisma.speakLog.count(),
-      
-      // デバッグ: すべての言語を確認
-      prisma.language.findMany({
-        select: {
-          id: true,
-          code: true,
-          name: true
-        }
       })
     ])
 
     if (!languageRecord) {
-      console.log('Language not found:', language)
       const errorResponse: ApiErrorResponse = {
         error: 'Language not found'
       }
@@ -57,9 +39,6 @@ export async function GET(request: NextRequest) {
     }
 
     const languageId = languageRecord.id
-    console.log('Language mapping:', { code: language, id: languageId })
-    console.log('Total speak logs in database:', allSpeakLogs)
-    console.log('Available languages:', allLanguages)
 
     // 期間に応じた日付条件を設定
     const now = new Date()
@@ -73,8 +52,6 @@ export async function GET(request: NextRequest) {
       // total の場合は全期間
       startDate = new Date('1970-01-01')
     }
-
-    console.log('Date filter:', { period, startDate })
 
     // Prismaを使用してSpeak Logsデータを取得
     const speakLogs = await prisma.speakLog.findMany({
@@ -101,35 +78,6 @@ export async function GET(request: NextRequest) {
         }
       }
     })
-
-    console.log('Prisma query result:', { count: speakLogs.length })
-    console.log('First few speak logs:', speakLogs.slice(0, 3))
-
-    // デバッグ: 指定言語のフレーズ数も確認
-    const phrasesForLanguage = await prisma.phrase.count({
-      where: {
-        languageId: languageId
-      }
-    })
-    console.log('Phrases for language', language, ':', phrasesForLanguage)
-
-    // デバッグ: 期間を無視して該当言語のスピークログを取得
-    const speakLogsNoDateFilter = await prisma.speakLog.findMany({
-      where: {
-        phrase: {
-          languageId: languageId
-        }
-      },
-      include: {
-        phrase: {
-          select: {
-            languageId: true
-          }
-        }
-      },
-      take: 5
-    })
-    console.log('Speak logs without date filter (first 5):', speakLogsNoDateFilter)
 
     // ユーザーごとのSpeak回数を集計
     const userCounts = new Map<string, { 
@@ -161,13 +109,17 @@ export async function GET(request: NextRequest) {
     })
 
     // ランキング順にソート（同数の場合は登録日時が古い方が上位）
-    const rankedUsers = Array.from(userCounts.values())
+    const allRankedUsers = Array.from(userCounts.values())
       .sort((a, b) => {
         if (b.count === a.count) {
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         }
         return b.count - a.count
       })
+
+    // 上位50位まで
+    const rankedUsers = allRankedUsers
+      .slice(0, 50) // 上位50位まで制限
       .map((user, index) => ({
         rank: index + 1,
         userId: user.userId,
@@ -176,8 +128,23 @@ export async function GET(request: NextRequest) {
         count: user.count
       }))
 
-    // 現在のユーザーの順位を取得
-    const currentUserRank = rankedUsers.find(u => u.userId === user.id)
+    // 現在のユーザーの順位を取得（50位圏外でも取得）
+    let currentUserRank = rankedUsers.find(u => u.userId === user.id) || null
+    
+    // 50位圏外の場合、全データから該当ユーザーの順位を取得
+    if (!currentUserRank) {
+      const userIndex = allRankedUsers.findIndex(u => u.userId === user.id)
+      if (userIndex !== -1) {
+        const userData = allRankedUsers[userIndex]
+        currentUserRank = {
+          rank: userIndex + 1,
+          userId: userData.userId,
+          username: userData.username,
+          iconUrl: userData.iconUrl,
+          count: userData.count
+        }
+      }
+    }
 
     const responseData: SpeakRankingResponseData = {
       success: true,
@@ -188,7 +155,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(responseData)
 
   } catch (error) {
-    console.error('API error:', error)
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error',
       details: error instanceof Error ? error.message : 'Unknown error'
