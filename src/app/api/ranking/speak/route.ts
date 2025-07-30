@@ -168,6 +168,7 @@ export async function GET(request: NextRequest) {
         }
         return b.count - a.count
       })
+      .slice(0, 50) // 上位50位まで制限
       .map((user, index) => ({
         rank: index + 1,
         userId: user.userId,

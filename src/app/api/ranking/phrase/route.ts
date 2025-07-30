@@ -84,14 +84,16 @@ export async function GET(request: NextRequest) {
       return b.count - a.count
     })
 
-    // ランクを付与
-    const topUsers = rankingData.map((user, index) => ({
-      rank: index + 1,
-      userId: user.userId,
-      username: user.username,
-      iconUrl: user.iconUrl,
-      count: user.count
-    }))
+    // ランクを付与（上位50位まで）
+    const topUsers = rankingData
+      .slice(0, 50) // 上位50位まで制限
+      .map((user, index) => ({
+        rank: index + 1,
+        userId: user.userId,
+        username: user.username,
+        iconUrl: user.iconUrl,
+        count: user.count
+      }))
 
     // 現在のユーザーの情報を取得
     const currentUser = topUsers.find(u => u.userId === user.id) || null
