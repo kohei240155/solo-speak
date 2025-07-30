@@ -45,7 +45,7 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
             value={contextName}
             onChange={(e) => setContextName(e.target.value)}
             placeholder="例: カフェで注文する時"
-            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none"
             maxLength={20}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -53,18 +53,15 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
               }
             }}
           />
-          <div className="flex justify-between items-center mt-1">
-            <span className={`text-xs ${
-              contextName.length > 20 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              20文字以内で入力してください
-            </span>
-            <span className={`text-xs ${
-              contextName.length > 20 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              {contextName.length} / 20
-            </span>
-          </div>
+          
+          {/* 20文字を超えた場合のバリデーションメッセージ */}
+          {contextName.length > 20 && (
+            <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+              <p className="text-sm text-gray-600">
+                20文字以内で入力してください（現在: {contextName.length}文字）
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ボタン */}
