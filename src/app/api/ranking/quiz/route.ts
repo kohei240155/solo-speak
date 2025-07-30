@@ -124,8 +124,23 @@ export async function GET(request: NextRequest) {
         count: user.count
       }))
 
-    // 現在のユーザーの情報を取得
-    const currentUser = topUsers.find(u => u.userId === user.id) || null
+    // 現在のユーザーの情報を取得（50位圏外でも取得）
+    let currentUser = topUsers.find(u => u.userId === user.id) || null
+    
+    // 50位圏外の場合、全データから該当ユーザーの順位を取得
+    if (!currentUser) {
+      const userIndex = rankingData.findIndex(u => u.userId === user.id)
+      if (userIndex !== -1) {
+        const userData = rankingData[userIndex]
+        currentUser = {
+          rank: userIndex + 1,
+          userId: userData.userId,
+          username: userData.username,
+          iconUrl: userData.iconUrl,
+          count: userData.count
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,

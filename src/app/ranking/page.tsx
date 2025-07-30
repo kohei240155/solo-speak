@@ -19,6 +19,7 @@ export default function RankingPage() {
     activeRankingType,
     languages,
     rankingData,
+    currentUser,
     isLoading,
     error,
     message,
@@ -197,6 +198,55 @@ export default function RankingPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* 51位以降のユーザー表示 */}
+              {!isLoading && currentUser && currentUser.rank > 50 && (
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <div className="mb-2">
+                    <p className="text-sm text-gray-600 font-medium">Your Ranking</p>
+                  </div>
+                  <div
+                    className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 py-2 sm:py-3 px-1 sm:px-2 rounded-lg bg-blue-50 border border-blue-200"
+                  >
+                    {/* 順位 */}
+                    <div className="flex items-center justify-start pl-2">
+                      <span className="text-gray-600 font-medium text-sm sm:text-base">{currentUser.rank}</span>
+                    </div>
+
+                    {/* ユーザー */}
+                    <div className="flex items-center gap-1 sm:gap-2 ml-6 sm:ml-10 min-w-0">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                        {currentUser.iconUrl ? (
+                          <Image
+                            src={currentUser.iconUrl}
+                            alt={currentUser.username}
+                            width={32}
+                            height={32}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                            <span className="text-gray-600 text-xs">
+                              {currentUser.username.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-medium text-gray-900 truncate text-sm sm:text-base min-w-0 flex-1">
+                        {currentUser.username.length > 20 
+                          ? `${currentUser.username.substring(0, 20)}...` 
+                          : currentUser.username
+                        }
+                      </p>
+                    </div>
+
+                    {/* 回数 */}
+                    <div className="flex items-center justify-end pr-2">
+                      <p className="font-bold text-sm sm:text-lg text-gray-900">{currentUser.totalCount}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

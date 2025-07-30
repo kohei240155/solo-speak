@@ -16,6 +16,7 @@ export const useRankingData = () => {
   const period = activeRankingType === 'phrase' ? 'total' : (activeTab.toLowerCase() as 'daily' | 'weekly' | 'total')
   const { 
     rankingData, 
+    currentUser,
     isLoading, 
     error, 
     message, 
@@ -66,6 +67,7 @@ export const useRankingData = () => {
     activeRankingType,
     languages: languages || [],
     rankingData: rankingData || [],
+    currentUser,
     isLoading,
     error,
     message,

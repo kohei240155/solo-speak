@@ -109,13 +109,16 @@ export async function GET(request: NextRequest) {
     })
 
     // ランキング順にソート（同数の場合は登録日時が古い方が上位）
-    const rankedUsers = Array.from(userCounts.values())
+    const allRankedUsers = Array.from(userCounts.values())
       .sort((a, b) => {
         if (b.count === a.count) {
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         }
         return b.count - a.count
       })
+
+    // 上位50位まで
+    const rankedUsers = allRankedUsers
       .slice(0, 50) // 上位50位まで制限
       .map((user, index) => ({
         rank: index + 1,
@@ -125,8 +128,23 @@ export async function GET(request: NextRequest) {
         count: user.count
       }))
 
-    // 現在のユーザーの順位を取得
-    const currentUserRank = rankedUsers.find(u => u.userId === user.id)
+    // 現在のユーザーの順位を取得（50位圏外でも取得）
+    let currentUserRank = rankedUsers.find(u => u.userId === user.id) || null
+    
+    // 50位圏外の場合、全データから該当ユーザーの順位を取得
+    if (!currentUserRank) {
+      const userIndex = allRankedUsers.findIndex(u => u.userId === user.id)
+      if (userIndex !== -1) {
+        const userData = allRankedUsers[userIndex]
+        currentUserRank = {
+          rank: userIndex + 1,
+          userId: userData.userId,
+          username: userData.username,
+          iconUrl: userData.iconUrl,
+          count: userData.count
+        }
+      }
+    }
 
     const responseData: SpeakRankingResponseData = {
       success: true,

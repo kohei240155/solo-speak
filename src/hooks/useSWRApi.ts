@@ -303,6 +303,13 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
       totalPhrases?: number
       rank: number
     }>
+    currentUser?: {
+      userId: string
+      username: string
+      iconUrl: string | null
+      count: number
+      rank: number
+    } | null
     message?: string
   }
 
@@ -339,8 +346,28 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     }
   }
 
+  // currentUserも統一形式に変換
+  let currentUser: {
+    userId: string
+    username: string
+    iconUrl: string | null
+    totalCount: number
+    rank: number
+  } | null = null
+
+  if (typedData?.currentUser) {
+    currentUser = {
+      userId: typedData.currentUser.userId,
+      username: typedData.currentUser.username,
+      iconUrl: typedData.currentUser.iconUrl,
+      totalCount: typedData.currentUser.count,
+      rank: typedData.currentUser.rank
+    }
+  }
+
   return {
     rankingData: transformedData,
+    currentUser,
     isLoading,
     error,
     message: typedData?.message,
