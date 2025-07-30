@@ -36,7 +36,7 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
         </div>
 
         {/* シチュエーション名入力 */}
-        <div className="mb-4">
+        <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Situation
           </h3>
@@ -53,16 +53,14 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
             }}
           />
           
-          {/* バリデーション表示エリア（常に高さを確保） */}
-          <div className="mt-2 h-12">
-            {contextName.length > 50 && (
-              <div className="p-3 border border-gray-300 rounded-md bg-gray-50">
-                <p className="text-sm text-gray-600">
-                  50文字以内で入力してください（現在: {contextName.length}文字）
-                </p>
-              </div>
-            )}
-          </div>
+          {/* 50文字を超えた場合のバリデーションメッセージ */}
+          {contextName.length > 50 && (
+            <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+              <p className="text-sm text-gray-600">
+                50文字以内で入力してください（現在: {contextName.length}文字）
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ボタン */}
