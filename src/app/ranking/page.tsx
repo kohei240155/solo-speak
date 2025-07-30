@@ -146,7 +146,7 @@ export default function RankingPage() {
                       }`}
                     >
                       {/* 順位 */}
-                      <div className="flex items-center justify-start pl-2">
+                      <div className="flex items-center justify-center">
                         {rankUser.rank <= 3 ? (
                           <div
                             className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
@@ -211,7 +211,7 @@ export default function RankingPage() {
                     className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 py-2 sm:py-3 px-1 sm:px-2 rounded-lg bg-blue-50 border border-blue-200"
                   >
                     {/* 順位 */}
-                    <div className="flex items-center justify-start pl-2">
+                    <div className="flex items-center justify-center">
                       <span className="text-gray-600 font-medium text-sm sm:text-base">{currentUser.rank}</span>
                     </div>
 
