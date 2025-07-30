@@ -198,28 +198,23 @@ export default function PhraseAdd({
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
           placeholder="例：この料理はなんですか？"
-          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
+          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
-              ? 'border-red-300 focus:ring-red-500' 
-              : 'border-gray-300 focus:ring-blue-500'
+              ? 'border-gray-400' 
+              : 'border-gray-300'
           }`}
           rows={3}
           disabled={isSaving}
         />
         
-        {/* 100文字以内で入力するよう促す文言とリアルタイム文字数 */}
-        <div className="flex justify-between items-center mt-1">
-          <span className={`text-xs ${
-            desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
-          }`}>
-            100文字以内で入力してください
-          </span>
-          <span className={`text-xs ${
-            desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
-          }`}>
-            {desiredPhrase.length} / 100
-          </span>
-        </div>
+        {/* 100文字を超えた場合のバリデーションメッセージ */}
+        {desiredPhrase.length > 100 && (
+          <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+            <p className="text-sm text-gray-600">
+              100文字以内で入力してください（現在: {desiredPhrase.length}文字）
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ChatGPT API使用チェックボックス */}
