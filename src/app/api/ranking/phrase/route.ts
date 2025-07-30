@@ -15,26 +15,12 @@ export async function GET(request: NextRequest) {
 
     const user = authResult.user
 
-    // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageRecord, allPhraseCounts] = await Promise.all([
-      // 言語コードから言語IDを取得
-      prisma.language.findFirst({
-        where: {
-          code: language
-        }
-      }),
-      
-      // 全言語のフレーズ数を事前に取得（後でフィルタリング）
-      prisma.phrase.groupBy({
-        by: ['userId', 'languageId'],
-        where: {
-          deletedAt: null // 削除されていないフレーズのみ
-        },
-        _count: {
-          id: true
-        }
-      })
-    ])
+    // 言語コードから言語IDを取得
+    const languageRecord = await prisma.language.findFirst({
+      where: {
+        code: language
+      }
+    })
 
     if (!languageRecord) {
       return NextResponse.json({
@@ -43,10 +29,15 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const languageId = languageRecord.id
-
-    // 指定された言語のフレーズ数のみをフィルタリング
-    const phraseCounts = allPhraseCounts.filter(pc => pc.languageId === languageId)
+    // 指定された言語のフレーズ数を取得（データベースレベルでフィルタリング）
+    const phraseCounts = await prisma.phrase.groupBy({
+      by: ['userId'],
+      where: {
+        deletedAt: null,
+        languageId: languageRecord.id
+      },
+      _count: { id: true }
+    })
 
     // ユーザー情報を取得してランキングデータを作成
     const userIds = phraseCounts.map(pc => pc.userId)
