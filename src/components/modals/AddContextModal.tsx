@@ -25,8 +25,16 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
     onClose()
   }
 
+  const handleModalClose = () => {
+    // 入力されている場合はモーダルを閉じない
+    if (contextName.trim()) {
+      return
+    }
+    handleCancel()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel}>
+    <Modal isOpen={isOpen} onClose={handleModalClose}>
       <div className="p-6">
         {/* ヘッダー部分 */}
         <div className="flex justify-between items-center mb-4">
