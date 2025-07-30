@@ -160,7 +160,7 @@ export default function PhraseAdd({
                     }
                   }}
                   disabled={generatedVariations.length > 0}
-                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
                       ? 'text-white border-transparent shadow-sm' 
                       : generatedVariations.length > 0
