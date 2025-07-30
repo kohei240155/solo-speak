@@ -174,7 +174,11 @@ export default function PhraseAdd({
                   <span className="whitespace-nowrap">{situation.name}</span>
                   <AiOutlineClose 
                     size={14} 
-                    className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                    className={`flex-shrink-0 font-bold ${
+                      selectedContext === situation.name
+                        ? 'text-white'
+                        : 'text-gray-700'
+                    }`}
                     onClick={(e) => {
                       e.stopPropagation()
                       if (generatedVariations.length === 0) {
