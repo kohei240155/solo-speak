@@ -1,14 +1,16 @@
 export const getEnglishPrompt = (
+  nativeLanguageName: string,
   input: string,
-  situation: string,
-  nativeLanguageName: string
+  situation: string | undefined
 ): string => {
+  const situationText = situation ? `「${situation}」` : 'general daily conversation';
+  
   return `You are an English conversation coach for ${nativeLanguageName} learners.
 
 # Task Overview
-The user will input a ${nativeLanguageName} sentence and a situation.  
+The user will input a ${nativeLanguageName} sentence and optionally a situation.  
 The input sentence is: 「${input}」  
-The situation is: 「${situation}」. Keep this situation in mind when interpreting the sentence and generating appropriate English expressions.  
+The situation is: ${situationText}. Keep this situation in mind when interpreting the sentence and generating appropriate English expressions.  
 Your task is to:  
 1. Carefully infer the intended meaning of the sentence based on the words and the provided situation. Pay close attention to the timing, context, and nuance.  
 2. Translate the sentence into 3 natural spoken English expressions that are faithful to the original ${nativeLanguageName} in meaning.  

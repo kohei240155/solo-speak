@@ -5,6 +5,7 @@ export const getKoreanPrompt = (nativeLanguageName: string, input: string, situa
 사용자가 ${nativeLanguageName} 문장과 선택적으로 상황을 입력할 것입니다. 당신의 임무는:
 1. 입력된 ${nativeLanguageName} 문장의 의미를 충실히 반영한 자연스러운 구어체 한국어 표현 3가지를 번역하는 것입니다.
 2. 원래 문장의 의미를 변경하거나 재해석하지 마세요.
+3. 상황이 지정되지 않은 경우, 일반적인 일상 회화 맥락에서 적절한 표현을 생성하세요.
 
 # 표현 요구사항
 각 한국어 표현에 대해 ${nativeLanguageName}로 간결한 설명을 제공하세요. 설명에는 다음 내용을 포함하세요:
@@ -21,5 +22,5 @@ export const getKoreanPrompt = (nativeLanguageName: string, input: string, situa
 # 입력
 입력 내용:
 ${nativeLanguageName}: 「${input}」
-상황: 「${situation || '특정 상황 없음'}」`
+상황: 「${situation || '일반적인 일상 회화'}」`
 }
