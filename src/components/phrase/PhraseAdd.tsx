@@ -3,6 +3,7 @@ import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
+import { MdOutlineTipsAndUpdates } from 'react-icons/md'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
@@ -190,7 +191,10 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Phrase</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
+          <MdOutlineTipsAndUpdates className="text-gray-600 text-lg" />
+        </div>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
