@@ -67,7 +67,7 @@ model Phrase {
   languageId         String       @map("language_id")
   text               String
   translation        String
-  nuance             String?
+  explanation        String?
   totalSpeakCount    Int          @default(0) @map("total_speak_count")
   dailySpeakCount    Int          @default(0) @map("daily_speak_count")
   lastSpeakDate      DateTime?    @map("last_speak_date")
