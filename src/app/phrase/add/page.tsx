@@ -30,7 +30,6 @@ export default function PhraseAddPage() {
     savingVariationIndex,
     editingVariations,
     phraseValidationError,
-    variationValidationErrors,
     selectedContext,
     availablePhraseCount,
     
@@ -39,7 +38,6 @@ export default function PhraseAddPage() {
     handlePhraseChange,
     handleGeneratePhrase,
     handleSelectVariation,
-    handleResetVariations,
     checkUnsavedChanges,
     handleContextChange,
     addSituation,
@@ -119,7 +117,6 @@ export default function PhraseAddPage() {
               isSaving={isSaving}
                 generatedVariations={generatedVariations}
                 editingVariations={editingVariations}
-                variationValidationErrors={variationValidationErrors}
                 savingVariationIndex={savingVariationIndex}
                 error={error}
                 selectedContext={selectedContext}
@@ -128,7 +125,6 @@ export default function PhraseAddPage() {
                 onGeneratePhrase={handleGeneratePhrase}
                 onEditVariation={handleEditVariation}
                 onSelectVariation={handleSelectVariation}
-                onResetVariations={handleResetVariations}
                 onContextChange={handleContextChange}
                 addSituation={addSituation}
                 deleteSituation={deleteSituation}

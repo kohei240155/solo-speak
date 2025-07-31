@@ -24,7 +24,6 @@ interface PhraseAddProps {
   isSaving: boolean
   generatedVariations: PhraseVariation[]
   editingVariations: {[key: number]: string}
-  variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
   error: string
   selectedContext: 'friend' | 'sns' | string | null
@@ -33,7 +32,6 @@ interface PhraseAddProps {
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
-  onResetVariations: () => void
   onContextChange?: (context: string | null) => void
   addSituation: (name: string) => Promise<void>
   deleteSituation: (id: string) => Promise<void>
@@ -47,7 +45,6 @@ export default function PhraseAdd({
   isSaving,
   generatedVariations,
   editingVariations,
-  variationValidationErrors,
   savingVariationIndex,
   error,
   selectedContext,
@@ -56,7 +53,6 @@ export default function PhraseAdd({
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
-  onResetVariations,
   onContextChange,
   addSituation,
   deleteSituation
@@ -287,13 +283,11 @@ export default function PhraseAdd({
       <GeneratedVariations
         generatedVariations={generatedVariations}
         editingVariations={editingVariations}
-        variationValidationErrors={variationValidationErrors}
         isSaving={isSaving}
         savingVariationIndex={savingVariationIndex}
         desiredPhrase={desiredPhrase}
         onEditVariation={onEditVariation}
         onSelectVariation={onSelectVariation}
-        onReset={onResetVariations}
         error={error}
       />
 

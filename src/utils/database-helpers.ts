@@ -1,6 +1,5 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
-import { Gender } from '@/generated/prisma/client'
 import { createDefaultSituations } from './create-default-situations'
 
 /**
@@ -75,8 +74,6 @@ export async function createUserSettings(
     iconUrl?: string
     nativeLanguageId: string
     defaultLearningLanguageId: string
-    birthdate?: string
-    gender?: Gender
     email?: string
     defaultQuizCount?: number
   }
@@ -99,8 +96,6 @@ export async function createUserSettings(
         iconUrl: userData.iconUrl,
         nativeLanguageId: userData.nativeLanguageId,
         defaultLearningLanguageId: userData.defaultLearningLanguageId,
-        birthdate: userData.birthdate ? new Date(userData.birthdate) : null,
-        gender: userData.gender,
         defaultQuizCount: userData.defaultQuizCount || 10,
       },
       include: {
@@ -146,18 +141,15 @@ export async function createUserSettings(
  * @returns 更新されたユーザー設定
  */
 export async function updateUserSettings(
-  userId: string, 
+  userId: string,
   userData: {
     username?: string
     iconUrl?: string
     nativeLanguageId?: string
     defaultLearningLanguageId?: string
-    birthdate?: string
-    gender?: Gender
-    email?: string
     defaultQuizCount?: number
   }
-) {
+){
   return await prisma.user.update({
     where: { id: userId },
     data: {
@@ -165,9 +157,6 @@ export async function updateUserSettings(
       iconUrl: userData.iconUrl,
       nativeLanguageId: userData.nativeLanguageId,
       defaultLearningLanguageId: userData.defaultLearningLanguageId,
-      birthdate: userData.birthdate ? new Date(userData.birthdate) : null,
-      gender: userData.gender,
-      email: userData.email,
       defaultQuizCount: userData.defaultQuizCount,
     },
     include: {

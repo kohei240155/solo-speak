@@ -12,8 +12,6 @@ interface UserSettings {
   iconUrl?: string
   nativeLanguage: Language
   defaultLearningLanguage: Language
-  birthdate?: string
-  gender?: string
   email: string
   defaultQuizCount: number
 }

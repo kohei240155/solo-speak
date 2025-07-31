@@ -2,7 +2,6 @@ import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHan
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
 import ImageUpload from '@/components/common/ImageUpload'
-import RadioButton from '@/components/common/RadioButton'
 
 interface UserSettingsFormProps {
   register: UseFormRegister<UserSetupFormData>
@@ -36,7 +35,6 @@ export default function UserSettingsForm({
     setIsUserSetupComplete
   )
   const watchIconUrl = watch('iconUrl')
-  const watchGender = watch('gender')
   const isDisabled = dataLoading || submitting || submittingProp
   
   // 実際に使用するsubmitting状態を統一
@@ -177,69 +175,6 @@ export default function UserSettingsForm({
         </div>
         {errors.defaultLearningLanguageId && (
           <p className="mt-1 text-sm text-red-600">{errors.defaultLearningLanguageId.message}</p>
-        )}
-      </div>
-
-      {/* Date of Birth */}
-      <div>
-        <label htmlFor="birthdate" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Date of Birth
-        </label>
-        <div className="relative">
-          <input
-            type="date"
-            id="birthdate"
-            {...register('birthdate')}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-            disabled={isDisabled}
-          />
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-            </svg>
-          </div>
-        </div>
-        {errors.birthdate && (
-          <p className="mt-1 text-sm text-red-600">{errors.birthdate.message}</p>
-        )}
-      </div>
-
-      {/* Gender */}
-      <div>
-        <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Gender
-        </label>
-        <div className="flex space-x-6">
-          <RadioButton
-            name="gender"
-            value="male" 
-            checked={watchGender === 'male'}
-            onChange={(value) => setValue('gender', value)}
-            disabled={isDisabled}
-          >
-            Male
-          </RadioButton>
-          <RadioButton
-            name="gender"
-            value="female"
-            checked={watchGender === 'female'}
-            onChange={(value) => setValue('gender', value)}
-            disabled={isDisabled}
-          >
-            Female
-          </RadioButton>
-          <RadioButton
-            name="gender"
-            value="unspecified"
-            checked={watchGender === 'unspecified'}
-            onChange={(value) => setValue('gender', value)}
-            disabled={isDisabled}
-          >
-            Unspecified
-          </RadioButton>
-        </div>
-        {errors.gender && (
-          <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
         )}
       </div>
 

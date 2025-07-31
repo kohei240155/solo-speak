@@ -54,8 +54,6 @@ export function useUserSettings() {
       iconUrl?: string
       nativeLanguage?: { id: string; name: string; code: string }
       defaultLearningLanguage?: { id: string; name: string; code: string }
-      birthdate?: string
-      gender?: string
       email?: string
       defaultQuizCount?: number
     } | undefined,
@@ -194,7 +192,7 @@ export function useSpeakPhraseById(phraseId?: string) {
     success: boolean
     phrase?: {
       id: string
-      text: string
+      original: string
       translation: string
       totalSpeakCount: number
       dailySpeakCount: number
@@ -234,7 +232,7 @@ export function useInfinitePhrases(language?: string) {
   type PageData = {
     phrases?: Array<{
       id: string
-      text: string
+      original: string
       translation: string
       explanation?: string
       createdAt: string

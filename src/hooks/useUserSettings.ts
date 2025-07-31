@@ -19,8 +19,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         iconUrl?: string,
         nativeLanguageId?: string,
         defaultLearningLanguageId?: string,
-        birthdate?: string,
-        gender?: string,
         email?: string,
         defaultQuizCount?: number
       }>(`/api/user/settings?t=${Date.now()}`, {
@@ -46,8 +44,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       })
       setValue('nativeLanguageId', userData.nativeLanguageId || '')
       setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
-      setValue('birthdate', userData.birthdate ? userData.birthdate.split('T')[0] : '')
-      setValue('gender', userData.gender || '')
       setValue('email', userData.email || '')
       setValue('defaultQuizCount', userData.defaultQuizCount || 10)
     } catch (error) {

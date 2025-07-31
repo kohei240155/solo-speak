@@ -103,20 +103,6 @@ export function validateEmail(email: string): { isValid: boolean; error?: string
 }
 
 /**
- * 生年月日のバリデーション
- * @param birthdate バリデーション対象の生年月日
- * @returns バリデーション結果
- */
-export function validateBirthdate(birthdate: string): { isValid: boolean; error?: string } {
-  const birthdateObj = new Date(birthdate)
-  if (isNaN(birthdateObj.getTime()) || birthdateObj > new Date() || birthdateObj.getFullYear() < 1900) {
-    return { isValid: false, error: 'Please enter a valid birth date' }
-  }
-
-  return { isValid: true }
-}
-
-/**
  * 共通のエラーレスポンス作成
  * @param error エラーオブジェクト
  * @param context エラーが発生したコンテキスト
