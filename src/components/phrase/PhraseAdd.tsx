@@ -6,6 +6,7 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { MdOutlineTipsAndUpdates } from 'react-icons/md'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
+import PhraseGenerationTipsModal from '@/components/modals/PhraseGenerationTipsModal'
 import Modal from '@/components/common/Modal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
@@ -62,6 +63,7 @@ export default function PhraseAdd({
 }: PhraseAddProps) {
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
+  const [isTipsModalOpen, setIsTipsModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -193,7 +195,13 @@ export default function PhraseAdd({
       <div className="mb-3">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
-          <MdOutlineTipsAndUpdates className="text-gray-600 text-lg" />
+          <button
+            onClick={() => setIsTipsModalOpen(true)}
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+            title="フレーズ生成のコツを見る"
+          >
+            <MdOutlineTipsAndUpdates className="text-lg" />
+          </button>
         </div>
         <textarea
           value={desiredPhrase}
@@ -347,6 +355,12 @@ export default function PhraseAdd({
           </div>
         </div>
       </Modal>
+
+      {/* フレーズ生成のTipsモーダル */}
+      <PhraseGenerationTipsModal
+        isOpen={isTipsModalOpen}
+        onClose={() => setIsTipsModalOpen(false)}
+      />
     </>
   )
 }
