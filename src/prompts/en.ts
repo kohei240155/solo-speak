@@ -10,7 +10,6 @@ The user will input a ${nativeLanguageName} sentence and optionally a situation.
 For each English expression, provide a concise explanation in ${nativeLanguageName}, including the following:
 - A brief interpretation of the expression.
 - What kind of tone it has (e.g. polite, casual, friendly, energetic and warm, slightly formal, etc.).
-- In what kind of restaurant setting or customer interaction it would be most appropriate.
 - A short explanation of any useful or potentially difficult vocabulary, phrase, or grammar used in the expression. Focus especially on expressions that might be unfamiliar or confusing to ${nativeLanguageName} learners. Keep the explanations concise and focused only on what is most helpful.
 
 # Important Formatting Rules
