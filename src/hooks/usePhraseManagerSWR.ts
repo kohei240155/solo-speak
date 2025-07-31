@@ -61,7 +61,6 @@ export const usePhraseManagerSWR = () => {
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
   const { totalCount: availablePhraseCount } = useInfinitePhrases(learningLanguage)
-  const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -101,15 +100,6 @@ export const usePhraseManagerSWR = () => {
       setSelectedContext(null)
     }
   }, [user])
-
-  // useChatGptApiの状態に応じてフレーズを自動設定
-  useEffect(() => {
-    if (!useChatGptApi) {
-      setDesiredPhrase('明日花火に行きたい')
-    } else {
-      setDesiredPhrase('')
-    }
-  }, [useChatGptApi])
 
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
@@ -184,7 +174,6 @@ export const usePhraseManagerSWR = () => {
         desiredPhrase,
         nativeLanguage,
         learningLanguage,
-        useChatGptApi,
         selectedContext
       })
 
@@ -207,7 +196,7 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, useChatGptApi, selectedContext, validatePhrase, mutateGenerations])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -294,11 +283,6 @@ export const usePhraseManagerSWR = () => {
     setUserSettingsInitialized(true)
   }, [])
 
-  // ChatGPT API使用設定変更ハンドラー
-  const handleUseChatGptApiChange = useCallback((value: boolean) => {
-    setUseChatGptApi(value)
-  }, [])
-
   // コンテキスト変更ハンドラー
   const handleContextChange = useCallback((context: string | null) => {
     setSelectedContext(context)
@@ -354,7 +338,6 @@ export const usePhraseManagerSWR = () => {
     editingVariations,
     phraseValidationError,
     variationValidationErrors,
-    useChatGptApi,
     selectedContext,
     availablePhraseCount: availablePhraseCount || 0,
     
@@ -365,7 +348,6 @@ export const usePhraseManagerSWR = () => {
     handleSelectVariation,
     handleResetVariations,
     handleLearningLanguageChange,
-    handleUseChatGptApiChange,
     handleContextChange,
     addSituation,
     deleteSituation,

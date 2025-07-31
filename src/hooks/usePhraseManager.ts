@@ -10,7 +10,6 @@ export const usePhraseManager = () => {
   const { user } = useAuth()
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
-  const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -49,15 +48,6 @@ export const usePhraseManager = () => {
       setIsInitializing(true)
     }
   }, [user])
-
-  // useChatGptApiの状態に応じてフレーズを自動設定
-  useEffect(() => {
-    if (!useChatGptApi) {
-      setDesiredPhrase('明日花火に行きたい')
-    } else {
-      setDesiredPhrase('')
-    }
-  }, [useChatGptApi])
 
   // 認証ヘッダーを取得するヘルパー関数（削除予定）
   
@@ -229,7 +219,6 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        useChatGptApi,
         selectedContext
       }
       
@@ -313,7 +302,6 @@ export const usePhraseManager = () => {
         setGeneratedVariations([])  // これにより AI Suggest ボタンが活性になる
         setEditingVariations({})
         setVariationValidationErrors({})
-        setUseChatGptApi(true)  // デフォルトでChatGPT APIをONに
         setDesiredPhrase('')    // フレーズを空に
         setSelectedContext(null) // コンテキスト選択をリセット
       })
@@ -406,11 +394,6 @@ export const usePhraseManager = () => {
     }
   }, [learningLanguage, user, fetchSavedPhrases])
 
-  const handleUseChatGptApiChange = (value: boolean) => {
-    setUseChatGptApi(value)
-    // useEffectでフレーズの自動設定が行われるため、ここでは何もしない
-  }
-
   return {
     // State
     nativeLanguage,
@@ -434,7 +417,6 @@ export const usePhraseManager = () => {
     totalPhrases,
     phraseValidationError,
     variationValidationErrors,
-    useChatGptApi,
     selectedContext,
     
     // Handlers
@@ -446,7 +428,6 @@ export const usePhraseManager = () => {
     fetchSavedPhrases,
     checkUnsavedChanges,
     handleLearningLanguageChange,
-    handleUseChatGptApiChange,
     handleContextChange,
     addSituation,
     deleteSituation

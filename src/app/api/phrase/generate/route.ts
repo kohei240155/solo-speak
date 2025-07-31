@@ -9,7 +9,6 @@ const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(100),
-  useChatGptApi: z.boolean().default(false),
   selectedContext: z.string().nullable().optional()
 })
 
@@ -39,11 +38,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { nativeLanguage, learningLanguage, desiredPhrase, useChatGptApi, selectedContext } = generatePhraseSchema.parse(body)
+    const { nativeLanguage, learningLanguage, desiredPhrase, selectedContext } = generatePhraseSchema.parse(body)
 
     const userId = authResult.user.id
 
-    // 生成前に残り回数をチェック（ChatGPT API使用・非使用に関わらず）
+    // 生成前に残り回数をチェック
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -100,79 +99,69 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ChatGPT APIを使用するかどうかで分岐
-    let result: GeneratePhraseResponse
-
-    if (useChatGptApi) {
-      // ===== ChatGPT API呼び出し (Structured Outputs使用) =====
-      if (!process.env.OPENAI_API_KEY) {
-        return NextResponse.json(
-          { error: 'OpenAI API key is not configured' },
-          { status: 500 }
-        )
-      }
-
-      // ChatGPT APIに送信するプロンプトを構築
-      const { prompt } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 1000,
-          // Structured Outputs使用
-          response_format: zodResponseFormat(phraseVariationsSchema, "phrase_variations")
-        }),
-      })
-
-      if (!response.ok) {
-        return NextResponse.json(
-          { error: 'Failed to generate phrases' },
-          { status: 500 }
-        )
-      }
-
-      const data = await response.json()
-      const generatedContent = data.choices[0]?.message?.content
-
-      if (!generatedContent) {
-        return NextResponse.json(
-          { error: 'No content generated' },
-          { status: 500 }
-        )
-      }
-
-      // Structured Outputsなので直接パースできる
-      const parsedResponse = phraseVariationsSchema.parse(JSON.parse(generatedContent))
-      
-      // レスポンス形式を既存のインターフェースに変換
-      const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
-        text: variation.text,
-        explanation: variation.explanation
-      }))
-
-      result = {
-        variations
-      }
-    } else {
-      // テスト用: 固定の応答を返す
-      result = {
-        variations: getMockVariations()
-      }
+    // ChatGPT API呼び出し (Structured Outputs使用)
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'OpenAI API key is not configured' },
+        { status: 500 }
+      )
     }
 
-    // フレーズ生成が成功した場合、生成回数を減らす（ChatGPT API使用・非使用に関わらず）
+    // ChatGPT APIに送信するプロンプトを構築
+    const { prompt } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+        // Structured Outputs使用
+        response_format: zodResponseFormat(phraseVariationsSchema, "phrase_variations")
+      }),
+    })
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to generate phrases' },
+        { status: 500 }
+      )
+    }
+
+    const data = await response.json()
+    const generatedContent = data.choices[0]?.message?.content
+
+    if (!generatedContent) {
+      return NextResponse.json(
+        { error: 'No content generated' },
+        { status: 500 }
+      )
+    }
+
+    // Structured Outputsなので直接パースできる
+    const parsedResponse = phraseVariationsSchema.parse(JSON.parse(generatedContent))
+    
+    // レスポンス形式を既存のインターフェースに変換
+    const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
+      text: variation.text,
+      explanation: variation.explanation
+    }))
+
+    const result: GeneratePhraseResponse = {
+      variations
+    }
+
+    // フレーズ生成が成功した場合、生成回数を減らす
     try {
       // 回数を1減らして更新
       await prisma.user.update({
@@ -203,25 +192,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// テスト用の固定レスポンス関数
-function getMockVariations(): PhraseVariation[] {
-  return [
-    {
-      text: 'I want to go see fireworks tomorrow.',
-      explanation: '最も直接的な表現。自分の意思をはっきりと伝える標準的な言い回し。'
-    },
-    {
-      text: "I'm thinking of going to see the fireworks tomorrow.",
-      explanation: '少し控えめな表現。「考えている」という言葉で、まだ完全には決めていないニュアンスを含む。'
-    },
-    {
-      text: "I'd like to check out the fireworks tomorrow.",
-      explanation: 'カジュアルで親しみやすい表現。「check out」を使うことでよりリラックスした雰囲気を演出。'
-    }
-  ]
-}
-
-// ===== ChatGPT API関連関数 (本番用に保持) =====
+// ChatGPT API関連関数
 
 function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string } {
   // 括弧内のシチュエーションを抽出

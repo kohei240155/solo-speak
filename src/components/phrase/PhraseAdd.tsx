@@ -7,7 +7,6 @@ import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import Modal from '@/components/common/Modal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
-import Checkbox from '@/components/common/Checkbox'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
 
 // GeneratedVariationsコンポーネントを動的インポート
@@ -26,7 +25,6 @@ interface PhraseAddProps {
   variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
   error: string
-  useChatGptApi: boolean
   selectedContext: 'friend' | 'sns' | string | null
   situations: SituationResponse[]
   onPhraseChange: (value: string) => void
@@ -34,7 +32,6 @@ interface PhraseAddProps {
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
   onResetVariations: () => void
-  onUseChatGptApiChange: (value: boolean) => void
   onContextChange?: (context: string | null) => void
   addSituation: (name: string) => Promise<void>
   deleteSituation: (id: string) => Promise<void>
@@ -51,7 +48,6 @@ export default function PhraseAdd({
   variationValidationErrors,
   savingVariationIndex,
   error,
-  useChatGptApi,
   selectedContext,
   situations,
   onPhraseChange,
@@ -59,7 +55,6 @@ export default function PhraseAdd({
   onEditVariation,
   onSelectVariation,
   onResetVariations,
-  onUseChatGptApiChange,
   onContextChange,
   addSituation,
   deleteSituation
@@ -219,21 +214,6 @@ export default function PhraseAdd({
             </p>
           </div>
         )}
-      </div>
-
-      {/* ChatGPT API使用チェックボックス */}
-      <div className="mb-4">
-        <Checkbox
-          id="useChatGptApi"
-          checked={useChatGptApi}
-          onChange={onUseChatGptApiChange}
-          disabled={generatedVariations.length > 0}
-          className="space-x-2"
-        >
-          <span className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}>
-            ChatGPT APIを使用する
-          </span>
-        </Checkbox>
       </div>
 
       {/* AI Suggest ボタン */}
