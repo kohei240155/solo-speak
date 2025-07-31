@@ -1,4 +1,5 @@
 import { getEnglishPrompt } from './en'
+import { getKoreanPrompt } from './ko'
 
 // 言語コードと名前のマッピング
 export const languageNames = {
@@ -11,14 +12,15 @@ export const languageNames = {
   de: 'German'
 } as const
 
-// 学習言語ごとのプロンプト取得関数（現在は英語のみ）
-const promptGetters = {
+// 学習言語ごとのプロンプト取得関数
+const learningLanguagePromptGetters = {
   en: getEnglishPrompt,
+  ko: getKoreanPrompt,
 } as const
 
 /**
  * 学習言語と母国語に基づいてプロンプトテンプレートを取得
- * @param learningLanguage 学習言語のコード（現在は 'en' のみサポート）
+ * @param learningLanguage 学習言語のコード（例: 'en', 'ko'）
  * @param nativeLanguage 母国語のコード（例: 'ja', 'en', 'ko'）
  * @param input ユーザーが入力したフレーズ
  * @param situation シチュエーション（オプション）
@@ -28,12 +30,12 @@ export const getPromptTemplate = (learningLanguage: string, nativeLanguage: stri
   const nativeLanguageName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
   
   // 学習言語に対応するプロンプト取得関数を取得
-  const promptGetter = promptGetters[learningLanguage as keyof typeof promptGetters]
+  const promptGetter = learningLanguagePromptGetters[learningLanguage as keyof typeof learningLanguagePromptGetters]
   
   if (promptGetter) {
     return promptGetter(nativeLanguageName, input, situation)
   }
   
-  // 現在は英語のみサポート、その他の言語も英語プロンプトを使用
+  // デフォルトは英語プロンプトを使用
   return getEnglishPrompt(nativeLanguageName, input, situation)
 }
