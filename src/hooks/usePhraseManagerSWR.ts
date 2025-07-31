@@ -184,7 +184,6 @@ export const usePhraseManagerSWR = () => {
         desiredPhrase,
         nativeLanguage,
         learningLanguage,
-        selectedStyle: 'common' as const,
         useChatGptApi,
         selectedContext
       })
