@@ -213,7 +213,7 @@ export const usePhraseManagerSWR = () => {
 
   // バリエーション選択ハンドラー
   const handleSelectVariation = useCallback(async (variation: PhraseVariation, index: number) => {
-    const textToSave = editingVariations[index] || variation.text
+    const textToSave = editingVariations[index] || variation.original
     
     if (!validateVariation(textToSave, index)) {
       return
@@ -226,14 +226,14 @@ export const usePhraseManagerSWR = () => {
       // contextがnullの場合は送信しない
       const requestBody: {
         languageId: string
-        text: string
+        original: string
         translation: string
         explanation: string
         level: string
         context?: string
       } = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
-        text: textToSave,
+        original: textToSave,
         translation: desiredPhrase,
         explanation: variation.explanation || '',
         level: 'common'

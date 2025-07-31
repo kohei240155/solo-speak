@@ -14,7 +14,7 @@ const prisma = new PrismaClient()
 
 const createPhraseSchema = z.object({
   languageId: z.string().min(1),
-  text: z.string().min(1).max(200),
+  original: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
   explanation: z.string().optional(),
   level: z.enum(['common', 'polite', 'casual']).optional(),
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body: unknown = await request.json()
-    const { languageId, text, translation, explanation, level, phraseLevelId }: Omit<CreatePhraseRequestBody, 'context'> = createPhraseSchema.parse(body)
+    const { languageId, original, translation, explanation, level, phraseLevelId }: Omit<CreatePhraseRequestBody, 'context'> = createPhraseSchema.parse(body)
 
     // contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
 
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data: {
         userId,
         languageId,
-        text,
+        original,
         translation,
         explanation,
         phraseLevelId: finalPhraseLevelId,
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
       explanation: phrase.explanation || undefined,
       createdAt: phrase.createdAt.toISOString(),
@@ -274,7 +274,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // フロントエンドの期待する形式に変換
     const transformedPhrases = phrases.map(phrase => ({
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
       explanation: phrase.explanation || undefined,
       createdAt: phrase.createdAt.toISOString(),

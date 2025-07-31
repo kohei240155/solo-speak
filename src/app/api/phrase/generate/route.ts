@@ -15,13 +15,13 @@ const generatePhraseSchema = z.object({
 // Structured Outputs用のレスポンススキーマ
 const phraseVariationsSchema = z.object({
   variations: z.array(z.object({
-    text: z.string().max(200).describe("自然な話し言葉の表現（200文字以内）"),
+    original: z.string().max(200).describe("自然な話し言葉の表現（200文字以内）"),
     explanation: z.string().describe("他の表現との違いを示すニュアンスの説明（30-50文字程度）")
   })).length(3).describe("同じ意味を持つ3つの異なる表現パターン")
 })
 
 interface PhraseVariation {
-  text: string
+  original: string
   explanation?: string
 }
 
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     
     // レスポンス形式を既存のインターフェースに変換
     const variations: PhraseVariation[] = parsedResponse.variations.map(variation => ({
-      text: variation.text,
+      original: variation.original,
       explanation: variation.explanation
     }))
 

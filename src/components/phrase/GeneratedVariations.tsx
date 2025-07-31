@@ -54,12 +54,12 @@ export default function GeneratedVariations({
           
           {/* 編集可能なテキストエリア */}
           <textarea
-            value={editingVariations[index] || variation.text}
+            value={editingVariations[index] || variation.original}
             onChange={(e) => onEditVariation(index, e.target.value)}
             onFocus={scrollPreservation.onFocus}
             onBlur={scrollPreservation.onBlur}
             className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 ${
-              (editingVariations[index] || variation.text).length > 200
+              (editingVariations[index] || variation.original).length > 200
                 ? 'border-gray-400' 
                 : 'border-gray-300'
             }`}
@@ -69,10 +69,10 @@ export default function GeneratedVariations({
 
           
           {/* 200文字を超えた場合のバリデーションメッセージ */}
-          {(editingVariations[index] || variation.text).length > 200 && (
+          {(editingVariations[index] || variation.original).length > 200 && (
             <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
               <p className="text-sm text-gray-600">
-                200文字以内で入力してください（現在: {(editingVariations[index] || variation.text).length}文字）
+                200文字以内で入力してください（現在: {(editingVariations[index] || variation.original).length}文字）
               </p>
             </div>
           )}
@@ -89,18 +89,18 @@ export default function GeneratedVariations({
           <div className="mb-3"></div>
           
           <button
-            disabled={isSaving || desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200}
+            disabled={isSaving || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200}
             className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             style={{ 
-              backgroundColor: (isSaving && savingVariationIndex === index) || desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200 ? '#9CA3AF' : '#616161'
+              backgroundColor: (isSaving && savingVariationIndex === index) || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200 ? '#9CA3AF' : '#616161'
             }}
             onMouseEnter={(e) => {
-              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#525252'
               }
             }}
             onMouseLeave={(e) => {
-              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#616161'
               }
             }}

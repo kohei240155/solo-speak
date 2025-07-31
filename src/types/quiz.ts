@@ -8,7 +8,7 @@ export interface QuizConfig {
 // クイズ用フレーズの型定義
 export interface QuizPhrase {
   id: string
-  text: string
+  original: string
   translation: string
   languageCode: string
   correctQuizCount: number

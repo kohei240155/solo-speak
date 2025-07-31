@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     // フレーズリストを返す
     const quizPhrases = selectedPhrases.map(phrase => ({
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
       languageCode: phrase.language.code,
       correctQuizCount: phrase.correctQuizCount || 0

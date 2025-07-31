@@ -77,7 +77,7 @@ async function updateExistingPhraseLevels() {
         const newLevel = phraseLevels.find(l => l.id === expectedLevelId)
         
         console.log(
-          `📝 更新: ${phrase.text.substring(0, 30)}... | ` +
+          `📝 更新: ${phrase.original.substring(0, 30)}... | ` +
           `正解数: ${correctAnswers} | ` +
           `${oldLevel?.name || '不明'} → ${newLevel?.name || '不明'}`
         )

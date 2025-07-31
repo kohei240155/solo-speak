@@ -3,7 +3,7 @@ import { RiSpeakLine } from 'react-icons/ri'
 
 interface SpeakPhrase {
   id: string
-  text: string
+  original: string
   translation: string
   totalSpeakCount: number
   dailySpeakCount: number
@@ -54,7 +54,7 @@ export default function SpeakPractice({
         <div className="bg-white rounded-lg p-8 min-h-[160px] flex flex-col justify-center text-center">
           {/* 学習言語のフレーズ（大きく表示） */}
           <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 mb-6 leading-relaxed">
-            {phrase.text}
+            {phrase.original}
           </div>
           
           {/* 母国語の翻訳（小さく表示） */}

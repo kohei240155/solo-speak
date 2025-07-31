@@ -19,7 +19,7 @@ export async function GET() {
           select: {
             id: true,
             languageId: true,
-            text: true,
+            original: true,
             user: {
               select: {
                 id: true,
@@ -39,7 +39,7 @@ export async function GET() {
           select: {
             id: true,
             languageId: true,
-            text: true,
+            original: true,
             user: {
               select: {
                 id: true,

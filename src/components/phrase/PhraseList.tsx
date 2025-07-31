@@ -76,7 +76,7 @@ const PhraseItem = memo(({
             minHeight: '24px' // テキスト行の最小高さを確保
           }}
         >
-          {isShowingNuance ? (phrase.explanation || 'ニュアンス情報がありません') : phrase.text}
+          {isShowingNuance ? (phrase.explanation || 'ニュアンス情報がありません') : phrase.original}
         </div>
         <div className="relative flex-shrink-0">
           <DropdownMenu
@@ -198,7 +198,7 @@ export default function PhraseList({
 
   const handleEdit = useCallback((phrase: SavedPhrase) => {
     setEditingPhrase(phrase)
-    setEditedText(phrase.text)               // 学習言語（下のフォーム）
+    setEditedText(phrase.original)               // 学習言語（下のフォーム）
     setEditedTranslation(phrase.translation) // 母国語（上のフォーム）
     setOpenMenuId(null)
   }, [])
@@ -279,7 +279,7 @@ export default function PhraseList({
     setIsUpdating(true)
     try {
       const updatedPhrase = await api.put<SavedPhrase>(`/api/phrase/${editingPhrase.id}`, {
-        text: editedText.trim(),            // 学習言語（下のフォーム）
+        original: editedText.trim(),            // 学習言語（下のフォーム）
         translation: editedTranslation.trim() // 母国語（上のフォーム）
       })
       

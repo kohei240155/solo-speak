@@ -8,7 +8,7 @@ export interface SpeakConfig {
 // 練習用フレーズの型定義
 export interface SpeakPhrase {
   id: string
-  text: string
+  original: string
   translation: string
   totalSpeakCount: number
   dailySpeakCount: number

@@ -1,45 +1,46 @@
-// デバッグAPI用の型定義
+import { ApiSuccessResponse } from './api'
 
-export interface DatabaseDebugResponseData {
-  success: true
-  data: {
-    totalSpeakLogs: number
-    totalQuizResults: number
-    sampleSpeakLogs: Array<{
+export interface DatabaseDebugData {
+  totalSpeakLogs: number
+  totalQuizResults: number
+  sampleSpeakLogs: Array<{
+    id: string
+    count: number
+    date: Date
+    phrase: {
       id: string
-      count: number
-      date: Date
-      phrase: {
+      languageId: string
+      original: string
+      user: {
         id: string
-        languageId: string
-        text: string
-        user: {
-          id: string
-          username: string | null
-        }
+        username: string | null
       }
-    }>
-    sampleQuizResults: Array<{
+    }
+  }>
+  sampleQuizResults: Array<{
+    id: string
+    correct: boolean
+    createdAt: Date
+    phrase: {
       id: string
-      correct: boolean
-      createdAt: Date
-      phrase: {
+      languageId: string
+      original: string
+      user: {
         id: string
-        languageId: string
-        text: string
-        user: {
-          id: string
-          username: string | null
-        }
+        username: string | null
       }
-    }>
-    languages: Array<{
-      id: string
-      code: string
-      name: string
-    }>
-    totalPhrases: number
-    phrasesEn: number
-    totalUsers: number
-  }
+    }
+  }>
+  languages: Array<{
+    id: string
+    code: string
+    name: string
+  }>
+  totalPhrases: number
+  phrasesEn: number
+  totalUsers: number
+}
+
+export interface DatabaseDebugResponseData extends ApiSuccessResponse {
+  data: DatabaseDebugData
 }

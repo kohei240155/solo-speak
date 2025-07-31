@@ -4,7 +4,7 @@ import { ApiSuccessResponse, CommonApiErrorResponse } from './api'
 // フレーズ作成リクエストボディの型
 export interface CreatePhraseRequestBody {
   languageId: string
-  text: string
+  original: string
   translation: string
   explanation?: string
   level?: 'common' | 'polite' | 'casual'
@@ -14,14 +14,14 @@ export interface CreatePhraseRequestBody {
 
 // フレーズ更新リクエストボディの型
 export interface UpdatePhraseRequestBody {
-  text: string
+  original: string
   translation: string
 }
 
 // フレーズレスポンスデータの型
 export interface PhraseData {
   id: string
-  text: string
+  original: string
   translation: string
   explanation?: string
   createdAt: string
@@ -52,7 +52,7 @@ export interface PhrasesQueryParams {
 // フレーズ詳細取得レスポンスの型
 export interface GetPhraseResponseData {
   id: string
-  text: string
+  original: string
   translation: string
   totalSpeakCount: number
   dailySpeakCount: number
@@ -66,7 +66,7 @@ export interface GetPhraseResponseData {
 // フレーズ更新レスポンスの型
 export interface UpdatePhraseResponseData {
   id: string
-  text: string
+  original: string
   translation: string
   createdAt: string
   practiceCount: number

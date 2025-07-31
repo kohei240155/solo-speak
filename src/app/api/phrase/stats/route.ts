@@ -125,7 +125,7 @@ export async function PATCH(request: NextRequest) {
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
       id: updatedPhrase.id,
-      text: updatedPhrase.text,
+      original: updatedPhrase.original,
       translation: updatedPhrase.translation,
       createdAt: updatedPhrase.createdAt,
       practiceCount: updatedPhrase.totalSpeakCount,

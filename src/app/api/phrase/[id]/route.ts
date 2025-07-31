@@ -43,7 +43,7 @@ export async function GET(
 
     const responseData: GetPhraseResponseData = {
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
       totalSpeakCount: phrase.totalSpeakCount,
       dailySpeakCount: phrase.dailySpeakCount,
@@ -73,19 +73,19 @@ export async function PUT(
 
     const { id } = await params
     const body: unknown = await request.json()
-    const { text, translation }: UpdatePhraseRequestBody = body as UpdatePhraseRequestBody
+    const { original, translation }: UpdatePhraseRequestBody = body as UpdatePhraseRequestBody
 
     // バリデーション
-    if (!text || !translation) {
+    if (!original || !translation) {
       const errorResponse: ApiErrorResponse = {
-        error: 'text and translation are required'
+        error: 'original text and translation are required'
       }
       return NextResponse.json(errorResponse, { status: 400 })
     }
 
-    if (text.length > 200 || translation.length > 200) {
+    if (original.length > 200 || translation.length > 200) {
       const errorResponse: ApiErrorResponse = {
-        error: 'text and translation must be 200 characters or less'
+        error: 'original text and translation must be 200 characters or less'
       }
       return NextResponse.json(errorResponse, { status: 400 })
     }
@@ -109,7 +109,7 @@ export async function PUT(
     const updatedPhrase = await prisma.phrase.update({
       where: { id },
       data: {
-        text: text.trim(),
+        original: original.trim(),
         translation: translation.trim(),
         updatedAt: new Date()
       },
@@ -125,7 +125,7 @@ export async function PUT(
 
     const responseData: UpdatePhraseResponseData = {
       id: updatedPhrase.id,
-      text: updatedPhrase.text,
+      original: updatedPhrase.original,
       translation: updatedPhrase.translation,
       createdAt: updatedPhrase.createdAt.toISOString(),
       practiceCount: updatedPhrase.totalSpeakCount,

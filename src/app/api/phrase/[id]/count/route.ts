@@ -83,7 +83,7 @@ export async function POST(
       success: true,
       phrase: {
         id: updatedPhrase.id,
-        text: updatedPhrase.text,
+        original: updatedPhrase.original,
         translation: updatedPhrase.translation,
         totalSpeakCount: updatedPhrase.totalSpeakCount,
         dailySpeakCount: updatedPhrase.dailySpeakCount

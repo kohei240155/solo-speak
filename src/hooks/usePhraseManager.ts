@@ -248,7 +248,7 @@ export const usePhraseManager = () => {
     }
 
     // 編集されたテキストの文字数バリデーション
-    const finalText = editingVariations[index] || variation.text
+    const finalText = editingVariations[index] || variation.original
     if (finalText.length > 200) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
@@ -286,7 +286,7 @@ export const usePhraseManager = () => {
       await api.post('/api/phrase', {
         userId: user.id,
         languageId: learningLang.id,
-        text: finalText,      // 学習言語のフレーズ
+        original: finalText,      // 学習言語のフレーズ
         translation: desiredPhrase, // 母国語の翻訳
         explanation: variation.explanation, // ニュアンス説明
         level: 'common', // フレーズのレベル（デフォルトcommon）
