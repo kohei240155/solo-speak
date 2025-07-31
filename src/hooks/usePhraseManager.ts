@@ -288,7 +288,7 @@ export const usePhraseManager = () => {
         languageId: learningLang.id,
         text: finalText,      // 学習言語のフレーズ
         translation: desiredPhrase, // 母国語の翻訳
-        nuance: variation.explanation, // ニュアンス説明
+        explanation: variation.explanation, // ニュアンス説明
         level: 'common', // フレーズのレベル（デフォルトcommon）
       })
 

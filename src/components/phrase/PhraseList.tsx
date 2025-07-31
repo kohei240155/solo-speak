@@ -76,7 +76,7 @@ const PhraseItem = memo(({
             minHeight: '24px' // テキスト行の最小高さを確保
           }}
         >
-          {isShowingNuance ? (phrase.nuance || 'ニュアンス情報がありません') : phrase.text}
+          {isShowingNuance ? (phrase.explanation || 'ニュアンス情報がありません') : phrase.text}
         </div>
         <div className="relative flex-shrink-0">
           <DropdownMenu

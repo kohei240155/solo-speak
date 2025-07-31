@@ -228,14 +228,14 @@ export const usePhraseManagerSWR = () => {
         languageId: string
         text: string
         translation: string
-        nuance: string
+        explanation: string
         level: string
         context?: string
       } = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
         text: textToSave,
         translation: desiredPhrase,
-        nuance: variation.explanation || '',
+        explanation: variation.explanation || '',
         level: 'common'
       }
 

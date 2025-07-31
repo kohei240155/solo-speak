@@ -236,7 +236,7 @@ export function useInfinitePhrases(language?: string) {
       id: string
       text: string
       translation: string
-      nuance?: string
+      explanation?: string
       createdAt: string
       practiceCount: number
       correctAnswers: number

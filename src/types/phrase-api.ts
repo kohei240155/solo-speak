@@ -6,7 +6,7 @@ export interface CreatePhraseRequestBody {
   languageId: string
   text: string
   translation: string
-  nuance?: string
+  explanation?: string
   level?: 'common' | 'polite' | 'casual'
   phraseLevelId?: string
   context?: string
@@ -23,7 +23,7 @@ export interface PhraseData {
   id: string
   text: string
   translation: string
-  nuance?: string
+  explanation?: string
   createdAt: string
   practiceCount: number
   correctAnswers: number
