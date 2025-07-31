@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { prisma } from '@/utils/prisma'
+import { getPromptTemplate } from '@/prompts'
 
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
       }
 
       // ChatGPT APIに送信するプロンプトを構築
-      const { prompt, situation } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
+      const { prompt } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -123,10 +124,6 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
-            {
-              role: 'system',
-              content: getSystemPrompt(nativeLanguage, learningLanguage, situation)
-            },
             {
               role: 'user',
               content: prompt
@@ -226,50 +223,7 @@ function getMockVariations(): PhraseVariation[] {
 
 // ===== ChatGPT API関連関数 (本番用に保持) =====
 
-function getSystemPrompt(nativeLanguage: string, learningLanguage: string, situation?: string): string {
-  const languageNames = {
-    ja: '日本語',
-    en: '英語',
-    ko: '韓国語',
-    zh: '中国語',
-    es: 'スペイン語',
-    fr: 'フランス語',
-    de: 'ドイツ語'
-  }
-
-  const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
-  const learningLangName = languageNames[learningLanguage as keyof typeof languageNames] || learningLanguage
-
-  // シチュエーションが指定されている場合の追加指示
-  const situationInstruction = situation 
-    ? `\n\n【特定シチュエーション】：${situation}\n上記のシチュエーションに最適で、その場面で実際に使われる自然な表現を生成してください。そのシチュエーションの文脈や雰囲気を十分に考慮し、その場面にふさわしい言葉選びや話し方を反映させてください。`
-    : '';
-
-  return `あなたは言語学習のサポートを行う専門家です。次の${nativeLangName}を、${learningLangName}のネイティブスピーカーが実際の会話で使う自然な話し言葉に翻訳してください。${situationInstruction}
-
-${situation ? 'このシチュエーションに最適で、その場面で実際に使われる' : ''}同じ意味を持つ3つの異なる表現パターンを、話し言葉に特化した最も自然な口語表現で生成してください。${situation ? 'シチュエーションの文脈や雰囲気を十分に考慮し、その場面にふさわしい言葉選びや話し方を反映させてください。' : ''}
-
-【重要】各表現には必ずニュアンスの説明を付けてください：
-- 他の2つの表現と比較してどのような違いがあるかを明確に説明する
-- 説明は30-50文字程度の簡潔な表現にする
-- 「〜な表現」「〜なニュアンス」「〜な雰囲気」などの形で記述する${situation ? '\n- このシチュエーションでの使用場面や適切さも説明に含める' : ''}
-
-【文字数制限】生成する各表現は200文字以内に収めてください。簡潔で自然な表現を心がけてください。`
-}
-
-function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string; situation?: string } {
-  const languageNames = {
-    ja: '日本語',
-    en: '英語',
-    ko: '韓国語',
-    zh: '中国語',
-    es: 'スペイン語',
-    fr: 'フランス語',
-    de: 'ドイツ語'
-  }
-
-  const nativeLangName = languageNames[nativeLanguage as keyof typeof languageNames] || nativeLanguage
-  
+function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string } {
   // 括弧内のシチュエーションを抽出
   const situationMatch = desiredPhrase.match(/\(([^)]+)\)/);
   const bracketSituation = situationMatch ? situationMatch[1] : undefined;
@@ -281,8 +235,19 @@ function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPh
   // シチュエーション部分を除いたフレーズを取得
   const cleanPhrase = desiredPhrase.replace(/\([^)]*\)/g, '').trim();
   
-  return {
-    prompt: `対象の${nativeLangName}：${cleanPhrase}`,
-    situation
-  };
+  // 新しいプロンプトシステムを使用
+  // デバッグ用ログ
+  console.log('Debug - buildPrompt values:', {
+    cleanPhrase,
+    situation,
+    nativeLanguage,
+    learningLanguage
+  });
+  
+  const prompt = getPromptTemplate(learningLanguage, nativeLanguage, cleanPhrase, situation);
+  
+  // デバッグ用ログ - 最終的なプロンプト
+  console.log('Debug - Final prompt:', prompt);
+  
+  return { prompt };
 }
