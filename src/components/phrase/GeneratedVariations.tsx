@@ -1,5 +1,4 @@
 import { PhraseVariation } from '@/types/phrase'
-import { GrPowerReset } from 'react-icons/gr'
 import { AiOutlineCaretRight } from 'react-icons/ai'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
@@ -11,7 +10,6 @@ interface GeneratedVariationsProps {
   desiredPhrase: string
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
-  onReset: () => void
   error: string
 }
 
@@ -23,7 +21,6 @@ export default function GeneratedVariations({
   desiredPhrase,
   onEditVariation,
   onSelectVariation,
-  onReset,
   error
 }: GeneratedVariationsProps) {
   // スクロール位置保持機能
@@ -35,18 +32,10 @@ export default function GeneratedVariations({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-3">
+      <div className="mb-3">
         <h3 className="text-xl md:text-2xl font-bold text-gray-900">
           AI Suggested Phrases
         </h3>
-        <button
-          onClick={onReset}
-          disabled={isSaving}
-          className="flex items-center justify-center w-8 h-8 text-gray-800 hover:text-black rounded-md hover:bg-gray-100 transition-colors duration-200"
-          title="Reset"
-        >
-          <GrPowerReset className="w-4 h-4" />
-        </button>
       </div>
       
       {generatedVariations.map((variation, index) => (
