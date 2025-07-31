@@ -6,7 +6,6 @@ import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
   editingVariations: {[key: number]: string}
-  variationValidationErrors: {[key: number]: string}
   isSaving: boolean
   savingVariationIndex: number | null
   desiredPhrase: string
@@ -19,7 +18,6 @@ interface GeneratedVariationsProps {
 export default function GeneratedVariations({
   generatedVariations,
   editingVariations,
-  variationValidationErrors,
   isSaving,
   savingVariationIndex,
   desiredPhrase,
@@ -99,33 +97,21 @@ export default function GeneratedVariations({
             </div>
           )}
           
-          {/* バリデーションエラーメッセージ */}
-          {variationValidationErrors[index] && (
-            <div className="mt-1 mb-3">
-              <span className="text-sm text-red-600">
-                {variationValidationErrors[index]}
-              </span>
-            </div>
-          )}
-          
-          {/* 通常時のマージン */}
-          {!variationValidationErrors[index] && (
-            <div className="mb-3"></div>
-          )}
+          <div className="mb-3"></div>
           
           <button
-            disabled={isSaving || !!variationValidationErrors[index] || desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200}
+            disabled={isSaving || desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200}
             className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
             style={{ 
-              backgroundColor: variationValidationErrors[index] || desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200 ? '#9CA3AF' : '#616161'
+              backgroundColor: desiredPhrase.length > 100 || (editingVariations[index] || variation.text).length > 200 ? '#9CA3AF' : '#616161'
             }}
             onMouseEnter={(e) => {
-              if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#525252'
               }
             }}
             onMouseLeave={(e) => {
-              if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.text).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#616161'
               }
             }}
