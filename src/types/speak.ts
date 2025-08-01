@@ -3,6 +3,8 @@ export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   language: string
   prioritizeLowPractice: boolean
+  excludeSpoken?: boolean
+  spokenPhraseIds?: string[]
 }
 
 // 練習用フレーズの型定義
@@ -18,4 +20,5 @@ export interface SpeakPhrase {
 export interface SpeakModeState {
   active: boolean
   config: SpeakConfig | null
+  spokenPhraseIds: string[]
 }

@@ -18,7 +18,8 @@ export const useSpeakMode = ({
 }: UseSpeakModeOptions) => {
   const [speakMode, setSpeakMode] = useState<SpeakModeState>({
     active: false,
-    config: null
+    config: null,
+    spokenPhraseIds: []
   })
 
   // ページ読み込み時にURLパラメータから設定を復元
@@ -34,9 +35,11 @@ export const useSpeakMode = ({
       const config: SpeakConfig = {
         order,
         language: urlLanguage || learningLanguage,
-        prioritizeLowPractice: false // デフォルト値
+        prioritizeLowPractice: false, // デフォルト値
+        excludeSpoken: false,
+        spokenPhraseIds: []
       }
-      setSpeakMode({ active: true, config })
+      setSpeakMode({ active: true, config, spokenPhraseIds: [] })
       fetchSpeakPhrase(config)
     }
   }, [learningLanguage, fetchSpeakPhrase])
@@ -74,7 +77,26 @@ export const useSpeakMode = ({
 
   // 練習開始時の処理
   const handleSpeakStart = useCallback(async (config: SpeakConfig) => {
-    setSpeakMode({ active: true, config })
+    // スピークしたフレーズIDをリセット（APIでsessionSpokenフラグをリセット）
+    try {
+      await fetch('/api/speak/reset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ language: config.language })
+      })
+    } catch (error) {
+      console.error('Failed to reset session spoken flags:', error)
+    }
+    
+    const updatedConfig = {
+      ...config,
+      excludeSpoken: false,
+      spokenPhraseIds: []
+    }
+    
+    setSpeakMode({ active: true, config: updatedConfig, spokenPhraseIds: [] })
     
     // URLパラメータに選択した設定を反映
     const params = new URLSearchParams(window.location.search)
@@ -86,12 +108,23 @@ export const useSpeakMode = ({
     window.history.replaceState({}, '', newUrl)
     
     // フレーズを取得
-    return await fetchSpeakPhrase(config)
+    return await fetchSpeakPhrase(updatedConfig)
+  }, [fetchSpeakPhrase])
+
+  // 次のフレーズ取得時の処理（Speak済みフレーズを除外）
+  const getNextPhrase = useCallback(async (currentConfig: SpeakConfig) => {
+    const updatedConfig = {
+      ...currentConfig,
+      excludeSpoken: true,
+      spokenPhraseIds: [] // データベースのsessionSpokenフラグを使うので不要
+    }
+    
+    return await fetchSpeakPhrase(updatedConfig)
   }, [fetchSpeakPhrase])
 
   // 練習終了時の処理
   const handleSpeakFinish = useCallback(() => {
-    setSpeakMode({ active: false, config: null })
+    setSpeakMode({ active: false, config: null, spokenPhraseIds: [] })
     
     // URLパラメータをクリア
     const newUrl = window.location.pathname
@@ -101,6 +134,7 @@ export const useSpeakMode = ({
   return {
     speakMode,
     handleSpeakStart,
-    handleSpeakFinish
+    handleSpeakFinish,
+    getNextPhrase
   }
 }
