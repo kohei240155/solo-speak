@@ -97,13 +97,24 @@ export const useSpeakPhrase = () => {
 
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig) => {
-    // 保留中のカウントを送信
-    if (currentPhrase && pendingCount > 0) {
-      const success = await sendPendingCount(currentPhrase.id, pendingCount)
-      if (success) {
-        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+    // 現在のフレーズが存在する場合、session_spokenを必ずtrueにする
+    if (currentPhrase) {
+      if (pendingCount > 0) {
+        // カウントがある場合は通常通り送信
+        const success = await sendPendingCount(currentPhrase.id, pendingCount)
+        if (success) {
+          setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+        } else {
+          toast.error('カウントの送信に失敗しました')
+        }
       } else {
-        toast.error('カウントの送信に失敗しました')
+        // カウントが0でもsession_spokenをtrueにするためにAPIを呼び出し
+        try {
+          await api.post(`/api/phrase/${currentPhrase.id}/count`, { count: 0 })
+        } catch (error) {
+          console.error('Error setting session spoken flag:', error)
+          toast.error('セッション状態の更新に失敗しました')
+        }
       }
     }
 

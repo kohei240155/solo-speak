@@ -23,9 +23,12 @@ export async function POST(
       )
     }
 
-    // リクエストボディから増加するカウント数を取得（デフォルトは1）
+    // リクエストボディから増加するカウント数を取得
     const body = await request.json().catch(() => ({}))
-    const countIncrement = Math.max(1, parseInt(body.count) || 1) // 最低1、最大値制限は必要に応じて追加
+    const requestedCount = parseInt(body.count) || 0
+    
+    // カウントが0の場合はsession_spokenのみ更新、1以上の場合は通常のカウント処理
+    const countIncrement = requestedCount === 0 ? 0 : Math.max(1, requestedCount)
 
     // フレーズが存在するかチェック（認証されたユーザーのフレーズのみ）
     const existingPhrase = await prisma.phrase.findUnique({
@@ -44,6 +47,30 @@ export async function POST(
 
     const currentDate = new Date()
     const isDayChangedFlag = isDayChanged(existingPhrase.lastSpeakDate, currentDate)
+
+    // カウントが0の場合はsession_spokenのみ更新
+    if (countIncrement === 0) {
+      const updatedPhrase = await prisma.phrase.update({
+        where: { id: phraseId },
+        data: {
+          sessionSpoken: true // セッション内でSpeakしたフラグを立てる
+        },
+        include: {
+          language: true
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        phrase: {
+          id: updatedPhrase.id,
+          original: updatedPhrase.original,
+          translation: updatedPhrase.translation,
+          totalSpeakCount: updatedPhrase.totalSpeakCount,
+          dailySpeakCount: updatedPhrase.dailySpeakCount
+        }
+      })
+    }
 
     // 日付が変わった場合は dailySpeakCount をリセット
     const dailyCountUpdate = isDayChangedFlag 
