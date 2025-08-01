@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
         code: language
       },
       deletedAt: null, // 削除されていないフレーズのみ
+      sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
           lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
@@ -64,12 +65,12 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    console.log(`Speak API - Found ${phrases.length} phrases after filtering`)
+    console.log(`Speak API - Found ${phrases.length} phrases after filtering (session_spoken = false)`)
     
     if (config.excludeIfSpeakCountGTE !== undefined) {
       console.log(`Speak API - Filtering phrases with totalSpeakCount < ${config.excludeIfSpeakCountGTE}`)
       phrases.forEach(phrase => {
-        console.log(`Phrase "${phrase.original}" - totalSpeakCount: ${phrase.totalSpeakCount}`)
+        console.log(`Phrase "${phrase.original}" - totalSpeakCount: ${phrase.totalSpeakCount}, sessionSpoken: ${phrase.sessionSpoken}`)
       })
     }
 
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
     if (phrases.length === 0) {
       return NextResponse.json({
         success: false,
-        message: 'No phrases found for the specified language'
+        message: 'No phrases available for practice in this session'
       })
     }
 
