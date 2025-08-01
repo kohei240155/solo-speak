@@ -361,7 +361,7 @@ export default function PhraseList({
             placeholder="例：この料理はなんですか？"
             className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
               editedTranslation.length > 200
-                ? 'border-red-400' 
+                ? 'border-gray-400' 
                 : 'border-gray-300'
             }`}
             rows={3}
@@ -370,8 +370,8 @@ export default function PhraseList({
           
           {/* 200文字を超えた場合のバリデーションメッセージ */}
           {editedTranslation.length > 200 && (
-            <div className="mt-2 p-3 border border-red-300 rounded-md bg-red-50">
-              <p className="text-sm text-red-600">
+            <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+              <p className="text-sm text-gray-600">
                 200文字以内で入力してください（現在: {editedTranslation.length}文字）
               </p>
             </div>
@@ -391,7 +391,7 @@ export default function PhraseList({
             placeholder="Enter phrase"
             className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
               editedText.length > 200
-                ? 'border-red-400' 
+                ? 'border-gray-400' 
                 : 'border-gray-300'
             }`}
             rows={3}
@@ -400,8 +400,8 @@ export default function PhraseList({
           
           {/* 200文字を超えた場合のバリデーションメッセージ */}
           {editedText.length > 200 && (
-            <div className="mt-2 p-3 border border-red-300 rounded-md bg-red-50">
-              <p className="text-sm text-red-600">
+            <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+              <p className="text-sm text-gray-600">
                 200文字以内で入力してください（現在: {editedText.length}文字）
               </p>
             </div>
