@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { getSpeakPhrase } from '@/hooks/useApi'
+import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/useApi'
 import toast from 'react-hot-toast'
 
 interface SpeakModeModalProps {
@@ -18,6 +18,23 @@ export type { SpeakConfig } from '@/types/speak'
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [isLoading, setIsLoading] = useState(false)
+
+  // モーダルが開かれたときにsession_spokenをリセット
+  useEffect(() => {
+    if (isOpen) {
+      const resetSession = async () => {
+        try {
+          console.log('SpeakModeModal - Resetting session_spoken for all user phrases')
+          await resetSessionSpoken()
+          console.log('SpeakModeModal - Successfully reset session_spoken')
+        } catch (error) {
+          console.error('SpeakModeModal - Failed to reset session_spoken:', error)
+          // エラーが発生してもモーダルの表示は継続する
+        }
+      }
+      resetSession()
+    }
+  }, [isOpen])
 
   const handleStart = async (selectedLanguage: string) => {
     if (isLoading) return

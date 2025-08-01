@@ -50,6 +50,18 @@ export async function updatePhrase(phraseId: string, updates: Record<string, unk
 }
 
 /**
+ * ユーザーの全フレーズのsession_spokenをfalseにリセットする関数
+ */
+export async function resetSessionSpoken() {
+  try {
+    return await api.post('/api/phrases/reset-session')
+  } catch (error) {
+    console.error('Failed to reset session spoken:', error)
+    throw error
+  }
+}
+
+/**
  * Speak用のフレーズを取得する関数
  */
 export async function getSpeakPhrase(params: {
