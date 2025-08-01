@@ -71,6 +71,44 @@ function PhraseSpeakPage() {
     preloadVoices()
   }, [])
 
+  // ページ離脱時の警告処理
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const hasPendingCount = isSinglePhraseMode 
+        ? singlePhrasePendingCount > 0 
+        : pendingCount > 0
+      
+      if (hasPendingCount) {
+        e.preventDefault()
+        e.returnValue = 'Countが登録されていません。このページを離れますか？'
+        return 'Countが登録されていません。このページを離れますか？'
+      }
+    }
+
+    const handleRouteChange = () => {
+      const hasPendingCount = isSinglePhraseMode 
+        ? singlePhrasePendingCount > 0 
+        : pendingCount > 0
+      
+      if (hasPendingCount) {
+        const confirmLeave = window.confirm('Countが登録されていません。このページを離れますか？')
+        if (!confirmLeave) {
+          // ナビゲーションをキャンセルする
+          window.history.pushState(null, '', window.location.pathname + window.location.search)
+          throw new Error('Route change cancelled by user')
+        }
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener('popstate', handleRouteChange)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener('popstate', handleRouteChange)
+    }
+  }, [pendingCount, singlePhrasePendingCount, isSinglePhraseMode])
+
   // SWRから取得したデータを状態に反映
   useEffect(() => {
     if (!phraseId) {
@@ -235,6 +273,15 @@ function PhraseSpeakPage() {
     setShowQuizModal(true)
   }
 
+  // 未保存の変更チェック関数
+  const checkUnsavedChanges = () => {
+    const hasPendingCount = isSinglePhraseMode 
+      ? singlePhrasePendingCount > 0 
+      : pendingCount > 0
+    
+    return hasPendingCount
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
@@ -248,6 +295,7 @@ function PhraseSpeakPage() {
           {/* タブメニュー */}
           <PhraseTabNavigation 
             activeTab="Speak" 
+            checkUnsavedChanges={checkUnsavedChanges}
             onSpeakModalOpen={speakMode.active ? undefined : () => setShowSpeakModal(true)}
             onQuizModalOpen={openQuizModal}
           />
