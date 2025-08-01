@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { 
@@ -9,8 +8,7 @@ import {
   PhrasesListResponseData 
 } from '@/types/phrase-api'
 import { ApiErrorResponse } from '@/types/api'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/utils/prisma'
 
 const createPhraseSchema = z.object({
   languageId: z.string().min(1),
