@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
+    const excludeSpoken = searchParams.get('excludeSpoken') === 'true'
 
     if (!language) {
       return NextResponse.json(
@@ -64,8 +65,23 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // 既にSpeakしたフレーズを除外
+    let filteredPhrases = phrases
+    if (excludeSpoken) {
+      // sessionSpokenがfalseのフレーズのみを取得
+      filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
+    }
+
+    // フィルタ後にフレーズがない場合
+    if (filteredPhrases.length === 0) {
+      return NextResponse.json({
+        success: false,
+        message: 'No unspoken phrases found for the specified language'
+      })
+    }
+
     // ソート処理
-    const sortedPhrases = [...phrases]
+    const sortedPhrases = [...filteredPhrases]
 
     // 常に音読回数の少ない順を優先
     sortedPhrases.sort((a, b) => {

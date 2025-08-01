@@ -19,6 +19,11 @@ export const useSpeakPhrase = () => {
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
       })
 
+      // 既にSpeak済みのフレーズを除外する場合
+      if (config.excludeSpoken) {
+        params.set('excludeSpoken', 'true')
+      }
+
       const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {

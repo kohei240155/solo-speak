@@ -72,6 +72,7 @@ model Phrase {
   correctQuizCount   Int          @default(0) @map("correct_quiz_count")
   incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")
   phraseLevelId      String       @map("phrase_level_id")
+  sessionSpoken      Boolean      @default(false) @map("session_spoken")
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
   deletedAt          DateTime?    @map("deleted_at")

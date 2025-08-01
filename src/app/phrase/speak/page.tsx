@@ -34,11 +34,10 @@ function PhraseSpeakPage() {
     fetchSpeakPhrase,
     sendPendingCount,
     handleCount,
-    handleNext,
     handleFinish
   } = useSpeakPhrase()
 
-  const { speakMode, handleSpeakStart } = useSpeakMode({
+  const { speakMode, handleSpeakStart, handleSpeakFinish, getNextPhrase } = useSpeakMode({
     learningLanguage,
     fetchSpeakPhrase,
     currentPhraseId: currentPhrase?.id || null,
@@ -166,8 +165,15 @@ function PhraseSpeakPage() {
 
   // 次のフレーズを取得（設定付き）
   const handleNextWithConfig = async () => {
-    if (speakMode.config) {
-      await handleNext(speakMode.config)
+    if (speakMode.config && currentPhrase) {
+      // 次のフレーズを取得（Speak済みフレーズを除外）
+      const success = await getNextPhrase(speakMode.config)
+      
+      if (!success) {
+        // すべてのフレーズをSpeakした場合、練習を終了
+        toast.success('すべてのフレーズをSpeakしました！')
+        await handleSpeakFinishComplete()
+      }
     }
   }
 
@@ -176,6 +182,7 @@ function PhraseSpeakPage() {
     setIsFinishing(true)
     try {
       await handleFinish()
+      handleSpeakFinish() // Speak済みフレーズIDをリセット
       // 練習準備画面ではなく、直接Listページに遷移
       router.push('/phrase/list')
     } catch (error) {

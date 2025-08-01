@@ -40,7 +40,9 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
-          prioritizeLowPractice: true // 常に少ない練習回数から表示
+          prioritizeLowPractice: true, // 常に少ない練習回数から表示
+          excludeSpoken: false, // 初回は除外しない
+          spokenPhraseIds: [] // 初回は空
         }
         console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる
