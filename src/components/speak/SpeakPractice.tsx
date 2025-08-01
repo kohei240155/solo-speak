@@ -106,16 +106,16 @@ export default function SpeakPractice({
       {/* Sound と Count ボタン */}
       <div>
         <div className="flex justify-between items-start">
-          {/* Sound ボタン + Finish ボタン */}
+          {/* Count ボタン + Finish ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onSound}
+              onClick={onCount}
               className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
               <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
+                <CiCirclePlus className="w-10 h-10 text-gray-600" />
               </div>
-              <span className="text-gray-900 font-medium text-base">Sound</span>
+              <span className="text-gray-900 font-medium text-base">Count</span>
             </button>
             {!isHideNext && (
               <button
@@ -142,16 +142,16 @@ export default function SpeakPractice({
           {/* 区切り線 - 上部に配置 */}
           <div className="w-px h-20 bg-gray-300 mx-4"></div>
 
-          {/* Count ボタン + Next ボタン */}
+          {/* Sound ボタン + Next ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onCount}
+              onClick={onSound}
               className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
               <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <CiCirclePlus className="w-10 h-10 text-gray-600" />
+                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
               </div>
-              <span className="text-gray-900 font-medium text-base">Count</span>
+              <span className="text-gray-900 font-medium text-base">Sound</span>
             </button>
             {!isHideNext && (
               <button
