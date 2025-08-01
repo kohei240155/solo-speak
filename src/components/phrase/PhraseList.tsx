@@ -85,6 +85,9 @@ const PhraseItem = memo(({
             isOpen={isMenuOpen}
             onToggle={() => onMenuToggle(phrase.id)}
             onClose={() => onMenuToggle('')}
+            triggerSize="lg"
+            width="w-36"
+            fontSize="base"
             items={[
               {
                 id: 'edit',
