@@ -14,6 +14,7 @@ export interface BaseModalProps {
   onClose: () => void
   children: ReactNode
   title?: string
+  width?: string
   showCloseButton?: boolean
   closeOnOverlayClick?: boolean
 }
@@ -23,6 +24,7 @@ export default function BaseModal({
   onClose,
   children,
   title,
+  width = '500px',
   showCloseButton = true,
   closeOnOverlayClick = true
 }: BaseModalProps) {
@@ -89,7 +91,13 @@ export default function BaseModal({
       shouldCloseOnEsc={true}
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
-      <div className="relative bg-white rounded-lg w-[90vw] sm:w-[500px]">
+      <div 
+        className="relative bg-white rounded-lg w-[90vw]" 
+        style={{ 
+          width: `min(90vw, ${width})`,
+          maxWidth: width 
+        }}
+      >
         {/* 閉じるボタン */}
         {showCloseButton && (
           <button
