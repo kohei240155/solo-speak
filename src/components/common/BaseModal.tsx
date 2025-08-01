@@ -1,13 +1,17 @@
 'use client'
 
 import Modal from 'react-modal'
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import { MdClose } from 'react-icons/md'
 
 // React Modalのアプリルート要素を設定
 if (typeof window !== 'undefined') {
   Modal.setAppElement('body')
 }
+
+// モーダルの開数を管理するカウンター
+let modalCounter = 0
+let originalBodyStyle: { overflow: string; paddingRight: string } | null = null
 
 export interface BaseModalProps {
   isOpen: boolean
@@ -28,6 +32,8 @@ export default function BaseModal({
   showCloseButton = true,
   closeOnOverlayClick = true
 }: BaseModalProps) {
+  const prevIsOpenRef = useRef(false)
+
   // Escキーでモーダルを閉じる
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -40,19 +46,48 @@ export default function BaseModal({
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
 
-  // モーダル表示時に背景のスクロールを無効化
+  // モーダル表示時に背景のスクロールを無効化（複数モーダル対応）
   useEffect(() => {
-    if (isOpen) {
-      // モーダルが開いたときに背景のスクロールを無効化
-      document.body.style.overflow = 'hidden'
-    } else {
-      // モーダルが閉じたときに背景のスクロールを有効化
-      document.body.style.overflow = 'unset'
+    const prevIsOpen = prevIsOpenRef.current
+    
+    if (isOpen && !prevIsOpen) {
+      // モーダルが開いた
+      modalCounter++
+      
+      if (modalCounter === 1) {
+        // 最初のモーダルが開いたときのみ背景スクロールを無効化
+        const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
+        originalBodyStyle = {
+          overflow: document.body.style.overflow,
+          paddingRight: document.body.style.paddingRight
+        }
+        document.body.style.overflow = 'hidden'
+        document.body.style.paddingRight = `${scrollBarWidth}px`
+      }
+    } else if (!isOpen && prevIsOpen) {
+      // モーダルが閉じた
+      modalCounter = Math.max(0, modalCounter - 1)
+      
+      if (modalCounter === 0 && originalBodyStyle) {
+        // 最後のモーダルが閉じたときのみ背景スクロールを復元
+        document.body.style.overflow = originalBodyStyle.overflow
+        document.body.style.paddingRight = originalBodyStyle.paddingRight
+        originalBodyStyle = null
+      }
     }
-
-    // クリーンアップ関数で元に戻す
+    
+    prevIsOpenRef.current = isOpen
+    
+    // クリーンアップ関数
     return () => {
-      document.body.style.overflow = 'unset'
+      if (isOpen) {
+        modalCounter = Math.max(0, modalCounter - 1)
+        if (modalCounter === 0 && originalBodyStyle) {
+          document.body.style.overflow = originalBodyStyle.overflow
+          document.body.style.paddingRight = originalBodyStyle.paddingRight
+          originalBodyStyle = null
+        }
+      }
     }
   }, [isOpen])
 
@@ -63,7 +98,13 @@ export default function BaseModal({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '1rem'
+      padding: '1rem',
+      position: 'fixed' as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      overflow: 'hidden'
     },
     content: {
       position: 'relative' as const,
