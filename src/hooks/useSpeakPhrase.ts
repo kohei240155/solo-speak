@@ -33,7 +33,10 @@ export const useSpeakPhrase = () => {
 
       const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string, allDone?: boolean, dailyLimitReached?: boolean }>(`/api/phrase/speak?${params.toString()}`)
 
+      console.log('Speak API Response:', data) // レスポンス確認用ログ
+
       if (data.success && data.phrase) {
+        console.log('Found phrase:', data.phrase.original, 'dailySpeakCount:', data.phrase.dailySpeakCount)
         setCurrentPhrase(data.phrase)
         setTodayCount(data.phrase.dailySpeakCount || 0)
         setTotalCount(data.phrase.totalSpeakCount || 0)
@@ -42,9 +45,11 @@ export const useSpeakPhrase = () => {
         return true
       } else if (data.success && data.allDone) {
         // All Done状態の場合は特別な戻り値を返す
+        console.log('All Done detected from API response')
         return 'allDone'
       } else if (data.dailyLimitReached) {
         // 1日の制限に達している場合
+        console.log('Daily limit reached')
         toast.error('このフレーズは1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
           duration: 4000
         })
@@ -52,6 +57,14 @@ export const useSpeakPhrase = () => {
         return false
       } else {
         // 通常のエラーの場合はトーストを表示
+        console.log('No phrase found or error:', data.message)
+        
+        // フレーズが見つからない場合はAll Done状態の可能性を確認
+        if (data.success === false && !data.phrase && !data.message) {
+          console.log('No phrases available, treating as All Done')
+          return 'allDone'
+        }
+        
         toast.error(data.message || 'フレーズが見つかりませんでした')
         return false
       }
@@ -109,35 +122,44 @@ export const useSpeakPhrase = () => {
     // ボタンの状態を更新（表示されているtodayCountと同じ値で判定）
     updateCountButtonState(newTodayCount)
     
-  }, [currentPhrase, todayCount, updateCountButtonState])
+  }, [currentPhrase, todayCount, pendingCount, updateCountButtonState])
 
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     if (!currentPhrase) {
+      console.log('No current phrase, fetching new phrase')
       return await fetchSpeakPhrase(config)
     }
 
     try {
       // 1. 保留中のカウントがある場合は送信
       if (pendingCount > 0) {
+        console.log('Sending pending count:', pendingCount)
         const success = await sendPendingCount(currentPhrase.id, pendingCount)
         if (success) {
           setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+          console.log('Pending count sent successfully')
         } else {
           toast.error('カウントの送信に失敗しました')
+          return false // カウント送信失敗時は次のフレーズを取得しない
         }
       }
 
       // 2. session_spokenをtrueに設定（カウントが0でも実行）
+      console.log('Marking phrase as session spoken')
       await markPhraseAsSessionSpoken(currentPhrase.id)
       
     } catch (error) {
       console.error('Error in handleNext:', error)
       toast.error('処理中にエラーが発生しました')
+      return false
     }
 
     // 3. 次のフレーズを取得
-    return await fetchSpeakPhrase(config)
+    console.log('Fetching next phrase')
+    const result = await fetchSpeakPhrase(config)
+    console.log('Next phrase fetch result:', result)
+    return result
   }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase])
 
   // 練習終了時の処理

@@ -237,10 +237,13 @@ function PhraseSpeakPage() {
   // 次のフレーズを取得（設定付き）
   const handleNextWithConfig = async () => {
     if (speakMode.config) {
+      console.log('Calling handleNext with config:', speakMode.config)
       const result = await handleNext(speakMode.config)
+      console.log('handleNext result:', result)
       
       // All Done状態の場合はisSpeakCompletedをtrueにしてAll Done画面を表示
       if (result === 'allDone') {
+        console.log('Setting isSpeakCompleted to true')
         setIsSpeakCompleted(true)
       }
     }
