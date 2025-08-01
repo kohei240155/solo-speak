@@ -29,6 +29,9 @@ export const useSpeakMode = ({
     const params = new URLSearchParams(window.location.search)
     const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
     const urlLanguage = params.get('language')
+    const excludeSpeakCountThreshold = params.get('excludeSpeakCountThreshold') 
+      ? parseInt(params.get('excludeSpeakCountThreshold')!) 
+      : 0
     
     // URLパラメータに設定がある場合、自動的に練習モードを開始
     if (order && (order === 'new-to-old' || order === 'old-to-new')) {
@@ -37,7 +40,8 @@ export const useSpeakMode = ({
         language: urlLanguage || learningLanguage,
         prioritizeLowPractice: false, // デフォルト値
         excludeSpoken: false,
-        spokenPhraseIds: []
+        spokenPhraseIds: [],
+        excludeSpeakCountThreshold
       }
       setSpeakMode({ active: true, config, spokenPhraseIds: [] })
       fetchSpeakPhrase(config)
@@ -102,6 +106,13 @@ export const useSpeakMode = ({
     const params = new URLSearchParams(window.location.search)
     params.set('order', config.order)
     params.set('language', config.language)
+    
+    // 音読回数除外閾値をURLパラメータに追加
+    if (config.excludeSpeakCountThreshold && config.excludeSpeakCountThreshold > 0) {
+      params.set('excludeSpeakCountThreshold', config.excludeSpeakCountThreshold.toString())
+    } else {
+      params.delete('excludeSpeakCountThreshold')
+    }
     
     // URLを更新（ページリロードは発生しない）
     const newUrl = `${window.location.pathname}?${params.toString()}`

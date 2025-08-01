@@ -24,6 +24,11 @@ export const useSpeakPhrase = () => {
         params.set('excludeSpoken', 'true')
       }
 
+      // 音読回数による除外閾値を設定
+      if (config.excludeSpeakCountThreshold && config.excludeSpeakCountThreshold > 0) {
+        params.set('excludeSpeakCountThreshold', config.excludeSpeakCountThreshold.toString())
+      }
+
       const data = await api.get<{ 
         success: boolean, 
         phrase?: SpeakPhrase, 

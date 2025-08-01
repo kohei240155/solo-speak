@@ -5,6 +5,7 @@ export interface SpeakConfig {
   prioritizeLowPractice: boolean
   excludeSpoken?: boolean
   spokenPhraseIds?: string[]
+  excludeSpeakCountThreshold?: number // 除外する音読回数の閾値
 }
 
 // 練習用フレーズの型定義

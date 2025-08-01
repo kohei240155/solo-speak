@@ -17,6 +17,7 @@ export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
+  const [excludeSpeakCountThreshold, setExcludeSpeakCountThreshold] = useState<number>(0)
 
   // モーダルが開かれたときにセッション設定をリセット
   useEffect(() => {
@@ -51,6 +52,17 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           { value: 'old-to-new', label: 'OLD → NEW' }
         ],
         onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
+      },
+      {
+        id: 'excludeSpeakCountThreshold',
+        label: 'Exclude phrases with more than',
+        type: 'select',
+        value: excludeSpeakCountThreshold.toString(),
+        options: Array.from({ length: 11 }, (_, i) => ({
+          value: (i * 10).toString(),
+          label: i === 0 ? 'No exclusion' : `${i * 10} times`
+        })),
+        onChange: (value: string) => setExcludeSpeakCountThreshold(parseInt(value))
       }
     ],
     onStart: async (selectedLanguage: string) => {
@@ -60,12 +72,14 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         language: selectedLanguage,
         prioritizeLowPractice: true, // 常に少ない練習回数から表示
         excludeSpoken: false, // 初回は除外しない
-        spokenPhraseIds: [] // 初回は空
+        spokenPhraseIds: [], // 初回は空
+        excludeSpeakCountThreshold: excludeSpeakCountThreshold // 除外する音読回数の閾値
       }
       console.log('SpeakModeModal - Starting practice with config:', config)
       
       // 実際の処理を開始
       await onStart(config)
+      // モーダルのクローズ処理は呼び出し元で処理される
     },
     startButtonText: 'Start'
   }

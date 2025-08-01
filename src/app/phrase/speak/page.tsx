@@ -162,10 +162,15 @@ function PhraseSpeakPage() {
 
   // フレーズが存在し、Speakモードがアクティブでない場合はリスト画面に遷移
   useEffect(() => {
-    if (!isSinglePhraseMode && !isLoadingPhrases && savedPhrases.length > 0 && !speakMode.active && !isStartingSpeak) {
+    if (!isSinglePhraseMode && 
+        !isLoadingPhrases && 
+        savedPhrases.length > 0 && 
+        !speakMode.active && 
+        !isStartingSpeak &&
+        !showSpeakModal) { // モーダルが開いている間は遷移しない
       router.push('/phrase/list')
     }
-  }, [isSinglePhraseMode, isLoadingPhrases, savedPhrases.length, speakMode.active, isStartingSpeak, router])
+  }, [isSinglePhraseMode, isLoadingPhrases, savedPhrases.length, speakMode.active, isStartingSpeak, showSpeakModal, router])
 
   // 音声再生機能
   const handleSound = async () => {
@@ -264,8 +269,11 @@ function PhraseSpeakPage() {
       } else if (result === 'allCompleted') {
         // 全て完了の場合はAll Done画面を表示
         setIsCompleted(true)
+        setShowSpeakModal(false) // モーダルを閉じる
+      } else {
+        // 成功した場合
+        setShowSpeakModal(false) // モーダルを閉じる
       }
-      // 成功した場合はモーダルは既に閉じられているので何もしない
     } catch (error) {
       console.error('Error starting speak practice:', error)
       // エラーが発生した場合もモーダルを再度開く

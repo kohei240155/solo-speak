@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
     const excludeSpoken = searchParams.get('excludeSpoken') === 'true' // 後方互換性のため残す
+    const excludeSpeakCountThreshold = searchParams.get('excludeSpeakCountThreshold') 
+      ? parseInt(searchParams.get('excludeSpeakCountThreshold')!) 
+      : 0
 
     if (!language) {
       return NextResponse.json(
@@ -68,7 +71,17 @@ export async function GET(request: NextRequest) {
     // 既にSpeakしたフレーズを除外（session_spokenがtrueのフレーズは常に除外）
     // 注意：excludeSpokenパラメータは後方互換性のために残している
     console.log('excludeSpoken parameter (for compatibility):', excludeSpoken)
-    const filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
+    console.log('excludeSpeakCountThreshold:', excludeSpeakCountThreshold)
+    
+    let filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
+    
+    // 指定された音読回数以上のフレーズを除外
+    if (excludeSpeakCountThreshold > 0) {
+      filteredPhrases = filteredPhrases.filter(phrase => 
+        (phrase.totalSpeakCount || 0) < excludeSpeakCountThreshold
+      )
+      console.log(`Filtered phrases by speak count threshold (${excludeSpeakCountThreshold}):`, filteredPhrases.length)
+    }
 
     // フィルタ後にフレーズがない場合（全てのフレーズが完了済み）
     if (filteredPhrases.length === 0) {
