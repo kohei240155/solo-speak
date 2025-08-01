@@ -2,7 +2,7 @@ import { SavedPhrase, Language } from '@/types/phrase'
 import { getPhraseLevelColorByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { RiSpeakLine, RiDeleteBin6Line } from 'react-icons/ri'
 import { IoCheckboxOutline } from 'react-icons/io5'
-import { BiCalendarAlt } from 'react-icons/bi'
+import { BiCalendarAlt, BiCommentDetail } from 'react-icons/bi'
 import { BsPencil } from 'react-icons/bs'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useRouter } from 'next/navigation'
@@ -28,6 +28,7 @@ interface PhraseItemProps {
   onEdit: (phrase: SavedPhrase) => void
   onSpeak: (phraseId: string) => void
   onDelete: (phraseId: string) => void
+  onExplanation: (phrase: SavedPhrase) => void
   isShowingNuance: boolean
   onCardClick: (phraseId: string) => void
 }
@@ -39,6 +40,7 @@ const PhraseItem = memo(({
   onEdit, 
   onSpeak, 
   onDelete,
+  onExplanation,
   isShowingNuance,
   onCardClick
 }: PhraseItemProps) => {
@@ -89,6 +91,12 @@ const PhraseItem = memo(({
                 label: 'Edit',
                 icon: BsPencil,
                 onClick: () => onEdit(phrase)
+              },
+              {
+                id: 'explanation',
+                label: 'Explanation',
+                icon: BiCommentDetail,
+                onClick: () => onExplanation(phrase)
               },
               {
                 id: 'speak',
@@ -181,6 +189,7 @@ export default function PhraseList({
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
   const [nuanceViewingIds, setNuanceViewingIds] = useState<Set<string>>(new Set())
+  const [explanationPhrase, setExplanationPhrase] = useState<SavedPhrase | null>(null)
 
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -213,6 +222,15 @@ export default function PhraseList({
     setDeletingPhraseId(phraseId)
     setOpenMenuId(null)
   }, [])
+
+  const handleExplanation = useCallback((phrase: SavedPhrase) => {
+    setExplanationPhrase(phrase)
+    setOpenMenuId(null)
+  }, [])
+
+  const handleCloseExplanation = () => {
+    setExplanationPhrase(null)
+  }
 
   const handleCardClick = useCallback((phraseId: string) => {
     setNuanceViewingIds(prev => {
@@ -336,6 +354,7 @@ export default function PhraseList({
             onEdit={handleEdit}
             onSpeak={handleSpeak}
             onDelete={handleDelete}
+            onExplanation={handleExplanation}
             isShowingNuance={nuanceViewingIds.has(phrase.id)}
             onCardClick={handleCardClick}
           />
@@ -481,6 +500,28 @@ export default function PhraseList({
             ) : (
               'Delete'
             )}
+          </button>
+        </div>
+      </BaseModal>
+
+      {/* Explanation モーダル */}
+      <BaseModal isOpen={!!explanationPhrase} onClose={handleCloseExplanation} title="Explanation">
+        <div className="mb-6">
+          <p className="text-gray-700 leading-relaxed">
+            {explanationPhrase?.explanation || 'Explanation情報がありません'}
+          </p>
+        </div>
+        
+        <div className="flex justify-end">
+          <button
+            onClick={handleCloseExplanation}
+            className="bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            style={{ 
+              borderColor: '#616161',
+              color: '#616161'
+            }}
+          >
+            Close
           </button>
         </div>
       </BaseModal>
