@@ -58,6 +58,26 @@ export const useSpeakPhrase = () => {
     }
   }, [])
 
+  // 完了チェック機能
+  const checkSpeakCompletion = useCallback(async (language: string): Promise<boolean> => {
+    try {
+      const data = await api.get<{ 
+        success: boolean, 
+        allSpoken: boolean, 
+        totalCount: number, 
+        spokenCount: number 
+      }>(`/api/speak/check-completion?language=${language}`)
+
+      if (data.success) {
+        return data.allSpoken
+      }
+      return false
+    } catch (error) {
+      console.error('Error checking speak completion:', error)
+      return false
+    }
+  }, [])
+
   // カウント機能（ローカルでのみカウントを増加）
   const handleCount = useCallback(() => {
     if (!currentPhrase) return
@@ -115,6 +135,7 @@ export const useSpeakPhrase = () => {
     pendingCount,
     fetchSpeakPhrase,
     sendPendingCount,
+    checkSpeakCompletion,
     handleCount,
     handleNext,
     handleFinish

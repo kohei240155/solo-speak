@@ -8,6 +8,7 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
+import SpeakComplete from '@/components/speak/SpeakComplete'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
@@ -33,6 +34,7 @@ function PhraseSpeakPage() {
     pendingCount,
     fetchSpeakPhrase,
     sendPendingCount,
+    checkSpeakCompletion,
     handleCount,
     handleNext,
     handleFinish
@@ -49,6 +51,7 @@ function PhraseSpeakPage() {
   const [showSpeakModal, setShowSpeakModal] = useState(false)
   const [showQuizModal, setShowQuizModal] = useState(false)
   const [isFinishing, setIsFinishing] = useState(false) // Finish処理中の状態を追加
+  const [isCompleted, setIsCompleted] = useState(false) // 全フレーズ完了状態を追加
   
   // 単一フレーズ練習用の状態
   const [singlePhrase, setSinglePhrase] = useState<SpeakPhrase | null>(null)
@@ -171,9 +174,17 @@ function PhraseSpeakPage() {
       const success = await handleNext(speakMode.config)
       
       if (!success) {
-        // すべてのフレーズをSpeakした場合、練習を終了
-        toast.success('すべてのフレーズをSpeakしました！')
-        await handleSpeakFinishComplete()
+        // 次のフレーズが取得できない場合、完了チェックを実行
+        const isAllCompleted = await checkSpeakCompletion(speakMode.config.language)
+        
+        if (isAllCompleted) {
+          // 全てのフレーズを完了した場合、All Done画面を表示
+          setIsCompleted(true)
+        } else {
+          // まだ未完了のフレーズがある場合、練習を終了
+          toast.success('すべてのフレーズをSpeakしました！')
+          await handleSpeakFinishComplete()
+        }
       }
     }
   }
@@ -191,6 +202,21 @@ function PhraseSpeakPage() {
       toast.error('終了処理中にエラーが発生しました')
     } finally {
       setIsFinishing(false)
+    }
+  }
+
+  // All Done画面からの終了処理
+  const handleCompleteFinish = async () => {
+    setIsCompleted(false)
+    await handleSpeakFinishComplete()
+  }
+
+  // All Done画面からの再開処理
+  const handleCompleteRestart = async () => {
+    setIsCompleted(false)
+    if (speakMode.config) {
+      // スピークしたフレーズIDをリセットして再開
+      await handleSpeakStart(speakMode.config)
     }
   }
 
@@ -263,25 +289,33 @@ function PhraseSpeakPage() {
             ) : (
               // 通常の複数フレーズ練習モード
               speakMode.active && speakMode.config ? (
-                // Finish処理中またはフレーズがある場合は練習画面を表示
-                (currentPhrase || isFinishing) ? (
-                  <SpeakPractice
-                    phrase={currentPhrase}
-                    onCount={handleCount}
-                    onSound={handleSound}
-                    onNext={handleNextWithConfig}
-                    onFinish={handleSpeakFinishComplete}
-                    todayCount={todayCount}
-                    totalCount={totalCount}
-                    isLoading={isLoadingPhrase}
-                    isHideNext={false}
-                    isFinishing={isFinishing}
+                // 完了状態の場合はSpeakCompleteを表示
+                isCompleted ? (
+                  <SpeakComplete
+                    onFinish={handleCompleteFinish}
+                    onRestart={handleCompleteRestart}
                   />
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-                  </div>
+                  // Finish処理中またはフレーズがある場合は練習画面を表示
+                  (currentPhrase || isFinishing) ? (
+                    <SpeakPractice
+                      phrase={currentPhrase}
+                      onCount={handleCount}
+                      onSound={handleSound}
+                      onNext={handleNextWithConfig}
+                      onFinish={handleSpeakFinishComplete}
+                      todayCount={todayCount}
+                      totalCount={totalCount}
+                      isLoading={isLoadingPhrase}
+                      isHideNext={false}
+                      isFinishing={isFinishing}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                      <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+                    </div>
+                  )
                 )
               ) : (
                 <SpeakPhraseList
