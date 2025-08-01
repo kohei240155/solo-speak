@@ -29,8 +29,6 @@ interface PhraseItemProps {
   onSpeak: (phraseId: string) => void
   onDelete: (phraseId: string) => void
   onExplanation: (phrase: SavedPhrase) => void
-  isShowingNuance: boolean
-  onCardClick: (phraseId: string) => void
 }
 
 const PhraseItem = memo(({ 
@@ -40,9 +38,7 @@ const PhraseItem = memo(({
   onEdit, 
   onSpeak, 
   onDelete,
-  onExplanation,
-  isShowingNuance,
-  onCardClick
+  onExplanation
 }: PhraseItemProps) => {
   const borderColor = useMemo(() => 
     getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
@@ -66,7 +62,7 @@ const PhraseItem = memo(({
         borderRadius: '5px',
         minHeight: '120px' // パディング減少に合わせて最小高さも調整
       }}
-      onClick={() => onCardClick(phrase.id)}
+      onClick={() => onSpeak(phrase.id)}
     >
       <div className="flex justify-between mb-2">
         <div 
@@ -78,7 +74,7 @@ const PhraseItem = memo(({
             minHeight: '24px' // テキスト行の最小高さを確保
           }}
         >
-          {isShowingNuance ? (phrase.explanation || 'ニュアンス情報がありません') : phrase.original}
+          {phrase.original}
         </div>
         <div className="relative flex-shrink-0">
           <DropdownMenu
@@ -102,12 +98,6 @@ const PhraseItem = memo(({
                 onClick: () => onExplanation(phrase)
               },
               {
-                id: 'speak',
-                label: 'Speak',
-                icon: RiSpeakLine,
-                onClick: () => onSpeak(phrase.id)
-              },
-              {
                 id: 'delete',
                 label: 'Delete',
                 icon: RiDeleteBin6Line,
@@ -128,7 +118,7 @@ const PhraseItem = memo(({
             minHeight: '20px' // 翻訳行の最小高さを確保
           }}
         >
-          {isShowingNuance ? '\u00A0' : phrase.translation} {/* ニュアンス表示時は非破壊スペースで高さを保持 */}
+          {phrase.translation}
         </div>
         <div className="relative flex-shrink-0 w-5">
           {/* 三点リーダーと同じ幅のスペースを確保 */}
@@ -191,7 +181,6 @@ export default function PhraseList({
   const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showSpeakModal, setShowSpeakModal] = useState(false)
-  const [nuanceViewingIds, setNuanceViewingIds] = useState<Set<string>>(new Set())
   const [explanationPhrase, setExplanationPhrase] = useState<SavedPhrase | null>(null)
 
   // スクロール位置保持機能
@@ -234,18 +223,6 @@ export default function PhraseList({
   const handleCloseExplanation = () => {
     setExplanationPhrase(null)
   }
-
-  const handleCardClick = useCallback((phraseId: string) => {
-    setNuanceViewingIds(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(phraseId)) {
-        newSet.delete(phraseId)
-      } else {
-        newSet.add(phraseId)
-      }
-      return newSet
-    })
-  }, [])
 
   const handleSpeakStart = (config: SpeakConfig) => {
     // 設定に基づいてSpeak画面に遷移
@@ -358,8 +335,6 @@ export default function PhraseList({
             onSpeak={handleSpeak}
             onDelete={handleDelete}
             onExplanation={handleExplanation}
-            isShowingNuance={nuanceViewingIds.has(phrase.id)}
-            onCardClick={handleCardClick}
           />
         ))}
         
