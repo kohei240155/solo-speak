@@ -39,6 +39,9 @@ export async function GET(request: NextRequest) {
       },
       deletedAt: null, // 削除されていないフレーズのみ
       sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
+      dailySpeakCount: {
+        lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+      },
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
           lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
@@ -72,6 +75,9 @@ export async function GET(request: NextRequest) {
             code: language
           },
           deletedAt: null,
+          dailySpeakCount: {
+            lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+          },
           ...(config.excludeIfSpeakCountGTE !== undefined && {
             totalSpeakCount: {
               lt: config.excludeIfSpeakCountGTE
@@ -85,14 +91,14 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    console.log(`Speak API - Found ${phrases.length} phrases after filtering (session_spoken = false)`)
-    console.log(`Speak API - Total available phrases (excluding session): ${allPhrases.length}`)
+    console.log(`Speak API - Found ${phrases.length} phrases after filtering (session_spoken = false, dailySpeakCount < 100)`)
+    console.log(`Speak API - Total available phrases (excluding session and 100+ daily count): ${allPhrases.length}`)
     console.log(`Speak API - Session completed phrases: ${allPhrases.filter(p => p.sessionSpoken).length}`)
     
     if (config.excludeIfSpeakCountGTE !== undefined) {
       console.log(`Speak API - Filtering phrases with totalSpeakCount < ${config.excludeIfSpeakCountGTE}`)
       phrases.forEach(phrase => {
-        console.log(`Phrase "${phrase.original}" - totalSpeakCount: ${phrase.totalSpeakCount}, sessionSpoken: ${phrase.sessionSpoken}`)
+        console.log(`Phrase "${phrase.original}" - totalSpeakCount: ${phrase.totalSpeakCount}, dailySpeakCount: ${phrase.dailySpeakCount}, sessionSpoken: ${phrase.sessionSpoken}`)
       })
     }
 
