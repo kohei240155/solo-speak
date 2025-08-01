@@ -169,7 +169,12 @@ function PhraseSpeakPage() {
   // 次のフレーズを取得（設定付き）
   const handleNextWithConfig = async () => {
     if (speakMode.config) {
-      await handleNext(speakMode.config)
+      const result = await handleNext(speakMode.config)
+      
+      // All Done状態の場合はisSpeakCompletedをtrueにしてAll Done画面を表示
+      if (result === 'allDone') {
+        setIsSpeakCompleted(true)
+      }
     }
   }
 

@@ -11,7 +11,7 @@ export const useSpeakPhrase = () => {
   const [pendingCount, setPendingCount] = useState(0)
 
   // フレーズを取得する関数
-  const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
+  const fetchSpeakPhrase = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     setIsLoadingPhrase(true)
     try {
       const params = new URLSearchParams({
@@ -32,11 +32,12 @@ export const useSpeakPhrase = () => {
         setTotalCount(data.phrase.totalSpeakCount || 0)
         setPendingCount(0) // 新しいフレーズ取得時はペンディングカウントをリセット
         return true
+      } else if (data.success && data.allDone) {
+        // All Done状態の場合は特別な戻り値を返す
+        return 'allDone'
       } else {
-        // All Done状態の場合はトーストを表示しない
-        if (!data.allDone) {
-          toast.error(data.message || 'フレーズが見つかりませんでした')
-        }
+        // 通常のエラーの場合はトーストを表示
+        toast.error(data.message || 'フレーズが見つかりませんでした')
         return false
       }
     } catch (error) {
@@ -79,7 +80,7 @@ export const useSpeakPhrase = () => {
   }, [currentPhrase])
 
   // 次のフレーズを取得
-  const handleNext = useCallback(async (config: SpeakConfig) => {
+  const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     // 保留中のカウントを送信
     if (currentPhrase && pendingCount > 0) {
       const success = await sendPendingCount(currentPhrase.id, pendingCount)

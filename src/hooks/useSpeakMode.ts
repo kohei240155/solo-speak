@@ -3,7 +3,7 @@ import { SpeakConfig, SpeakModeState } from '@/types/speak'
 
 interface UseSpeakModeOptions {
   learningLanguage: string
-  fetchSpeakPhrase: (config: SpeakConfig) => Promise<boolean>
+  fetchSpeakPhrase: (config: SpeakConfig) => Promise<boolean | 'allDone'>
   currentPhraseId: string | null
   pendingCount: number
   sendPendingCount: (phraseId: string, count: number) => Promise<boolean>
@@ -86,7 +86,14 @@ export const useSpeakMode = ({
     window.history.replaceState({}, '', newUrl)
     
     // フレーズを取得
-    return await fetchSpeakPhrase(config)
+    const result = await fetchSpeakPhrase(config)
+    
+    // All Done状態の場合はfalseを返して、SpeakModalでAll Done画面を表示させる
+    if (result === 'allDone') {
+      return false
+    }
+    
+    return result
   }, [fetchSpeakPhrase])
 
   // 練習終了時の処理
