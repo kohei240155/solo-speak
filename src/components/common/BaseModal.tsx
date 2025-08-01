@@ -38,6 +38,22 @@ export default function BaseModal({
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
 
+  // モーダル表示時に背景のスクロールを無効化
+  useEffect(() => {
+    if (isOpen) {
+      // モーダルが開いたときに背景のスクロールを無効化
+      document.body.style.overflow = 'hidden'
+    } else {
+      // モーダルが閉じたときに背景のスクロールを有効化
+      document.body.style.overflow = 'unset'
+    }
+
+    // クリーンアップ関数で元に戻す
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
   const customStyles = {
     overlay: {
       backgroundColor: 'rgba(97, 97, 97, 0.5)',
