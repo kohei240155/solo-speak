@@ -29,6 +29,24 @@ export async function GET(request: NextRequest) {
       excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined
     }
 
+    console.log('Speak API - Config:', config)
+
+    // フィルタリング条件を構築
+    const whereClause = {
+      userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+      language: {
+        code: language
+      },
+      deletedAt: null, // 削除されていないフレーズのみ
+      ...(config.excludeIfSpeakCountGTE !== undefined && {
+        totalSpeakCount: {
+          lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
+        }
+      })
+    }
+
+    console.log('Speak API - Where clause:', JSON.stringify(whereClause, null, 2))
+
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases] = await Promise.all([
       // 指定された言語が存在するか確認
@@ -39,23 +57,21 @@ export async function GET(request: NextRequest) {
       // データベースからフレーズを取得（削除されていないもののみ）
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
-        where: {
-          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
-          language: {
-            code: language
-          },
-          deletedAt: null, // 削除されていないフレーズのみ
-          ...(config.excludeIfSpeakCountGTE !== undefined && {
-            totalSpeakCount: {
-              lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
-            }
-          })
-        },
+        where: whereClause,
         include: {
           language: true
         }
       })
     ])
+
+    console.log(`Speak API - Found ${phrases.length} phrases after filtering`)
+    
+    if (config.excludeIfSpeakCountGTE !== undefined) {
+      console.log(`Speak API - Filtering phrases with totalSpeakCount < ${config.excludeIfSpeakCountGTE}`)
+      phrases.forEach(phrase => {
+        console.log(`Phrase "${phrase.original}" - totalSpeakCount: ${phrase.totalSpeakCount}`)
+      })
+    }
 
     if (!languageExists) {
       return NextResponse.json({
