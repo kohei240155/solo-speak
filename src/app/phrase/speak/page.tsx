@@ -52,6 +52,7 @@ function PhraseSpeakPage() {
   const [showQuizModal, setShowQuizModal] = useState(false)
   const [isFinishing, setIsFinishing] = useState(false) // Finish処理中の状態を追加
   const [isCompleted, setIsCompleted] = useState(false) // 全フレーズ完了状態を追加
+  const [isStartingSpeak, setIsStartingSpeak] = useState(false) // Speak開始処理中の状態を追加
   
   // 単一フレーズ練習用の状態
   const [singlePhrase, setSinglePhrase] = useState<SpeakPhrase | null>(null)
@@ -210,29 +211,52 @@ function PhraseSpeakPage() {
 
   // All Done画面からの終了処理
   const handleCompleteFinish = async () => {
-    setIsCompleted(false)
-    await handleSpeakFinishComplete()
+    // 直接リストページに遷移（setIsCompleted(false)は実行しない）
+    try {
+      await handleFinish()
+      handleSpeakFinish() // Speak済みフレーズIDをリセット
+      router.push('/phrase/list')
+    } catch (error) {
+      console.error('Error finishing speak practice:', error)
+      toast.error('終了処理中にエラーが発生しました')
+    }
   }
 
   // All Done画面からの再開処理
   const handleCompleteRestart = async () => {
     setIsCompleted(false)
-    if (speakMode.config) {
-      // スピークしたフレーズIDをリセットして再開
-      await handleSpeakStart(speakMode.config)
+    setIsStartingSpeak(true) // ローディング開始
+    try {
+      if (speakMode.config) {
+        // スピークしたフレーズIDをリセットして再開
+        const result = await handleSpeakStart(speakMode.config)
+        if (result === 'allCompleted') {
+          // 再度全て完了の場合
+          setIsCompleted(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error restarting speak practice:', error)
+      toast.error('再開処理中にエラーが発生しました')
+    } finally {
+      setIsStartingSpeak(false) // ローディング終了
     }
   }
 
   // モーダル開始処理
   const handleSpeakStartWithModal = async (config: SpeakConfig) => {
     console.log('handleSpeakStartWithModal called with config:', config)
+    setIsStartingSpeak(true) // ローディング開始
     try {
-      const success = await handleSpeakStart(config)
-      console.log('handleSpeakStart result:', success)
-      if (!success) {
+      const result = await handleSpeakStart(config)
+      console.log('handleSpeakStart result:', result)
+      if (result === false) {
         // 失敗した場合のみモーダルを再度開く
         setShowSpeakModal(true)
         toast.error('練習の開始に失敗しました')
+      } else if (result === 'allCompleted') {
+        // 全て完了の場合はAll Done画面を表示
+        setIsCompleted(true)
       }
       // 成功した場合はモーダルは既に閉じられているので何もしない
     } catch (error) {
@@ -240,6 +264,8 @@ function PhraseSpeakPage() {
       // エラーが発生した場合もモーダルを再度開く
       setShowSpeakModal(true)
       toast.error('練習の開始中にエラーが発生しました')
+    } finally {
+      setIsStartingSpeak(false) // ローディング終了
     }
   }
 
@@ -332,6 +358,12 @@ function PhraseSpeakPage() {
                     </div>
                   )
                 )
+              ) : isStartingSpeak ? (
+                // Speak開始処理中のローディング表示
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                  <p className="mt-2 text-gray-600">練習を開始しています...</p>
+                </div>
               ) : (
                 <SpeakPhraseList
                   isLoadingPhrases={isLoadingPhrases}
