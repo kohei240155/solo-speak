@@ -6,7 +6,7 @@ import { BiCalendarAlt } from 'react-icons/bi'
 import { BsPencil } from 'react-icons/bs'
 import { useState, useCallback, useMemo, memo } from 'react'
 import { useRouter } from 'next/navigation'
-import Modal from '../common/Modal'
+import BaseModal from '../common/BaseModal'
 import SpeakModeModal from '../modals/SpeakModeModal'
 import DropdownMenu from '../common/DropdownMenu'
 import toast from 'react-hot-toast'
@@ -350,158 +350,140 @@ export default function PhraseList({
       </div>
 
       {/* 編集モーダル */}
-      <Modal isOpen={!!editingPhrase} onClose={handleCancelEdit}>
-        <div className="p-6">
-          {/* ヘッダー部分 - Editタイトル */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              Edit
-            </h2>
-          </div>
-
-          {/* 母国語 section (上のフォーム) */}
-          <div className="mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
-            </h3>
-            <textarea
-              value={editedTranslation}
-              onChange={(e) => setEditedTranslation(e.target.value)}
-              onFocus={scrollPreservation.onFocus}
-              onBlur={scrollPreservation.onBlur}
-              placeholder={`${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              disabled={isUpdating}
-            />
-            <div className="flex justify-between items-center mt-1">
-              <span className={`text-xs ${
-                editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                200文字以内で入力してください
-              </span>
-              <span className={`text-xs ${
-                editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                {editedTranslation.length} / 200
-              </span>
-            </div>
-          </div>
-
-          {/* 学習言語 section (下のフォーム) */}
-          <div className="mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {editingPhrase?.language?.name || 'English'}
-            </h3>
-            <textarea
-              value={editedText}
-              onChange={(e) => setEditedText(e.target.value)}
-              onFocus={scrollPreservation.onFocus}
-              onBlur={scrollPreservation.onBlur}
-              placeholder="Enter phrase"
-              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              disabled={isUpdating}
-            />
-            <div className="flex justify-between items-center mt-1">
-              <span className={`text-xs ${
-                editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                200文字以内で入力してください
-              </span>
-              <span className={`text-xs ${
-                editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
-              }`}>
-                {editedText.length} / 200
-              </span>
-            </div>
-          </div>
-
-          {/* ボタン */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleCancelEdit}
-              disabled={isUpdating}
-              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleUpdatePhrase}
-              disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
-              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161'
-              }}
-            >
-              {isUpdating ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Saving...
-                </div>
-              ) : (
-                'Save'
-              )}
-            </button>
+      <BaseModal isOpen={!!editingPhrase} onClose={handleCancelEdit} title="Edit">
+        {/* 母国語 section (上のフォーム) */}
+        <div className="mb-6">
+          <h3 className="text-base font-semibold text-gray-900 mb-3">
+            {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
+          </h3>
+          <textarea
+            value={editedTranslation}
+            onChange={(e) => setEditedTranslation(e.target.value)}
+            onFocus={scrollPreservation.onFocus}
+            onBlur={scrollPreservation.onBlur}
+            placeholder={`${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
+            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows={3}
+            disabled={isUpdating}
+          />
+          <div className="flex justify-between items-center mt-1">
+            <span className={`text-xs ${
+              editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
+            }`}>
+              200文字以内で入力してください
+            </span>
+            <span className={`text-xs ${
+              editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
+            }`}>
+              {editedTranslation.length} / 200
+            </span>
           </div>
         </div>
-      </Modal>
+
+        {/* 学習言語 section (下のフォーム) */}
+        <div className="mb-6">
+          <h3 className="text-base font-semibold text-gray-900 mb-3">
+            {editingPhrase?.language?.name || 'English'}
+          </h3>
+          <textarea
+            value={editedText}
+            onChange={(e) => setEditedText(e.target.value)}
+            onFocus={scrollPreservation.onFocus}
+            onBlur={scrollPreservation.onBlur}
+            placeholder="Enter phrase"
+            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows={3}
+            disabled={isUpdating}
+          />
+          <div className="flex justify-between items-center mt-1">
+            <span className={`text-xs ${
+              editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
+            }`}>
+              200文字以内で入力してください
+            </span>
+            <span className={`text-xs ${
+              editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
+            }`}>
+              {editedText.length} / 200
+            </span>
+          </div>
+        </div>
+
+        {/* ボタン */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleCancelEdit}
+            disabled={isUpdating}
+            className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              borderColor: '#616161',
+              color: '#616161'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUpdatePhrase}
+            disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
+            className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161'
+            }}
+          >
+            {isUpdating ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Saving...
+              </div>
+            ) : (
+              'Save'
+            )}
+          </button>
+        </div>
+      </BaseModal>
 
       {/* 削除確認モーダル */}
-      <Modal isOpen={!!deletingPhraseId} onClose={handleCancelDelete}>
-        <div className="p-6">
-          {/* ヘッダー部分 */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              Delete Phrase
-            </h2>
-          </div>
-
-          {/* 確認メッセージ */}
-          <div className="mb-6">
-            <p className="text-gray-700">
-              このフレーズを削除してもよろしいですか？<br />
-              この操作は取り消すことができません。
-            </p>
-          </div>
-
-          {/* ボタン */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleCancelDelete}
-              disabled={isDeleting}
-              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmDelete}
-              disabled={isDeleting}
-              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
-              }}
-            >
-              {isDeleting ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Deleting...
-                </div>
-              ) : (
-                'Delete'
-              )}
-            </button>
-          </div>
+      <BaseModal isOpen={!!deletingPhraseId} onClose={handleCancelDelete} title="Delete Phrase">
+        {/* 確認メッセージ */}
+        <div className="mb-6">
+          <p className="text-gray-700">
+            このフレーズを削除してもよろしいですか？<br />
+            この操作は取り消すことができません。
+          </p>
         </div>
-      </Modal>
+
+        {/* ボタン */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleCancelDelete}
+            disabled={isDeleting}
+            className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              borderColor: '#616161',
+              color: '#616161'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+            }}
+          >
+            {isDeleting ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Deleting...
+              </div>
+            ) : (
+              'Delete'
+            )}
+          </button>
+        </div>
+      </BaseModal>
 
       {/* Speak Mode モーダル */}
       <SpeakModeModal

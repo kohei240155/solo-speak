@@ -7,7 +7,7 @@ import { MdOutlineTipsAndUpdates } from 'react-icons/md'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import PhraseGenerationTipsModal from '@/components/modals/PhraseGenerationTipsModal'
-import Modal from '@/components/common/Modal'
+import BaseModal from '@/components/common/BaseModal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
 
@@ -299,56 +299,47 @@ export default function PhraseAdd({
       />
 
       {/* シチュエーション削除確認モーダル */}
-      <Modal isOpen={!!deletingSituationId} onClose={handleCancelDelete}>
-        <div className="p-6">
-          {/* ヘッダー部分 */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              Delete Situation
-            </h2>
-          </div>
-
-          {/* 確認メッセージ */}
-          <div className="mb-6">
-            <p className="text-gray-700">
-              このシチュエーションを削除してもよろしいですか？<br />
-              この操作は取り消すことができません。
-            </p>
-          </div>
-
-          {/* ボタン */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleCancelDelete}
-              disabled={isDeleting}
-              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmDelete}
-              disabled={isDeleting}
-              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
-              }}
-            >
-              {isDeleting ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Deleting...
-                </div>
-              ) : (
-                'Delete'
-              )}
-            </button>
-          </div>
+      <BaseModal isOpen={!!deletingSituationId} onClose={handleCancelDelete} title="Delete Situation">
+        {/* 確認メッセージ */}
+        <div className="mb-6">
+          <p className="text-gray-700">
+            このシチュエーションを削除してもよろしいですか？<br />
+            この操作は取り消すことができません。
+          </p>
         </div>
-      </Modal>
+
+        {/* ボタン */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleCancelDelete}
+            disabled={isDeleting}
+            className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              borderColor: '#616161',
+              color: '#616161'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+            }}
+          >
+            {isDeleting ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Deleting...
+              </div>
+            ) : (
+              'Delete'
+            )}
+          </button>
+        </div>
+      </BaseModal>
 
       {/* フレーズ生成のTipsモーダル */}
       <PhraseGenerationTipsModal
