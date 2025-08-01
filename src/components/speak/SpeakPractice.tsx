@@ -4,7 +4,7 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 
 interface SpeakPhrase {
   id: string
-  text: string
+  original: string
   translation: string
   totalSpeakCount: number
   dailySpeakCount: number
@@ -77,7 +77,7 @@ export default function SpeakPractice({
               wordBreak: 'break-word'
             }}
           >
-            {phrase.text}
+            {phrase.original}
           </div>
         </div>
         

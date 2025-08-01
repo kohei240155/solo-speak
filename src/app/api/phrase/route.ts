@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 import { 
@@ -9,17 +8,16 @@ import {
   PhrasesListResponseData 
 } from '@/types/phrase-api'
 import { ApiErrorResponse } from '@/types/api'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/utils/prisma'
 
 const createPhraseSchema = z.object({
   languageId: z.string().min(1),
-  text: z.string().min(1).max(200),
+  original: z.string().min(1).max(200),
   translation: z.string().min(1).max(200),
-  nuance: z.string().optional(),
+  explanation: z.string().optional(),
   level: z.enum(['common', 'polite', 'casual']).optional(),
   phraseLevelId: z.string().optional(),
-  context: z.string().optional(),
+  context: z.string().nullable().optional(),
 })
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -31,7 +29,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const body: unknown = await request.json()
-    const { languageId, text, translation, nuance, level, phraseLevelId }: Omit<CreatePhraseRequestBody, 'context'> = createPhraseSchema.parse(body)
+    const { languageId, original, translation, explanation, level, phraseLevelId }: Omit<CreatePhraseRequestBody, 'context'> = createPhraseSchema.parse(body)
 
     // contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
 
@@ -110,9 +108,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data: {
         userId,
         languageId,
-        text,
+        original,
         translation,
-        nuance,
+        explanation,
         phraseLevelId: finalPhraseLevelId,
       },
       include: {
@@ -150,9 +148,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
-      nuance: phrase.nuance || undefined,
+      explanation: phrase.explanation || undefined,
       createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,
@@ -274,9 +272,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // フロントエンドの期待する形式に変換
     const transformedPhrases = phrases.map(phrase => ({
       id: phrase.id,
-      text: phrase.text,
+      original: phrase.original,
       translation: phrase.translation,
-      nuance: phrase.nuance || undefined,
+      explanation: phrase.explanation || undefined,
       createdAt: phrase.createdAt.toISOString(),
       practiceCount: phrase.totalSpeakCount,
       correctAnswers: phrase.correctQuizCount,

@@ -1,7 +1,7 @@
 import { LanguageInfo } from './common'
 
 export interface PhraseVariation {
-  text: string
+  original: string
   explanation?: string
 }
 
@@ -10,9 +10,9 @@ export type Language = LanguageInfo
 
 export interface SavedPhrase {
   id: string
-  text: string
+  original: string
   translation: string
-  nuance?: string
+  explanation?: string
   createdAt: string
   practiceCount: number
   correctAnswers: number

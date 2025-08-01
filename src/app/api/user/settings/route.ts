@@ -3,7 +3,6 @@ import {
   authenticateRequest, 
   validateUsername, 
   validateEmail, 
-  validateBirthdate, 
   validateRequiredFields, 
   createErrorResponse 
 } from '@/utils/api-helpers'
@@ -14,7 +13,6 @@ import {
   checkUserExists, 
   checkUsernameConflict 
 } from '@/utils/database-helpers'
-import { Gender } from '@/generated/prisma'
 import { prisma } from '@/utils/prisma'
 
 // ユーザー設定取得
@@ -57,8 +55,6 @@ export async function POST(request: NextRequest) {
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      birthdate,
-      gender,
       email,
       defaultQuizCount
     } = body
@@ -104,9 +100,6 @@ export async function POST(request: NextRequest) {
         iconUrl,
         nativeLanguageId,
         defaultLearningLanguageId,
-        birthdate,
-        gender: gender as Gender,
-        email: authResult.user.email || email,
         defaultQuizCount: defaultQuizCount || 10,
       })
     } else {
@@ -115,8 +108,6 @@ export async function POST(request: NextRequest) {
         iconUrl,
         nativeLanguageId,
         defaultLearningLanguageId,
-        birthdate,
-        gender: gender as Gender,
         email,
         defaultQuizCount: defaultQuizCount || 10,
       })
@@ -149,8 +140,6 @@ export async function PUT(request: NextRequest) {
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      birthdate,
-      gender,
       email,
       defaultQuizCount
     } = body
@@ -179,22 +168,11 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // 生年月日のバリデーション
-    if (birthdate) {
-      const birthdateValidation = validateBirthdate(birthdate)
-      if (!birthdateValidation.isValid) {
-        return NextResponse.json({ error: birthdateValidation.error }, { status: 400 })
-      }
-    }
-
     const updatedUser = await updateUserSettings(authResult.user.id, {
       username,
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      birthdate,
-      gender: gender as Gender,
-      email,
       defaultQuizCount,
     })
 

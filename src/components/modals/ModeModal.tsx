@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Modal from '../common/Modal'
+import BaseModal from '../common/BaseModal'
 import { Language } from '@/types/phrase'
 
 // 共通の設定項目の型定義
@@ -138,75 +138,66 @@ export default function ModeModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="p-6">
-        {/* ヘッダー部分 */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-            {config.title}
-          </h2>
+    <BaseModal isOpen={isOpen} onClose={onClose} title={config.title}>
+      {/* Language セクション（常に最初に表示） */}
+      <div className="mb-4">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">
+          Language
+        </h3>
+        <div className="relative">
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
+            style={selectStyle}
+          >
+            {languages.map((language) => (
+              <option key={language.id} value={language.code}>
+                {language.name}
+              </option>
+            ))}
+          </select>
         </div>
-
-        {/* Language セクション（常に最初に表示） */}
-        <div className="mb-4">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
-            Language
-          </h3>
-          <div className="relative">
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
-              style={selectStyle}
-            >
-              {languages.map((language) => (
-                <option key={language.id} value={language.code}>
-                  {language.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* 動的な設定項目 */}
-        {config.configItems.map((item) => (
-          <div key={item.id} className="mb-8">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">
-              {item.label}
-            </h3>
-            {renderConfigItem(item)}
-          </div>
-        ))}
-
-        {/* Start ボタン */}
-        <button
-          onClick={handleStart}
-          disabled={isLoading}
-          className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          style={{ 
-            backgroundColor: isLoading ? '#9CA3AF' : '#616161'
-          }}
-          onMouseEnter={(e) => {
-            if (!isLoading && e.currentTarget) {
-              e.currentTarget.style.backgroundColor = '#525252'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isLoading && e.currentTarget) {
-              e.currentTarget.style.backgroundColor = '#616161'
-            }
-          }}
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Loading...
-            </div>
-          ) : (
-            config.startButtonText || 'Start'
-          )}
-        </button>
       </div>
-    </Modal>
+
+      {/* 動的な設定項目 */}
+      {config.configItems.map((item) => (
+        <div key={item.id} className="mb-8">
+          <h3 className="text-base font-semibold text-gray-900 mb-3">
+            {item.label}
+          </h3>
+          {renderConfigItem(item)}
+        </div>
+      ))}
+
+      {/* Start ボタン */}
+      <button
+        onClick={handleStart}
+        disabled={isLoading}
+        className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+        style={{ 
+          backgroundColor: isLoading ? '#9CA3AF' : '#616161'
+        }}
+        onMouseEnter={(e) => {
+          if (!isLoading && e.currentTarget) {
+            e.currentTarget.style.backgroundColor = '#525252'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isLoading && e.currentTarget) {
+            e.currentTarget.style.backgroundColor = '#616161'
+          }
+        }}
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            Loading...
+          </div>
+        ) : (
+          config.startButtonText || 'Start'
+        )}
+      </button>
+    </BaseModal>
   )
 }

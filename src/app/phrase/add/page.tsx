@@ -30,8 +30,6 @@ export default function PhraseAddPage() {
     savingVariationIndex,
     editingVariations,
     phraseValidationError,
-    variationValidationErrors,
-    useChatGptApi,
     selectedContext,
     availablePhraseCount,
     
@@ -40,9 +38,7 @@ export default function PhraseAddPage() {
     handlePhraseChange,
     handleGeneratePhrase,
     handleSelectVariation,
-    handleResetVariations,
     checkUnsavedChanges,
-    handleUseChatGptApiChange,
     handleContextChange,
     addSituation,
     deleteSituation
@@ -121,18 +117,14 @@ export default function PhraseAddPage() {
               isSaving={isSaving}
                 generatedVariations={generatedVariations}
                 editingVariations={editingVariations}
-                variationValidationErrors={variationValidationErrors}
                 savingVariationIndex={savingVariationIndex}
                 error={error}
-                useChatGptApi={useChatGptApi}
                 selectedContext={selectedContext}
                 situations={situations}
                 onPhraseChange={handlePhraseChange}
                 onGeneratePhrase={handleGeneratePhrase}
                 onEditVariation={handleEditVariation}
                 onSelectVariation={handleSelectVariation}
-                onResetVariations={handleResetVariations}
-                onUseChatGptApiChange={handleUseChatGptApiChange}
                 onContextChange={handleContextChange}
                 addSituation={addSituation}
                 deleteSituation={deleteSituation}

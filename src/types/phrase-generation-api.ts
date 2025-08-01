@@ -4,7 +4,6 @@ export interface GeneratePhraseRequestBody {
   nativeLanguage: string
   learningLanguage: string
   desiredPhrase: string
-  useChatGptApi?: boolean
   selectedContext?: string
 }
 

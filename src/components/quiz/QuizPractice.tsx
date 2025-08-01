@@ -87,7 +87,7 @@ export default function QuizPractice({
                 wordBreak: 'break-word'
               }}
             >
-              {currentPhrase.text}
+              {currentPhrase.original}
             </div>
           ) : (
             <div className="w-full">

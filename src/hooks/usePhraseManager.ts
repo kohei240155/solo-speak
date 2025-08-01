@@ -10,7 +10,6 @@ export const usePhraseManager = () => {
   const { user } = useAuth()
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
-  const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -49,15 +48,6 @@ export const usePhraseManager = () => {
       setIsInitializing(true)
     }
   }, [user])
-
-  // useChatGptApiの状態に応じてフレーズを自動設定
-  useEffect(() => {
-    if (!useChatGptApi) {
-      setDesiredPhrase('明日花火に行きたい')
-    } else {
-      setDesiredPhrase('')
-    }
-  }, [useChatGptApi])
 
   // 認証ヘッダーを取得するヘルパー関数（削除予定）
   
@@ -229,8 +219,6 @@ export const usePhraseManager = () => {
         nativeLanguage,
         learningLanguage,
         desiredPhrase,
-        selectedStyle: 'common' as const,
-        useChatGptApi,
         selectedContext
       }
       
@@ -260,7 +248,7 @@ export const usePhraseManager = () => {
     }
 
     // 編集されたテキストの文字数バリデーション
-    const finalText = editingVariations[index] || variation.text
+    const finalText = editingVariations[index] || variation.original
     if (finalText.length > 200) {
       setVariationValidationErrors(prev => ({ 
         ...prev, 
@@ -298,9 +286,9 @@ export const usePhraseManager = () => {
       await api.post('/api/phrase', {
         userId: user.id,
         languageId: learningLang.id,
-        text: finalText,      // 学習言語のフレーズ
+        original: finalText,      // 学習言語のフレーズ
         translation: desiredPhrase, // 母国語の翻訳
-        nuance: variation.explanation, // ニュアンス説明
+        explanation: variation.explanation, // ニュアンス説明
         level: 'common', // フレーズのレベル（デフォルトcommon）
       })
 
@@ -314,7 +302,6 @@ export const usePhraseManager = () => {
         setGeneratedVariations([])  // これにより AI Suggest ボタンが活性になる
         setEditingVariations({})
         setVariationValidationErrors({})
-        setUseChatGptApi(true)  // デフォルトでChatGPT APIをONに
         setDesiredPhrase('')    // フレーズを空に
         setSelectedContext(null) // コンテキスト選択をリセット
       })
@@ -407,11 +394,6 @@ export const usePhraseManager = () => {
     }
   }, [learningLanguage, user, fetchSavedPhrases])
 
-  const handleUseChatGptApiChange = (value: boolean) => {
-    setUseChatGptApi(value)
-    // useEffectでフレーズの自動設定が行われるため、ここでは何もしない
-  }
-
   return {
     // State
     nativeLanguage,
@@ -435,7 +417,6 @@ export const usePhraseManager = () => {
     totalPhrases,
     phraseValidationError,
     variationValidationErrors,
-    useChatGptApi,
     selectedContext,
     
     // Handlers
@@ -447,7 +428,6 @@ export const usePhraseManager = () => {
     fetchSavedPhrases,
     checkUnsavedChanges,
     handleLearningLanguageChange,
-    handleUseChatGptApiChange,
     handleContextChange,
     addSituation,
     deleteSituation

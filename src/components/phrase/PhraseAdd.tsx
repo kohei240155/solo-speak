@@ -3,11 +3,12 @@ import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
+import { MdOutlineTipsAndUpdates } from 'react-icons/md'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
-import Modal from '@/components/common/Modal'
+import PhraseGenerationTipsModal from '@/components/modals/PhraseGenerationTipsModal'
+import BaseModal from '@/components/common/BaseModal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
-import Checkbox from '@/components/common/Checkbox'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
 
 // GeneratedVariationsコンポーネントを動的インポート
@@ -23,18 +24,14 @@ interface PhraseAddProps {
   isSaving: boolean
   generatedVariations: PhraseVariation[]
   editingVariations: {[key: number]: string}
-  variationValidationErrors: {[key: number]: string}
   savingVariationIndex: number | null
   error: string
-  useChatGptApi: boolean
   selectedContext: 'friend' | 'sns' | string | null
   situations: SituationResponse[]
   onPhraseChange: (value: string) => void
   onGeneratePhrase: () => void
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
-  onResetVariations: () => void
-  onUseChatGptApiChange: (value: boolean) => void
   onContextChange?: (context: string | null) => void
   addSituation: (name: string) => Promise<void>
   deleteSituation: (id: string) => Promise<void>
@@ -48,24 +45,21 @@ export default function PhraseAdd({
   isSaving,
   generatedVariations,
   editingVariations,
-  variationValidationErrors,
   savingVariationIndex,
   error,
-  useChatGptApi,
   selectedContext,
   situations,
   onPhraseChange,
   onGeneratePhrase,
   onEditVariation,
   onSelectVariation,
-  onResetVariations,
-  onUseChatGptApiChange,
   onContextChange,
   addSituation,
   deleteSituation
 }: PhraseAddProps) {
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
+  const [isTipsModalOpen, setIsTipsModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -136,7 +130,7 @@ export default function PhraseAdd({
           <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
           
           {/* シチュエーション表示エリア全体を囲む */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
@@ -160,7 +154,7 @@ export default function PhraseAdd({
                     }
                   }}
                   disabled={generatedVariations.length > 0}
-                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
                       ? 'text-white border-transparent shadow-sm' 
                       : generatedVariations.length > 0
@@ -174,7 +168,11 @@ export default function PhraseAdd({
                   <span className="whitespace-nowrap">{situation.name}</span>
                   <AiOutlineClose 
                     size={14} 
-                    className="flex-shrink-0 hover:text-red-500 transition-colors" 
+                    className={`flex-shrink-0 font-bold ${
+                      selectedContext === situation.name
+                        ? 'text-white'
+                        : 'text-gray-700'
+                    }`}
                     onClick={(e) => {
                       e.stopPropagation()
                       if (generatedVariations.length === 0) {
@@ -191,50 +189,39 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-3">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Phrase</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
+          <button
+            onClick={() => setIsTipsModalOpen(true)}
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+            title="フレーズ生成のコツを見る"
+          >
+            <MdOutlineTipsAndUpdates className="text-lg" />
+          </button>
+        </div>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
           placeholder="例：この料理はなんですか？"
-          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-300 ${
+          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
-              ? 'border-red-300 focus:ring-red-500' 
-              : 'border-gray-300 focus:ring-blue-500'
+              ? 'border-gray-400' 
+              : 'border-gray-300'
           }`}
           rows={3}
           disabled={isSaving}
         />
         
-        {/* 100文字以内で入力するよう促す文言とリアルタイム文字数 */}
-        <div className="flex justify-between items-center mt-1">
-          <span className={`text-xs ${
-            desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
-          }`}>
-            100文字以内で入力してください
-          </span>
-          <span className={`text-xs ${
-            desiredPhrase.length > 100 ? 'text-red-500' : 'text-gray-500'
-          }`}>
-            {desiredPhrase.length} / 100
-          </span>
-        </div>
-      </div>
-
-      {/* ChatGPT API使用チェックボックス */}
-      <div className="mb-4">
-        <Checkbox
-          id="useChatGptApi"
-          checked={useChatGptApi}
-          onChange={onUseChatGptApiChange}
-          disabled={generatedVariations.length > 0}
-          className="space-x-2"
-        >
-          <span className={`text-sm ${generatedVariations.length > 0 ? 'text-gray-400' : 'text-gray-700'}`}>
-            ChatGPT APIを使用する
-          </span>
-        </Checkbox>
+        {/* 100文字を超えた場合のバリデーションメッセージ */}
+        {desiredPhrase.length > 100 && (
+          <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+            <p className="text-sm text-gray-600">
+              100文字以内で入力してください（現在: {desiredPhrase.length}文字）
+            </p>
+          </div>
+        )}
       </div>
 
       {/* AI Suggest ボタン */}
@@ -296,13 +283,11 @@ export default function PhraseAdd({
       <GeneratedVariations
         generatedVariations={generatedVariations}
         editingVariations={editingVariations}
-        variationValidationErrors={variationValidationErrors}
         isSaving={isSaving}
         savingVariationIndex={savingVariationIndex}
         desiredPhrase={desiredPhrase}
         onEditVariation={onEditVariation}
         onSelectVariation={onSelectVariation}
-        onReset={onResetVariations}
         error={error}
       />
 
@@ -314,56 +299,53 @@ export default function PhraseAdd({
       />
 
       {/* シチュエーション削除確認モーダル */}
-      <Modal isOpen={!!deletingSituationId} onClose={handleCancelDelete}>
-        <div className="p-6">
-          {/* ヘッダー部分 */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-              Delete Situation
-            </h2>
-          </div>
-
-          {/* 確認メッセージ */}
-          <div className="mb-6">
-            <p className="text-gray-700">
-              このシチュエーションを削除してもよろしいですか？<br />
-              この操作は取り消すことができません。
-            </p>
-          </div>
-
-          {/* ボタン */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleCancelDelete}
-              disabled={isDeleting}
-              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmDelete}
-              disabled={isDeleting}
-              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
-              }}
-            >
-              {isDeleting ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Deleting...
-                </div>
-              ) : (
-                'Delete'
-              )}
-            </button>
-          </div>
+      <BaseModal isOpen={!!deletingSituationId} onClose={handleCancelDelete} title="Delete Situation">
+        {/* 確認メッセージ */}
+        <div className="mb-6">
+          <p className="text-gray-700">
+            このシチュエーションを削除してもよろしいですか？<br />
+            この操作は取り消すことができません。
+          </p>
         </div>
-      </Modal>
+
+        {/* ボタン */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleCancelDelete}
+            disabled={isDeleting}
+            className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              borderColor: '#616161',
+              color: '#616161'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            style={{ 
+              backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+            }}
+          >
+            {isDeleting ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Deleting...
+              </div>
+            ) : (
+              'Delete'
+            )}
+          </button>
+        </div>
+      </BaseModal>
+
+      {/* フレーズ生成のTipsモーダル */}
+      <PhraseGenerationTipsModal
+        isOpen={isTipsModalOpen}
+        onClose={() => setIsTipsModalOpen(false)}
+      />
     </>
   )
 }

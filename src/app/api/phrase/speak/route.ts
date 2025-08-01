@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       success: true,
       phrase: {
         id: firstPhrase.id,
-        text: firstPhrase.text,
+        original: firstPhrase.original,
         translation: firstPhrase.translation,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
         dailySpeakCount: dailySpeakCount,

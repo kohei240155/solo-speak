@@ -13,19 +13,11 @@ import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
 import { useSpeakMode } from '@/hooks/useSpeakMode'
 import { speakText, preloadVoices } from '@/utils/speechSynthesis'
-import { SpeakConfig } from '@/types/speak'
+import { SpeakConfig, SpeakPhrase } from '@/types/speak'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import { useSpeakPhraseById } from '@/hooks/useSWRApi'
-
-interface SpeakPhrase {
-  id: string
-  text: string
-  translation: string
-  totalSpeakCount: number
-  dailySpeakCount: number
-}
 
 function PhraseSpeakPage() {
   const router = useRouter()
@@ -134,7 +126,7 @@ function PhraseSpeakPage() {
   // 単一フレーズの音声再生
   const handleSinglePhraseSound = async () => {
     if (!singlePhrase) return
-    await speakText(singlePhrase.text, learningLanguage)
+    await speakText(singlePhrase.original, learningLanguage)
   }
 
   // 単一フレーズ練習終了処理
@@ -169,7 +161,7 @@ function PhraseSpeakPage() {
     if (!currentPhrase) return
     
     const languageToUse = speakMode.config?.language || learningLanguage
-    await speakText(currentPhrase.text, languageToUse)
+    await speakText(currentPhrase.original, languageToUse)
   }
 
   // 次のフレーズを取得（設定付き）

@@ -1,31 +1,26 @@
 import { PhraseVariation } from '@/types/phrase'
-import { GrPowerReset } from 'react-icons/gr'
 import { AiOutlineCaretRight } from 'react-icons/ai'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
   editingVariations: {[key: number]: string}
-  variationValidationErrors: {[key: number]: string}
   isSaving: boolean
   savingVariationIndex: number | null
   desiredPhrase: string
   onEditVariation: (index: number, newText: string) => void
   onSelectVariation: (variation: PhraseVariation, index: number) => void
-  onReset: () => void
   error: string
 }
 
 export default function GeneratedVariations({
   generatedVariations,
   editingVariations,
-  variationValidationErrors,
   isSaving,
   savingVariationIndex,
   desiredPhrase,
   onEditVariation,
   onSelectVariation,
-  onReset,
   error
 }: GeneratedVariationsProps) {
   // スクロール位置保持機能
@@ -37,18 +32,10 @@ export default function GeneratedVariations({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-3">
+      <div className="mb-3">
         <h3 className="text-xl md:text-2xl font-bold text-gray-900">
           AI Suggested Phrases
         </h3>
-        <button
-          onClick={onReset}
-          disabled={isSaving}
-          className="flex items-center justify-center w-8 h-8 text-gray-800 hover:text-black rounded-md hover:bg-gray-100 transition-colors duration-200"
-          title="Reset"
-        >
-          <GrPowerReset className="w-4 h-4" />
-        </button>
       </div>
       
       {generatedVariations.map((variation, index) => (
@@ -67,27 +54,28 @@ export default function GeneratedVariations({
           
           {/* 編集可能なテキストエリア */}
           <textarea
-            value={editingVariations[index] || variation.text}
+            value={editingVariations[index] || variation.original}
             onChange={(e) => onEditVariation(index, e.target.value)}
             onFocus={scrollPreservation.onFocus}
             onBlur={scrollPreservation.onBlur}
-            className={`w-full border rounded-md px-3 py-2 text-base leading-relaxed resize-none focus:outline-none focus:ring-2 ${
-              variationValidationErrors[index]
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-blue-500'
+            className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 ${
+              (editingVariations[index] || variation.original).length > 200
+                ? 'border-gray-400' 
+                : 'border-gray-300'
             }`}
             rows={3}
             disabled={isSaving}
           />
+
           
-          {/* 文字数カウンター */}
-          <div className="flex justify-end mt-1">
-            <span className={`text-xs ${
-              (editingVariations[index] || variation.text).length > 200 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              {(editingVariations[index] || variation.text).length} / 200
-            </span>
-          </div>
+          {/* 200文字を超えた場合のバリデーションメッセージ */}
+          {(editingVariations[index] || variation.original).length > 200 && (
+            <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+              <p className="text-sm text-gray-600">
+                200文字以内で入力してください（現在: {(editingVariations[index] || variation.original).length}文字）
+              </p>
+            </div>
+          )}
 
           {/* ニュアンス・説明欄 */}
           {variation.explanation && (
@@ -98,33 +86,21 @@ export default function GeneratedVariations({
             </div>
           )}
           
-          {/* バリデーションエラーメッセージ */}
-          {variationValidationErrors[index] && (
-            <div className="mt-1 mb-3">
-              <span className="text-sm text-red-600">
-                {variationValidationErrors[index]}
-              </span>
-            </div>
-          )}
-          
-          {/* 通常時のマージン */}
-          {!variationValidationErrors[index] && (
-            <div className="mb-3"></div>
-          )}
+          <div className="mb-3"></div>
           
           <button
-            disabled={isSaving || !!variationValidationErrors[index] || desiredPhrase.length > 100}
-            className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
+            disabled={isSaving || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200}
+            className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             style={{ 
-              backgroundColor: variationValidationErrors[index] || desiredPhrase.length > 100 ? '#9CA3AF' : '#616161'
+              backgroundColor: (isSaving && savingVariationIndex === index) || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200 ? '#9CA3AF' : '#616161'
             }}
             onMouseEnter={(e) => {
-              if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#525252'
               }
             }}
             onMouseLeave={(e) => {
-              if (!isSaving && !variationValidationErrors[index] && desiredPhrase.length <= 100 && e.currentTarget) {
+              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
                 e.currentTarget.style.backgroundColor = '#616161'
               }
             }}

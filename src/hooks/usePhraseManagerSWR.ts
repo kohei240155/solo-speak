@@ -61,7 +61,6 @@ export const usePhraseManagerSWR = () => {
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
   const { totalCount: availablePhraseCount } = useInfinitePhrases(learningLanguage)
-  const [useChatGptApi, setUseChatGptApi] = useState(true)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -101,15 +100,6 @@ export const usePhraseManagerSWR = () => {
       setSelectedContext(null)
     }
   }, [user])
-
-  // useChatGptApiの状態に応じてフレーズを自動設定
-  useEffect(() => {
-    if (!useChatGptApi) {
-      setDesiredPhrase('明日花火に行きたい')
-    } else {
-      setDesiredPhrase('')
-    }
-  }, [useChatGptApi])
 
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
@@ -184,8 +174,6 @@ export const usePhraseManagerSWR = () => {
         desiredPhrase,
         nativeLanguage,
         learningLanguage,
-        selectedStyle: 'common' as const,
-        useChatGptApi,
         selectedContext
       })
 
@@ -208,7 +196,7 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, useChatGptApi, selectedContext, validatePhrase, mutateGenerations])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -225,7 +213,7 @@ export const usePhraseManagerSWR = () => {
 
   // バリエーション選択ハンドラー
   const handleSelectVariation = useCallback(async (variation: PhraseVariation, index: number) => {
-    const textToSave = editingVariations[index] || variation.text
+    const textToSave = editingVariations[index] || variation.original
     
     if (!validateVariation(textToSave, index)) {
       return
@@ -235,14 +223,28 @@ export const usePhraseManagerSWR = () => {
     setIsSaving(true)
 
     try {
-      await api.post('/api/phrase', {
+      // contextがnullの場合は送信しない
+      const requestBody: {
+        languageId: string
+        original: string
+        translation: string
+        explanation: string
+        level: string
+        context?: string
+      } = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
-        text: textToSave,
+        original: textToSave,
         translation: desiredPhrase,
-        nuance: variation.explanation || '',
-        level: 'common',
-        context: selectedContext
-      })
+        explanation: variation.explanation || '',
+        level: 'common'
+      }
+
+      // selectedContextが存在する場合のみcontextを追加
+      if (selectedContext) {
+        requestBody.context = selectedContext
+      }
+
+      await api.post('/api/phrase', requestBody)
 
       flushSync(() => {
         setGeneratedVariations([])
@@ -279,11 +281,6 @@ export const usePhraseManagerSWR = () => {
   const handleLearningLanguageChange = useCallback((language: string) => {
     setLearningLanguage(language)
     setUserSettingsInitialized(true)
-  }, [])
-
-  // ChatGPT API使用設定変更ハンドラー
-  const handleUseChatGptApiChange = useCallback((value: boolean) => {
-    setUseChatGptApi(value)
   }, [])
 
   // コンテキスト変更ハンドラー
@@ -341,7 +338,6 @@ export const usePhraseManagerSWR = () => {
     editingVariations,
     phraseValidationError,
     variationValidationErrors,
-    useChatGptApi,
     selectedContext,
     availablePhraseCount: availablePhraseCount || 0,
     
@@ -352,7 +348,6 @@ export const usePhraseManagerSWR = () => {
     handleSelectVariation,
     handleResetVariations,
     handleLearningLanguageChange,
-    handleUseChatGptApiChange,
     handleContextChange,
     addSituation,
     deleteSituation,

@@ -45,7 +45,7 @@ export async function GET(
       success: true,
       phrase: {
         id: phrase.id,
-        text: phrase.text,
+        original: phrase.original,
         translation: phrase.translation,
         totalSpeakCount: phrase.totalSpeakCount || 0,
         dailySpeakCount: dailySpeakCount,
