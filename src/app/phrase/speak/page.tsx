@@ -171,10 +171,13 @@ function PhraseSpeakPage() {
   const handleNextWithConfig = async () => {
     if (speakMode.config && currentPhrase) {
       // カウントを送信してから次のフレーズを取得
-      const success = await handleNext(speakMode.config)
+      const result = await handleNext(speakMode.config)
       
-      if (!success) {
-        // 次のフレーズが取得できない場合、完了チェックを実行
+      if (result === 'allCompleted') {
+        // 全てのフレーズが完了した場合、All Done画面を表示
+        setIsCompleted(true)
+      } else if (!result) {
+        // エラーが発生した場合、完了チェックを実行
         const isAllCompleted = await checkSpeakCompletion(speakMode.config.language)
         
         if (isAllCompleted) {
@@ -222,9 +225,21 @@ function PhraseSpeakPage() {
 
   // モーダル開始処理
   const handleSpeakStartWithModal = async (config: SpeakConfig) => {
-    const success = await handleSpeakStart(config)
-    if (success) {
-      setShowSpeakModal(false)
+    console.log('handleSpeakStartWithModal called with config:', config)
+    try {
+      const success = await handleSpeakStart(config)
+      console.log('handleSpeakStart result:', success)
+      if (!success) {
+        // 失敗した場合のみモーダルを再度開く
+        setShowSpeakModal(true)
+        toast.error('練習の開始に失敗しました')
+      }
+      // 成功した場合はモーダルは既に閉じられているので何もしない
+    } catch (error) {
+      console.error('Error starting speak practice:', error)
+      // エラーが発生した場合もモーダルを再度開く
+      setShowSpeakModal(true)
+      toast.error('練習の開始中にエラーが発生しました')
     }
   }
 

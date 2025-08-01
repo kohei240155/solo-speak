@@ -11,7 +11,7 @@ export const useSpeakPhrase = () => {
   const [pendingCount, setPendingCount] = useState(0)
 
   // フレーズを取得する関数
-  const fetchSpeakPhrase = useCallback(async (config: SpeakConfig) => {
+  const fetchSpeakPhrase = useCallback(async (config: SpeakConfig): Promise<boolean | 'allCompleted'> => {
     setIsLoadingPhrase(true)
     try {
       const params = new URLSearchParams({
@@ -24,7 +24,12 @@ export const useSpeakPhrase = () => {
         params.set('excludeSpoken', 'true')
       }
 
-      const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string }>(`/api/phrase/speak?${params.toString()}`)
+      const data = await api.get<{ 
+        success: boolean, 
+        phrase?: SpeakPhrase, 
+        message?: string,
+        allCompleted?: boolean 
+      }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {
         setCurrentPhrase(data.phrase)
@@ -32,6 +37,10 @@ export const useSpeakPhrase = () => {
         setTotalCount(data.phrase.totalSpeakCount || 0)
         setPendingCount(0) // 新しいフレーズ取得時はペンディングカウントをリセット
         return true
+      } else if (data.allCompleted) {
+        // 全てのフレーズが完了した場合は特別な処理
+        setCurrentPhrase(null)
+        return 'allCompleted'
       } else {
         toast.error(data.message || 'フレーズが見つかりませんでした')
         return false
@@ -96,7 +105,7 @@ export const useSpeakPhrase = () => {
   }, [currentPhrase])
 
   // 次のフレーズを取得
-  const handleNext = useCallback(async (config: SpeakConfig) => {
+  const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allCompleted'> => {
     // 現在のフレーズが存在する場合、session_spokenを必ずtrueにする
     if (currentPhrase) {
       if (pendingCount > 0) {

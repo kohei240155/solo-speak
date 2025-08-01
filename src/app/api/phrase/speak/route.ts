@@ -70,11 +70,12 @@ export async function GET(request: NextRequest) {
     console.log('excludeSpoken parameter (for compatibility):', excludeSpoken)
     const filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
 
-    // フィルタ後にフレーズがない場合
+    // フィルタ後にフレーズがない場合（全てのフレーズが完了済み）
     if (filteredPhrases.length === 0) {
       return NextResponse.json({
         success: false,
-        message: 'No unspoken phrases found for the specified language'
+        allCompleted: true,
+        message: 'All phrases have been completed for this session'
       })
     }
 

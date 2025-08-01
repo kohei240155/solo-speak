@@ -3,7 +3,7 @@ import { SpeakConfig, SpeakModeState } from '@/types/speak'
 
 interface UseSpeakModeOptions {
   learningLanguage: string
-  fetchSpeakPhrase: (config: SpeakConfig) => Promise<boolean>
+  fetchSpeakPhrase: (config: SpeakConfig) => Promise<boolean | 'allCompleted'>
   currentPhraseId: string | null
   pendingCount: number
   sendPendingCount: (phraseId: string, count: number) => Promise<boolean>
@@ -76,7 +76,7 @@ export const useSpeakMode = ({
   }, [currentPhraseId, pendingCount, sendPendingCount])
 
   // 練習開始時の処理
-  const handleSpeakStart = useCallback(async (config: SpeakConfig) => {
+  const handleSpeakStart = useCallback(async (config: SpeakConfig): Promise<boolean | 'allCompleted'> => {
     // スピークしたフレーズIDをリセット（APIでsessionSpokenフラグをリセット）
     try {
       await fetch('/api/speak/reset', {
@@ -112,7 +112,7 @@ export const useSpeakMode = ({
   }, [fetchSpeakPhrase])
 
   // 次のフレーズ取得時の処理（Speak済みフレーズを除外）
-  const getNextPhrase = useCallback(async (currentConfig: SpeakConfig) => {
+  const getNextPhrase = useCallback(async (currentConfig: SpeakConfig): Promise<boolean | 'allCompleted'> => {
     const updatedConfig = {
       ...currentConfig,
       excludeSpoken: true,
