@@ -149,7 +149,7 @@ export default function PhraseQuizPage() {
               onFinish={handleFinish}
               onRetry={handleRetry}
             />
-          ) : quizMode.active ? (
+            ) : quizMode.active && session && currentPhrase ? (
             <QuizPractice
               session={session}
               currentPhrase={currentPhrase}

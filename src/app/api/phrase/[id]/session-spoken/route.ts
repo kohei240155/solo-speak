@@ -4,7 +4,7 @@ import { authenticateRequest } from '@/utils/api-helpers'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 認証チェック
@@ -13,7 +13,8 @@ export async function POST(
       return authResult.error
     }
 
-    const phraseId = params.id
+    const resolvedParams = await params
+    const phraseId = resolvedParams.id
 
     if (!phraseId) {
       return NextResponse.json(
