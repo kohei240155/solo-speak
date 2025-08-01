@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
-    const excludeSpoken = searchParams.get('excludeSpoken') === 'true'
+    const excludeSpoken = searchParams.get('excludeSpoken') === 'true' // 後方互換性のため残す
 
     if (!language) {
       return NextResponse.json(
@@ -65,12 +65,10 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 既にSpeakしたフレーズを除外
-    let filteredPhrases = phrases
-    if (excludeSpoken) {
-      // sessionSpokenがfalseのフレーズのみを取得
-      filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
-    }
+    // 既にSpeakしたフレーズを除外（session_spokenがtrueのフレーズは常に除外）
+    // 注意：excludeSpokenパラメータは後方互換性のために残している
+    console.log('excludeSpoken parameter (for compatibility):', excludeSpoken)
+    const filteredPhrases = phrases.filter(phrase => !phrase.sessionSpoken)
 
     // フィルタ後にフレーズがない場合
     if (filteredPhrases.length === 0) {
