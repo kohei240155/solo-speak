@@ -110,7 +110,7 @@ export const useSpeakPhrase = () => {
       return await fetchSpeakPhrase(config)
     }
 
-    // 保留中のカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
     if (pendingCount > 0) {
       console.log('Sending pending count:', pendingCount)
       const success = await sendPendingCount(currentPhrase.id, pendingCount)
@@ -120,6 +120,15 @@ export const useSpeakPhrase = () => {
       } else {
         toast.error('カウントの送信に失敗しました')
         return false // カウント送信失敗時は次のフレーズを取得しない
+      }
+    } else {
+      // カウントが0でもsession_spokenをtrueに設定
+      try {
+        await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
+        console.log('Session spoken set to true (count=0)')
+      } catch (error) {
+        console.error('Error setting session spoken:', error)
+        // session_spoken設定エラーは次のフレーズ取得を阻害しない
       }
     }
 
@@ -132,11 +141,22 @@ export const useSpeakPhrase = () => {
 
   // 練習終了時の処理
   const handleFinish = useCallback(async () => {
-    // 保留中のカウントを送信
-    if (currentPhrase && pendingCount > 0) {
+    if (!currentPhrase) return
+
+    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+    if (pendingCount > 0) {
       const success = await sendPendingCount(currentPhrase.id, pendingCount)
       if (!success) {
         toast.error('カウントの送信に失敗しました')
+      }
+    } else {
+      // カウントが0でもsession_spokenをtrueに設定
+      try {
+        await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
+        console.log('Session spoken set to true on finish (count=0)')
+      } catch (error) {
+        console.error('Error setting session spoken on finish:', error)
+        // エラーが発生してもFinish処理は続行
       }
     }
 
