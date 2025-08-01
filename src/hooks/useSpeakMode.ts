@@ -22,32 +22,6 @@ export const useSpeakMode = ({
     spokenPhraseIds: []
   })
 
-  // ページ読み込み時にURLパラメータから設定を復元
-  useEffect(() => {
-    if (!learningLanguage) return
-
-    const params = new URLSearchParams(window.location.search)
-    const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
-    const urlLanguage = params.get('language')
-    const excludeSpeakCountThreshold = params.get('excludeSpeakCountThreshold') 
-      ? parseInt(params.get('excludeSpeakCountThreshold')!) 
-      : 0
-    
-    // URLパラメータに設定がある場合、自動的に練習モードを開始
-    if (order && (order === 'new-to-old' || order === 'old-to-new')) {
-      const config: SpeakConfig = {
-        order,
-        language: urlLanguage || learningLanguage,
-        prioritizeLowPractice: false, // デフォルト値
-        excludeSpoken: false,
-        spokenPhraseIds: [],
-        excludeSpeakCountThreshold
-      }
-      setSpeakMode({ active: true, config, spokenPhraseIds: [] })
-      fetchSpeakPhrase(config)
-    }
-  }, [learningLanguage, fetchSpeakPhrase])
-
   // ページ離脱時に保留中のカウントを送信
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -119,7 +93,14 @@ export const useSpeakMode = ({
     window.history.replaceState({}, '', newUrl)
     
     // フレーズを取得
-    return await fetchSpeakPhrase(updatedConfig)
+    const result = await fetchSpeakPhrase(updatedConfig)
+    
+    // フレーズの取得に失敗した場合はspeakModeを無効にする
+    if (result === false) {
+      setSpeakMode({ active: false, config: null, spokenPhraseIds: [] })
+    }
+    
+    return result
   }, [fetchSpeakPhrase])
 
   // 次のフレーズ取得時の処理（Speak済みフレーズを除外）

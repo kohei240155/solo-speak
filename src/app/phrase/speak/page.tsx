@@ -160,18 +160,6 @@ function PhraseSpeakPage() {
     }
   }, [learningLanguage, fetchSavedPhrases, isSinglePhraseMode])
 
-  // フレーズが存在し、Speakモードがアクティブでない場合はリスト画面に遷移
-  useEffect(() => {
-    if (!isSinglePhraseMode && 
-        !isLoadingPhrases && 
-        savedPhrases.length > 0 && 
-        !speakMode.active && 
-        !isStartingSpeak &&
-        !showSpeakModal) { // モーダルが開いている間は遷移しない
-      router.push('/phrase/list')
-    }
-  }, [isSinglePhraseMode, isLoadingPhrases, savedPhrases.length, speakMode.active, isStartingSpeak, showSpeakModal, router])
-
   // 音声再生機能
   const handleSound = async () => {
     if (!currentPhrase) return
@@ -257,11 +245,10 @@ function PhraseSpeakPage() {
 
   // モーダル開始処理
   const handleSpeakStartWithModal = async (config: SpeakConfig) => {
-    console.log('handleSpeakStartWithModal called with config:', config)
     setIsStartingSpeak(true) // ローディング開始
+    setShowSpeakModal(false) // まずモーダルを閉じる
     try {
       const result = await handleSpeakStart(config)
-      console.log('handleSpeakStart result:', result)
       if (result === false) {
         // 失敗した場合のみモーダルを再度開く
         setShowSpeakModal(true)
@@ -269,10 +256,6 @@ function PhraseSpeakPage() {
       } else if (result === 'allCompleted') {
         // 全て完了の場合はAll Done画面を表示
         setIsCompleted(true)
-        setShowSpeakModal(false) // モーダルを閉じる
-      } else {
-        // 成功した場合
-        setShowSpeakModal(false) // モーダルを閉じる
       }
     } catch (error) {
       console.error('Error starting speak practice:', error)
@@ -301,6 +284,25 @@ function PhraseSpeakPage() {
     setShowQuizModal(true)
   }
 
+  // Speakモーダルを開く処理（適切な条件チェック付き）
+  const handleSpeakModalOpen = () => {
+    // 単一フレーズモードでない場合のみ処理
+    if (!isSinglePhraseMode) {
+      // ローディング中の場合は何もしない
+      if (isLoadingPhrases) {
+        return
+      }
+      
+      // フレーズが存在し、Speakモードがアクティブでない場合はリスト画面に遷移
+      if (savedPhrases.length > 0 && !speakMode.active) {
+        router.push('/phrase/list')
+      } else {
+        // フレーズが0個の場合、またはその他の場合はモーダルを開く
+        setShowSpeakModal(true)
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
@@ -314,7 +316,7 @@ function PhraseSpeakPage() {
           {/* タブメニュー */}
           <PhraseTabNavigation 
             activeTab="Speak" 
-            onSpeakModalOpen={speakMode.active ? undefined : () => setShowSpeakModal(true)}
+            onSpeakModalOpen={speakMode.active ? undefined : handleSpeakModalOpen}
             onQuizModalOpen={openQuizModal}
           />
 
@@ -393,7 +395,18 @@ function PhraseSpeakPage() {
                     <p className="text-gray-600">練習できるフレーズがありません</p>
                     <p className="text-gray-500 text-sm mt-2">まずはフレーズを追加してください</p>
                   </div>
-                ) : null
+                ) : (
+                  // フレーズが存在する場合はSpeak練習を開始するボタンを表示
+                  <div className="text-center py-8">
+                    <p className="text-gray-600 mb-4">Speak練習を開始しましょう</p>
+                    <button
+                      onClick={() => setShowSpeakModal(true)}
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Speak練習を開始
+                    </button>
+                  </div>
+                )
               )
             )}
           </div>
