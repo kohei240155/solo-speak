@@ -92,10 +92,11 @@ export default function BaseModal({
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
       <div 
-        className="relative bg-white rounded-lg w-[90vw]" 
+        className="relative bg-white rounded-lg w-[90vw] sm:w-auto" 
         style={{ 
+          maxWidth: `min(90vw, ${width})`,
           width: `min(90vw, ${width})`,
-          maxWidth: width 
+          overflowX: 'hidden'
         }}
       >
         {/* 閉じるボタン */}

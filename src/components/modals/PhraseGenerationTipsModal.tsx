@@ -14,7 +14,7 @@ export default function PhraseGenerationTipsModal({
       isOpen={isOpen} 
       onClose={onClose} 
       title="フレーズ生成のコツ"
-      width="700px"
+      width="650px"
     >
       {/* コンテンツ */}
       <div className="space-y-6">
