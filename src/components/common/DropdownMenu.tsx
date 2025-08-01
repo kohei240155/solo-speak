@@ -124,7 +124,8 @@ export default function DropdownMenu({
     }
   }
 
-  const handleItemClick = (item: DropdownMenuItem) => {
+  const handleItemClick = (item: DropdownMenuItem, event: React.MouseEvent) => {
+    event.stopPropagation()
     if (!item.disabled) {
       item.onClick()
       onClose()
@@ -151,6 +152,7 @@ export default function DropdownMenu({
         <div 
           className={`absolute ${getPositionClasses()} bg-white border border-gray-200 rounded-md shadow-lg ${width} ${menuClassName}`}
           style={{ zIndex }}
+          onClick={(e) => e.stopPropagation()}
         >
           {items.map((item) => {
             const ItemIcon = item.icon
@@ -160,7 +162,7 @@ export default function DropdownMenu({
             return (
               <button
                 key={item.id}
-                onClick={() => handleItemClick(item)}
+                onClick={(e) => handleItemClick(item, e)}
                 disabled={isDisabled}
                 className={`
                   w-full px-3 py-2 text-left ${getFontSize()} flex items-center gap-2 transition-colors
