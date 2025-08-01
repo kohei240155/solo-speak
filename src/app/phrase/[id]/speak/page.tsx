@@ -180,14 +180,6 @@ export default function SpeakPage() {
         toast.error('カウントの送信に失敗しました')
         return // エラーの場合は次のフレーズ取得を中止
       }
-    } else if (phrase) {
-      // カウントが0の場合でもsession_spokenをtrueに設定する必要がある
-      try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
-      } catch (error) {
-        console.error('Error setting session spoken:', error)
-        // session_spoken設定エラーは次のフレーズ取得を阻害しない
-      }
     }
 
     // 次のフレーズを取得
@@ -218,14 +210,6 @@ export default function SpeakPage() {
         console.error('Error sending pending count:', error)
         toast.error('カウントの送信に失敗しました')
         // Finishの場合はエラーがあってもページ遷移を実行
-      }
-    } else if (phrase) {
-      // カウントが0の場合でもsession_spokenをtrueに設定する必要がある
-      try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
-      } catch (error) {
-        console.error('Error setting session spoken:', error)
-        // session_spoken設定エラーはページ遷移を阻害しない
       }
     }
 
