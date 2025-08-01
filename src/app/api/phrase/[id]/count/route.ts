@@ -61,7 +61,7 @@ export async function POST(
           },
           dailySpeakCount: dailyCountUpdate,
           lastSpeakDate: currentDate,
-          sessionSpoken: true // セッション中にSpeak練習済みとマーク
+          sessionSpoken: true // セッション中にSpeak練習済みとマーク（Count時に自動設定）
         },
         include: {
           language: true

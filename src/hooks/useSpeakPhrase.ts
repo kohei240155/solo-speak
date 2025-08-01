@@ -132,22 +132,22 @@ export const useSpeakPhrase = () => {
     }
 
     try {
-      // 1. 保留中のカウントがある場合は送信
+      // 保留中のカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
       if (pendingCount > 0) {
         console.log('Sending pending count:', pendingCount)
         const success = await sendPendingCount(currentPhrase.id, pendingCount)
         if (success) {
           setPendingCount(0) // 送信成功時はペンディングカウントをリセット
-          console.log('Pending count sent successfully')
+          console.log('Pending count sent successfully and session_spoken set to true')
         } else {
           toast.error('カウントの送信に失敗しました')
           return false // カウント送信失敗時は次のフレーズを取得しない
         }
+      } else {
+        // カウントが0の場合でもsession_spokenをtrueに設定する必要がある
+        console.log('No pending count, but marking phrase as session spoken')
+        await markPhraseAsSessionSpoken(currentPhrase.id)
       }
-
-      // 2. session_spokenをtrueに設定（カウントが0でも実行）
-      console.log('Marking phrase as session spoken')
-      await markPhraseAsSessionSpoken(currentPhrase.id)
       
     } catch (error) {
       console.error('Error in handleNext:', error)
@@ -155,12 +155,12 @@ export const useSpeakPhrase = () => {
       return false
     }
 
-    // 3. 次のフレーズを取得
+    // 次のフレーズを取得
     console.log('Fetching next phrase')
     const result = await fetchSpeakPhrase(config)
     console.log('Next phrase fetch result:', result)
     return result
-  }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase])
+  }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase, markPhraseAsSessionSpoken])
 
   // 練習終了時の処理
   const handleFinish = useCallback(async () => {
