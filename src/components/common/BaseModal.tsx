@@ -14,7 +14,6 @@ export interface BaseModalProps {
   onClose: () => void
   children: ReactNode
   title?: string
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   showCloseButton?: boolean
   closeOnOverlayClick?: boolean
 }
@@ -24,7 +23,6 @@ export default function BaseModal({
   onClose,
   children,
   title,
-  maxWidth = 'md',
   showCloseButton = true,
   closeOnOverlayClick = true
 }: BaseModalProps) {
@@ -40,31 +38,14 @@ export default function BaseModal({
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
 
-  // 最大幅の設定
-  const getMaxWidthClass = () => {
-    switch (maxWidth) {
-      case 'sm':
-        return 'max-w-sm'
-      case 'md':
-        return 'max-w-md'
-      case 'lg':
-        return 'max-w-lg'
-      case 'xl':
-        return 'max-w-xl'
-      case '2xl':
-        return 'max-w-2xl'
-      default:
-        return 'max-w-md'
-    }
-  }
-
   const customStyles = {
     overlay: {
       backgroundColor: 'rgba(97, 97, 97, 0.5)',
       zIndex: 50,
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      padding: '1rem'
     },
     content: {
       position: 'relative' as const,
@@ -76,7 +57,7 @@ export default function BaseModal({
       borderRadius: '0.5rem',
       boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       padding: 0,
-      margin: '1rem',
+      margin: 0,
       maxHeight: '90vh',
       overflow: 'auto',
       backgroundColor: 'white'
@@ -92,7 +73,7 @@ export default function BaseModal({
       shouldCloseOnEsc={true}
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
-      <div className={`relative bg-white rounded-lg ${getMaxWidthClass()} w-full`}>
+      <div className="relative bg-white rounded-lg w-[90vw] sm:w-[600px]">
         {/* 閉じるボタン */}
         {showCloseButton && (
           <button
