@@ -19,7 +19,12 @@ export const useSpeakPhrase = () => {
         order: config.order.replace('-', '_'), // new-to-old → new_to_old
       })
 
-      const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string }>(`/api/phrase/speak?${params.toString()}`)
+      // excludeIfSpeakCountGTEパラメータを追加
+      if (config.excludeIfSpeakCountGTE !== undefined) {
+        params.append('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
+      }
+
+      const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string, allDone?: boolean }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {
         setCurrentPhrase(data.phrase)
@@ -28,7 +33,10 @@ export const useSpeakPhrase = () => {
         setPendingCount(0) // 新しいフレーズ取得時はペンディングカウントをリセット
         return true
       } else {
-        toast.error(data.message || 'フレーズが見つかりませんでした')
+        // All Done状態の場合はトーストを表示しない
+        if (!data.allDone) {
+          toast.error(data.message || 'フレーズが見つかりませんでした')
+        }
         return false
       }
     } catch (error) {

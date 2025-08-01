@@ -107,13 +107,21 @@ export async function GET(request: NextRequest) {
       // すべてのフレーズがセッション完了済みかチェック
       const allSessionCompleted = allPhrases.length > 0 && allPhrases.every(p => p.sessionSpoken)
       
-      return NextResponse.json({
-        success: false,
-        message: allSessionCompleted 
-          ? 'All available phrases have been practiced in this session' 
-          : 'No phrases available for practice in this session',
-        allDone: allSessionCompleted // フロントエンドでAll Done画面表示判定用
-      })
+      if (allSessionCompleted) {
+        // All Done状態の場合は成功レスポンスとして返す（トーストエラーを防ぐため）
+        return NextResponse.json({
+          success: true,
+          allDone: true,
+          message: 'All available phrases have been practiced in this session'
+        })
+      } else {
+        // フレーズがない場合はエラーとして返す
+        return NextResponse.json({
+          success: false,
+          message: 'No phrases available for practice in this session',
+          allDone: false
+        })
+      }
     }
 
     // ソート処理

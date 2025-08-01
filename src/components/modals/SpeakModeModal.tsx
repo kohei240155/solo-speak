@@ -52,10 +52,17 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
 
       const data = await getSpeakPhrase(params)
 
-      console.log('SpeakModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })
+      console.log('SpeakModeModal - API Response:', { 
+        success: data.success, 
+        hasPhrase: !!data.phrase, 
+        allDone: data.allDone,
+        message: data.message,
+        fullResponse: data
+      })
 
       if (data.success && data.phrase) {
         // 設定オブジェクトを作成して渡す
+        console.log('SpeakModeModal - Branch: Normal phrase found')
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
@@ -66,27 +73,25 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // onStartの呼び出し前にモーダルを閉じる
         onClose()
         onStart(config)
+      } else if (data.success && data.allDone) {
+        // All Done状態の場合（成功レスポンスでallDoneフラグがある）
+        console.log('SpeakModeModal - Branch: All Done detected')
+        // モーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
+        onClose()
+        // onStartにall doneフラグを付けて呼び出し
+        onStart({ 
+          order: order as 'new-to-old' | 'old-to-new',
+          language: selectedLanguage,
+          prioritizeLowPractice: true,
+          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
+          allDone: true 
+        } as SpeakConfig & { allDone: boolean })
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
+        console.log('SpeakModeModal - Branch: Error case')
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
         console.warn('SpeakModeModal - No phrases found:', data.message)
-        
-        // All Done状態かチェック
-        if (data.allDone) {
-          console.log('SpeakModeModal - All phrases completed in this session')
-          // All Done状態の場合はモーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
-          onClose()
-          // onStartにall doneフラグを付けて呼び出し
-          onStart({ 
-            order: order as 'new-to-old' | 'old-to-new',
-            language: selectedLanguage,
-            prioritizeLowPractice: true,
-            excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
-            allDone: true 
-          } as SpeakConfig & { allDone: boolean })
-        } else {
-          toast.error(errorMessage)
-        }
+        toast.error(errorMessage)
       }
     } catch (error) {
       console.error('SpeakModeModal - Error fetching phrase:', error)
