@@ -73,7 +73,7 @@ export default function BaseModal({
       shouldCloseOnEsc={true}
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
-      <div className="relative bg-white rounded-lg w-[90vw] sm:w-[600px]">
+      <div className="relative bg-white rounded-lg w-[90vw] sm:w-[500px]">
         {/* 閉じるボタン */}
         {showCloseButton && (
           <button
