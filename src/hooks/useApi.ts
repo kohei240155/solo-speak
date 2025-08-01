@@ -50,6 +50,18 @@ export async function updatePhrase(phraseId: string, updates: Record<string, unk
 }
 
 /**
+ * 個別フレーズのsession_spokenをtrueに設定する関数
+ */
+export async function markPhraseAsSessionSpoken(phraseId: string) {
+  try {
+    return await api.post(`/api/phrase/${phraseId}/session-spoken`)
+  } catch (error) {
+    console.error('Failed to mark phrase as session spoken:', error)
+    throw error
+  }
+}
+
+/**
  * ユーザーの全フレーズのsession_spokenをfalseにリセットする関数
  */
 export async function resetSessionSpoken() {

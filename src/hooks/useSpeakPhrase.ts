@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { api } from '@/utils/api'
+import { markPhraseAsSessionSpoken } from './useApi'
 import toast from 'react-hot-toast'
 import { SpeakPhrase, SpeakConfig } from '@/types/speak'
 
@@ -81,16 +82,30 @@ export const useSpeakPhrase = () => {
 
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
-    // 保留中のカウントを送信
-    if (currentPhrase && pendingCount > 0) {
-      const success = await sendPendingCount(currentPhrase.id, pendingCount)
-      if (success) {
-        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
-      } else {
-        toast.error('カウントの送信に失敗しました')
-      }
+    if (!currentPhrase) {
+      return await fetchSpeakPhrase(config)
     }
 
+    try {
+      // 1. 保留中のカウントがある場合は送信
+      if (pendingCount > 0) {
+        const success = await sendPendingCount(currentPhrase.id, pendingCount)
+        if (success) {
+          setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+        } else {
+          toast.error('カウントの送信に失敗しました')
+        }
+      }
+
+      // 2. session_spokenをtrueに設定（カウントが0でも実行）
+      await markPhraseAsSessionSpoken(currentPhrase.id)
+      
+    } catch (error) {
+      console.error('Error in handleNext:', error)
+      toast.error('処理中にエラーが発生しました')
+    }
+
+    // 3. 次のフレーズを取得
     return await fetchSpeakPhrase(config)
   }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase])
 
