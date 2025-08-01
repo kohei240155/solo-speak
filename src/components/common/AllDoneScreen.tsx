@@ -1,9 +1,9 @@
-interface QuizCompleteProps {
+interface AllDoneScreenProps {
   onFinish: () => void
   onRetry: () => void
 }
 
-export default function QuizComplete({ onFinish, onRetry }: QuizCompleteProps) {
+export default function AllDoneScreen({ onFinish, onRetry }: AllDoneScreenProps) {
   return (
     <div className="flex flex-col min-h-[300px]">
       <div className="text-center mt-10">

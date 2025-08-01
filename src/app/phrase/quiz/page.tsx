@@ -6,7 +6,7 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
-import QuizComplete from '@/components/quiz/QuizComplete'
+import AllDoneScreen from '@/components/common/AllDoneScreen'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
@@ -144,12 +144,12 @@ export default function PhraseQuizPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {isQuizCompleted ? (
-            <QuizComplete 
+                    {isQuizCompleted ? (
+            <AllDoneScreen 
               onFinish={handleFinish}
               onRetry={handleRetry}
             />
-          ) : quizMode.active && quizMode.config && currentPhrase && session ? (
+          ) : quizMode.active ? (
             <QuizPractice
               session={session}
               currentPhrase={currentPhrase}

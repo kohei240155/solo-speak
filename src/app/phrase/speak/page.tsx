@@ -8,7 +8,7 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
-import QuizComplete from '@/components/quiz/QuizComplete'
+import AllDoneScreen from '@/components/common/AllDoneScreen'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
@@ -256,7 +256,7 @@ function PhraseSpeakPage() {
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             {isSpeakCompleted ? (
               // All Done画面
-              <QuizComplete 
+              <AllDoneScreen 
                 onFinish={handleAllDoneFinish}
                 onRetry={handleAllDoneRetry}
               />
