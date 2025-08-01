@@ -86,16 +86,16 @@ const PhraseItem = memo(({
             fontSize="base"
             items={[
               {
-                id: 'edit',
-                label: 'Edit',
-                icon: BsPencil,
-                onClick: () => onEdit(phrase)
-              },
-              {
                 id: 'explanation',
                 label: 'Explanation',
                 icon: BiCommentDetail,
                 onClick: () => onExplanation(phrase)
+              },
+              {
+                id: 'edit',
+                label: 'Edit',
+                icon: BsPencil,
+                onClick: () => onEdit(phrase)
               },
               {
                 id: 'delete',
