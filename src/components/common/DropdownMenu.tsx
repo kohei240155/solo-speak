@@ -37,6 +37,8 @@ interface DropdownMenuProps {
   triggerClassName?: string
   /** メニューコンテナのクラス名 */
   menuClassName?: string
+  /** メニューアイテムの文字サイズ */
+  fontSize?: 'sm' | 'base' | 'lg'
 }
 
 export default function DropdownMenu({
@@ -51,7 +53,8 @@ export default function DropdownMenu({
   width = 'w-28',
   zIndex = 10,
   triggerClassName = '',
-  menuClassName = ''
+  menuClassName = '',
+  fontSize = 'sm'
 }: DropdownMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -97,6 +100,17 @@ export default function DropdownMenu({
     }
   }
 
+  const getFontSize = () => {
+    switch (fontSize) {
+      case 'base':
+        return 'text-base'
+      case 'lg':
+        return 'text-lg'
+      default:
+        return 'text-sm'
+    }
+  }
+
   const getPositionClasses = () => {
     switch (position) {
       case 'bottom-left':
@@ -110,7 +124,8 @@ export default function DropdownMenu({
     }
   }
 
-  const handleItemClick = (item: DropdownMenuItem) => {
+  const handleItemClick = (item: DropdownMenuItem, event: React.MouseEvent) => {
+    event.stopPropagation()
     if (!item.disabled) {
       item.onClick()
       onClose()
@@ -137,6 +152,7 @@ export default function DropdownMenu({
         <div 
           className={`absolute ${getPositionClasses()} bg-white border border-gray-200 rounded-md shadow-lg ${width} ${menuClassName}`}
           style={{ zIndex }}
+          onClick={(e) => e.stopPropagation()}
         >
           {items.map((item) => {
             const ItemIcon = item.icon
@@ -146,10 +162,10 @@ export default function DropdownMenu({
             return (
               <button
                 key={item.id}
-                onClick={() => handleItemClick(item)}
+                onClick={(e) => handleItemClick(item, e)}
                 disabled={isDisabled}
                 className={`
-                  w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors
+                  w-full px-3 py-2 text-left ${getFontSize()} flex items-center gap-2 transition-colors
                   ${isDisabled 
                     ? 'text-gray-400 cursor-not-allowed' 
                     : isDanger 
@@ -158,7 +174,7 @@ export default function DropdownMenu({
                   }
                 `}
               >
-                {ItemIcon && <ItemIcon className="w-3 h-3 flex-shrink-0" />}
+                {ItemIcon && <ItemIcon className="w-4 h-4 flex-shrink-0" />}
                 <span className="truncate">{item.label}</span>
               </button>
             )
