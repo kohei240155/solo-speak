@@ -22,6 +22,7 @@ interface SpeakPracticeProps {
   isNextLoading?: boolean
   isHideNext?: boolean // Nextボタンを非表示にするかどうか
   isFinishing?: boolean // Finish処理中かどうか
+  isCountDisabled?: boolean // Countボタンを無効にするかどうか
 }
 
 export default function SpeakPractice({
@@ -35,7 +36,8 @@ export default function SpeakPractice({
   isLoading = false,
   isNextLoading = false,
   isHideNext = false,
-  isFinishing = false
+  isFinishing = false,
+  isCountDisabled = false
 }: SpeakPracticeProps) {
 
   // ローディング中の表示
@@ -110,12 +112,21 @@ export default function SpeakPractice({
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={onCount}
-              className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
+              disabled={isCountDisabled}
+              className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 ${
+                isCountDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
             >
-              <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <CiCirclePlus className="w-10 h-10 text-gray-600" />
+              <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1 ${
+                isCountDisabled ? 'opacity-50' : ''
+              }`}>
+                <CiCirclePlus className={`w-10 h-10 ${
+                  isCountDisabled ? 'text-gray-400' : 'text-gray-600'
+                }`} />
               </div>
-              <span className="text-gray-900 font-medium text-base">Count</span>
+              <span className={`font-medium text-base ${
+                isCountDisabled ? 'text-gray-400' : 'text-gray-900'
+              }`}>Count</span>
             </button>
             {!isHideNext && (
               <button

@@ -27,6 +27,7 @@ export default function SpeakPage() {
   const params = useParams()
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
+  const [pendingCount, setPendingCount] = useState(0) // ペンディング中のカウント数
   const [learningLanguage, setLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -114,19 +115,22 @@ export default function SpeakPage() {
   const handleCount = async () => {
     if (!phrase) return
 
-    try {
-      // 音読回数を更新
-      await api.post(`/api/phrase/${phrase.id}/count`)
-      
-      // カウント更新成功（トーストは表示しない）
-      setPhrase(prev => prev ? {
-        ...prev,
-        totalSpeakCount: prev.totalSpeakCount + 1,
-        dailySpeakCount: prev.dailySpeakCount + 1
-      } : null)
-    } catch (error) {
-      console.error('Error updating count:', error)
+    // 制限チェック: 現在の日次カウント + ペンディングカウント が 100 以上の場合
+    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount
+    if (currentDailyCount >= 100) {
+      toast.error('このフレーズは1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+        duration: 4000
+      })
+      return
     }
+
+    // ローカル状態のみを更新（APIは呼ばない）
+    setPendingCount(prev => prev + 1)
+    setPhrase(prev => prev ? {
+      ...prev,
+      totalSpeakCount: prev.totalSpeakCount + 1,
+      dailySpeakCount: prev.dailySpeakCount + 1
+    } : null)
   }
 
   const handleSound = async () => {
@@ -166,6 +170,18 @@ export default function SpeakPage() {
   }
 
   const handleNext = async () => {
+    // ペンディングカウントがある場合は送信
+    if (pendingCount > 0 && phrase) {
+      try {
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
+        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+      } catch (error: unknown) {
+        console.error('Error sending pending count:', error)
+        toast.error('カウントの送信に失敗しました')
+        return // エラーの場合は次のフレーズ取得を中止
+      }
+    }
+
     // 次のフレーズを取得
     try {
       const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
@@ -184,7 +200,19 @@ export default function SpeakPage() {
     }
   }
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
+    // ペンディングカウントがある場合は送信
+    if (pendingCount > 0 && phrase) {
+      try {
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
+        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+      } catch (error: unknown) {
+        console.error('Error sending pending count:', error)
+        toast.error('カウントの送信に失敗しました')
+        // Finishの場合はエラーがあってもページ遷移を実行
+      }
+    }
+
     router.push('/phrase/list')
   }
 
@@ -327,11 +355,20 @@ export default function SpeakPage() {
               <div className="flex-1 flex flex-col items-center">
                 <button
                   onClick={handleCount}
-                  className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
+                  disabled={(phrase.dailySpeakCount + pendingCount) >= 100}
+                  className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors md:w-24 md:h-24 ${
+                    (phrase.dailySpeakCount + pendingCount) >= 100 
+                      ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
-                  <CiCirclePlus className="w-12 h-12 text-gray-600 md:w-16 md:h-16" />
+                  <CiCirclePlus className={`w-12 h-12 md:w-16 md:h-16 ${
+                    (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-600'
+                  }`} />
                 </button>
-                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">Count</span>
+                <span className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
+                  (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-900'
+                }`}>Count</span>
               </div>
 
               {/* 中央の区切り線 */}

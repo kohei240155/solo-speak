@@ -14,6 +14,7 @@ import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
 import { useSpeakMode } from '@/hooks/useSpeakMode'
 import { speakText, preloadVoices } from '@/utils/speechSynthesis'
+import { api } from '@/utils/api'
 import { SpeakConfig, SpeakPhrase } from '@/types/speak'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
@@ -32,6 +33,7 @@ function PhraseSpeakPage() {
     todayCount,
     totalCount,
     pendingCount,
+    isCountDisabled,
     fetchSpeakPhrase,
     sendPendingCount,
     handleCount,
@@ -59,6 +61,7 @@ function PhraseSpeakPage() {
   const [singlePhraseTodayCount, setSinglePhraseTodayCount] = useState(0)
   const [singlePhraseTotalCount, setSinglePhraseTotalCount] = useState(0)
   const [singlePhrasePendingCount, setSinglePhrasePendingCount] = useState(0) // ペンディングカウント追加
+  const [singlePhraseCountDisabled, setSinglePhraseCountDisabled] = useState(false) // Countボタンの無効化状態
 
   // URLパラメータからphraseIdを取得
   const phraseId = searchParams.get('phraseId')
@@ -120,6 +123,7 @@ function PhraseSpeakPage() {
       setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0)
       setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0)
       setSinglePhrasePendingCount(0)
+      setSinglePhraseCountDisabled((singlePhraseFromSWR.dailySpeakCount || 0) >= 100)
       setIsLoadingSinglePhrase(false)
       return
     }
@@ -150,17 +154,43 @@ function PhraseSpeakPage() {
   const handleSinglePhraseCount = async () => {
     if (!singlePhrase) return
 
-    // ローカル状態を即座に更新（既存のuseSpeakPhraseと同じロジック）
-    setSinglePhrasePendingCount(prev => prev + 1)
-    setSinglePhraseTodayCount(prev => prev + 1)
-    setSinglePhraseTotalCount(prev => prev + 1)
-    
-    // フレーズの表示カウントも更新
-    setSinglePhrase(prev => prev ? {
-      ...prev,
-      dailySpeakCount: prev.dailySpeakCount + 1,
-      totalSpeakCount: prev.totalSpeakCount + 1
-    } : null)
+    try {
+      // 実際にサーバーに送信して制限をチェック
+      await api.post(`/api/phrase/${singlePhrase.id}/count`, { count: 1 })
+      
+      // 成功した場合のみローカル状態を更新
+      setSinglePhrasePendingCount(prev => prev + 1)
+      setSinglePhraseTodayCount(prev => {
+        const newCount = prev + 1
+        setSinglePhraseCountDisabled(newCount >= 100)
+        return newCount
+      })
+      setSinglePhraseTotalCount(prev => prev + 1)
+      
+      // フレーズの表示カウントも更新
+      setSinglePhrase(prev => prev ? {
+        ...prev,
+        dailySpeakCount: prev.dailySpeakCount + 1,
+        totalSpeakCount: prev.totalSpeakCount + 1
+      } : null)
+      
+    } catch (error: unknown) {
+      console.error('Error updating count:', error)
+      
+      // 制限エラーの場合は専用のトーストを表示
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response?: { data?: { dailyLimitReached?: boolean } } }
+        if (apiError.response?.data?.dailyLimitReached) {
+          toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+            duration: 4000
+          })
+        } else {
+          toast.error('カウントの更新に失敗しました')
+        }
+      } else {
+        toast.error('カウントの更新に失敗しました')
+      }
+    }
   }
 
   // 単一フレーズの音声再生
@@ -323,6 +353,7 @@ function PhraseSpeakPage() {
                   isNextLoading={false}
                   isHideNext={true}
                   isFinishing={isFinishing}
+                  isCountDisabled={singlePhraseCountDisabled}
                 />
               ) : (
                 <div className="text-center py-8">
@@ -346,6 +377,7 @@ function PhraseSpeakPage() {
                     isLoading={isLoadingPhrase}
                     isHideNext={false}
                     isFinishing={isFinishing}
+                    isCountDisabled={isCountDisabled}
                   />
                 ) : (
                   <div className="text-center py-8">
