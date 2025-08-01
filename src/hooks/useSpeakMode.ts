@@ -95,10 +95,8 @@ export const useSpeakMode = ({
     // フレーズを取得
     const result = await fetchSpeakPhrase(updatedConfig)
     
-    // フレーズの取得に失敗した場合はspeakModeを無効にする
-    if (result === false) {
-      setSpeakMode({ active: false, config: null, spokenPhraseIds: [] })
-    }
+    // フレーズの取得に失敗した場合の処理は呼び出し元で行う
+    // ここではspeakModeの状態は変更しない
     
     return result
   }, [fetchSpeakPhrase])

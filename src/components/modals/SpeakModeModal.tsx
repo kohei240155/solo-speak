@@ -76,6 +76,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         excludeSpeakCountThreshold: excludeSpeakCountThreshold // 除外する音読回数の閾値
       }
       console.log('SpeakModeModal - Starting practice with config:', config)
+      console.log('excludeSpeakCountThreshold value:', excludeSpeakCountThreshold)
       
       // 実際の処理を開始
       await onStart(config)

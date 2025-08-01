@@ -250,16 +250,23 @@ function PhraseSpeakPage() {
     try {
       const result = await handleSpeakStart(config)
       if (result === false) {
-        // 失敗した場合のみモーダルを再度開く
+        // 失敗した場合はspeakModeをリセットし、適切なエラーメッセージを表示
+        handleSpeakFinish() // speakModeを無効にする
         setShowSpeakModal(true)
-        toast.error('練習の開始に失敗しました')
+        if (config.excludeSpeakCountThreshold && config.excludeSpeakCountThreshold > 0) {
+          toast.error(`${config.excludeSpeakCountThreshold}回以上音読したフレーズを除外すると、練習できるフレーズがありません。設定を変更してください。`)
+        } else {
+          toast.error('フレーズの取得に失敗しました。設定を確認してください。')
+        }
       } else if (result === 'allCompleted') {
         // 全て完了の場合はAll Done画面を表示
         setIsCompleted(true)
       }
+      // 成功した場合は何もしない（SpeakPractice画面が自動的に表示される）
     } catch (error) {
       console.error('Error starting speak practice:', error)
-      // エラーが発生した場合もモーダルを再度開く
+      // エラーが発生した場合もspeakModeをリセットしてモーダルを再度開く
+      handleSpeakFinish() // speakModeを無効にする
       setShowSpeakModal(true)
       toast.error('練習の開始中にエラーが発生しました')
     } finally {
@@ -284,7 +291,7 @@ function PhraseSpeakPage() {
     setShowQuizModal(true)
   }
 
-  // Speakモーダルを開く処理（適切な条件チェック付き）
+    // Speakモーダルを開く処理（適切な条件チェック付き）
   const handleSpeakModalOpen = () => {
     // 単一フレーズモードでない場合のみ処理
     if (!isSinglePhraseMode) {
@@ -293,13 +300,8 @@ function PhraseSpeakPage() {
         return
       }
       
-      // フレーズが存在し、Speakモードがアクティブでない場合はリスト画面に遷移
-      if (savedPhrases.length > 0 && !speakMode.active) {
-        router.push('/phrase/list')
-      } else {
-        // フレーズが0個の場合、またはその他の場合はモーダルを開く
-        setShowSpeakModal(true)
-      }
+      // 常にモーダルを開く（リスト画面への遷移は削除）
+      setShowSpeakModal(true)
     }
   }
 
@@ -396,15 +398,9 @@ function PhraseSpeakPage() {
                     <p className="text-gray-500 text-sm mt-2">まずはフレーズを追加してください</p>
                   </div>
                 ) : (
-                  // フレーズが存在する場合はSpeak練習を開始するボタンを表示
+                  // フレーズが存在する場合の初期画面（モーダルを開くまでの待機画面）
                   <div className="text-center py-8">
-                    <p className="text-gray-600 mb-4">Speak練習を開始しましょう</p>
-                    <button
-                      onClick={() => setShowSpeakModal(true)}
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Speak練習を開始
-                    </button>
+                    <p className="text-gray-600">上のSpeakタブをクリックして練習を開始してください</p>
                   </div>
                 )
               )

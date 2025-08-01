@@ -29,6 +29,9 @@ export const useSpeakPhrase = () => {
         params.set('excludeSpeakCountThreshold', config.excludeSpeakCountThreshold.toString())
       }
 
+      console.log('useSpeakPhrase - API request params:', params.toString())
+      console.log('useSpeakPhrase - config.excludeSpeakCountThreshold:', config.excludeSpeakCountThreshold)
+
       const data = await api.get<{ 
         success: boolean, 
         phrase?: SpeakPhrase, 
