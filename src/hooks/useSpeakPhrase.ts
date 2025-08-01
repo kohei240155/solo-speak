@@ -13,8 +13,8 @@ export const useSpeakPhrase = () => {
   const [isCountDisabled, setIsCountDisabled] = useState(false)
 
   // 今日のカウントに基づいてCountボタンの状態を更新
-  const updateCountButtonState = useCallback((currentTodayCount: number) => {
-    setIsCountDisabled(currentTodayCount >= 100)
+  const updateCountButtonState = useCallback((actualTodayCount: number) => {
+    setIsCountDisabled(actualTodayCount >= 100)
   }, [])
 
   // フレーズを取得する関数
@@ -82,9 +82,8 @@ export const useSpeakPhrase = () => {
   const handleCount = useCallback(async () => {
     if (!currentPhrase) return
 
-    // 制限チェック: 現在の日次カウント + ペンディングカウント + 1 が 100 を超える場合
-    const currentDailyCount = (currentPhrase.dailySpeakCount || 0) + pendingCount
-    if (currentDailyCount >= 100) {
+    // 制限チェック: todayCount が 100 に達している場合
+    if (todayCount >= 100) {
       toast.error('このフレーズは1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
         duration: 4000
       })
@@ -93,22 +92,24 @@ export const useSpeakPhrase = () => {
     }
 
     // ローカル状態のみを更新（APIは呼ばない）
-    setPendingCount(prev => prev + 1)
-    setTodayCount(prev => {
-      const newCount = prev + 1
-      updateCountButtonState(newCount)
-      return newCount
-    })
+    const newPendingCount = pendingCount + 1
+    setPendingCount(newPendingCount)
+    
+    const newTodayCount = todayCount + 1
+    setTodayCount(newTodayCount)
     setTotalCount(prev => prev + 1)
     
-    // フレーズの表示カウントも更新
+    // フレーズの表示カウントは更新しない（todayCountを表示に使用するため）
     setCurrentPhrase(prev => prev ? {
       ...prev,
-      totalSpeakCount: prev.totalSpeakCount + 1,
-      dailySpeakCount: prev.dailySpeakCount + 1
+      totalSpeakCount: prev.totalSpeakCount + 1
+      // dailySpeakCount は更新しない
     } : null)
     
-  }, [currentPhrase, pendingCount, updateCountButtonState])
+    // ボタンの状態を更新（表示されているtodayCountと同じ値で判定）
+    updateCountButtonState(newTodayCount)
+    
+  }, [currentPhrase, todayCount, updateCountButtonState])
 
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
