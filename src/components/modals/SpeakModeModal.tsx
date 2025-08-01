@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { getSpeakPhrase } from '@/hooks/useApi'
+import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 
 interface SpeakModeModalProps {
@@ -17,51 +17,25 @@ export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleStart = async (selectedLanguage: string) => {
-    if (isLoading) return
-    
-    setIsLoading(true)
-    try {
-      // モード設定でAPI呼び出し
-      const params = {
-        language: selectedLanguage,
-        order: order.replace('-', '_'), // new-to-old → new_to_old
-        prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
-      }
-
-      const data = await getSpeakPhrase(params)
-
-      console.log('SpeakModeModal - API Response:', { success: data.success, hasPhrase: !!data.phrase, message: data.message })
-
-      if (data.success && data.phrase) {
-        // 設定オブジェクトを作成して渡す
-        const config: SpeakConfig = {
-          order: order as 'new-to-old' | 'old-to-new',
-          language: selectedLanguage,
-          prioritizeLowPractice: true, // 常に少ない練習回数から表示
-          excludeSpoken: false, // 初回は除外しない
-          spokenPhraseIds: [] // 初回は空
+  // モーダルが開かれたときにセッション設定をリセット
+  useEffect(() => {
+    if (isOpen && defaultLearningLanguage) {
+      const resetSessionSpoken = async () => {
+        try {
+          await api.post('/api/speak/reset', {
+            language: defaultLearningLanguage
+          })
+          console.log('Session spoken flags reset successfully')
+        } catch (error) {
+          console.error('Failed to reset session spoken flags:', error)
+          toast.error('Failed to reset session settings')
         }
-        console.log('SpeakModeModal - Starting practice with config:', config)
-        // onStartの呼び出し前にモーダルを閉じる
-        onClose()
-        onStart(config)
-      } else {
-        // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = data.message || 'フレーズが見つかりませんでした'
-        console.warn('SpeakModeModal - No phrases found:', data.message)
-        toast.error(errorMessage)
       }
-    } catch (error) {
-      console.error('SpeakModeModal - Error fetching phrase:', error)
-      // エラーは既にAPIクライアント内でハンドリングされているため、ここでは追加でトーストを表示しない
-    } finally {
-      console.log('SpeakModeModal - Setting loading to false')
-      setIsLoading(false)
+      
+      resetSessionSpoken()
     }
-  }
+  }, [isOpen, defaultLearningLanguage])
 
   // モーダル設定を定義
   const modalConfig: ModeModalConfig = {
@@ -79,7 +53,20 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
       }
     ],
-    onStart: handleStart,
+    onStart: async (selectedLanguage: string) => {
+      // 設定オブジェクトを作成して渡す
+      const config: SpeakConfig = {
+        order: order as 'new-to-old' | 'old-to-new',
+        language: selectedLanguage,
+        prioritizeLowPractice: true, // 常に少ない練習回数から表示
+        excludeSpoken: false, // 初回は除外しない
+        spokenPhraseIds: [] // 初回は空
+      }
+      console.log('SpeakModeModal - Starting practice with config:', config)
+      
+      // 実際の処理を開始
+      await onStart(config)
+    },
     startButtonText: 'Start'
   }
 
@@ -90,7 +77,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       config={modalConfig}
       languages={languages}
       defaultLearningLanguage={defaultLearningLanguage}
-      isLoading={isLoading}
     />
   )
 }
