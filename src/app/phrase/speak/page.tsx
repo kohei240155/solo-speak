@@ -7,7 +7,7 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
-import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import SpeakComplete from '@/components/speak/SpeakComplete'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
@@ -159,6 +159,13 @@ function PhraseSpeakPage() {
       fetchSavedPhrases(1, false)
     }
   }, [learningLanguage, fetchSavedPhrases, isSinglePhraseMode])
+
+  // フレーズが存在し、Speakモードがアクティブでない場合はリスト画面に遷移
+  useEffect(() => {
+    if (!isSinglePhraseMode && !isLoadingPhrases && savedPhrases.length > 0 && !speakMode.active && !isStartingSpeak) {
+      router.push('/phrase/list')
+    }
+  }, [isSinglePhraseMode, isLoadingPhrases, savedPhrases.length, speakMode.active, isStartingSpeak, router])
 
   // 音声再生機能
   const handleSound = async () => {
@@ -322,10 +329,11 @@ function PhraseSpeakPage() {
                   isFinishing={isFinishing}
                 />
               ) : (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-                </div>
+                <LoadingSpinner 
+                  size="lg"
+                  message="フレーズを読み込み中..." 
+                  className="py-12" 
+                />
               )
             ) : (
               // 通常の複数フレーズ練習モード
@@ -352,24 +360,32 @@ function PhraseSpeakPage() {
                       isFinishing={isFinishing}
                     />
                   ) : (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                      <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-                    </div>
+                    <LoadingSpinner 
+                      size="lg"
+                      message="フレーズを読み込み中..." 
+                      className="py-12" 
+                    />
                   )
                 )
               ) : isStartingSpeak ? (
-                // Speak開始処理中のローディング表示
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">練習を開始しています...</p>
-                </div>
-              ) : (
-                <SpeakPhraseList
-                  isLoadingPhrases={isLoadingPhrases}
-                  phraseCount={savedPhrases.length}
-                  onStartClick={() => setShowSpeakModal(true)}
+                // Speak開始処理中のローディング表示（タブの下、コンテンツエリア内）
+                <LoadingSpinner 
+                  size="lg"
+                  message="練習を開始しています..."
+                  className="py-12"
                 />
+              ) : (
+                isLoadingPhrases ? (
+                  <LoadingSpinner 
+                    message="フレーズを読み込み中..." 
+                    className="py-8" 
+                  />
+                ) : savedPhrases.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">練習できるフレーズがありません</p>
+                    <p className="text-gray-500 text-sm mt-2">まずはフレーズを追加してください</p>
+                  </div>
+                ) : null
               )
             )}
           </div>
