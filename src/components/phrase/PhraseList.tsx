@@ -349,8 +349,8 @@ export default function PhraseList({
       {/* 編集モーダル */}
       <BaseModal isOpen={!!editingPhrase} onClose={handleCancelEdit} title="Edit">
         {/* 母国語 section (上のフォーム) */}
-        <div className="mb-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}
           </h3>
           <textarea
@@ -358,28 +358,29 @@ export default function PhraseList({
             onChange={(e) => setEditedTranslation(e.target.value)}
             onFocus={scrollPreservation.onFocus}
             onBlur={scrollPreservation.onBlur}
-            placeholder={`${languages.find(lang => lang.code === nativeLanguage)?.name || '日本語'}で入力してください`}
-            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="例：この料理はなんですか？"
+            className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
+              editedTranslation.length > 200
+                ? 'border-red-400' 
+                : 'border-gray-300'
+            }`}
             rows={3}
             disabled={isUpdating}
           />
-          <div className="flex justify-between items-center mt-1">
-            <span className={`text-xs ${
-              editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              200文字以内で入力してください
-            </span>
-            <span className={`text-xs ${
-              editedTranslation.length > 200 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              {editedTranslation.length} / 200
-            </span>
-          </div>
+          
+          {/* 200文字を超えた場合のバリデーションメッセージ */}
+          {editedTranslation.length > 200 && (
+            <div className="mt-2 p-3 border border-red-300 rounded-md bg-red-50">
+              <p className="text-sm text-red-600">
+                200文字以内で入力してください（現在: {editedTranslation.length}文字）
+              </p>
+            </div>
+          )}
         </div>
 
         {/* 学習言語 section (下のフォーム) */}
         <div className="mb-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {editingPhrase?.language?.name || 'English'}
           </h3>
           <textarea
@@ -388,22 +389,23 @@ export default function PhraseList({
             onFocus={scrollPreservation.onFocus}
             onBlur={scrollPreservation.onBlur}
             placeholder="Enter phrase"
-            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
+              editedText.length > 200
+                ? 'border-red-400' 
+                : 'border-gray-300'
+            }`}
             rows={3}
             disabled={isUpdating}
           />
-          <div className="flex justify-between items-center mt-1">
-            <span className={`text-xs ${
-              editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              200文字以内で入力してください
-            </span>
-            <span className={`text-xs ${
-              editedText.length > 200 ? 'text-red-500' : 'text-gray-500'
-            }`}>
-              {editedText.length} / 200
-            </span>
-          </div>
+          
+          {/* 200文字を超えた場合のバリデーションメッセージ */}
+          {editedText.length > 200 && (
+            <div className="mt-2 p-3 border border-red-300 rounded-md bg-red-50">
+              <p className="text-sm text-red-600">
+                200文字以内で入力してください（現在: {editedText.length}文字）
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ボタン */}
