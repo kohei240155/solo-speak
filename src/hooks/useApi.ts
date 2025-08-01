@@ -68,9 +68,14 @@ export async function getSpeakPhrase(params: {
   language?: string
   order?: string
   prioritizeLowPractice?: string
+  excludeIfSpeakCountGTE?: string
 }): Promise<SpeakPhraseApiResponse> {
   try {
-    const queryString = new URLSearchParams(params).toString()
+    // undefinedの値を除去してクエリストリングを作成
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined)
+    )
+    const queryString = new URLSearchParams(filteredParams).toString()
     return await api.get<SpeakPhraseApiResponse>(`/api/phrase/speak?${queryString}`)
   } catch (error) {
     console.error('Failed to get speak phrase:', error)

@@ -17,6 +17,7 @@ export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
+  const [excludeThreshold, setExcludeThreshold] = useState<string>('') // 空文字列は未選択を表す
   const [isLoading, setIsLoading] = useState(false)
 
   // モーダルが開かれたときにsession_spokenをリセット
@@ -46,6 +47,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         language: selectedLanguage,
         order: order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
+        excludeIfSpeakCountGTE: excludeThreshold || undefined // 未選択の場合はundefined
       }
 
       const data = await getSpeakPhrase(params)
@@ -57,7 +59,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
-          prioritizeLowPractice: true // 常に少ない練習回数から表示
+          prioritizeLowPractice: true, // 常に少ない練習回数から表示
+          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined // 未選択の場合はundefined
         }
         console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる
@@ -92,6 +95,26 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           { value: 'old-to-new', label: 'OLD → NEW' }
         ],
         onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
+      },
+      {
+        id: 'excludeThreshold',
+        label: 'Exclude High Practice Count',
+        type: 'select',
+        value: excludeThreshold,
+        options: [
+          { value: '', label: 'No limit' },
+          { value: '10', label: 'Exclude 10+ times' },
+          { value: '20', label: 'Exclude 20+ times' },
+          { value: '30', label: 'Exclude 30+ times' },
+          { value: '40', label: 'Exclude 40+ times' },
+          { value: '50', label: 'Exclude 50+ times' },
+          { value: '60', label: 'Exclude 60+ times' },
+          { value: '70', label: 'Exclude 70+ times' },
+          { value: '80', label: 'Exclude 80+ times' },
+          { value: '90', label: 'Exclude 90+ times' },
+          { value: '100', label: 'Exclude 100+ times' }
+        ],
+        onChange: (value: string) => setExcludeThreshold(value)
       }
     ],
     onStart: handleStart,

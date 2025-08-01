@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
+    const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
 
     if (!language) {
       return NextResponse.json(
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
 
     // モード設定をクエリパラメータから取得
     const config = {
-      order
+      order,
+      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined
     }
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
@@ -42,7 +44,12 @@ export async function GET(request: NextRequest) {
           language: {
             code: language
           },
-          deletedAt: null // 削除されていないフレーズのみ
+          deletedAt: null, // 削除されていないフレーズのみ
+          ...(config.excludeIfSpeakCountGTE !== undefined && {
+            totalSpeakCount: {
+              lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
+            }
+          })
         },
         include: {
           language: true
