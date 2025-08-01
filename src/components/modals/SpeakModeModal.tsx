@@ -74,8 +74,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // All Done状態かチェック
         if (data.allDone) {
           console.log('SpeakModeModal - All phrases completed in this session')
-          toast.success('All phrases in this session have been practiced!')
-          // All Done状態の場合はモーダルを閉じてAll Done画面を表示させる
+          // All Done状態の場合はモーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
           onClose()
           // onStartにall doneフラグを付けて呼び出し
           onStart({ 
