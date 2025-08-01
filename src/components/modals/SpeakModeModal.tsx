@@ -70,7 +70,24 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
         console.warn('SpeakModeModal - No phrases found:', data.message)
-        toast.error(errorMessage)
+        
+        // All Done状態かチェック
+        if (data.allDone) {
+          console.log('SpeakModeModal - All phrases completed in this session')
+          toast.success('All phrases in this session have been practiced!')
+          // All Done状態の場合はモーダルを閉じてAll Done画面を表示させる
+          onClose()
+          // onStartにall doneフラグを付けて呼び出し
+          onStart({ 
+            order: order as 'new-to-old' | 'old-to-new',
+            language: selectedLanguage,
+            prioritizeLowPractice: true,
+            excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
+            allDone: true 
+          } as SpeakConfig & { allDone: boolean })
+        } else {
+          toast.error(errorMessage)
+        }
       }
     } catch (error) {
       console.error('SpeakModeModal - Error fetching phrase:', error)

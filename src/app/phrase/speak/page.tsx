@@ -8,6 +8,7 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
+import QuizComplete from '@/components/quiz/QuizComplete'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
@@ -48,6 +49,7 @@ function PhraseSpeakPage() {
 
   const [showSpeakModal, setShowSpeakModal] = useState(false)
   const [showQuizModal, setShowQuizModal] = useState(false)
+  const [isSpeakCompleted, setIsSpeakCompleted] = useState(false) // All Done状態を管理
   const [isFinishing, setIsFinishing] = useState(false) // Finish処理中の状態を追加
   
   // 単一フレーズ練習用の状態
@@ -187,11 +189,28 @@ function PhraseSpeakPage() {
   }
 
   // モーダル開始処理
-  const handleSpeakStartWithModal = async (config: SpeakConfig) => {
-    const success = await handleSpeakStart(config)
+  const handleSpeakStartWithModal = async (config: SpeakConfig | (SpeakConfig & { allDone: boolean })) => {
+    // All Done状態をチェック
+    if ('allDone' in config && config.allDone) {
+      setIsSpeakCompleted(true)
+      return
+    }
+    
+    const success = await handleSpeakStart(config as SpeakConfig)
     if (success) {
       setShowSpeakModal(false)
     }
+  }
+
+  // All Done完了処理
+  const handleAllDoneFinish = () => {
+    router.push('/phrase/list')
+  }
+
+  // All Done リトライ処理
+  const handleAllDoneRetry = () => {
+    setIsSpeakCompleted(false)
+    setShowSpeakModal(true)
   }
 
   // Quizモーダル開始処理
@@ -230,7 +249,13 @@ function PhraseSpeakPage() {
 
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            {isSinglePhraseMode ? (
+            {isSpeakCompleted ? (
+              // All Done画面
+              <QuizComplete 
+                onFinish={handleAllDoneFinish}
+                onRetry={handleAllDoneRetry}
+              />
+            ) : isSinglePhraseMode ? (
               // 単一フレーズ練習モード
               singlePhrase ? (
                 <SpeakPractice

@@ -87,4 +87,5 @@ export interface SpeakPhraseApiResponse extends BaseApiResponse {
     }
   }
   message?: string
+  allDone?: boolean // All Done画面表示用フラグ
 }

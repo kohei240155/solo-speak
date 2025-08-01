@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     console.log('Speak API - Where clause:', JSON.stringify(whereClause, null, 2))
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageExists, phrases] = await Promise.all([
+    const [languageExists, phrases, allPhrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { code: language }
@@ -62,10 +62,32 @@ export async function GET(request: NextRequest) {
         include: {
           language: true
         }
+      }),
+
+      // セッション管理を除いた全フレーズ数を取得（デバッグ用）
+      prisma.phrase.findMany({
+        where: {
+          userId: authResult.user.id,
+          language: {
+            code: language
+          },
+          deletedAt: null,
+          ...(config.excludeIfSpeakCountGTE !== undefined && {
+            totalSpeakCount: {
+              lt: config.excludeIfSpeakCountGTE
+            }
+          })
+        },
+        select: {
+          id: true,
+          sessionSpoken: true
+        }
       })
     ])
 
     console.log(`Speak API - Found ${phrases.length} phrases after filtering (session_spoken = false)`)
+    console.log(`Speak API - Total available phrases (excluding session): ${allPhrases.length}`)
+    console.log(`Speak API - Session completed phrases: ${allPhrases.filter(p => p.sessionSpoken).length}`)
     
     if (config.excludeIfSpeakCountGTE !== undefined) {
       console.log(`Speak API - Filtering phrases with totalSpeakCount < ${config.excludeIfSpeakCountGTE}`)
@@ -82,9 +104,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (phrases.length === 0) {
+      // すべてのフレーズがセッション完了済みかチェック
+      const allSessionCompleted = allPhrases.length > 0 && allPhrases.every(p => p.sessionSpoken)
+      
       return NextResponse.json({
         success: false,
-        message: 'No phrases available for practice in this session'
+        message: allSessionCompleted 
+          ? 'All available phrases have been practiced in this session' 
+          : 'No phrases available for practice in this session',
+        allDone: allSessionCompleted // フロントエンドでAll Done画面表示判定用
       })
     }
 
