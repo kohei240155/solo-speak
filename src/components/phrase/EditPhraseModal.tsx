@@ -96,10 +96,17 @@ export default function EditPhraseModal({
     setSelectedAction(null)
   }
 
+  const handleImmediateClose = () => {
+    setEditedText('')
+    setEditedTranslation('')
+    onClose()
+    setSelectedAction(null)
+  }
+
   if (!phrase) return null
 
   return (
-    <BaseModal isOpen={isOpen} onClose={handleCancel} title="Edit">
+    <BaseModal isOpen={isOpen} onClose={handleImmediateClose} title="Edit">
       {/* 母国語 section (上のフォーム) */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
