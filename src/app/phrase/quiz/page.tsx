@@ -15,12 +15,10 @@ import { useQuizPhrase } from '@/hooks/useQuizPhrase'
 import { useQuizMode } from '@/hooks/useQuizMode'
 import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
-import { useUserSettings } from '@/hooks/useSWRApi'
 
 export default function PhraseQuizPage() {
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
-  const { userSettings } = useUserSettings()
   const router = useRouter()
 
   // クイズ完了状態
@@ -211,7 +209,6 @@ export default function PhraseQuizPage() {
         languages={languages}
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={savedPhrases.length}
-        defaultQuizCount={userSettings?.defaultQuizCount || 10}
       />
       
       <Toaster />

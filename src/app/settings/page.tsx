@@ -30,8 +30,7 @@ export default function UserSettingsPage() {
       iconUrl: '',
       nativeLanguageId: '',
       defaultLearningLanguageId: '',
-      email: '',
-      defaultQuizCount: 10
+      email: ''
     }
   })
 

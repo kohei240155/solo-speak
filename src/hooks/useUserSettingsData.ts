@@ -13,7 +13,6 @@ interface UserSettings {
   nativeLanguage: Language
   defaultLearningLanguage: Language
   email: string
-  defaultQuizCount: number
 }
 
 interface UseUserSettingsDataReturn {

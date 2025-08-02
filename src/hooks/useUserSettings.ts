@@ -19,8 +19,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         iconUrl?: string,
         nativeLanguageId?: string,
         defaultLearningLanguageId?: string,
-        email?: string,
-        defaultQuizCount?: number
+        email?: string
       }>(`/api/user/settings?t=${Date.now()}`, {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -45,7 +44,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       setValue('nativeLanguageId', userData.nativeLanguageId || '')
       setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
       setValue('email', userData.email || '')
-      setValue('defaultQuizCount', userData.defaultQuizCount || 10)
     } catch (error) {
       // 404エラー（初回ユーザー）かApiErrorかをチェック
       const is404Error = (

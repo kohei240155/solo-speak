@@ -75,7 +75,6 @@ export async function createUserSettings(
     nativeLanguageId: string
     defaultLearningLanguageId: string
     email?: string
-    defaultQuizCount?: number
   }
 ) {
   try {
@@ -96,7 +95,6 @@ export async function createUserSettings(
         iconUrl: userData.iconUrl,
         nativeLanguageId: userData.nativeLanguageId,
         defaultLearningLanguageId: userData.defaultLearningLanguageId,
-        defaultQuizCount: userData.defaultQuizCount || 10,
       },
       include: {
         nativeLanguage: true,
@@ -147,7 +145,6 @@ export async function updateUserSettings(
     iconUrl?: string
     nativeLanguageId?: string
     defaultLearningLanguageId?: string
-    defaultQuizCount?: number
   }
 ){
   return await prisma.user.update({
@@ -157,7 +154,6 @@ export async function updateUserSettings(
       iconUrl: userData.iconUrl,
       nativeLanguageId: userData.nativeLanguageId,
       defaultLearningLanguageId: userData.defaultLearningLanguageId,
-      defaultQuizCount: userData.defaultQuizCount,
     },
     include: {
       nativeLanguage: true,

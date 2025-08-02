@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const mode = searchParams.get('mode') || 'normal'
+    const count = searchParams.get('count')
 
     if (!language) {
       return NextResponse.json(
@@ -21,14 +22,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // URLパラメータから問題数を取得（デフォルトは10）
+    const questionCount = count ? parseInt(count, 10) : 10
+
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [userSettings, languageExists, phrases] = await Promise.all([
-      // ユーザー設定を取得（デフォルトクイズ出題数）
-      prisma.user.findUnique({
-        where: { id: authResult.user.id },
-        select: { defaultQuizCount: true }
-      }),
-      
+    const [languageExists, phrases] = await Promise.all([      
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { code: language }
@@ -50,8 +48,6 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    const userDefaultQuizCount = userSettings?.defaultQuizCount || 10
-
     if (!languageExists) {
       return NextResponse.json({
         success: false,
@@ -66,8 +62,8 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 実際の問題数を決定（フレーズ数とユーザー設定の小さい方）
-    const actualQuestionCount = Math.min(userDefaultQuizCount, phrases.length)
+    // 実際の問題数を決定（フレーズ数とリクエストされた問題数の小さい方）
+    const actualQuestionCount = Math.min(questionCount, phrases.length)
 
     let selectedPhrases
 
