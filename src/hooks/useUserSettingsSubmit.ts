@@ -4,6 +4,7 @@ import { api, ApiError } from '@/utils/api'
 import { ImageUploadRef } from '@/components/common/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'
+import { useRouter } from 'next/navigation'
 
 export function useUserSettingsSubmit(
   setError: (error: string) => void,
@@ -12,6 +13,7 @@ export function useUserSettingsSubmit(
   const { user, updateUserMetadata, refreshUserSettings, clearSettingsRedirect } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const imageUploadRef = useRef<ImageUploadRef>(null)
+  const router = useRouter()
 
   const onSubmit = async (data: UserSetupFormData) => {
     setSubmitting(true)
@@ -204,7 +206,8 @@ export function useUserSettingsSubmit(
         position: 'top-center',
       })
       
-      // Settings画面に留まる（ダッシュボードへのリダイレクトを削除）
+      // Phrase Add画面に遷移
+      router.push('/phrase/add')
     } catch (error) {
       console.error('Settings save failed:', error)
       console.error('Error details:', {
