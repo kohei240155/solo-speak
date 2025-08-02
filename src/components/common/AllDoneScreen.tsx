@@ -1,3 +1,5 @@
+import AnimatedButton from './AnimatedButton'
+
 interface AllDoneScreenProps {
   onFinish: () => void
   onRetry: () => void
@@ -14,29 +16,22 @@ export default function AllDoneScreen({ onFinish, onRetry }: AllDoneScreenProps)
 
       {/* ボタン */}
       <div className="flex gap-3">
-        <button
-          onClick={onFinish}
-          className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          style={{ 
-            borderColor: '#616161',
-            color: '#616161'
-          }}
-        >
-          Finish
-        </button>
-        <button
-          onClick={onRetry}
-          className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          style={{ backgroundColor: '#616161' }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#525252'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#616161'
-          }}
-        >
-          Retry
-        </button>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={onFinish}
+            variant="secondary"
+          >
+            Finish
+          </AnimatedButton>
+        </div>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={onRetry}
+            variant="primary"
+          >
+            Retry
+          </AnimatedButton>
+        </div>
       </div>
     </div>
   )

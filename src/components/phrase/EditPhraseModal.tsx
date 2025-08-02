@@ -82,11 +82,17 @@ export default function EditPhraseModal({
     }
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     setSelectedAction('cancel')
+    setIsUpdating(true)
+    
+    // 少しの遅延を追加してスピナー表示を確認できるようにする
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
     setEditedText('')
     setEditedTranslation('')
     onClose()
+    setIsUpdating(false)
     setSelectedAction(null)
   }
 
