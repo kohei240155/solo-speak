@@ -116,7 +116,7 @@ export default function SpeakPractice({
       )}
       
       {/* フレーズ表示エリア - Phrase Listと同じレイアウト */}
-      <div className="mb-10">
+      <div className="mb-6">
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
           <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed">
