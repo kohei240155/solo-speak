@@ -148,7 +148,7 @@ export default function SpeakPractice({
               onClick={handleCount}
               disabled={isCountButtonDisabled}
               className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
-                isCountButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                isCountButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               }`}
             >
               <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-2 ${
@@ -195,7 +195,7 @@ export default function SpeakPractice({
               onClick={handleSound}
               disabled={isPlaying || !phrase?.original}
               className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
-                isPlaying || !phrase?.original ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                isPlaying || !phrase?.original ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               }`}
             >
               <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-2 ${
