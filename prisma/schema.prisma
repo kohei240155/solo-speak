@@ -11,10 +11,10 @@ datasource db {
 
 model User {
   id                         String      @id @default(cuid())
-  username                   String      @unique
+  username                   String?     @unique
   iconUrl                    String?     @map("icon_url")
-  nativeLanguageId           String      @map("native_language_id")
-  defaultLearningLanguageId  String      @map("default_learning_language_id")
+  nativeLanguageId           String?     @map("native_language_id")
+  defaultLearningLanguageId  String?     @map("default_learning_language_id")
   email                      String      @unique
   stripeCustomerId           String?     @map("stripe_customer_id")
   remainingPhraseGenerations Int         @default(0) @map("remaining_phrase_generations")
@@ -25,8 +25,8 @@ model User {
   deletedAt                  DateTime?   @map("deleted_at")
   phrases                    Phrase[]
   situations                 Situation[]
-  defaultLearningLanguage    Language    @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
-  nativeLanguage             Language    @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
+  defaultLearningLanguage    Language?   @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
+  nativeLanguage             Language?   @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
 
   @@map("users")
 }
