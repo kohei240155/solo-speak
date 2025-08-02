@@ -147,7 +147,7 @@ export default function SpeakPractice({
             <button
               onClick={handleCount}
               disabled={isCountButtonDisabled}
-              className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
+              className={`flex flex-col items-center focus:outline-none mb-4 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
                 isCountButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               }`}
             >
@@ -187,14 +187,14 @@ export default function SpeakPractice({
           </div>
 
           {/* 区切り線 - 上部に配置 */}
-          <div className="w-px h-28 bg-gray-300 mx-4"></div>
+          <div className="w-px h-20 bg-gray-300 mx-4"></div>
 
           {/* Sound ボタン + Next ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={handleSound}
               disabled={isPlaying || !phrase?.original}
-              className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
+              className={`flex flex-col items-center focus:outline-none mb-4 transition-colors rounded-lg p-6 w-full min-h-[120px] ${
                 isPlaying || !phrase?.original ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               }`}
             >
