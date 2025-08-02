@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/utils/supabase-server'
 import { User } from '@supabase/supabase-js'
+import { supabase } from '@/utils/spabase'
 
 /**
  * APIリクエストの認証処理
@@ -161,4 +162,18 @@ export function validateRequiredFields(
   }
 
   return { isValid: true }
+}
+
+/**
+ * クライアント側でSupabaseの認証トークンを取得
+ * @returns 認証トークン（Bearer token形式）またはnull
+ */
+export async function getClientAuthToken(): Promise<string | null> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token ? `Bearer ${session.access_token}` : null
+  } catch (error) {
+    console.error('Failed to get client auth token:', error)
+    return null
+  }
 }

@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast'
+import { getClientAuthToken } from '@/utils/api-helpers'
 
 // 音声キャッシュ用のインターface
 interface AudioCache {
@@ -74,11 +75,20 @@ export const speakText = async (text: string, languageCode: string): Promise<voi
     if (audioCache[cacheKey]) {
       await playAudioFromBase64(audioCache[cacheKey])
       return
-    }    // TTS APIを呼び出し
+    }
+
+    // 認証トークンを取得
+    const authToken = await getClientAuthToken()
+    if (!authToken) {
+      throw new Error('Authentication required for TTS service')
+    }
+
+    // TTS APIを呼び出し
     const response = await fetch('/api/tts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': authToken,
       },
       body: JSON.stringify({
         text: text,
