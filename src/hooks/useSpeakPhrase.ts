@@ -76,7 +76,7 @@ export const useSpeakPhrase = () => {
 
     // 制限チェック: todayCount が 100 に達している場合
     if (todayCount >= 100) {
-      toast.error('このフレーズは1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
         duration: 4000
       })
       setIsCountDisabled(true)

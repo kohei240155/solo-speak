@@ -118,7 +118,7 @@ export default function SpeakPage() {
     // 制限チェック: 現在の日次カウント + ペンディングカウント が 100 以上の場合
     const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount
     if (currentDailyCount >= 100) {
-      toast.error('このフレーズは1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
         duration: 4000
       })
       return
