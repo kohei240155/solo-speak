@@ -50,7 +50,7 @@ export default function QuizPractice({
   return (
     <>
       {/* プログレスバー */}
-      <div className="w-full mb-6">
+      <div className="w-full mb-2">
         <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-gray-600 transition-all duration-300"
@@ -58,26 +58,24 @@ export default function QuizPractice({
           />
         </div>
       </div>
+      {/* 正解数表示 */}
+      <div className="flex items-center justify-end mb-2 text-xs text-gray-500">
+        <IoCheckboxOutline className="w-4 h-4 mr-1" />
+        <span>Correct: {currentPhrase.correctQuizCount}</span>
+      </div>
       {/* フレーズ表示エリア */}
       <div className="mb-2">
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-3">
-          <div className="flex items-start justify-between">
-            <div 
-              className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed flex-1"
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
-              }}
-            >
-              {currentPhrase.translation}
-            </div>
-            {/* 正解数表示 */}
-            <div className="flex items-center ml-3 text-xs text-gray-500 flex-shrink-0">
-              <IoCheckboxOutline className="w-4 h-4 mr-1" />
-              <span>Correct: {currentPhrase.correctQuizCount}</span>
-            </div>
+          <div 
+            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
+            style={{ 
+              wordWrap: 'break-word',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word'
+            }}
+          >
+            {currentPhrase.translation}
           </div>
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
