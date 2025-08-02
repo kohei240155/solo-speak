@@ -27,6 +27,7 @@ async function recreateProductionTables() {
       'speak_logs',
       'quiz_results', 
       'phrases',
+      'situations',
       'users',
       'phrase_levels',
       'languages'
