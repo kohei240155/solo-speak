@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
 
     speakLogs.forEach((log) => {
       const userId = log.phrase.user.id
-      const username = log.phrase.user.username
+      const username = log.phrase.user.username || 'Anonymous'
       const iconUrl = log.phrase.user.iconUrl
       const createdAt = log.phrase.user.createdAt
       const speakCount = log.count || 1
