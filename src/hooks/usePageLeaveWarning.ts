@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface UsePageLeaveWarningProps {
   hasPendingChanges: boolean
@@ -9,10 +9,16 @@ export function usePageLeaveWarning({
   hasPendingChanges, 
   warningMessage = 'Countが登録されていません。このページを離れますか？' 
 }: UsePageLeaveWarningProps) {
+  const pendingChangesRef = useRef(hasPendingChanges)
+  
+  // ref を更新
+  useEffect(() => {
+    pendingChangesRef.current = hasPendingChanges
+  }, [hasPendingChanges])
   
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasPendingChanges) {
+      if (pendingChangesRef.current) {
         e.preventDefault()
         e.returnValue = warningMessage
         return warningMessage
@@ -20,7 +26,7 @@ export function usePageLeaveWarning({
     }
 
     const handleRouteChange = () => {
-      if (hasPendingChanges) {
+      if (pendingChangesRef.current) {
         const confirmLeave = window.confirm(warningMessage)
         if (!confirmLeave) {
           // ナビゲーションをキャンセルする
@@ -30,12 +36,35 @@ export function usePageLeaveWarning({
       }
     }
 
+    // ページ内のリンククリックをインターセプト
+    const handleLinkClick = (e: MouseEvent) => {
+      if (pendingChangesRef.current) {
+        const target = e.target as HTMLElement
+        const link = target.closest('a') || target.closest('[role="button"]') || target.closest('button')
+        
+        if (link && (
+          link.getAttribute('href') || 
+          link.onclick || 
+          link.getAttribute('role') === 'button'
+        )) {
+          const confirmLeave = window.confirm(warningMessage)
+          if (!confirmLeave) {
+            e.preventDefault()
+            e.stopPropagation()
+            return false
+          }
+        }
+      }
+    }
+
     window.addEventListener('beforeunload', handleBeforeUnload)
     window.addEventListener('popstate', handleRouteChange)
+    document.addEventListener('click', handleLinkClick, true)
     
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       window.removeEventListener('popstate', handleRouteChange)
+      document.removeEventListener('click', handleLinkClick, true)
     }
-  }, [hasPendingChanges, warningMessage])
+  }, [warningMessage])
 }
