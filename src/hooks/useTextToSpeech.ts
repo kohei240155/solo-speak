@@ -24,9 +24,6 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
     setError(null)
 
     try {
-      console.log('TTS: Starting text-to-speech for:', text)
-      console.log('TTS: Language code:', options.languageCode)
-      
       // Text-to-Speech API を呼び出し
       const response = await fetch('/api/tts', {
         method: 'POST',
@@ -39,19 +36,14 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
         }),
       })
 
-      console.log('TTS: API response status:', response.status)
-
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('TTS: API error response:', errorData)
         throw new Error(errorData.error || 'Failed to generate speech')
       }
 
       const data = await response.json()
-      console.log('TTS: API response data keys:', Object.keys(data))
 
       if (!data.success || !data.audioData) {
-        console.error('TTS: Invalid response structure:', data)
         throw new Error('Invalid response from server')
       }
 
@@ -60,27 +52,22 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       const audioBlob = new Blob([audioBytes], { type: data.mimeType || 'audio/mpeg' })
       const audioUrl = URL.createObjectURL(audioBlob)
 
-      console.log('TTS: Audio blob created, size:', audioBlob.size)
-
       // 音声を再生
       const audio = new Audio(audioUrl)
       
       // 再生完了時のクリーンアップ
       audio.addEventListener('ended', () => {
-        console.log('TTS: Audio playback ended')
         setIsPlaying(false)
         URL.revokeObjectURL(audioUrl)
       })
 
       // エラー時のクリーンアップ
-      audio.addEventListener('error', (e) => {
-        console.error('TTS: Audio playback error:', e)
+      audio.addEventListener('error', () => {
         setIsPlaying(false)
         setError('音声の再生に失敗しました')
         URL.revokeObjectURL(audioUrl)
       })
 
-      console.log('TTS: Starting audio playback')
       await audio.play()
     } catch (err) {
       setIsPlaying(false)
