@@ -162,7 +162,7 @@ export default function ModeModal({
 
       {/* 動的な設定項目 */}
       {config.configItems.map((item) => (
-        <div key={item.id} className="mb-8">
+        <div key={item.id} className="mb-4">
           <h3 className="text-base font-semibold text-gray-900 mb-3">
             {item.label}
           </h3>
