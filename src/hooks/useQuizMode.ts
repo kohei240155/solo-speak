@@ -33,15 +33,12 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
         questionCount: count ? parseInt(count, 10) : 10
       }
       
-      console.log('Auto-starting quiz from URL params:', config)
       setQuizMode({ active: true, config, session: null })
       fetchQuizSession(config)
     }
   }, [fetchQuizSession])
 
   const handleQuizStart = useCallback(async (config: QuizConfig): Promise<boolean> => {
-    console.log('Starting quiz with config:', config)
-    
     // URLパラメータに選択した設定を反映
     const params = new URLSearchParams(window.location.search)
     params.set('language', config.language)
@@ -60,16 +57,13 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
         config,
         session: null // セッションはuseQuizPhraseで管理
       })
-      console.log('Quiz started successfully')
       return true
     } else {
-      console.log('Failed to start quiz')
       return false
     }
   }, [fetchQuizSession])
 
   const handleQuizFinish = useCallback(() => {
-    console.log('Finishing quiz')
     setQuizMode({
       active: false,
       config: null,

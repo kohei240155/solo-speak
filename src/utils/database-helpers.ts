@@ -62,6 +62,64 @@ export async function getUserSettings(userId: string) {
 }
 
 /**
+ * 初回ログイン時のユーザー初期化
+ * @param user Supabaseユーザー情報
+ * @returns 作成されたユーザーデータ
+ */
+export async function initializeUser(user: User) {
+  try {
+    console.log('initializeUser - Input data:', {
+      userId: user.id,
+      email: user.email,
+      fullName: user.user_metadata?.full_name,
+      name: user.user_metadata?.name,
+      avatarUrl: user.user_metadata?.avatar_url ? `${user.user_metadata.avatar_url.substring(0, 50)}...` : undefined
+    })
+
+    // Googleから取得した情報
+    const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
+    const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
+
+    console.log('initializeUser - Extracted Google data:', {
+      displayName: googleDisplayName,
+      avatarUrl: googleAvatarUrl ? `${googleAvatarUrl.substring(0, 50)}...` : googleAvatarUrl
+    })
+
+    const result = await prisma.user.create({
+      data: {
+        id: user.id,
+        email: user.email || '',
+        username: googleDisplayName || null, // Googleの表示名を初期値として設定
+        iconUrl: googleAvatarUrl,
+        nativeLanguageId: null, // 初期状態では空（後で設定）
+        defaultLearningLanguageId: null, // 初期状態では空（後で設定）
+      },
+      include: {
+        nativeLanguage: true,
+        defaultLearningLanguage: true,
+      }
+    })
+
+    console.log('initializeUser - Success:', {
+      userId: result.id,
+      email: result.email,
+      username: result.username,
+      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
+    })
+
+    return result
+  } catch (error) {
+    console.error('initializeUser - Error:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      userId: user.id
+    })
+    throw error
+  }
+}
+
+/**
  * ユーザー設定の作成
  * @param user Supabaseユーザー情報
  * @param userData ユーザーデータ
@@ -75,7 +133,6 @@ export async function createUserSettings(
     nativeLanguageId: string
     defaultLearningLanguageId: string
     email?: string
-    defaultQuizCount?: number
   }
 ) {
   try {
@@ -96,7 +153,6 @@ export async function createUserSettings(
         iconUrl: userData.iconUrl,
         nativeLanguageId: userData.nativeLanguageId,
         defaultLearningLanguageId: userData.defaultLearningLanguageId,
-        defaultQuizCount: userData.defaultQuizCount || 10,
       },
       include: {
         nativeLanguage: true,
@@ -106,7 +162,9 @@ export async function createUserSettings(
 
     // ユーザー作成後、ネイティブ言語に応じたデフォルトシチュエーションを作成
     try {
-      await createDefaultSituations(prisma, result.id, result.nativeLanguage.code)
+      if (result.nativeLanguage) {
+        await createDefaultSituations(prisma, result.id, result.nativeLanguage.code)
+      }
     } catch (situationError) {
       console.error('Failed to create default situations:', situationError)
       // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
@@ -147,7 +205,6 @@ export async function updateUserSettings(
     iconUrl?: string
     nativeLanguageId?: string
     defaultLearningLanguageId?: string
-    defaultQuizCount?: number
   }
 ){
   return await prisma.user.update({
@@ -157,7 +214,6 @@ export async function updateUserSettings(
       iconUrl: userData.iconUrl,
       nativeLanguageId: userData.nativeLanguageId,
       defaultLearningLanguageId: userData.defaultLearningLanguageId,
-      defaultQuizCount: userData.defaultQuizCount,
     },
     include: {
       nativeLanguage: true,

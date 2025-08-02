@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     // ユーザー別に回数を集計（QuizResultはcorrect/incorrectの回数なので、総回答数をカウント）
     const userCountMap = new Map<string, { 
-      user: { id: string, username: string, iconUrl: string | null, createdAt: Date }, 
+      user: { id: string, username: string | null, iconUrl: string | null, createdAt: Date }, 
       totalCount: number 
     }>()
     
@@ -94,12 +94,10 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('User count map size:', userCountMap.size)
-
     // ランキングデータを作成
     const rankingData = Array.from(userCountMap.entries()).map(([userId, data]) => ({
       userId,
-      username: data.user.username,
+      username: data.user.username || 'Anonymous',
       iconUrl: data.user.iconUrl,
       count: data.totalCount,
       createdAt: data.user.createdAt

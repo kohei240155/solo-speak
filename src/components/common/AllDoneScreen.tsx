@@ -1,9 +1,39 @@
+import { useState } from 'react'
+import AnimatedButton from './AnimatedButton'
+
 interface AllDoneScreenProps {
   onFinish: () => void
   onRetry: () => void
 }
 
 export default function AllDoneScreen({ onFinish, onRetry }: AllDoneScreenProps) {
+  const [isFinishing, setIsFinishing] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<'finish' | 'retry' | null>(null)
+
+  const handleFinish = async () => {
+    setSelectedAction('finish')
+    setIsFinishing(true)
+    
+    // 少しの遅延を追加してスピナー表示を確認できるようにする
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    onFinish()
+    setIsFinishing(false)
+    setSelectedAction(null)
+  }
+
+  const handleRetry = async () => {
+    setSelectedAction('retry')
+    setIsRetrying(true)
+    
+    // 少しの遅延を追加してスピナー表示を確認できるようにする
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    onRetry()
+    setIsRetrying(false)
+    setSelectedAction(null)
+  }
   return (
     <div className="flex flex-col min-h-[300px]">
       <div className="text-center mt-10">
@@ -14,29 +44,26 @@ export default function AllDoneScreen({ onFinish, onRetry }: AllDoneScreenProps)
 
       {/* ボタン */}
       <div className="flex gap-3">
-        <button
-          onClick={onFinish}
-          className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          style={{ 
-            borderColor: '#616161',
-            color: '#616161'
-          }}
-        >
-          Finish
-        </button>
-        <button
-          onClick={onRetry}
-          className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          style={{ backgroundColor: '#616161' }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#525252'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#616161'
-          }}
-        >
-          Retry
-        </button>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={handleFinish}
+            disabled={isFinishing || isRetrying}
+            variant="secondary"
+            isLoading={isFinishing && selectedAction === 'finish'}
+          >
+            Finish
+          </AnimatedButton>
+        </div>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={handleRetry}
+            disabled={isFinishing || isRetrying}
+            variant="primary"
+            isLoading={isRetrying && selectedAction === 'retry'}
+          >
+            Retry
+          </AnimatedButton>
+        </div>
       </div>
     </div>
   )

@@ -112,7 +112,7 @@ export default function SpeakPage() {
     fetchPhrase()
   }, [languageId, user])
 
-  const handleCount = async () => {
+  const handleCount = () => {
     if (!phrase) return
 
     // 現在のカウントを計算
@@ -125,11 +125,7 @@ export default function SpeakPage() {
 
     // ローカル状態のみを更新（APIは呼ばない）
     setPendingCount(prev => prev + 1)
-    setPhrase(prev => prev ? {
-      ...prev,
-      totalSpeakCount: prev.totalSpeakCount + 1,
-      dailySpeakCount: prev.dailySpeakCount + 1
-    } : null)
+    // フレーズの表示カウントは実際のAPIレスポンスベースで管理するため、ここでは更新しない
     
     // ちょうど100回に達した時にトーストを表示
     const newDailyCount = currentDailyCount + 1

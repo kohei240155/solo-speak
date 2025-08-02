@@ -169,6 +169,7 @@ function PhraseSpeakPage() {
                     todayCount={todayCount}
                     totalCount={totalCount}
                     isLoading={isLoadingPhrase}
+                    isNextLoading={multiPhraseSpeak.isNextLoading}
                     isHideNext={false}
                     isFinishing={multiPhraseSpeak.isFinishing}
                     isCountDisabled={isCountDisabled}

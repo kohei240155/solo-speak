@@ -3,13 +3,73 @@ import { PrismaClient } from '../src/generated/prisma'
 const prisma = new PrismaClient()
 
 const languages = [
-  { name: 'Japanese', code: 'ja' },
+  // 主要国際言語
   { name: 'English', code: 'en' },
   { name: 'Chinese', code: 'zh' },
-  { name: 'Korean', code: 'ko' },
+  { name: 'Hindi', code: 'hi' },
   { name: 'Spanish', code: 'es' },
+  { name: 'French', code: 'fr' },
+  { name: 'Arabic', code: 'ar' },
+  { name: 'Bengali', code: 'bn' },
   { name: 'Portuguese', code: 'pt' },
-  { name: 'Thai', code: 'th' }
+  { name: 'Russian', code: 'ru' },
+  { name: 'Urdu', code: 'ur' },
+  { name: 'Japanese', code: 'ja' },
+  { name: 'German', code: 'de' },
+  { name: 'Korean', code: 'ko' },
+  { name: 'Swahili', code: 'sw' },
+  { name: 'Italian', code: 'it' },
+  { name: 'Turkish', code: 'tr' },
+  { name: 'Vietnamese', code: 'vi' },
+  
+  // インド系言語
+  { name: 'Tamil', code: 'ta' },
+  { name: 'Telugu', code: 'te' },
+  { name: 'Marathi', code: 'mr' },
+  { name: 'Gujarati', code: 'gu' },
+  { name: 'Malayalam', code: 'ml' },
+  { name: 'Kannada', code: 'kn' },
+  { name: 'Odia', code: 'or' },
+  { name: 'Punjabi', code: 'pa' },
+  { name: 'Sindhi', code: 'sd' },
+  { name: 'Nepali', code: 'ne' },
+  
+  // 中東・西アジア系言語
+  { name: 'Persian', code: 'fa' },
+  { name: 'Kurdish', code: 'ku' },
+  { name: 'Hebrew', code: 'he' },
+  { name: 'Pashto', code: 'ps' },
+  
+  // 東南アジア系言語
+  { name: 'Javanese', code: 'jv' },
+  { name: 'Thai', code: 'th' },
+  { name: 'Tagalog', code: 'tl' },
+  { name: 'Lao', code: 'lo' },
+  { name: 'Khmer', code: 'km' },
+  { name: 'Sinhala', code: 'si' },
+  
+  // ヨーロッパ系言語
+  { name: 'Czech', code: 'cs' },
+  { name: 'Hungarian', code: 'hu' },
+  { name: 'Romanian', code: 'ro' },
+  { name: 'Serbian', code: 'sr' },
+  { name: 'Bulgarian', code: 'bg' },
+  { name: 'Greek', code: 'el' },
+  { name: 'Dutch', code: 'nl' },
+  { name: 'Swedish', code: 'sv' },
+  { name: 'Finnish', code: 'fi' },
+  { name: 'Danish', code: 'da' },
+  { name: 'Norwegian', code: 'no' },
+  { name: 'Ukrainian', code: 'uk' },
+  { name: 'Polish', code: 'pl' },
+  
+  // その他の言語
+  { name: 'Mongolian', code: 'mn' },
+  { name: 'Amharic', code: 'am' },
+  { name: 'Somali', code: 'so' },
+  { name: 'Yoruba', code: 'yo' },
+  { name: 'Igbo', code: 'ig' },
+  { name: 'Zulu', code: 'zu' }
 ]
 
 const phraseLevels = [

@@ -55,7 +55,6 @@ export function useUserSettings() {
       nativeLanguage?: { id: string; name: string; code: string }
       defaultLearningLanguage?: { id: string; name: string; code: string }
       email?: string
-      defaultQuizCount?: number
     } | undefined,
     isLoading,
     error,

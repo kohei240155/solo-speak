@@ -5,6 +5,7 @@ import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 import { api } from '@/utils/api'
 import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
+import AnimatedButton from '../common/AnimatedButton'
 
 interface EditPhraseModalProps {
   isOpen: boolean
@@ -29,6 +30,7 @@ export default function EditPhraseModal({
   const [editedText, setEditedText] = useState('')
   const [editedTranslation, setEditedTranslation] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<'save' | 'cancel' | null>(null)
   
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -52,6 +54,7 @@ export default function EditPhraseModal({
     if (!phrase || !session) return
 
     setIsUpdating(true)
+    setSelectedAction('save')
     try {
       const updatedPhrase = await api.put<SavedPhrase>(`/api/phrase/${phrase.id}`, {
         original: editedText.trim(),
@@ -75,19 +78,35 @@ export default function EditPhraseModal({
       toast.error('Failed to update phrase')
     } finally {
       setIsUpdating(false)
+      setSelectedAction(null)
     }
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    setSelectedAction('cancel')
+    setIsUpdating(true)
+    
+    // 少しの遅延を追加してスピナー表示を確認できるようにする
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
     setEditedText('')
     setEditedTranslation('')
     onClose()
+    setIsUpdating(false)
+    setSelectedAction(null)
+  }
+
+  const handleImmediateClose = () => {
+    setEditedText('')
+    setEditedTranslation('')
+    onClose()
+    setSelectedAction(null)
   }
 
   if (!phrase) return null
 
   return (
-    <BaseModal isOpen={isOpen} onClose={handleCancel} title="Edit">
+    <BaseModal isOpen={isOpen} onClose={handleImmediateClose} title="Edit">
       {/* 母国語 section (上のフォーム) */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -150,34 +169,27 @@ export default function EditPhraseModal({
 
       {/* ボタン */}
       <div className="flex gap-3">
-        <button
-          onClick={handleCancel}
-          disabled={isUpdating}
-          className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-          style={{ 
-            borderColor: '#616161',
-            color: '#616161'
-          }}
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleUpdatePhrase}
-          disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
-          className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-          style={{ 
-            backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161'
-          }}
-        >
-          {isUpdating ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Saving...
-            </div>
-          ) : (
-            'Save'
-          )}
-        </button>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={handleCancel}
+            disabled={isUpdating}
+            variant="secondary"
+            isLoading={isUpdating && selectedAction === 'cancel'}
+          >
+            Cancel
+          </AnimatedButton>
+        </div>
+        <div className="flex-1">
+          <AnimatedButton
+            onClick={handleUpdatePhrase}
+            disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
+            variant="primary"
+            isLoading={isUpdating && selectedAction === 'save'}
+            loadingText="Saving..."
+          >
+            Save
+          </AnimatedButton>
+        </div>
       </div>
     </BaseModal>
   )

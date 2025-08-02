@@ -26,11 +26,39 @@ export default function DashboardPage() {
     }
 
     try {
-      // SWRのデータが存在する場合は設定完了とみなす
+      // SWRのデータが存在し、必須設定が完了している場合
       if (userSettings) {
-        setSetupCheckLoading(false)
+        console.log('Dashboard - User settings:', {
+          username: userSettings.username,
+          hasNativeLanguage: !!userSettings.nativeLanguage,
+          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
+          userSettings
+        })
+        
+        const hasRequiredSettings = !!(
+          userSettings.username && 
+          userSettings.username.trim() !== '' &&
+          userSettings.nativeLanguage && 
+          userSettings.defaultLearningLanguage
+        )
+        
+        console.log('Dashboard - Setup completion check:', {
+          hasUsername: !!(userSettings.username && userSettings.username.trim() !== ''),
+          hasNativeLanguage: !!userSettings.nativeLanguage,
+          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
+          isComplete: hasRequiredSettings
+        })
+        
+        if (hasRequiredSettings) {
+          setSetupCheckLoading(false)
+        } else {
+          // 必須設定が不完全な場合は設定ページにリダイレクト
+          console.log('Dashboard - User setup incomplete, redirecting to settings')
+          router.push('/settings')
+        }
       } else {
         // 設定が存在しない場合は設定ページにリダイレクト
+        console.log('Dashboard - No user settings found, redirecting to settings')
         router.push('/settings')
       }
     } catch (error) {

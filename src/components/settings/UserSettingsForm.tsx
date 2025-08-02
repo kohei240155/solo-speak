@@ -40,14 +40,6 @@ export default function UserSettingsForm({
   // 実際に使用するsubmitting状態を統一
   const actualSubmitting = submitting || submittingProp
 
-  // デバッグ用ログ
-  console.log('UserSettingsForm: watchIconUrl:', {
-    value: watchIconUrl,
-    type: typeof watchIconUrl,
-    length: watchIconUrl?.length,
-    timestamp: new Date().toISOString()
-  })
-
   return (
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
@@ -59,19 +51,10 @@ export default function UserSettingsForm({
           ref={imageUploadRef}
           currentImage={watchIconUrl}
           onImageChange={(imageUrl) => {
-            console.log('UserSettingsForm: onImageChange called with:', {
-              imageUrl,
-              type: typeof imageUrl,
-              length: imageUrl?.length,
-              timestamp: new Date().toISOString()
-            })
             setValue('iconUrl', imageUrl)
-            console.log('UserSettingsForm: setValue called for iconUrl')
           }}
           onImageRemove={() => {
-            console.log('UserSettingsForm: onImageRemove called')
             setValue('iconUrl', '')
-            console.log('UserSettingsForm: setValue called for iconUrl with empty string')
           }}
           disabled={isDisabled}
         />
@@ -109,12 +92,6 @@ export default function UserSettingsForm({
             {...register('nativeLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
-            onChange={(e) => {
-              console.log('Native language selected:', {
-                selectedId: e.target.value,
-                selectedOption: languages.find(lang => lang.id === e.target.value)
-              })
-            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -149,12 +126,6 @@ export default function UserSettingsForm({
             {...register('defaultLearningLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
-            onChange={(e) => {
-              console.log('Learning language selected:', {
-                selectedId: e.target.value,
-                selectedOption: languages.find(lang => lang.id === e.target.value)
-              })
-            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -193,35 +164,6 @@ export default function UserSettingsForm({
         />
         {errors.email && (
           <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-
-      {/* Default Quiz Length */}
-      <div>
-        <label htmlFor="defaultQuizCount" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Default Quiz Length
-        </label>
-        <div className="relative">
-          <select
-            id="defaultQuizCount"
-            {...register('defaultQuizCount', { valueAsNumber: true })}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-            disabled={isDisabled}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25">25</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-            </svg>
-          </div>
-        </div>
-        {errors.defaultQuizCount && (
-          <p className="mt-1 text-sm text-red-600">{errors.defaultQuizCount.message}</p>
         )}
       </div>
 

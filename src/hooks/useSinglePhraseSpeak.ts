@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { api } from '@/utils/api'
 import { SpeakPhrase } from '@/types/speak'
 import { useSpeakPhraseById } from '@/hooks/useSWRApi'
 
@@ -54,42 +53,33 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     }
   }, [phraseId, isLoadingSinglePhraseSWR])
 
-  // 音読回数を更新
-  const handleCount = async () => {
+  // 音読回数を更新（ローカルでのみカウントを増加）
+  const handleCount = () => {
     if (!singlePhrase) return
 
-    try {
-      // 実際にサーバーに送信して制限をチェック
-      await api.post(`/api/phrase/${singlePhrase.id}/count`, { count: 1 })
+    // ローカル状態のみを更新（APIは呼ばない）
+    setSinglePhrasePendingCount(prev => prev + 1)
+    setSinglePhraseTodayCount(prev => {
+      const newCount = prev + 1
+      setSinglePhraseCountDisabled(newCount >= 100)
       
-      // 成功した場合のみローカル状態を更新
-      setSinglePhrasePendingCount(prev => prev + 1)
-      setSinglePhraseTodayCount(prev => {
-        const newCount = prev + 1
-        setSinglePhraseCountDisabled(newCount >= 100)
-        
-        // ちょうど100回に達した時にトーストを表示
-        if (newCount === 100) {
-          toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
-            duration: 4000
-          })
-        }
-        
-        return newCount
-      })
-      setSinglePhraseTotalCount(prev => prev + 1)
+      // ちょうど100回に達した時にトーストを表示
+      if (newCount === 100) {
+        toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+          duration: 4000
+        })
+      }
       
-      // フレーズの表示カウントも更新
-      setSinglePhrase(prev => prev ? {
-        ...prev,
-        dailySpeakCount: prev.dailySpeakCount + 1,
-        totalSpeakCount: prev.totalSpeakCount + 1
-      } : null)
-      
-    } catch (error: unknown) {
-      console.error('Error updating count:', error)
-      toast.error('カウントの更新に失敗しました')
-    }
+      return newCount
+    })
+    setSinglePhraseTotalCount(prev => prev + 1)
+    
+    // フレーズの表示カウントも更新（表示用）
+    setSinglePhrase(prev => prev ? {
+      ...prev,
+      totalSpeakCount: prev.totalSpeakCount + 1
+      // dailySpeakCount は実際のAPIレスポンスベースで管理するため更新しない
+    } : null)
   }
 
   // 練習終了処理

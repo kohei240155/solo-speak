@@ -55,8 +55,7 @@ export async function POST(request: NextRequest) {
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      email,
-      defaultQuizCount
+      email
     } = body
 
     // 必須フィールドのバリデーション
@@ -100,7 +99,6 @@ export async function POST(request: NextRequest) {
         iconUrl,
         nativeLanguageId,
         defaultLearningLanguageId,
-        defaultQuizCount: defaultQuizCount || 10,
       })
     } else {
       result = await createUserSettings(authResult.user, {
@@ -109,7 +107,6 @@ export async function POST(request: NextRequest) {
         nativeLanguageId,
         defaultLearningLanguageId,
         email,
-        defaultQuizCount: defaultQuizCount || 10,
       })
     }
 
@@ -140,8 +137,7 @@ export async function PUT(request: NextRequest) {
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      email,
-      defaultQuizCount
+      email
     } = body
 
     // ユーザー名のバリデーション
@@ -173,7 +169,6 @@ export async function PUT(request: NextRequest) {
       iconUrl,
       nativeLanguageId,
       defaultLearningLanguageId,
-      defaultQuizCount,
     })
 
     return NextResponse.json(updatedUser)

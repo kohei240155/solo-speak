@@ -35,7 +35,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   }
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
+    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} width="400px">
       {/* ロゴとタイトル */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center mb-4">
@@ -49,7 +49,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
           Solo Speakでは言えなかったフレーズを言え<br />
-          るようにする地道な練習をサポートします。
+          るようにする練習をサポートします。
         </p>
       </div>
 

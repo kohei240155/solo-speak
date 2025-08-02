@@ -33,14 +33,7 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         count: (config.questionCount || 10).toString()
       })
 
-      console.log('Quiz API request:', {
-        language: config.language,
-        mode: config.mode,
-        count: config.questionCount || 10
-      })
-
       const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], message?: string, totalCount?: number, availablePhraseCount?: number }>(`/api/phrase/quiz?${params.toString()}`)
-      console.log('Quiz API response:', data)
 
       if (data.success && data.phrases && data.phrases.length > 0) {
         const newSession: QuizSession = {
@@ -53,12 +46,10 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         return true
       } else {
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
-        console.error('Quiz API failed:', data)
         toast.error(errorMessage)
         return false
       }
-    } catch (error) {
-      console.error('Error fetching quiz session:', error)
+    } catch {
       toast.error('フレーズの取得中にエラーが発生しました')
       return false
     } finally {
@@ -80,8 +71,7 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         isCorrect
       })
 
-    } catch (error) {
-      console.error('Error submitting answer:', error)
+    } catch {
       toast.error('回答の送信中にエラーが発生しました')
     }
   }, [currentPhrase, session])

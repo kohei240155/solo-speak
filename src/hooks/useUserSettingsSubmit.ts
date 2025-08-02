@@ -108,11 +108,7 @@ export function useUserSettingsSubmit(
       }
 
       // アイコンが削除された場合（空文字列に設定された場合）の処理
-      console.log('UserSettingsSubmit: finalData.iconUrl === "":', finalData.iconUrl === '')
-      console.log('UserSettingsSubmit: existingIconUrl exists:', existingIconUrl && existingIconUrl.trim() !== '')
-      
       if (finalData.iconUrl === '' && existingIconUrl && existingIconUrl.trim() !== '') {
-        console.log('UserSettingsSubmit: Icon deletion detected, analyzing existing URL...')
         
         // GoogleのプロフィールURLかどうかをチェック
         const isGoogleUrl = existingIconUrl.includes('googleusercontent.com') || 
