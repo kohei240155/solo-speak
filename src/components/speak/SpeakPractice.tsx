@@ -1,6 +1,7 @@
 import { RiSpeakLine } from 'react-icons/ri'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { useState, useEffect } from 'react'
 
 interface SpeakPhrase {
   id: string
@@ -39,6 +40,29 @@ export default function SpeakPractice({
   isFinishing = false,
   isCountDisabled = false
 }: SpeakPracticeProps) {
+  const [countCooldown, setCountCooldown] = useState(0)
+
+  // カウントダウンの管理
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (countCooldown > 0) {
+      timer = setTimeout(() => {
+        setCountCooldown(countCooldown - 1)
+      }, 1000)
+    }
+    return () => clearTimeout(timer)
+  }, [countCooldown])
+
+  // カウントボタンのハンドラー
+  const handleCount = () => {
+    if (countCooldown > 0 || isCountDisabled) return
+    
+    setCountCooldown(1)
+    onCount()
+  }
+
+  // カウントボタンの無効状態判定
+  const isCountButtonDisabled = isCountDisabled || countCooldown > 0
 
   // ローディング中の表示
   if (isLoading) {
@@ -97,22 +121,24 @@ export default function SpeakPractice({
           {/* Count ボタン + Finish ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onCount}
-              disabled={isCountDisabled}
+              onClick={handleCount}
+              disabled={isCountButtonDisabled}
               className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 ${
-                isCountDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                isCountButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               }`}
             >
               <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1 ${
-                isCountDisabled ? 'opacity-50' : ''
+                isCountButtonDisabled ? 'opacity-50' : ''
               }`}>
                 <CiCirclePlus className={`w-10 h-10 ${
-                  isCountDisabled ? 'text-gray-400' : 'text-gray-600'
+                  isCountButtonDisabled ? 'text-gray-400' : 'text-gray-600'
                 }`} />
               </div>
               <span className={`font-medium text-base ${
-                isCountDisabled ? 'text-gray-400' : 'text-gray-900'
-              }`}>Count</span>
+                isCountButtonDisabled ? 'text-gray-400' : 'text-gray-900'
+              }`}>
+                {countCooldown > 0 ? 'Wait...' : 'Count'}
+              </span>
             </button>
             {!isHideNext && (
               <button
