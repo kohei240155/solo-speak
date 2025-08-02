@@ -115,6 +115,14 @@ export default function SpeakPage() {
   const handleCount = async () => {
     if (!phrase) return
 
+    // 現在のカウントを計算
+    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount
+    
+    // 既に100回に達している場合は何もしない
+    if (currentDailyCount >= 100) {
+      return
+    }
+
     // ローカル状態のみを更新（APIは呼ばない）
     setPendingCount(prev => prev + 1)
     setPhrase(prev => prev ? {
@@ -124,7 +132,7 @@ export default function SpeakPage() {
     } : null)
     
     // ちょうど100回に達した時にトーストを表示
-    const newDailyCount = (phrase.dailySpeakCount || 0) + pendingCount + 1
+    const newDailyCount = currentDailyCount + 1
     if (newDailyCount === 100) {
       toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
         duration: 4000
