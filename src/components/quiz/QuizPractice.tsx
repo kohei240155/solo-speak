@@ -82,7 +82,7 @@ export default function QuizPractice({
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           {showTranslation ? (
             <div 
-              className="text-sm sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium"
+              className="text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium"
               style={{ 
                 wordWrap: 'break-word',
                 overflowWrap: 'anywhere',
@@ -100,7 +100,7 @@ export default function QuizPractice({
       </div>
 
       {/* 中央のアイコン表示エリア */}
-      <div className="flex justify-center items-center mb-26">
+      <div className="flex justify-center items-center mb-20 sm:mb-26">
         <div 
           className="cursor-pointer rounded-full p-4 transition-colors"
           onClick={onShowTranslation}
