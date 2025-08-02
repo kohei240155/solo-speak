@@ -74,15 +74,6 @@ export const useSpeakPhrase = () => {
   const handleCount = useCallback(async () => {
     if (!currentPhrase) return
 
-    // 制限チェック: todayCount が 100 に達している場合
-    if (todayCount >= 100) {
-      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
-        duration: 4000
-      })
-      setIsCountDisabled(true)
-      return
-    }
-
     // ローカル状態のみを更新（APIは呼ばない）
     const newPendingCount = pendingCount + 1
     setPendingCount(newPendingCount)
@@ -97,6 +88,13 @@ export const useSpeakPhrase = () => {
       totalSpeakCount: prev.totalSpeakCount + 1
       // dailySpeakCount は更新しない
     } : null)
+    
+    // ちょうど100回に達した時にトーストを表示
+    if (newTodayCount === 100) {
+      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+        duration: 4000
+      })
+    }
     
     // ボタンの状態を更新（表示されているtodayCountと同じ値で判定）
     updateCountButtonState(newTodayCount)

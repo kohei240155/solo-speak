@@ -69,6 +69,14 @@ export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCo
       setSinglePhraseTodayCount(prev => {
         const newCount = prev + 1
         setSinglePhraseCountDisabled(newCount >= 100)
+        
+        // ちょうど100回に達した時にトーストを表示
+        if (newCount === 100) {
+          toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+            duration: 4000
+          })
+        }
+        
         return newCount
       })
       setSinglePhraseTotalCount(prev => prev + 1)
@@ -82,20 +90,7 @@ export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCo
       
     } catch (error: unknown) {
       console.error('Error updating count:', error)
-      
-      // 制限エラーの場合は専用のトーストを表示
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { dailyLimitReached?: boolean } } }
-        if (apiError.response?.data?.dailyLimitReached) {
-          toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
-            duration: 4000
-          })
-        } else {
-          toast.error('カウントの更新に失敗しました')
-        }
-      } else {
-        toast.error('カウントの更新に失敗しました')
-      }
+      toast.error('カウントの更新に失敗しました')
     }
   }
 
