@@ -7,7 +7,6 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
-import SpeakPhraseList from '@/components/speak/SpeakPhraseList'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
@@ -23,7 +22,7 @@ import { Toaster } from 'react-hot-toast'
 function PhraseSpeakPage() {
   const searchParams = useSearchParams()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
+  const { savedPhrases, fetchSavedPhrases } = usePhraseList()
   
   const {
     currentPhrase,
@@ -150,7 +149,7 @@ function PhraseSpeakPage() {
               ) : (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+                  <p className="mt-2 text-gray-600">Loading...</p>
                 </div>
               )
             ) : (
@@ -174,17 +173,12 @@ function PhraseSpeakPage() {
                 ) : (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
+                    <p className="mt-2 text-gray-600">Loading...</p>
                   </div>
                 )
-              ) : (
-                <SpeakPhraseList
-                  isLoadingPhrases={isLoadingPhrases}
-                  phraseCount={savedPhrases.length}
-                  onStartClick={modalManager.openSpeakModal}
-                />
-              )
-            )}
+              ) : null
+            )
+          }
           </div>
 
           {/* Speak Mode モーダル */}
