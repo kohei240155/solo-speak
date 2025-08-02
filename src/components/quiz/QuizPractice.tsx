@@ -109,9 +109,9 @@ export default function QuizPractice({
 
       {/* Got It / No Idea ボタン */}
       <div>
-        <div className="flex justify-center items-start">
+        <div className="flex justify-between items-start">
           {/* No Idea ボタン */}
-          <div className="flex flex-col items-center mr-4" style={{ width: '45%' }}>
+          <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
               onClick={() => handleAnswer(false)}
               disabled={hasAnswered}
