@@ -103,11 +103,13 @@ export default function PhraseAddPage() {
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {isInitializing ? (
-            <LoadingSpinner 
-              size="md" 
-              message="データを読み込んでいます..." 
-              className="py-12"
-            />
+            <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
+              <LoadingSpinner 
+                size="md" 
+                message="Loading..." 
+                className="text-center"
+              />
+            </div>
           ) : (
             <PhraseAdd
               remainingGenerations={remainingGenerations}
