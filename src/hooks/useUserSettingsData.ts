@@ -33,8 +33,14 @@ export function useUserSettingsData(): UseUserSettingsDataReturn {
       setLoading(true)
       setError(null)
 
-      // 言語一覧を取得
-      const languagesData = await api.get<Language[]>('/api/languages')
+      // 言語一覧を取得（キャッシュ無効）
+      const languagesData = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
       setLanguages(languagesData)
 
       // ユーザー設定を取得

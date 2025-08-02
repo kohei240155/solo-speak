@@ -94,8 +94,15 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 
   const fetchLanguages = useCallback(async () => {
     try {
-      console.log('fetchLanguages: Fetching languages from API...')
-      const data = await api.get<Language[]>('/api/languages')
+      console.log('fetchLanguages: Fetching languages from API (no cache)...')
+      // ユーザー設定画面では常にDBから最新データを取得（キャッシュ無効）
+      const data = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
       
       if (Array.isArray(data) && data.length > 0) {
         setLanguages(data)
