@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useLanguages, useUserSettings } from '@/hooks/useSWRApi'
+import { speakText } from '@/utils/speechSynthesis'
 
 interface SpeakPhrase {
   id: string
@@ -144,32 +145,8 @@ export default function SpeakPage() {
     if (!phrase) return
 
     try {
-      // 音声再生APIを呼び出し
-      const response = await fetch('/api/speech', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: phrase.text,
-          language: languageId
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        
-        // Web Speech API を使用して音声再生
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(phrase.text)
-          utterance.lang = data.language
-          speechSynthesis.speak(utterance)
-        } else {
-          toast.error('音声再生がサポートされていません')
-        }
-      } else {
-        toast.error('音声データの取得に失敗しました')
-      }
+      // Google Cloud TTSを使用して音声再生
+      await speakText(phrase.text, languageId)
     } catch (error) {
       console.error('Error playing sound:', error)
       toast.error('音声再生に失敗しました')
