@@ -23,10 +23,12 @@ export default function QuizPractice({
   onFinish
 }: QuizPracticeProps) {
   const [hasAnswered, setHasAnswered] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
 
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
     setHasAnswered(true)
+    setSelectedAnswer(isCorrect)
     onAnswer(isCorrect)
     
     // 1秒後に次の問題に進むか、最後の問題の場合は終了
@@ -35,6 +37,7 @@ export default function QuizPractice({
         onFinish()
       } else {
         setHasAnswered(false)
+        setSelectedAnswer(null)
         onNext()
       }
     }, 1000)
@@ -128,14 +131,16 @@ export default function QuizPractice({
               }}
               disabled={hasAnswered}
               className={`w-full bg-white border py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed relative ${
-                hasAnswered 
+                hasAnswered && selectedAnswer === false
                   ? 'opacity-50 animate-pulse' 
+                  : hasAnswered && selectedAnswer === true
+                  ? 'opacity-50'
                   : 'hover:bg-gray-50'
               }`}
               style={{ 
                 borderColor: '#616161',
                 color: '#616161',
-                boxShadow: hasAnswered ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+                boxShadow: hasAnswered && selectedAnswer === false ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
               }}
               onMouseEnter={(e) => {
                 if (!hasAnswered && e.currentTarget) {
@@ -150,7 +155,7 @@ export default function QuizPractice({
                 }
               }}
             >
-              {hasAnswered ? (
+              {hasAnswered && selectedAnswer === false ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600 mr-2"></div>
                   No Idea
@@ -179,13 +184,15 @@ export default function QuizPractice({
               }}
               disabled={hasAnswered}
               className={`w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed relative ${
-                hasAnswered 
+                hasAnswered && selectedAnswer === true
                   ? 'opacity-50 animate-pulse' 
+                  : hasAnswered && selectedAnswer === false
+                  ? 'opacity-50'
                   : ''
               }`}
               style={{ 
                 backgroundColor: hasAnswered ? '#9CA3AF' : '#616161',
-                boxShadow: hasAnswered ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+                boxShadow: hasAnswered && selectedAnswer === true ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
               }}
               onMouseEnter={(e) => {
                 if (!hasAnswered && e.currentTarget) {
@@ -200,7 +207,7 @@ export default function QuizPractice({
                 }
               }}
             >
-              {hasAnswered ? (
+              {hasAnswered && selectedAnswer === true ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                   Got It
