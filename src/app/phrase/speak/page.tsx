@@ -8,6 +8,7 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/useSpeakPhrase'
@@ -147,9 +148,12 @@ function PhraseSpeakPage() {
                   learningLanguage={learningLanguage}
                 />
               ) : (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading...</p>
+                <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
+                  <LoadingSpinner 
+                    size="md" 
+                    message="Loading..." 
+                    className="text-center"
+                  />
                 </div>
               )
             ) : (
@@ -171,9 +175,12 @@ function PhraseSpeakPage() {
                     learningLanguage={learningLanguage}
                   />
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Loading...</p>
+                  <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
+                    <LoadingSpinner 
+                      size="md" 
+                      message="Loading..." 
+                      className="text-center"
+                    />
                   </div>
                 )
               ) : null
