@@ -20,25 +20,21 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   const [questionCount, setQuestionCount] = useState<number>(10)
   const [isLoading, setIsLoading] = useState(false)
 
-  // 最大問題数の計算（フレーズ数）
-  const maxQuestionCount = availablePhraseCount
-
   // フレーズ数が変わった時に問題数を調整
   useEffect(() => {
+    // デフォルトは10、フレーズ数が10未満の場合はフレーズ数に調整
     setQuestionCount(Math.min(10, availablePhraseCount))
   }, [availablePhraseCount])
 
   // 問題数選択のオプションを生成
   const generateQuestionCountOptions = () => {
-    const options = []
-    for (let i = 5; i <= Math.min(25, maxQuestionCount); i += 5) {
-      options.push({ value: i.toString(), label: `${i} questions` })
-    }
-    // maxQuestionCountが設定されたオプションに含まれていない場合は追加
-    if (maxQuestionCount > 0 && !options.some(opt => parseInt(opt.value) === maxQuestionCount)) {
-      options.push({ value: maxQuestionCount.toString(), label: `${maxQuestionCount} questions (max)` })
-    }
-    return options.sort((a, b) => parseInt(a.value) - parseInt(b.value))
+    const baseOptions = [5, 10, 15, 20, 25, 30]
+    
+    // 常に全ての固定オプションを表示
+    return baseOptions.map(count => ({
+      value: count.toString(),
+      label: `${count} questions`
+    }))
   }
 
   const handleStart = async (selectedLanguage: string) => {
