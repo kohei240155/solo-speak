@@ -193,6 +193,21 @@ export async function createUserSettings(
 }
 
 /**
+ * ユーザーのシチュエーションが存在するかチェック
+ * @param userId ユーザーID
+ * @returns シチュエーションが存在するかどうか
+ */
+export async function hasUserSituations(userId: string): Promise<boolean> {
+  const count = await prisma.situation.count({
+    where: {
+      userId,
+      deletedAt: null
+    }
+  })
+  return count > 0
+}
+
+/**
  * ユーザー設定の更新
  * @param userId ユーザーID
  * @param userData 更新データ
@@ -207,7 +222,7 @@ export async function updateUserSettings(
     defaultLearningLanguageId?: string
   }
 ){
-  return await prisma.user.update({
+  const result = await prisma.user.update({
     where: { id: userId },
     data: {
       username: userData.username,
@@ -220,4 +235,17 @@ export async function updateUserSettings(
       defaultLearningLanguage: true,
     }
   })
+
+  // ユーザーにシチュエーションが存在しない場合、デフォルトシチュエーションを作成
+  try {
+    const hasSituations = await hasUserSituations(userId)
+    if (!hasSituations && result.nativeLanguage) {
+      await createDefaultSituations(prisma, userId, result.nativeLanguage.code)
+    }
+  } catch (situationError) {
+    console.error('Failed to create default situations during update:', situationError)
+    // シチュエーション作成に失敗してもユーザー更新自体は成功として扱う
+  }
+
+  return result
 }
