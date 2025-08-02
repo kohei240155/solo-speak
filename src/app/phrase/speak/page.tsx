@@ -145,6 +145,7 @@ function PhraseSpeakPage() {
                   isHideNext={true}
                   isFinishing={singlePhraseSpeak.isFinishing}
                   isCountDisabled={singlePhraseSpeak.singlePhraseCountDisabled}
+                  learningLanguage={learningLanguage}
                 />
               ) : (
                 <div className="text-center py-8">
@@ -168,6 +169,7 @@ function PhraseSpeakPage() {
                     isHideNext={false}
                     isFinishing={multiPhraseSpeak.isFinishing}
                     isCountDisabled={isCountDisabled}
+                    learningLanguage={learningLanguage}
                   />
                 ) : (
                   <div className="text-center py-8">

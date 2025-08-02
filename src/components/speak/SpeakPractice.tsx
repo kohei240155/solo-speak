@@ -2,6 +2,7 @@ import { RiSpeakLine } from 'react-icons/ri'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
+import { useTextToSpeech } from '@/hooks/useTextToSpeech'
 
 interface SpeakPhrase {
   id: string
@@ -23,6 +24,7 @@ interface SpeakPracticeProps {
   isHideNext?: boolean // Nextボタンを非表示にするかどうか
   isFinishing?: boolean // Finish処理中かどうか
   isCountDisabled?: boolean // Countボタンを無効にするかどうか
+  learningLanguage?: string // 学習言語コード（TTS用）
 }
 
 export default function SpeakPractice({
@@ -36,9 +38,15 @@ export default function SpeakPractice({
   isNextLoading = false,
   isHideNext = false,
   isFinishing = false,
-  isCountDisabled = false
+  isCountDisabled = false,
+  learningLanguage = 'en'
 }: SpeakPracticeProps) {
   const [countCooldown, setCountCooldown] = useState(0)
+  
+  // TTS機能の初期化
+  const { isPlaying, error: ttsError, playText } = useTextToSpeech({
+    languageCode: learningLanguage
+  })
 
   // カウントダウンの管理
   useEffect(() => {
@@ -57,6 +65,17 @@ export default function SpeakPractice({
     
     setCountCooldown(1)
     onCount()
+  }
+
+  // Soundボタンのハンドラー
+  const handleSound = async () => {
+    if (!phrase?.original || isPlaying) return
+    
+    try {
+      await playText(phrase.original)
+    } catch (error) {
+      console.error('Failed to play sound:', error)
+    }
   }
 
   // カウントボタンの無効状態判定
@@ -89,6 +108,13 @@ export default function SpeakPractice({
 
   return (
     <>
+      {/* TTS エラー表示 */}
+      {ttsError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">{ttsError}</p>
+        </div>
+      )}
+      
       {/* フレーズ表示エリア - Phrase Listと同じレイアウト */}
       <div className="mb-10">
         {/* 学習言語のフレーズ（メイン表示） */}
@@ -166,12 +192,24 @@ export default function SpeakPractice({
           {/* Sound ボタン + Next ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
+              onClick={handleSound}
+              disabled={isPlaying || !phrase?.original}
+              className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 ${
+                isPlaying || !phrase?.original ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
             >
-              <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
+              <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1 ${
+                isPlaying ? 'animate-pulse' : ''
+              }`}>
+                <HiMiniSpeakerWave className={`w-10 h-10 ${
+                  isPlaying || !phrase?.original ? 'text-gray-400' : 'text-gray-900'
+                }`} />
               </div>
-              <span className="text-gray-900 font-medium text-base">Sound</span>
+              <span className={`font-medium text-base ${
+                isPlaying || !phrase?.original ? 'text-gray-400' : 'text-gray-900'
+              }`}>
+                {isPlaying ? 'Playing...' : 'Sound'}
+              </span>
             </button>
             {!isHideNext && (
               <button
