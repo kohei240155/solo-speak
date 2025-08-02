@@ -3,8 +3,16 @@ import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 import { getGoogleTTSLanguageCode, getLanguageSpecificVoiceSettings } from '@/utils/tts-language-mapping'
 
 // Google Cloud Text-to-Speech クライアントの初期化
+// Vercel対応: 環境変数から認証情報を読み込み
+const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+if (!serviceAccountKey) {
+  throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable is not set')
+}
+
+const credentials = JSON.parse(serviceAccountKey)
+
 const client = new TextToSpeechClient({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  credentials,
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 })
 
