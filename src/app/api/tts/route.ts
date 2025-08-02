@@ -19,11 +19,21 @@ let ttsClient: TextToSpeechClient | null = null
 function initializeTTSClient() {
   if (!ttsClient) {
     try {
+      // 環境変数からJSON文字列の認証情報を取得（開発・本番共通）
+      const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+      
+      if (!credentials) {
+        throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable is not set')
+      }
+      
+      // JSON文字列から認証情報をパース
+      const parsedCredentials = JSON.parse(credentials)
       ttsClient = new TextToSpeechClient({
-        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        credentials: parsedCredentials,
         projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
       })
-      console.log('Google Cloud TTS client initialized successfully')
+      console.log('Google Cloud TTS client initialized with JSON credentials')
+      
     } catch (error) {
       console.error('Failed to initialize Google Cloud TTS client:', error)
       throw error
