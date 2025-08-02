@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 
 interface UseTextToSpeechOptions {
   languageCode?: string
@@ -8,11 +8,25 @@ interface UseTextToSpeechReturn {
   isPlaying: boolean
   error: string | null
   playText: (text: string) => Promise<void>
+  clearCache: () => void
+}
+
+interface CachedAudio {
+  audioUrl: string
+  audio: HTMLAudioElement
 }
 
 export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextToSpeechReturn {
   const [isPlaying, setIsPlaying] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // 音声キャッシュを保存するRef
+  const audioCache = useRef<Map<string, CachedAudio>>(new Map())
+  
+  // キャッシュキーを生成する関数
+  const getCacheKey = useCallback((text: string, languageCode: string) => {
+    return `${text.trim()}_${languageCode}`
+  }, [])
 
   const playText = useCallback(async (text: string) => {
     if (!text.trim()) {
@@ -24,7 +38,40 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
     setError(null)
 
     try {
-      // Text-to-Speech API を呼び出し
+      const languageCode = options.languageCode || 'en'
+      const cacheKey = getCacheKey(text, languageCode)
+      
+      // キャッシュから音声を取得
+      const cachedAudio = audioCache.current.get(cacheKey)
+      
+      if (cachedAudio) {
+        // キャッシュされた音声を再生
+        const audio = cachedAudio.audio
+        
+        // 再生完了時のクリーンアップ
+        const handleEnded = () => {
+          setIsPlaying(false)
+          audio.removeEventListener('ended', handleEnded)
+          audio.removeEventListener('error', handleError)
+        }
+        
+        const handleError = () => {
+          setIsPlaying(false)
+          setError('音声の再生に失敗しました')
+          audio.removeEventListener('ended', handleEnded)
+          audio.removeEventListener('error', handleError)
+        }
+        
+        audio.addEventListener('ended', handleEnded)
+        audio.addEventListener('error', handleError)
+        
+        // 音声を最初から再生
+        audio.currentTime = 0
+        await audio.play()
+        return
+      }
+
+      // キャッシュにない場合は新しく音声を取得
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: {
@@ -32,7 +79,7 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
         },
         body: JSON.stringify({
           text: text.trim(),
-          languageCode: options.languageCode || 'en',
+          languageCode,
         }),
       })
 
@@ -55,18 +102,29 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       // 音声を再生
       const audio = new Audio(audioUrl)
       
+      // キャッシュに保存
+      audioCache.current.set(cacheKey, { audioUrl, audio })
+      
       // 再生完了時のクリーンアップ
-      audio.addEventListener('ended', () => {
+      const handleEnded = () => {
         setIsPlaying(false)
-        URL.revokeObjectURL(audioUrl)
-      })
-
-      // エラー時のクリーンアップ
-      audio.addEventListener('error', () => {
+        audio.removeEventListener('ended', handleEnded)
+        audio.removeEventListener('error', handleError)
+      }
+      
+      const handleError = () => {
         setIsPlaying(false)
         setError('音声の再生に失敗しました')
+        audio.removeEventListener('ended', handleEnded)
+        audio.removeEventListener('error', handleError)
+        
+        // エラー時はキャッシュからも削除
+        audioCache.current.delete(cacheKey)
         URL.revokeObjectURL(audioUrl)
-      })
+      }
+      
+      audio.addEventListener('ended', handleEnded)
+      audio.addEventListener('error', handleError)
 
       await audio.play()
     } catch (err) {
@@ -75,11 +133,22 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       setError(errorMessage)
       console.error('Text-to-Speech error:', err)
     }
-  }, [options.languageCode])
+  }, [options.languageCode, getCacheKey])
+
+  // キャッシュをクリアする関数
+  const clearCache = useCallback(() => {
+    // すべてのオーディオURLを解放
+    audioCache.current.forEach(({ audioUrl }) => {
+      URL.revokeObjectURL(audioUrl)
+    })
+    // キャッシュをクリア
+    audioCache.current.clear()
+  }, [])
 
   return {
     isPlaying,
     error,
     playText,
+    clearCache,
   }
 }
