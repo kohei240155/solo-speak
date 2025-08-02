@@ -18,7 +18,6 @@ import { usePageLeaveWarning } from '@/hooks/usePageLeaveWarning'
 import { useModalManager } from '@/hooks/useModalManager'
 import { useMultiPhraseSpeak } from '@/hooks/useMultiPhraseSpeak'
 import { useAllDoneScreen } from '@/hooks/useAllDoneScreen'
-import { preloadVoices } from '@/utils/speechSynthesis'
 import { Toaster } from 'react-hot-toast'
 
 function PhraseSpeakPage() {
@@ -95,11 +94,6 @@ function PhraseSpeakPage() {
     : pendingCount > 0
   
   usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
-
-  // 音声リストの初期化
-  useEffect(() => {
-    preloadVoices()
-  }, [])
 
   // ページ読み込み時にフレーズを取得
   useEffect(() => {

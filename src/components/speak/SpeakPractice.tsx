@@ -71,28 +71,14 @@ export default function SpeakPractice({
       <div className="mb-10">
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
-          <div 
-            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
+          <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed">
             {phrase.original}
           </div>
         </div>
         
         {/* 母国語の翻訳 */}
         <div className="mb-3">
-          <div 
-            className="text-sm sm:text-base md:text-lg text-gray-600 break-words leading-relaxed"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
+          <div className="text-sm sm:text-base md:text-lg text-gray-600 break-words leading-relaxed">
             {phrase.translation}
           </div>
         </div>

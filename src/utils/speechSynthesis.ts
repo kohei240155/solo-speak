@@ -35,11 +35,10 @@ async function playAudioFromBase64(base64AudioData: string): Promise<void> {
       const audio = new Audio(audioUrl)
       
       audio.oncanplaythrough = () => {
-        console.log('Audio loaded and ready to play')
+        // Audio is ready to play
       }
       
       audio.onended = () => {
-        console.log('Audio playback completed')
         URL.revokeObjectURL(audioUrl) // メモリリークを防ぐ
         resolve()
       }
@@ -73,14 +72,9 @@ export const speakText = async (text: string, languageCode: string): Promise<voi
     
     // キャッシュをチェック
     if (audioCache[cacheKey]) {
-      console.log('Playing audio from cache')
       await playAudioFromBase64(audioCache[cacheKey])
       return
-    }
-    
-    console.log('Audio not in cache, requesting from TTS API')
-    
-    // TTS APIを呼び出し
+    }    // TTS APIを呼び出し
     const response = await fetch('/api/tts', {
       method: 'POST',
       headers: {
@@ -105,8 +99,6 @@ export const speakText = async (text: string, languageCode: string): Promise<voi
     if (!data.audioContent) {
       throw new Error('No audio content received')
     }
-
-    console.log('TTS API response successful, caching and playing audio')
     
     // 音声データをキャッシュに保存
     audioCache[cacheKey] = data.audioContent
@@ -153,7 +145,6 @@ export const speakTextLegacy = async (text: string, languageCode: string): Promi
       }
 
       utterance.onend = () => {
-        console.log('Speech synthesis completed')
         resolve()
       }
       
@@ -179,14 +170,4 @@ export const getAudioCacheStats = (): { size: number; keys: string[] } => {
     size: keys.length,
     keys: keys
   }
-}
-
-// 音声リストを事前初期化する関数（Google Cloud TTSでは不要だが、後方互換性のため残す）
-export const preloadVoices = (): void => {
-  console.log('preloadVoices called - Using Google Cloud TTS, no preloading needed')
-}
-
-// 初期化時のvoid化対応（後方互換性）
-export const initializeVoices = (): Promise<void> => {
-  return Promise.resolve()
 }

@@ -14,18 +14,6 @@ export async function updatePhraseCount(phraseId: string) {
 }
 
 /**
- * 音声合成APIを呼び出す関数
- */
-export async function generateSpeech(text: string, language?: string) {
-  try {
-    return await api.post('/api/speech', { text, language })
-  } catch (error) {
-    console.error('Failed to generate speech:', error)
-    throw error
-  }
-}
-
-/**
  * フレーズを削除する関数
  */
 export async function deletePhrase(phraseId: string) {
