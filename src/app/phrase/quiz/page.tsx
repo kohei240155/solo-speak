@@ -6,7 +6,8 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
-import QuizComplete from '@/components/quiz/QuizComplete'
+import AllDoneScreen from '@/components/common/AllDoneScreen'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/usePhraseSettings'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
@@ -144,12 +145,12 @@ export default function PhraseQuizPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {isQuizCompleted ? (
-            <QuizComplete 
+                    {isQuizCompleted ? (
+            <AllDoneScreen 
               onFinish={handleFinish}
               onRetry={handleRetry}
             />
-          ) : quizMode.active && quizMode.config && currentPhrase && session ? (
+            ) : quizMode.active && session && currentPhrase ? (
             <QuizPractice
               session={session}
               currentPhrase={currentPhrase}
@@ -159,20 +160,26 @@ export default function PhraseQuizPage() {
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
             />
-          ) : quizMode.active && quizMode.config ? (
-            // クイズがアクティブだが、セッションまたはフレーズがまだ読み込み中
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">Starting quiz...</p>
+          ) : quizMode.active && !session ? (
+            // セッション読み込み中の表示
+            <div className="flex items-center justify-center" style={{ minHeight: '200px' }}>
+              <LoadingSpinner 
+                size="md" 
+                message="Starting quiz..." 
+                className="text-center"
+              />
             </div>
           ) : (
             // クイズがアクティブでない場合は何も表示しない（モーダルで操作）
             <div className="text-center py-8">
               {isLoadingPhrases ? (
-                <>
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading phrases...</p>
-                </>
+                <div className="flex items-center justify-center" style={{ minHeight: '200px' }}>
+                  <LoadingSpinner 
+                    size="md" 
+                    message="Loading phrases..." 
+                    className="text-center"
+                  />
+                </div>
               ) : savedPhrases.length === 0 ? (
                 <>
                   <p className="text-gray-600 mb-4">No phrases found for quiz.</p>

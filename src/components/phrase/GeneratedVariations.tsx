@@ -32,7 +32,7 @@ export default function GeneratedVariations({
 
   return (
     <div className="space-y-4">
-      <div className="mb-3">
+      <div className="mt-6 mb-3">
         <h3 className="text-xl md:text-2xl font-bold text-gray-900">
           AI Suggested Phrases
         </h3>

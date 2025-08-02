@@ -27,6 +27,7 @@ export default function SpeakPage() {
   const params = useParams()
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
+  const [pendingCount, setPendingCount] = useState(0) // ペンディング中のカウント数
   const [learningLanguage, setLearningLanguage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -114,58 +115,52 @@ export default function SpeakPage() {
   const handleCount = async () => {
     if (!phrase) return
 
-    try {
-      // 音読回数を更新
-      await api.post(`/api/phrase/${phrase.id}/count`)
-      
-      // カウント更新成功（トーストは表示しない）
-      setPhrase(prev => prev ? {
-        ...prev,
-        totalSpeakCount: prev.totalSpeakCount + 1,
-        dailySpeakCount: prev.dailySpeakCount + 1
-      } : null)
-    } catch (error) {
-      console.error('Error updating count:', error)
+    // 現在のカウントを計算
+    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount
+    
+    // 既に100回に達している場合は何もしない
+    if (currentDailyCount >= 100) {
+      return
     }
-  }
 
-  const handleSound = async () => {
-    if (!phrase) return
-
-    try {
-      // 音声再生APIを呼び出し
-      const response = await fetch('/api/speech', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: phrase.text,
-          language: languageId
-        })
+    // ローカル状態のみを更新（APIは呼ばない）
+    setPendingCount(prev => prev + 1)
+    setPhrase(prev => prev ? {
+      ...prev,
+      totalSpeakCount: prev.totalSpeakCount + 1,
+      dailySpeakCount: prev.dailySpeakCount + 1
+    } : null)
+    
+    // ちょうど100回に達した時にトーストを表示
+    const newDailyCount = currentDailyCount + 1
+    if (newDailyCount === 100) {
+      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+        duration: 4000
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        
-        // Web Speech API を使用して音声再生
-        if ('speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(phrase.text)
-          utterance.lang = data.language
-          speechSynthesis.speak(utterance)
-        } else {
-          toast.error('音声再生がサポートされていません')
-        }
-      } else {
-        toast.error('音声データの取得に失敗しました')
-      }
-    } catch (error) {
-      console.error('Error playing sound:', error)
-      toast.error('音声再生に失敗しました')
     }
   }
 
   const handleNext = async () => {
+    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+    if (pendingCount > 0 && phrase) {
+      try {
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
+        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+      } catch (error: unknown) {
+        console.error('Error sending pending count:', error)
+        toast.error('カウントの送信に失敗しました')
+        return // エラーの場合は次のフレーズ取得を中止
+      }
+    } else if (phrase) {
+      // カウントが0でもsession_spokenをtrueに設定
+      try {
+        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+      } catch (error) {
+        console.error('Error setting session spoken:', error)
+        // session_spoken設定エラーは次のフレーズ取得を阻害しない
+      }
+    }
+
     // 次のフレーズを取得
     try {
       const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
@@ -184,7 +179,27 @@ export default function SpeakPage() {
     }
   }
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
+    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+    if (pendingCount > 0 && phrase) {
+      try {
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
+        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+      } catch (error: unknown) {
+        console.error('Error sending pending count:', error)
+        toast.error('カウントの送信に失敗しました')
+        // Finishの場合はエラーがあってもページ遷移を実行
+      }
+    } else if (phrase) {
+      // カウントが0でもsession_spokenをtrueに設定
+      try {
+        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+      } catch (error) {
+        console.error('Error setting session spoken:', error)
+        // session_spoken設定エラーはページ遷移を阻害しない
+      }
+    }
+
     router.push('/phrase/list')
   }
 
@@ -327,11 +342,20 @@ export default function SpeakPage() {
               <div className="flex-1 flex flex-col items-center">
                 <button
                   onClick={handleCount}
-                  className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
+                  disabled={(phrase.dailySpeakCount + pendingCount) >= 100}
+                  className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors md:w-24 md:h-24 ${
+                    (phrase.dailySpeakCount + pendingCount) >= 100 
+                      ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
-                  <CiCirclePlus className="w-12 h-12 text-gray-600 md:w-16 md:h-16" />
+                  <CiCirclePlus className={`w-12 h-12 md:w-16 md:h-16 ${
+                    (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-600'
+                  }`} />
                 </button>
-                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">Count</span>
+                <span className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
+                  (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-900'
+                }`}>Count</span>
               </div>
 
               {/* 中央の区切り線 */}
@@ -340,7 +364,6 @@ export default function SpeakPage() {
               {/* Sound ボタンエリア */}
               <div className="flex-1 flex flex-col items-center">
                 <button
-                  onClick={handleSound}
                   className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
                 >
                   <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />

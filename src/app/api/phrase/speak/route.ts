@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
+    const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
 
     if (!language) {
       return NextResponse.json(
@@ -24,11 +25,30 @@ export async function GET(request: NextRequest) {
 
     // モード設定をクエリパラメータから取得
     const config = {
-      order
+      order,
+      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined
+    }
+
+    // フィルタリング条件を構築
+    const whereClause = {
+      userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+      language: {
+        code: language
+      },
+      deletedAt: null, // 削除されていないフレーズのみ
+      sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
+      dailySpeakCount: {
+        lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+      },
+      ...(config.excludeIfSpeakCountGTE !== undefined && {
+        totalSpeakCount: {
+          lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
+        }
+      })
     }
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageExists, phrases] = await Promise.all([
+    const [languageExists, phrases, allPhrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { code: language }
@@ -37,15 +57,32 @@ export async function GET(request: NextRequest) {
       // データベースからフレーズを取得（削除されていないもののみ）
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
+        where: whereClause,
+        include: {
+          language: true
+        }
+      }),
+
+      // セッション管理を除いた全フレーズ数を取得（デバッグ用）
+      prisma.phrase.findMany({
         where: {
-          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          userId: authResult.user.id,
           language: {
             code: language
           },
-          deletedAt: null // 削除されていないフレーズのみ
+          deletedAt: null,
+          dailySpeakCount: {
+            lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+          },
+          ...(config.excludeIfSpeakCountGTE !== undefined && {
+            totalSpeakCount: {
+              lt: config.excludeIfSpeakCountGTE
+            }
+          })
         },
-        include: {
-          language: true
+        select: {
+          id: true,
+          sessionSpoken: true
         }
       })
     ])
@@ -58,10 +95,24 @@ export async function GET(request: NextRequest) {
     }
 
     if (phrases.length === 0) {
-      return NextResponse.json({
-        success: false,
-        message: 'No phrases found for the specified language'
-      })
+      // すべてのフレーズがセッション完了済みかチェック
+      const allSessionCompleted = allPhrases.length > 0 && allPhrases.every(p => p.sessionSpoken)
+      
+      if (allSessionCompleted) {
+        // All Done状態の場合は成功レスポンスとして返す（トーストエラーを防ぐため）
+        return NextResponse.json({
+          success: true,
+          allDone: true,
+          message: 'All available phrases have been practiced in this session'
+        })
+      } else {
+        // フレーズがない場合はエラーとして返す
+        return NextResponse.json({
+          success: false,
+          message: 'No phrases available for practice in this session',
+          allDone: false
+        })
+      }
     }
 
     // ソート処理

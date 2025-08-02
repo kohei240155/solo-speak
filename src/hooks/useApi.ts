@@ -14,18 +14,6 @@ export async function updatePhraseCount(phraseId: string) {
 }
 
 /**
- * 音声合成APIを呼び出す関数
- */
-export async function generateSpeech(text: string, language?: string) {
-  try {
-    return await api.post('/api/speech', { text, language })
-  } catch (error) {
-    console.error('Failed to generate speech:', error)
-    throw error
-  }
-}
-
-/**
  * フレーズを削除する関数
  */
 export async function deletePhrase(phraseId: string) {
@@ -50,15 +38,44 @@ export async function updatePhrase(phraseId: string, updates: Record<string, unk
 }
 
 /**
+ * 個別フレーズのsession_spokenをtrueに設定する関数
+ */
+export async function markPhraseAsSessionSpoken(phraseId: string) {
+  try {
+    return await api.post(`/api/phrase/${phraseId}/session-spoken`)
+  } catch (error) {
+    console.error('Failed to mark phrase as session spoken:', error)
+    throw error
+  }
+}
+
+/**
+ * ユーザーの全フレーズのsession_spokenをfalseにリセットする関数
+ */
+export async function resetSessionSpoken() {
+  try {
+    return await api.post('/api/phrases/reset-session')
+  } catch (error) {
+    console.error('Failed to reset session spoken:', error)
+    throw error
+  }
+}
+
+/**
  * Speak用のフレーズを取得する関数
  */
 export async function getSpeakPhrase(params: {
   language?: string
   order?: string
   prioritizeLowPractice?: string
+  excludeIfSpeakCountGTE?: string
 }): Promise<SpeakPhraseApiResponse> {
   try {
-    const queryString = new URLSearchParams(params).toString()
+    // undefinedの値を除去してクエリストリングを作成
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined)
+    )
+    const queryString = new URLSearchParams(filteredParams).toString()
     return await api.get<SpeakPhraseApiResponse>(`/api/phrase/speak?${queryString}`)
   } catch (error) {
     console.error('Failed to get speak phrase:', error)

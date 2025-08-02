@@ -99,18 +99,10 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       console.log('fetchLanguages: Fetching languages from API...')
       const data = await api.get<Language[]>('/api/languages')
       
-      console.log('fetchLanguages: Received data:', {
-        dataType: Array.isArray(data) ? 'array' : typeof data,
-        length: Array.isArray(data) ? data.length : 'N/A',
-        firstFewItems: Array.isArray(data) ? data.slice(0, 3) : data
-      })
-      
       if (Array.isArray(data) && data.length > 0) {
         setLanguages(data)
         setError('') // エラーをクリア
-        console.log('fetchLanguages: Languages set successfully, count:', data.length)
       } else {
-        console.warn('fetchLanguages: No languages received or invalid data')
         setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
       }
     } catch (error) {
@@ -122,12 +114,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   // データの並列初期化（再ログイン時は強制リフレッシュ）
   useEffect(() => {
     if (user) {
-      console.log('useUserSettings: User logged in, user metadata:', {
-        user_metadata: user.user_metadata,
-        avatar_url: user.user_metadata?.avatar_url,
-        picture: user.user_metadata?.picture,
-        avatar: user.user_metadata?.avatar
-      })
       
       Promise.all([
         fetchUserSettings(), // 初回読み込み時は常にフレッシュデータ

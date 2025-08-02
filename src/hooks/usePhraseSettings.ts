@@ -13,7 +13,6 @@ export const usePhraseSettings = () => {
   const fetchLanguages = useCallback(async () => {
     // ユーザーがログインしていない場合は何もしない
     if (!user) {
-      console.log('User not logged in, skipping language fetch in usePhraseSettings')
       return
     }
 
