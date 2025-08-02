@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
+import AnimatedButton from '../common/AnimatedButton'
 
 interface QuizPracticeProps {
   session: QuizSession
@@ -115,107 +116,28 @@ export default function QuizPractice({
         <div className="flex justify-between items-start">
           {/* No Idea ボタン */}
           <div className="flex flex-col items-center" style={{ width: '48%' }}>
-            <button
-              onClick={(e) => {
-                if (hasAnswered || !e.currentTarget) return
-                
-                // スケール効果
-                e.currentTarget.style.transform = 'scale(0.98)'
-                setTimeout(() => {
-                  if (e.currentTarget) {
-                    e.currentTarget.style.transform = 'scale(1)'
-                  }
-                }, 150)
-                
-                handleAnswer(false)
-              }}
+            <AnimatedButton
+              onClick={() => handleAnswer(false)}
               disabled={hasAnswered}
-              className={`w-full bg-white border py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed relative ${
-                hasAnswered && selectedAnswer === false
-                  ? 'opacity-50 animate-pulse' 
-                  : hasAnswered && selectedAnswer === true
-                  ? 'opacity-50'
-                  : 'hover:bg-gray-50'
-              }`}
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161',
-                boxShadow: hasAnswered && selectedAnswer === false ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
-              }}
-              onMouseEnter={(e) => {
-                if (!hasAnswered && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = '#f9fafb'
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!hasAnswered && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = 'white'
-                  e.currentTarget.style.boxShadow = 'none'
-                }
-              }}
+              variant="secondary"
+              isLoading={hasAnswered && selectedAnswer === false}
+              className="px-6"
             >
-              {hasAnswered && selectedAnswer === false ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600 mr-2"></div>
-                  No Idea
-                </div>
-              ) : (
-                'No Idea'
-              )}
-            </button>
+              No Idea
+            </AnimatedButton>
           </div>
 
           {/* Got It ボタン */}
           <div className="flex flex-col items-center" style={{ width: '48%' }}>
-            <button
-              onClick={(e) => {
-                if (hasAnswered || !e.currentTarget) return
-                
-                // スケール効果
-                e.currentTarget.style.transform = 'scale(0.98)'
-                setTimeout(() => {
-                  if (e.currentTarget) {
-                    e.currentTarget.style.transform = 'scale(1)'
-                  }
-                }, 150)
-                
-                handleAnswer(true)
-              }}
+            <AnimatedButton
+              onClick={() => handleAnswer(true)}
               disabled={hasAnswered}
-              className={`w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed relative ${
-                hasAnswered && selectedAnswer === true
-                  ? 'opacity-50 animate-pulse' 
-                  : hasAnswered && selectedAnswer === false
-                  ? 'opacity-50'
-                  : ''
-              }`}
-              style={{ 
-                backgroundColor: hasAnswered ? '#9CA3AF' : '#616161',
-                boxShadow: hasAnswered && selectedAnswer === true ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
-              }}
-              onMouseEnter={(e) => {
-                if (!hasAnswered && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = '#525252'
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!hasAnswered && e.currentTarget) {
-                  e.currentTarget.style.backgroundColor = '#616161'
-                  e.currentTarget.style.boxShadow = 'none'
-                }
-              }}
+              variant="primary"
+              isLoading={hasAnswered && selectedAnswer === true}
+              className="px-6"
             >
-              {hasAnswered && selectedAnswer === true ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Got It
-                </div>
-              ) : (
-                'Got It'
-              )}
-            </button>
+              Got It
+            </AnimatedButton>
           </div>
         </div>
       </div>

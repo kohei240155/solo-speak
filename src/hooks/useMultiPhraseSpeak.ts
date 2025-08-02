@@ -23,13 +23,18 @@ export function useMultiPhraseSpeak({
 }: UseMultiPhraseSpeakProps) {
   const router = useRouter()
   const [isFinishing, setIsFinishing] = useState(false)
+  const [isNextLoading, setIsNextLoading] = useState(false)
 
   // 次のフレーズを取得（設定付き）
   const handleNextWithConfig = async () => {
     if (speakMode.config) {
-      const result = await handleNext(speakMode.config)
-      
-      return result
+      setIsNextLoading(true)
+      try {
+        const result = await handleNext(speakMode.config)
+        return result
+      } finally {
+        setIsNextLoading(false)
+      }
     }
   }
 
@@ -50,6 +55,7 @@ export function useMultiPhraseSpeak({
 
   return {
     isFinishing,
+    isNextLoading,
     handleNextWithConfig,
     handleSpeakFinishComplete,
     handleCount

@@ -3,6 +3,7 @@ import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
 import { useTextToSpeech } from '@/hooks/useTextToSpeech'
+import AnimatedButton from '../common/AnimatedButton'
 
 interface SpeakPhrase {
   id: string
@@ -165,24 +166,16 @@ export default function SpeakPractice({
               </span>
             </button>
             {!isHideNext && (
-              <button
+              <AnimatedButton
                 onClick={onFinish}
                 disabled={isFinishing}
-                className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:cursor-not-allowed"
-                style={{ 
-                  borderColor: '#616161',
-                  color: isFinishing ? '#9CA3AF' : '#616161'
-                }}
+                variant="secondary"
+                isLoading={isFinishing}
+                loadingText="Finishing..."
+                className="px-6"
               >
-                {isFinishing ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-                    Finishing...
-                  </div>
-                ) : (
-                  'Finish'
-                )}
-              </button>
+                Finish
+              </AnimatedButton>
             )}
           </div>
 
@@ -212,33 +205,16 @@ export default function SpeakPractice({
               </span>
             </button>
             {!isHideNext && (
-              <button
+              <AnimatedButton
                 onClick={onNext}
                 disabled={isNextLoading}
-                className="w-full text-white py-2 px-6 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
-                style={{ 
-                  backgroundColor: isNextLoading ? '#9CA3AF' : '#616161'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isNextLoading && e.currentTarget) {
-                    e.currentTarget.style.backgroundColor = '#525252'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isNextLoading && e.currentTarget) {
-                    e.currentTarget.style.backgroundColor = '#616161'
-                  }
-                }}
+                variant="primary"
+                isLoading={isNextLoading}
+                loadingText="Loading..."
+                className="px-6"
               >
-                {isNextLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Loading...
-                  </div>
-                ) : (
-                  'Next'
-                )}
-              </button>
+                Next
+              </AnimatedButton>
             )}
           </div>
         </div>
@@ -246,24 +222,16 @@ export default function SpeakPractice({
         {/* 単一フレーズモード時のFinishボタン（横いっぱい） */}
         {isHideNext && (
           <div className="mt-4">
-            <button
+            <AnimatedButton
               onClick={onFinish}
               disabled={isFinishing}
-              className="w-full bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:cursor-not-allowed"
-              style={{ 
-                borderColor: '#616161',
-                color: isFinishing ? '#9CA3AF' : '#616161'
-              }}
+              variant="secondary"
+              isLoading={isFinishing}
+              loadingText="Finishing..."
+              className="px-6"
             >
-              {isFinishing ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-                  Finishing...
-                </div>
-              ) : (
-                'Finish'
-              )}
-            </button>
+              Finish
+            </AnimatedButton>
           </div>
         )}
       </div>
