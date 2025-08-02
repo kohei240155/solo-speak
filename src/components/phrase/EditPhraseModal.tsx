@@ -29,6 +29,7 @@ export default function EditPhraseModal({
   const [editedText, setEditedText] = useState('')
   const [editedTranslation, setEditedTranslation] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [selectedAction, setSelectedAction] = useState<'save' | 'cancel' | null>(null)
   
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -52,6 +53,7 @@ export default function EditPhraseModal({
     if (!phrase || !session) return
 
     setIsUpdating(true)
+    setSelectedAction('save')
     try {
       const updatedPhrase = await api.put<SavedPhrase>(`/api/phrase/${phrase.id}`, {
         original: editedText.trim(),
@@ -75,13 +77,16 @@ export default function EditPhraseModal({
       toast.error('Failed to update phrase')
     } finally {
       setIsUpdating(false)
+      setSelectedAction(null)
     }
   }
 
   const handleCancel = () => {
+    setSelectedAction('cancel')
     setEditedText('')
     setEditedTranslation('')
     onClose()
+    setSelectedAction(null)
   }
 
   if (!phrase) return null
@@ -151,25 +156,94 @@ export default function EditPhraseModal({
       {/* ボタン */}
       <div className="flex gap-3">
         <button
-          onClick={handleCancel}
+          onClick={(e) => {
+            if (isUpdating || !e.currentTarget) return
+            
+            // スケール効果
+            e.currentTarget.style.transform = 'scale(0.98)'
+            setTimeout(() => {
+              if (e.currentTarget) {
+                e.currentTarget.style.transform = 'scale(1)'
+              }
+            }, 150)
+            
+            handleCancel()
+          }}
           disabled={isUpdating}
-          className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+          className={`flex-1 bg-white border py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed ${
+            isUpdating && selectedAction === 'cancel'
+              ? 'opacity-50 animate-pulse'
+              : isUpdating && selectedAction === 'save'
+              ? 'opacity-50'
+              : 'hover:bg-gray-50'
+          }`}
           style={{ 
             borderColor: '#616161',
-            color: '#616161'
+            color: '#616161',
+            boxShadow: isUpdating && selectedAction === 'cancel' ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+          }}
+          onMouseEnter={(e) => {
+            if (!isUpdating && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = '#f9fafb'
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isUpdating && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = 'white'
+              e.currentTarget.style.boxShadow = 'none'
+            }
           }}
         >
-          Cancel
+          {isUpdating && selectedAction === 'cancel' ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+              Cancel
+            </div>
+          ) : (
+            'Cancel'
+          )}
         </button>
         <button
-          onClick={handleUpdatePhrase}
+          onClick={(e) => {
+            if (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200 || !e.currentTarget) return
+            
+            // スケール効果
+            e.currentTarget.style.transform = 'scale(0.98)'
+            setTimeout(() => {
+              if (e.currentTarget) {
+                e.currentTarget.style.transform = 'scale(1)'
+              }
+            }, 150)
+            
+            handleUpdatePhrase()
+          }}
           disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
-          className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+          className={`flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 disabled:cursor-not-allowed ${
+            isUpdating && selectedAction === 'save'
+              ? 'opacity-50 animate-pulse'
+              : isUpdating && selectedAction === 'cancel'
+              ? 'opacity-50'
+              : ''
+          }`}
           style={{ 
-            backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161'
+            backgroundColor: (isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200) ? '#9CA3AF' : '#616161',
+            boxShadow: isUpdating && selectedAction === 'save' ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+          }}
+          onMouseEnter={(e) => {
+            if (!isUpdating && editedText.trim() && editedTranslation.trim() && editedText.length <= 200 && editedTranslation.length <= 200 && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = '#525252'
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isUpdating && editedText.trim() && editedTranslation.trim() && editedText.length <= 200 && editedTranslation.length <= 200 && e.currentTarget) {
+              e.currentTarget.style.backgroundColor = '#616161'
+              e.currentTarget.style.boxShadow = 'none'
+            }
           }}
         >
-          {isUpdating ? (
+          {isUpdating && selectedAction === 'save' ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               Saving...
