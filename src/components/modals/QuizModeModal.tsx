@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
 import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
+import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 
 interface QuizModeModalProps {
@@ -51,9 +52,24 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       }
       console.log('QuizModeModal - Starting quiz with config:', config)
       
-      // onStartを呼び出し、成功した場合のみモーダルを閉じる
-      await onStart(config)
-      onClose()
+      // Quiz APIを呼び出してフレーズの有無を確認
+      const params = new URLSearchParams({
+        language: config.language,
+        mode: config.mode,
+        count: (config.questionCount || 10).toString()
+      })
+
+      const data = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${params.toString()}`)
+      
+      if (data.success && data.phrases && data.phrases.length > 0) {
+        // フレーズが見つかった場合は、モーダルを閉じてクイズを開始
+        onClose()
+        await onStart(config)
+      } else {
+        // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
+        const errorMessage = data.message || 'クイズを開始するにはフレーズを追加してください'
+        toast.error(errorMessage)
+      }
     } catch (error) {
       console.error('QuizModeModal - Error starting quiz:', error)
       toast.error('クイズの開始に失敗しました')
