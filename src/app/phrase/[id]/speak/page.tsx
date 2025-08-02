@@ -13,7 +13,6 @@ import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useLanguages, useUserSettings } from '@/hooks/useSWRApi'
-import { speakText } from '@/utils/speechSynthesis'
 
 interface SpeakPhrase {
   id: string
@@ -138,18 +137,6 @@ export default function SpeakPage() {
       toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
         duration: 4000
       })
-    }
-  }
-
-  const handleSound = async () => {
-    if (!phrase) return
-
-    try {
-      // Google Cloud TTSを使用して音声再生
-      await speakText(phrase.text, languageId)
-    } catch (error) {
-      console.error('Error playing sound:', error)
-      toast.error('音声再生に失敗しました')
     }
   }
 
@@ -377,7 +364,6 @@ export default function SpeakPage() {
               {/* Sound ボタンエリア */}
               <div className="flex-1 flex flex-col items-center">
                 <button
-                  onClick={handleSound}
                   className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
                 >
                   <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />

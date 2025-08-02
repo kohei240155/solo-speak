@@ -14,7 +14,6 @@ interface SpeakPhrase {
 interface SpeakPracticeProps {
   phrase: SpeakPhrase | null
   onCount: () => void
-  onSound: () => void
   onNext: () => void
   onFinish: () => void
   todayCount: number
@@ -29,7 +28,6 @@ interface SpeakPracticeProps {
 export default function SpeakPractice({
   phrase,
   onCount,
-  onSound,
   onNext,
   onFinish,
   todayCount,
@@ -168,7 +166,6 @@ export default function SpeakPractice({
           {/* Sound ボタン + Next ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onSound}
               className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
               <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">

@@ -3,16 +3,14 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { api } from '@/utils/api'
 import { SpeakPhrase } from '@/types/speak'
-import { speakText } from '@/utils/speechSynthesis'
 import { useSpeakPhraseById } from '@/hooks/useSWRApi'
 
 interface UseSinglePhraseSpeakProps {
   phraseId: string | null
-  learningLanguage: string
   sendPendingCount: (phraseId: string, count: number) => Promise<boolean>
 }
 
-export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCount }: UseSinglePhraseSpeakProps) {
+export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePhraseSpeakProps) {
   const router = useRouter()
   
   // 状態管理
@@ -94,12 +92,6 @@ export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCo
     }
   }
 
-  // 音声再生
-  const handleSound = async () => {
-    if (!singlePhrase) return
-    await speakText(singlePhrase.original, learningLanguage)
-  }
-
   // 練習終了処理
   const handleFinish = async () => {
     setIsFinishing(true)
@@ -129,7 +121,6 @@ export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCo
     singlePhraseCountDisabled,
     isFinishing,
     handleCount,
-    handleSound,
     handleFinish
   }
 }

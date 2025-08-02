@@ -56,15 +56,12 @@ function PhraseSpeakPage() {
   // 単一フレーズ練習用のフック
   const singlePhraseSpeak = useSinglePhraseSpeak({
     phraseId,
-    learningLanguage,
     sendPendingCount
   })
 
   // 複数フレーズ練習用のフック
   const multiPhraseSpeak = useMultiPhraseSpeak({
-    currentPhrase,
     speakMode,
-    learningLanguage,
     handleCount,
     handleNext: async (config) => {
       const result = await handleNext(config)
@@ -139,7 +136,6 @@ function PhraseSpeakPage() {
                 <SpeakPractice
                   phrase={singlePhraseSpeak.singlePhrase}
                   onCount={singlePhraseSpeak.handleCount}
-                  onSound={singlePhraseSpeak.handleSound}
                   onNext={() => {}} // 単一フレーズモードでは何もしない
                   onFinish={singlePhraseSpeak.handleFinish}
                   todayCount={singlePhraseSpeak.singlePhraseTodayCount}
@@ -164,7 +160,6 @@ function PhraseSpeakPage() {
                   <SpeakPractice
                     phrase={currentPhrase}
                     onCount={multiPhraseSpeak.handleCount}
-                    onSound={multiPhraseSpeak.handleSound}
                     onNext={multiPhraseSpeak.handleNextWithConfig}
                     onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
                     todayCount={todayCount}
