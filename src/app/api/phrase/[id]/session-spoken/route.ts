@@ -47,8 +47,6 @@ export async function POST(
       }
     })
 
-    console.log(`Phrase ${phraseId} marked as session spoken`)
-
     return NextResponse.json({
       success: true,
       message: 'Phrase marked as session spoken'

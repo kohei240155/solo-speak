@@ -32,10 +32,7 @@ export const useSpeakPhrase = () => {
 
       const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string, allDone?: boolean, dailyLimitReached?: boolean }>(`/api/phrase/speak?${params.toString()}`)
 
-      console.log('Speak API Response:', data) // レスポンス確認用ログ
-
       if (data.success && data.phrase) {
-        console.log('Found phrase:', data.phrase.original, 'dailySpeakCount:', data.phrase.dailySpeakCount)
         setCurrentPhrase(data.phrase)
         setTodayCount(data.phrase.dailySpeakCount || 0)
         setTotalCount(data.phrase.totalSpeakCount || 0)
@@ -44,7 +41,6 @@ export const useSpeakPhrase = () => {
         return true
       } else {
         // フレーズが取得できない場合は常にAll Done状態として扱う
-        console.log('No phrase available, treating as All Done')
         return 'allDone'
       }
     } catch (error) {
@@ -104,17 +100,14 @@ export const useSpeakPhrase = () => {
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     if (!currentPhrase) {
-      console.log('No current phrase, fetching new phrase')
       return await fetchSpeakPhrase(config)
     }
 
     // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
     if (pendingCount > 0) {
-      console.log('Sending pending count:', pendingCount)
       const success = await sendPendingCount(currentPhrase.id, pendingCount)
       if (success) {
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
-        console.log('Pending count sent successfully and session_spoken set to true')
       } else {
         toast.error('カウントの送信に失敗しました')
         return false // カウント送信失敗時は次のフレーズを取得しない
@@ -123,7 +116,6 @@ export const useSpeakPhrase = () => {
       // カウントが0でもsession_spokenをtrueに設定
       try {
         await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
-        console.log('Session spoken set to true (count=0)')
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
@@ -131,9 +123,7 @@ export const useSpeakPhrase = () => {
     }
 
     // 次のフレーズを取得
-    console.log('Fetching next phrase')
     const result = await fetchSpeakPhrase(config)
-    console.log('Next phrase fetch result:', result)
     return result
   }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase])
 
@@ -151,7 +141,6 @@ export const useSpeakPhrase = () => {
       // カウントが0でもsession_spokenをtrueに設定
       try {
         await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
-        console.log('Session spoken set to true on finish (count=0)')
       } catch (error) {
         console.error('Error setting session spoken on finish:', error)
         // エラーが発生してもFinish処理は続行

@@ -25,9 +25,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
     if (isOpen) {
       const resetSession = async () => {
         try {
-          console.log('SpeakModeModal - Resetting session_spoken for all user phrases')
           await resetSessionSpoken()
-          console.log('SpeakModeModal - Successfully reset session_spoken')
         } catch (error) {
           console.error('SpeakModeModal - Failed to reset session_spoken:', error)
           // エラーが発生してもモーダルの表示は継続する
@@ -52,30 +50,19 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
 
       const data = await getSpeakPhrase(params)
 
-      console.log('SpeakModeModal - API Response:', { 
-        success: data.success, 
-        hasPhrase: !!data.phrase, 
-        allDone: data.allDone,
-        message: data.message,
-        fullResponse: data
-      })
-
       if (data.success && data.phrase) {
         // 設定オブジェクトを作成して渡す
-        console.log('SpeakModeModal - Branch: Normal phrase found')
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
           prioritizeLowPractice: true, // 常に少ない練習回数から表示
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined // 未選択の場合はundefined
         }
-        console.log('SpeakModeModal - Starting practice with config:', config)
         // onStartの呼び出し前にモーダルを閉じる
         onClose()
         onStart(config)
       } else if (data.success && data.allDone) {
         // All Done状態の場合（成功レスポンスでallDoneフラグがある）
-        console.log('SpeakModeModal - Branch: All Done detected')
         // モーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
         onClose()
         // onStartにall doneフラグを付けて呼び出し
@@ -88,16 +75,13 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         } as SpeakConfig & { allDone: boolean })
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        console.log('SpeakModeModal - Branch: Error case')
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
-        console.warn('SpeakModeModal - No phrases found:', data.message)
         toast.error(errorMessage)
       }
     } catch (error) {
       console.error('SpeakModeModal - Error fetching phrase:', error)
       // エラーは既にAPIクライアント内でハンドリングされているため、ここでは追加でトーストを表示しない
     } finally {
-      console.log('SpeakModeModal - Setting loading to false')
       setIsLoading(false)
     }
   }

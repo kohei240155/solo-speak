@@ -40,9 +40,7 @@ export function useMultiPhraseSpeak({
   // 次のフレーズを取得（設定付き）
   const handleNextWithConfig = async () => {
     if (speakMode.config) {
-      console.log('Calling handleNext with config:', speakMode.config)
       const result = await handleNext(speakMode.config)
-      console.log('handleNext result:', result)
       
       return result
     }

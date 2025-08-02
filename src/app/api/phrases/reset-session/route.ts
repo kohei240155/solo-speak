@@ -23,8 +23,6 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`Reset session_spoken for ${updateResult.count} phrases for user ${userId}`)
-
     return NextResponse.json({
       success: true,
       message: `Reset session_spoken for ${updateResult.count} phrases`,
