@@ -108,12 +108,12 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
     configItems: [
       {
         id: 'order',
-        label: 'Order',
+        label: 'Start from',
         type: 'select',
         value: order,
         options: [
-          { value: 'new-to-old', label: 'NEW → OLD' },
-          { value: 'old-to-new', label: 'OLD → NEW' }
+          { value: 'new-to-old', label: 'Newest' },
+          { value: 'old-to-new', label: 'Oldest' }
         ],
         onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
       },
