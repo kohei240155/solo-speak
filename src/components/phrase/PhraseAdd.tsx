@@ -188,7 +188,7 @@ export default function PhraseAdd({
       </div>
 
       {/* フレーズ入力エリア */}
-      <div className="mb-3">
+      <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
           <button
@@ -227,7 +227,7 @@ export default function PhraseAdd({
       {/* AI Suggest ボタン */}
       <button
         disabled={isLoading || isSaving || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0}
-        className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 mb-4 relative ${
+        className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
           isLoading ? 'animate-pulse' : ''
         }`}
         style={{ 
