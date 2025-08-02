@@ -50,7 +50,6 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         language: selectedLanguage,
         questionCount: questionCount
       }
-      console.log('QuizModeModal - Starting quiz with config:', config)
       
       // Quiz APIを呼び出してフレーズの有無を確認
       const params = new URLSearchParams({
@@ -70,8 +69,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
         toast.error(errorMessage)
       }
-    } catch (error) {
-      console.error('QuizModeModal - Error starting quiz:', error)
+    } catch {
       toast.error('クイズの開始に失敗しました')
     } finally {
       setIsLoading(false)

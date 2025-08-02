@@ -45,8 +45,7 @@ export function useMultiPhraseSpeak({
       await handleFinish()
       // 練習準備画面ではなく、直接Listページに遷移
       router.push('/phrase/list')
-    } catch (error) {
-      console.error('Error finishing speak practice:', error)
+    } catch {
       toast.error('終了処理中にエラーが発生しました')
     } finally {
       setIsFinishing(false)

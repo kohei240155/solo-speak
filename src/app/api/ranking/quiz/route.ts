@@ -94,8 +94,6 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('User count map size:', userCountMap.size)
-
     // ランキングデータを作成
     const rankingData = Array.from(userCountMap.entries()).map(([userId, data]) => ({
       userId,

@@ -35,12 +35,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       // フォームに既存データを設定
       setValue('username', userData.username || '')
       setValue('iconUrl', userData.iconUrl || '')
-      console.log('Settings: Setting iconUrl in form:', {
-        iconUrl: userData.iconUrl,
-        type: typeof userData.iconUrl,
-        length: userData.iconUrl?.length,
-        timestamp: new Date().toISOString()
-      })
       setValue('nativeLanguageId', userData.nativeLanguageId || '')
       setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
       setValue('email', userData.email || '')
@@ -60,8 +54,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         const googleAvatarUrl = user?.user_metadata?.avatar_url || 
                                user?.user_metadata?.picture || 
                                user?.user_metadata?.avatar
-        
-        console.log('New user detected - setting up initial form values')
         
         // Googleアバターがある場合は設定
         if (googleAvatarUrl && (googleAvatarUrl.includes('googleusercontent.com') || 
@@ -94,7 +86,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 
   const fetchLanguages = useCallback(async () => {
     try {
-      console.log('fetchLanguages: Fetching languages from API (no cache)...')
       // ユーザー設定画面では常にDBから最新データを取得（キャッシュ無効）
       const data = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
         headers: {

@@ -40,14 +40,6 @@ export default function UserSettingsForm({
   // 実際に使用するsubmitting状態を統一
   const actualSubmitting = submitting || submittingProp
 
-  // デバッグ用ログ
-  console.log('UserSettingsForm: watchIconUrl:', {
-    value: watchIconUrl,
-    type: typeof watchIconUrl,
-    length: watchIconUrl?.length,
-    timestamp: new Date().toISOString()
-  })
-
   return (
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
@@ -59,19 +51,10 @@ export default function UserSettingsForm({
           ref={imageUploadRef}
           currentImage={watchIconUrl}
           onImageChange={(imageUrl) => {
-            console.log('UserSettingsForm: onImageChange called with:', {
-              imageUrl,
-              type: typeof imageUrl,
-              length: imageUrl?.length,
-              timestamp: new Date().toISOString()
-            })
             setValue('iconUrl', imageUrl)
-            console.log('UserSettingsForm: setValue called for iconUrl')
           }}
           onImageRemove={() => {
-            console.log('UserSettingsForm: onImageRemove called')
             setValue('iconUrl', '')
-            console.log('UserSettingsForm: setValue called for iconUrl with empty string')
           }}
           disabled={isDisabled}
         />
@@ -109,12 +92,6 @@ export default function UserSettingsForm({
             {...register('nativeLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
-            onChange={(e) => {
-              console.log('Native language selected:', {
-                selectedId: e.target.value,
-                selectedOption: languages.find(lang => lang.id === e.target.value)
-              })
-            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
@@ -149,12 +126,6 @@ export default function UserSettingsForm({
             {...register('defaultLearningLanguageId')}
             className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
             disabled={isDisabled}
-            onChange={(e) => {
-              console.log('Learning language selected:', {
-                selectedId: e.target.value,
-                selectedOption: languages.find(lang => lang.id === e.target.value)
-              })
-            }}
           >
             <option value="">
               {dataLoading ? 'Loading languages...' : 'Select a language'}
