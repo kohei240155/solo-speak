@@ -68,7 +68,7 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
   }
 
   return (
-    <div className="flex mb-[18px]">
+    <div className="flex mb-[18px]" data-tab-navigation>
       {tabs.map((tab, index) => (
         <button 
           key={tab.key}

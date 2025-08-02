@@ -42,6 +42,11 @@ export function usePageLeaveWarning({
         const target = e.target as HTMLElement
         const link = target.closest('a') || target.closest('[role="button"]') || target.closest('button')
         
+        // タブナビゲーション内のボタンはスキップ（独自の警告処理があるため）
+        if (link && link.closest('[data-tab-navigation]')) {
+          return
+        }
+        
         if (link && (
           link.getAttribute('href') || 
           link.onclick || 
