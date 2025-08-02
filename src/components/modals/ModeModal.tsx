@@ -88,43 +88,22 @@ export default function ModeModal({
   const renderConfigItem = (item: ModalConfigItem) => {
     switch (item.type) {
       case 'select':
-        if (item.id === 'language') {
-          // 言語選択の場合
-          return (
-            <div className="relative">
-              <select
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
-                style={selectStyle}
-              >
-                {languages.map((language) => (
-                  <option key={language.id} value={language.code}>
-                    {language.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )
-        } else {
-          // その他のセレクトボックス
-          return (
-            <div className="relative">
-              <select
-                value={item.value as string}
-                onChange={(e) => item.onChange?.(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
-                style={selectStyle}
-              >
-                {item.options?.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )
-        }
+        return (
+          <div className="relative">
+            <select
+              value={item.value as string}
+              onChange={(e) => item.onChange?.(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
+              style={selectStyle}
+            >
+              {item.options?.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
       case 'info':
         // 情報表示の場合
         return (
@@ -137,32 +116,24 @@ export default function ModeModal({
     }
   }
 
+  // Language設定項目を作成
+  const languageConfigItem: ModalConfigItem = {
+    id: 'language',
+    label: 'Language',
+    type: 'select',
+    value: selectedLanguage,
+    options: languages.map(lang => ({ value: lang.code, label: lang.name })),
+    onChange: (value: string) => setSelectedLanguage(value)
+  }
+
+  // Language設定項目を最初に追加した設定項目配列を作成
+  const allConfigItems = [languageConfigItem, ...config.configItems]
+
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title={config.title}>
-      {/* Language セクション（常に最初に表示） */}
-      <div className="mb-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-3">
-          Language
-        </h3>
-        <div className="relative">
-          <select
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-900"
-            style={selectStyle}
-          >
-            {languages.map((language) => (
-              <option key={language.id} value={language.code}>
-                {language.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* 動的な設定項目 */}
-      {config.configItems.map((item) => (
-        <div key={item.id} className="mb-4">
+      {/* 全ての設定項目を統一的に表示 */}
+      {allConfigItems.map((item, index) => (
+        <div key={item.id} className={index === allConfigItems.length - 1 ? "mb-8" : "mb-4"}>
           <h3 className="text-base font-semibold text-gray-900 mb-3">
             {item.label}
           </h3>
