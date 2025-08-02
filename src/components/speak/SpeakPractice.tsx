@@ -1,6 +1,7 @@
 import { RiSpeakLine } from 'react-icons/ri'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { useState, useEffect } from 'react'
 
 interface SpeakPhrase {
   id: string
@@ -22,6 +23,7 @@ interface SpeakPracticeProps {
   isNextLoading?: boolean
   isHideNext?: boolean // Nextボタンを非表示にするかどうか
   isFinishing?: boolean // Finish処理中かどうか
+  isCountDisabled?: boolean // Countボタンを無効にするかどうか
 }
 
 export default function SpeakPractice({
@@ -35,8 +37,32 @@ export default function SpeakPractice({
   isLoading = false,
   isNextLoading = false,
   isHideNext = false,
-  isFinishing = false
+  isFinishing = false,
+  isCountDisabled = false
 }: SpeakPracticeProps) {
+  const [countCooldown, setCountCooldown] = useState(0)
+
+  // カウントダウンの管理
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (countCooldown > 0) {
+      timer = setTimeout(() => {
+        setCountCooldown(countCooldown - 1)
+      }, 1000)
+    }
+    return () => clearTimeout(timer)
+  }, [countCooldown])
+
+  // カウントボタンのハンドラー
+  const handleCount = () => {
+    if (countCooldown > 0 || isCountDisabled) return
+    
+    setCountCooldown(1)
+    onCount()
+  }
+
+  // カウントボタンの無効状態判定
+  const isCountButtonDisabled = isCountDisabled || countCooldown > 0
 
   // ローディング中の表示
   if (isLoading) {
@@ -69,28 +95,14 @@ export default function SpeakPractice({
       <div className="mb-10">
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
-          <div 
-            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
+          <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed">
             {phrase.original}
           </div>
         </div>
         
         {/* 母国語の翻訳 */}
         <div className="mb-3">
-          <div 
-            className="text-sm sm:text-base md:text-lg text-gray-600 break-words leading-relaxed"
-            style={{ 
-              wordWrap: 'break-word',
-              overflowWrap: 'anywhere',
-              wordBreak: 'break-word'
-            }}
-          >
+          <div className="text-sm sm:text-base md:text-lg text-gray-600 break-words leading-relaxed">
             {phrase.translation}
           </div>
         </div>
@@ -106,16 +118,27 @@ export default function SpeakPractice({
       {/* Sound と Count ボタン */}
       <div>
         <div className="flex justify-between items-start">
-          {/* Sound ボタン + Finish ボタン */}
+          {/* Count ボタン + Finish ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onSound}
-              className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
+              onClick={handleCount}
+              disabled={isCountButtonDisabled}
+              className={`flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 ${
+                isCountButtonDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
             >
-              <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
+              <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1 ${
+                isCountButtonDisabled ? 'opacity-50' : ''
+              }`}>
+                <CiCirclePlus className={`w-10 h-10 ${
+                  isCountButtonDisabled ? 'text-gray-400' : 'text-gray-600'
+                }`} />
               </div>
-              <span className="text-gray-900 font-medium text-base">Sound</span>
+              <span className={`font-medium text-base ${
+                isCountButtonDisabled ? 'text-gray-400' : 'text-gray-900'
+              }`}>
+                {countCooldown > 0 ? 'Wait...' : 'Count'}
+              </span>
             </button>
             {!isHideNext && (
               <button
@@ -142,16 +165,16 @@ export default function SpeakPractice({
           {/* 区切り線 - 上部に配置 */}
           <div className="w-px h-20 bg-gray-300 mx-4"></div>
 
-          {/* Count ボタン + Next ボタン */}
+          {/* Sound ボタン + Next ボタン */}
           <div className="flex flex-col items-center" style={{ width: '45%' }}>
             <button
-              onClick={onCount}
+              onClick={onSound}
               className="flex flex-col items-center focus:outline-none mb-8 transition-colors rounded-lg p-2 cursor-pointer"
             >
               <div className="w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-1">
-                <CiCirclePlus className="w-10 h-10 text-gray-600" />
+                <HiMiniSpeakerWave className="w-10 h-10 text-gray-900" />
               </div>
-              <span className="text-gray-900 font-medium text-base">Count</span>
+              <span className="text-gray-900 font-medium text-base">Sound</span>
             </button>
             {!isHideNext && (
               <button

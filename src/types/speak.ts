@@ -3,6 +3,7 @@ export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   language: string
   prioritizeLowPractice: boolean
+  excludeIfSpeakCountGTE?: number // 指定回数以上のフレーズを除外（未設定の場合は制限なし）
 }
 
 // 練習用フレーズの型定義

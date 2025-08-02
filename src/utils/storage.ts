@@ -25,12 +25,7 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
         throw new Error('認証が必要です')
       }
 
-      // ユーザー情報を詳細ログ出力
-      console.log('User session info:', {
-        userId,
-        sessionUserId: session.user.id,
-        userEmail: session.user.email
-      })
+
     }
 
     // バケットの存在確認とアップロード前の準備

@@ -50,7 +50,6 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
           availablePhraseCount: data.availablePhraseCount || data.phrases.length
         }
         setSession(newSession)
-        console.log('Quiz session created successfully:', newSession)
         return true
       } else {
         const errorMessage = data.message || 'フレーズが見つかりませんでした'
