@@ -47,10 +47,17 @@ export function usePageLeaveWarning({
           return
         }
         
+        // ページ離脱に関係のないボタンをスキップ
+        if (link && link instanceof HTMLButtonElement) {
+          // onclick属性がある場合でも、href属性がなければページ離脱しないボタンとして扱う
+          if (!link.getAttribute('href') && !link.getAttribute('data-navigate')) {
+            return
+          }
+        }
+        
         if (link && (
           link.getAttribute('href') || 
-          link.onclick || 
-          link.getAttribute('role') === 'button'
+          link.getAttribute('data-navigate') // 明示的にナビゲーションを示すdata属性がある場合のみ
         )) {
           const confirmLeave = window.confirm(warningMessage)
           if (!confirmLeave) {
