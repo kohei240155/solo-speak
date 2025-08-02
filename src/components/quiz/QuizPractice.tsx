@@ -111,7 +111,7 @@ export default function QuizPractice({
       <div>
         <div className="flex justify-between items-start">
           {/* No Idea ボタン */}
-          <div className="flex flex-col items-center" style={{ width: '45%' }}>
+          <div className="flex flex-col items-center" style={{ width: '48%' }}>
             <button
               onClick={() => handleAnswer(false)}
               disabled={hasAnswered}
@@ -130,7 +130,7 @@ export default function QuizPractice({
           </div>
 
           {/* Got It ボタン */}
-          <div className="flex flex-col items-center" style={{ width: '45%' }}>
+          <div className="flex flex-col items-center" style={{ width: '48%' }}>
             <button
               onClick={() => handleAnswer(true)}
               disabled={hasAnswered}
