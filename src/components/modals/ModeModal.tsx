@@ -136,7 +136,7 @@ export default function ModeModal({
       {/* 全ての設定項目を統一的に表示 */}
       {allConfigItems.map((item, index) => (
         <div key={item.id} className={index === allConfigItems.length - 1 ? "mb-8" : "mb-4"}>
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
+          <h3 className="text-base font-medium text-gray-900 mb-3">
             {item.label}
           </h3>
           {renderConfigItem(item)}
