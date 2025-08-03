@@ -55,11 +55,11 @@ export default function DashboardPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner withHeaderOffset message="Loading..." />
   }
 
   if (setupCheckLoading) {
-    return <LoadingSpinner fullScreen message="Loading..." />
+    return <LoadingSpinner withHeaderOffset message="Loading..." />
   }
 
   return (

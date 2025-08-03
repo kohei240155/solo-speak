@@ -100,15 +100,8 @@ const Header = memo(function Header() {
     
     e.preventDefault()
     
-    // ユーザー設定が未完了の場合は自動ログアウト
-    if (user && !isUserSetupComplete) {
-      await signOut()
-      window.location.href = '/'
-      return
-    }
-    
     // ログインしている場合はフレーズ一覧へ
-    if (user && isUserSetupComplete) {
+    if (user) {
       window.location.href = '/phrase/list'
     }
   }
