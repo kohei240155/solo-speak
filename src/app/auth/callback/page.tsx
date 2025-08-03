@@ -17,7 +17,7 @@ export default function AuthCallback() {
         
         if (authError) {
           console.error('認証エラー:', authError)
-          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
           window.location.href = `${redirectUrl}/?error=callback_error`
           return
         }
@@ -31,13 +31,13 @@ export default function AuthCallback() {
               showErrorToast: false
             })
             
-            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
             
             // ユーザーが設定済みの場合はフレーズリストページへ
             window.location.href = `${redirectUrl}/phrase/list`
           } catch (apiError) {
             // 404エラー（ユーザー未設定）またはその他のエラー
-            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
             
             const is404Error = (
               (apiError instanceof ApiError && apiError.status === 404) ||
@@ -56,12 +56,12 @@ export default function AuthCallback() {
           }
         } else {
           // セッション情報がない場合はホームページへ
-          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
           window.location.href = redirectUrl
         }
       } catch (error) {
         console.error('コールバック処理エラー:', error)
-        const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+        const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
         window.location.href = `${redirectUrl}/?error=callback_error`
       }
     }
