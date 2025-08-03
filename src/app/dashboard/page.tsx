@@ -31,7 +31,6 @@ export default function DashboardPage() {
         setSetupCheckLoading(false)
       } else {
         // 必須項目が未設定の場合は設定ページにリダイレクト
-        console.log('Dashboard - Required settings missing, redirecting to settings')
         router.push('/settings')
       }
     } catch (error) {
