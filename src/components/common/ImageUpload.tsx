@@ -186,12 +186,6 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     // フォームの値を空文字列に設定（Save時に削除処理が実行される）
     onImageRemove()
   }
-    currentImage,
-    type: typeof currentImage,
-    length: currentImage?.length,
-    isEmpty: !currentImage || currentImage.trim() === '',
-    timestamp: new Date().toISOString()
-  })
 
   return (
     <div className="space-y-4">

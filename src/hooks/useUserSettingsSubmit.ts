@@ -112,13 +112,6 @@ export function useUserSettingsSubmit(
       // アイコンが削除された場合（空文字列に設定された場合）の処理
       if (finalData.iconUrl === '' && existingIconUrl && existingIconUrl.trim() !== '') {
         
-        // GoogleのプロフィールURLかどうかをチェック
-        const isGoogleUrl = existingIconUrl.includes('googleusercontent.com') || 
-                           existingIconUrl.includes('googleapis.com') ||
-                           existingIconUrl.startsWith('https://lh3.googleusercontent.com') ||
-                           existingIconUrl.includes('accounts.google.com') ||
-                           existingIconUrl.includes('google.com')
-        
         // Supabase StorageのURLかどうかをチェック
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
         const isSupabaseUrl = existingIconUrl.includes(supabaseUrl) &&
@@ -139,7 +132,7 @@ export function useUserSettingsSubmit(
       }
 
       // 2つ目のAPI: ユーザー設定を保存
-      const result = await api.post('/api/user/settings', finalData) as { iconUrl?: string }
+      await api.post('/api/user/settings', finalData)
       
       // Supabaseのユーザーメタデータも更新（空文字列の場合も含む）
       await updateUserMetadata({ icon_url: finalData.iconUrl || '' })
