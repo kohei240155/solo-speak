@@ -221,7 +221,7 @@ const Header = memo(function Header() {
                     e.currentTarget.style.backgroundColor = '#616161'
                   }}
                 >
-                  {t('common.login')}
+                  Login
                 </button>
               </div>
             )}
@@ -272,7 +272,7 @@ const Header = memo(function Header() {
                     e.currentTarget.style.backgroundColor = '#616161'
                   }}
                 >
-                  {t('common.login')}
+                  Login
                 </button>
               </div>
             )}
