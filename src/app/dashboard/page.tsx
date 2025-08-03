@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
   const { languages } = useLanguages()
 
-  // ユーザー設定の完了状態をチェック
+  // ユーザー設定の完了状態をチェック（簡素化）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
       setSetupCheckLoading(false)
@@ -26,44 +26,17 @@ export default function DashboardPage() {
     }
 
     try {
-      // SWRのデータが存在し、必須設定が完了している場合
+      // SWRのデータが存在する場合は設定完了とみなす
       if (userSettings) {
-        console.log('Dashboard - User settings:', {
-          username: userSettings.username,
-          hasNativeLanguage: !!userSettings.nativeLanguage,
-          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
-          userSettings
-        })
-        
-        const hasRequiredSettings = !!(
-          userSettings.username && 
-          userSettings.username.trim() !== '' &&
-          userSettings.nativeLanguage && 
-          userSettings.defaultLearningLanguage
-        )
-        
-        console.log('Dashboard - Setup completion check:', {
-          hasUsername: !!(userSettings.username && userSettings.username.trim() !== ''),
-          hasNativeLanguage: !!userSettings.nativeLanguage,
-          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
-          isComplete: hasRequiredSettings
-        })
-        
-        if (hasRequiredSettings) {
-          setSetupCheckLoading(false)
-        } else {
-          // 必須設定が不完全な場合は設定ページにリダイレクト
-          console.log('Dashboard - User setup incomplete, redirecting to settings')
-          router.push('/settings')
-        }
+        setSetupCheckLoading(false)
       } else {
-        // 設定が存在しない場合は設定ページにリダイレクト
-        console.log('Dashboard - No user settings found, redirecting to settings')
+        // 初回ログイン時のみ設定ページにリダイレクト
         router.push('/settings')
       }
     } catch (error) {
       console.error('Error checking user setup:', error)
-      router.push('/settings')
+      // エラー時も設定画面にリダイレクトしない（データ表示をスキップ）
+      setSetupCheckLoading(false)
     }
   }, [user, router, userSettings])
 
@@ -169,8 +142,32 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-600">データがありません</p>
+            <div className="space-y-6">
+              {/* データがない場合のデフォルト表示 */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
+                <div className="flex items-baseline">
+                  <div className="text-6xl font-bold text-gray-900 mr-3">0</div>
+                  <div className="text-xl text-gray-600">days</div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <div className="text-6xl font-bold text-gray-900">0</div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <div className="text-6xl font-bold text-gray-900">0</div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <div className="text-center py-4">
+                  <p className="text-gray-600">データがまだありません</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
