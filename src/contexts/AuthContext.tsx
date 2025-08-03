@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     // 本番環境では明示的に設定されたドメインを使用
-    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.vercel.app'
+    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
     const redirectUrl = `${productionUrl}/auth/callback`
     
     const { error } = await supabase.auth.signInWithOAuth({

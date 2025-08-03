@@ -10,6 +10,7 @@
   "scope": "/",
   "lang": "ja",
   "categories": ["education", "lifestyle"],
+  "id": "/",
   "icons": [
     {
       "src": "/favicon.ico",
