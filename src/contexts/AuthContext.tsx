@@ -167,22 +167,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
-    // 本番環境では明示的に設定されたドメインを使用
-    const isProduction = process.env.NODE_ENV === 'production'
-    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-    
-    // 本番環境では強制的にsolo-speak.comを使用
-    const redirectUrl = isProduction 
-      ? 'https://solo-speak.com/auth/callback'
-      : `${productionUrl}/auth/callback`
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl
+    try {
+      // 本番環境では明示的に設定されたドメインを使用
+      const isProduction = process.env.NODE_ENV === 'production'
+      const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
+      
+      // 本番環境では強制的にsolo-speak.comを使用
+      const redirectUrl = isProduction 
+        ? 'https://solo-speak.com/auth/callback'
+        : `${productionUrl}/auth/callback`
+      
+      console.log('Starting Google OAuth with redirect URL:', redirectUrl)
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
+      })
+      
+      // OAuth認証が正常に開始されたかログで確認
+      if (data?.url) {
+        console.log('OAuth URL generated:', data.url)
+        // 明示的にOAuth URLに遷移（ブラウザによってはこれが必要）
+        window.location.href = data.url
+      } else if (!error) {
+        console.warn('OAuth started but no URL was returned')
       }
-    })
-    return { error }
+      
+      return { error }
+    } catch (err) {
+      console.error('Error in signInWithGoogle:', err)
+      const error = err instanceof Error ? err : new Error('認証処理でエラーが発生しました')
+      return { error: error as AuthError }
+    }
   }
 
   const updateUserMetadata = async (metadata: Record<string, string>) => {
