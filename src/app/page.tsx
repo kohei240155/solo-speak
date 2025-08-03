@@ -1,21 +1,11 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useRedirect } from '@/hooks/useRedirect'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 
 export default function Home() {
-  const { user, loading, isUserSetupComplete } = useAuth()
-  const router = useRouter()
-
-  // 認証済みユーザーをPhrase List画面にリダイレクト
-  useEffect(() => {
-    if (!loading && user && isUserSetupComplete) {
-      router.push('/phrase/list')
-    }
-  }, [loading, user, isUserSetupComplete, router])
+  const { loading } = useRedirect()
 
   if (loading) {
     return <LoadingSpinner fullScreen message="Loading..." />
