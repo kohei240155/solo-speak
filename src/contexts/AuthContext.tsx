@@ -176,8 +176,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ? 'https://solo-speak.com/auth/callback'
       : `${productionUrl}/auth/callback`
     
-    console.log('OAuth redirect URL:', redirectUrl) // デバッグ用
-    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

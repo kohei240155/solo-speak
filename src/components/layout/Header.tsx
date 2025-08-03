@@ -87,7 +87,6 @@ const Header = memo(function Header() {
 
   const handleImageError = () => {
     // AuthContextでエラーハンドリングを行うため、ここでは何もしない
-    console.warn('User icon failed to load')
   }
 
   // ロゴクリック時の処理
