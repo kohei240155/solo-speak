@@ -2,7 +2,6 @@
 
 import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useTranslation } from '@/hooks/useTranslation'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from '../common/DropdownMenu'
@@ -13,7 +12,6 @@ import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
-  const { t } = useTranslation('common')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
@@ -61,13 +59,13 @@ const Header = memo(function Header() {
       items.push(
         {
           id: 'dashboard',
-          label: t('common.dashboard'),
+          label: 'Dashboard',
           icon: BsClipboardData,
           onClick: () => window.location.href = '/dashboard'
         },
         {
           id: 'settings',
-          label: t('common.userSettings'),
+          label: 'User Settings',
           icon: LuSettings,
           onClick: () => window.location.href = '/settings'
         }
@@ -82,7 +80,7 @@ const Header = memo(function Header() {
     })
     
     return items
-  }, [isUserSetupComplete, handleSignOut, t])
+  }, [isUserSetupComplete, handleSignOut])
 
   const handleLoginClick = () => {
     showLoginModal()

@@ -46,7 +46,7 @@ export default function UserSettingsForm({
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
       <div>
-        <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
+        <label className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
           {t('settings.userIcon')}
         </label>
         <ImageUpload
@@ -67,7 +67,7 @@ export default function UserSettingsForm({
 
       {/* Display Name */}
       <div>
-        <label htmlFor="username" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
+        <label htmlFor="username" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
           {t('settings.displayName')}
         </label>
         <input
@@ -85,7 +85,7 @@ export default function UserSettingsForm({
 
       {/* Native Language */}
       <div>
-        <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
+        <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
           {t('settings.nativeLanguage')}
         </label>
         <div className="relative">
@@ -119,7 +119,7 @@ export default function UserSettingsForm({
 
       {/* Default Learning Language */}
       <div>
-        <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
+        <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
           {t('settings.defaultLearningLanguage')}
         </label>
         <div className="relative">
@@ -153,7 +153,7 @@ export default function UserSettingsForm({
 
       {/* Contact Email */}
       <div>
-        <label htmlFor="email" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
+        <label htmlFor="email" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
           {t('settings.contactEmail')}
         </label>
         <input
