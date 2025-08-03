@@ -147,7 +147,7 @@ const Header = memo(function Header() {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
-            {user && isUserSetupComplete ? (
+            {user ? (
               <Link 
                 href="/phrase/list" 
                 className="flex items-center space-x-2" 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Toaster } from 'react-hot-toast'
@@ -14,7 +14,7 @@ import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
-  const { loading } = useAuth()
+  const { loading: authLoading } = useAuthGuard()
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
 
   const {
@@ -45,7 +45,7 @@ export default function UserSettingsPage() {
 
   const { onSubmit, submitting } = useUserSettingsSubmit(setError, setIsUserSetupComplete)
 
-  if (loading || dataLoading) {
+  if (authLoading || dataLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 

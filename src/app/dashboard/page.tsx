@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
@@ -8,7 +8,7 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuthGuard()
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
   const { languages } = useLanguages()
 
-  // ユーザー設定の完了状態をチェック
+  // ユーザー設定の完了状態をチェック（必須項目のみ）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
       setSetupCheckLoading(false)
@@ -26,52 +26,25 @@ export default function DashboardPage() {
     }
 
     try {
-      // SWRのデータが存在し、必須設定が完了している場合
-      if (userSettings) {
-        console.log('Dashboard - User settings:', {
-          username: userSettings.username,
-          hasNativeLanguage: !!userSettings.nativeLanguage,
-          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
-          userSettings
-        })
-        
-        const hasRequiredSettings = !!(
-          userSettings.username && 
-          userSettings.username.trim() !== '' &&
-          userSettings.nativeLanguage && 
-          userSettings.defaultLearningLanguage
-        )
-        
-        console.log('Dashboard - Setup completion check:', {
-          hasUsername: !!(userSettings.username && userSettings.username.trim() !== ''),
-          hasNativeLanguage: !!userSettings.nativeLanguage,
-          hasDefaultLearningLanguage: !!userSettings.defaultLearningLanguage,
-          isComplete: hasRequiredSettings
-        })
-        
-        if (hasRequiredSettings) {
-          setSetupCheckLoading(false)
-        } else {
-          // 必須設定が不完全な場合は設定ページにリダイレクト
-          console.log('Dashboard - User setup incomplete, redirecting to settings')
-          router.push('/settings')
-        }
+      // 必須項目（母国語と学習言語）が設定されているかチェック
+      if (userSettings && userSettings.nativeLanguage && userSettings.defaultLearningLanguage) {
+        setSetupCheckLoading(false)
       } else {
-        // 設定が存在しない場合は設定ページにリダイレクト
-        console.log('Dashboard - No user settings found, redirecting to settings')
+        // 必須項目が未設定の場合は設定ページにリダイレクト
         router.push('/settings')
       }
     } catch (error) {
       console.error('Error checking user setup:', error)
-      router.push('/settings')
+      // エラー時も設定画面にリダイレクトしない（データ表示をスキップ）
+      setSetupCheckLoading(false)
     }
   }, [user, router, userSettings])
 
   useEffect(() => {
-    if (user) {
+    if (user && userSettings !== undefined) {
       checkUserSetupComplete()
     }
-  }, [user, checkUserSetupComplete])
+  }, [user, userSettings, checkUserSetupComplete])
 
   // 言語設定の初期化
   useEffect(() => {
@@ -79,6 +52,11 @@ export default function DashboardPage() {
       setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
   }, [userSettings, selectedLanguage])
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
+  }
 
   if (setupCheckLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
@@ -164,8 +142,32 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-600">データがありません</p>
+            <div className="space-y-6">
+              {/* データがない場合のデフォルト表示 */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
+                <div className="flex items-baseline">
+                  <div className="text-6xl font-bold text-gray-900 mr-3">0</div>
+                  <div className="text-xl text-gray-600">days</div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <div className="text-6xl font-bold text-gray-900">0</div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <div className="text-6xl font-bold text-gray-900">0</div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <div className="text-center py-4">
+                  <p className="text-gray-600">データがまだありません</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
