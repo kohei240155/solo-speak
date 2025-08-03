@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import BaseModal from '../common/BaseModal'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface AddContextModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ interface AddContextModalProps {
 }
 
 export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextModalProps) {
+  const { t } = useTranslation('common')
   const [contextName, setContextName] = useState('')
 
   const handleSubmit = () => {
@@ -36,7 +38,7 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
           type="text"
           value={contextName}
           onChange={(e) => setContextName(e.target.value)}
-          placeholder="例: カフェで注文する時"
+          placeholder={t('phrase.placeholders.situationInput')}
           className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {

@@ -10,6 +10,7 @@ import PhraseGenerationTipsModal from '@/components/modals/PhraseGenerationTipsM
 import BaseModal from '@/components/common/BaseModal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
+import { useTranslation } from '@/hooks/useTranslation'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -57,6 +58,8 @@ export default function PhraseAdd({
   addSituation,
   deleteSituation
 }: PhraseAddProps) {
+  const { t } = useTranslation('common')
+  
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
   const [isTipsModalOpen, setIsTipsModalOpen] = useState(false)
@@ -204,7 +207,7 @@ export default function PhraseAdd({
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder="例：この料理はなんですか？"
+          placeholder={t('phrase.placeholders.phraseInput')}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-gray-400' 

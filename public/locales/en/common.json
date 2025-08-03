@@ -14,7 +14,11 @@
     "selectLanguage": "Select a language"
   },
   "phrase": {
-    "noPhrasesYet": "No phrases have been registered yet"
+    "noPhrasesYet": "No phrases have been registered yet",
+    "placeholders": {
+      "phraseInput": "Example: Where have you been recently?",
+      "situationInput": "Example: Ordering at a restaurant"
+    }
   },
   "home": {
     "hero": {

@@ -14,7 +14,11 @@
     "selectLanguage": "言語を選択してください"
   },
   "phrase": {
-    "noPhrasesYet": "まだフレーズが登録されていません"
+    "noPhrasesYet": "まだフレーズが登録されていません",
+    "placeholders": {
+      "phraseInput": "例：最近どこに行きましたか？",
+      "situationInput": "例：レストランの注文で"
+    }
   },
   "home": {
     "hero": {
