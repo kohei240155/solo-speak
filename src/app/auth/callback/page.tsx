@@ -17,28 +17,22 @@ export default function AuthCallback() {
         
         if (authError) {
           console.error('認証エラー:', authError)
-          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-          window.location.href = `${redirectUrl}/?error=callback_error`
+          router.push('/?error=callback_error')
           return
         }
 
         if (authData.session) {
-          // 認証成功時の処理 - 以前のユーザー状態をクリア
-          
+          // 認証成功時の処理
           try {
             // ユーザーが既に設定済みかチェック（404エラーでトーストを表示しない）
             await api.get('/api/user/settings', {
               showErrorToast: false
             })
             
-            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-            
             // ユーザーが設定済みの場合はフレーズリストページへ
-            window.location.href = `${redirectUrl}/phrase/list`
+            router.push('/phrase/list')
           } catch (apiError) {
             // 404エラー（ユーザー未設定）またはその他のエラー
-            const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-            
             const is404Error = (
               (apiError instanceof ApiError && apiError.status === 404) ||
               (apiError instanceof Error && apiError.message.includes('404'))
@@ -46,21 +40,19 @@ export default function AuthCallback() {
             
             if (is404Error) {
               // ユーザーが未設定の場合は設定画面へ直接遷移
-              window.location.href = `${redirectUrl}/settings`
+              router.push('/settings')
             } else {
               // その他のエラー - とりあえずフレーズリストページへ
-              window.location.href = `${redirectUrl}/phrase/list`
+              router.push('/phrase/list')
             }
           }
         } else {
           // セッション情報がない場合はホームページへ
-          const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-          window.location.href = redirectUrl
+          router.push('/')
         }
       } catch (error) {
         console.error('コールバック処理エラー:', error)
-        const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-        window.location.href = `${redirectUrl}/?error=callback_error`
+        router.push('/?error=callback_error')
       }
     }
 
