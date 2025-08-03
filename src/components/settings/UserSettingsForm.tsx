@@ -28,8 +28,9 @@ export default function UserSettingsForm({
   dataLoading,
   setError,
   setIsUserSetupComplete,
-  onSubmit, // 未使用だが型との整合性のため受け取る
-  submitting: submittingProp
+  submitting: submittingProp,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ...rest // onSubmitを含む残りのpropsを受け取るが使用しない
 }: UserSettingsFormProps) {
   const { t } = useTranslation('common')
   const { submitting, imageUploadRef, onSubmit: onSubmitFromHook } = useUserSettingsSubmit(
