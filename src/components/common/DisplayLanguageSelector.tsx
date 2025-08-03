@@ -8,7 +8,7 @@ interface DisplayLanguageSelectorProps {
 }
 
 const LANGUAGE_NAMES = {
-  ja: '日本語',
+  ja: 'Japanese',
   en: 'English', 
 }
 
@@ -23,7 +23,7 @@ export const DisplayLanguageSelector: React.FC<DisplayLanguageSelectorProps> = (
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value)}
-        className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[100px] text-gray-900"
+        className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px] text-gray-900"
         disabled={isLoadingLocale}
       >
         {availableLocales.map((lang) => (

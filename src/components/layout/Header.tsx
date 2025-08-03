@@ -197,7 +197,7 @@ const Header = memo(function Header() {
                 triggerClassName="p-1 rounded-full hover:bg-gray-100"
               />
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-6">
                 {/* 未ログイン時の言語選択 */}
                 <DisplayLanguageSelector />
                 
@@ -248,7 +248,7 @@ const Header = memo(function Header() {
                 triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
               />
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-4">
                 {/* 未ログイン時の言語選択（モバイル版） */}
                 <DisplayLanguageSelector />
                 
