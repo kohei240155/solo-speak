@@ -41,6 +41,17 @@
       }
     }
   },
+  "quiz": {
+    "modal": {
+      "mode": "モード",
+      "quizLength": "問題数",
+      "options": {
+        "normal": "通常",
+        "random": "ランダム"
+      },
+      "questions": "問"
+    }
+  },
   "home": {
     "hero": {
       "title": {

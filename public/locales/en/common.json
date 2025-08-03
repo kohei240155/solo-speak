@@ -41,6 +41,17 @@
       }
     }
   },
+  "quiz": {
+    "modal": {
+      "mode": "Mode",
+      "quizLength": "Quiz Length",
+      "options": {
+        "normal": "Normal",
+        "random": "Random"
+      },
+      "questions": "questions"
+    }
+  },
   "home": {
     "hero": {
       "title": {
