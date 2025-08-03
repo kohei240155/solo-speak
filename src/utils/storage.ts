@@ -3,14 +3,6 @@ import { createServerSupabaseClient } from './supabase-server'
 
 export async function uploadUserIcon(file: File, userId: string, serverMode: boolean = false): Promise<string> {
   try {
-    // 環境情報をログ出力
-    console.log('Storage environment info:', {
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      nodeEnv: process.env.NODE_ENV,
-      vercelEnv: process.env.VERCEL_ENV,
-      serverMode
-    })
-
     let supabaseClient = supabase
 
     // サーバーサイドモードの場合は、サーバーサイドクライアントを使用
@@ -36,16 +28,8 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
     const fileName = `${userId}_${Date.now()}.${fileExt}`
     const filePath = `user-icons/${fileName}`
 
-    console.log('Uploading file:', {
-      fileName,
-      filePath,
-      fileSize: file.size,
-      fileType: file.type,
-      userId
-    })
-
     // Supabase Storageにアップロード
-    const { data, error } = await supabaseClient.storage
+    const { error } = await supabaseClient.storage
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -68,46 +52,23 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
       throw new Error(`画像のアップロードに失敗しました: ${error.message}`)
     }
 
-    console.log('Upload successful:', {
-      data,
-      path: data?.path,
-      fullPath: data?.fullPath,
-      id: data?.id
-    })
-
     // 公開URLを取得
     const { data: publicUrlData } = supabaseClient.storage
       .from('images')
       .getPublicUrl(filePath)
 
-    console.log('Public URL generated:', {
-      publicUrl: publicUrlData.publicUrl,
-      filePath: filePath,
-      urlStructure: {
-        protocol: new URL(publicUrlData.publicUrl).protocol,
-        hostname: new URL(publicUrlData.publicUrl).hostname,
-        pathname: new URL(publicUrlData.publicUrl).pathname
-      }
-    })
-
     // URL の有効性をテスト（オプション）
     try {
       const testResponse = await fetch(publicUrlData.publicUrl, { method: 'HEAD' })
-      console.log('URL accessibility test:', {
-        status: testResponse.status,
-        ok: testResponse.ok,
-        headers: Object.fromEntries(testResponse.headers.entries())
-      })        // 公開URLでアクセスできない場合は、認証付きURLを試す
-        if (!testResponse.ok) {
-          console.log('Public URL failed, trying signed URL...')
-          const { data: signedUrlData, error: signedUrlError } = await supabaseClient.storage
-            .from('images')
-            .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
-        
+      // 公開URLでアクセスできない場合は、認証付きURLを試す
+      if (!testResponse.ok) {
+        const { data: signedUrlData, error: signedUrlError } = await supabaseClient.storage
+          .from('images')
+          .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
+      
         if (signedUrlError) {
           console.error('Error creating signed URL:', signedUrlError)
         } else {
-          console.log('Signed URL created:', signedUrlData.signedUrl)
           return signedUrlData.signedUrl
         }
       }
@@ -124,28 +85,12 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
 
 export async function testStoragePermissions(): Promise<void> {
   try {
-    console.log('🔍 Testing Supabase Storage permissions...')
-    
-    // サーバーサイドクライアントを使用
+    // サーバーサイドクライアントを使用してストレージの基本テストを実行
     const serverSupabase = createServerSupabaseClient()
     
-    // バケット一覧を取得
-    const { data: buckets, error: bucketsError } = await serverSupabase.storage.listBuckets()
-    console.log('Buckets list:', { buckets, error: bucketsError })
+    // 基本的な接続テスト
+    await serverSupabase.storage.listBuckets()
     
-    // imagesバケットの内容を確認
-    const { data: files, error: listError } = await serverSupabase.storage
-      .from('images')
-      .list('')
-    console.log('Images bucket root contents:', { files, error: listError })
-    
-    // user-iconsフォルダの内容を確認
-    const { data: userIconFiles, error: userIconsError } = await serverSupabase.storage
-      .from('images')
-      .list('user-icons')
-    console.log('User icons folder contents:', { userIconFiles, error: userIconsError })
-    
-    console.log('✅ Storage permissions test completed')
   } catch (error) {
     console.error('❌ Storage permissions test failed:', error)
     throw error

@@ -46,11 +46,9 @@ export default function AuthCallback() {
             
             if (is404Error) {
               // ユーザーが未設定の場合は設定画面へ直接遷移
-              console.log('Initial user setup required - redirecting to settings')
               window.location.href = `${redirectUrl}/settings`
             } else {
               // その他のエラー - とりあえずフレーズリストページへ
-              console.error('API呼び出しエラー:', apiError)
               window.location.href = `${redirectUrl}/phrase/list`
             }
           }
