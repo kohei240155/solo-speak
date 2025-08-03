@@ -15,6 +15,18 @@ const AVAILABLE_LOCALES = ['ja', 'en']
 const DEFAULT_LOCALE = 'ja'
 const LOCALE_STORAGE_KEY = 'solo-speak-display-locale'
 
+// ローカルストレージから言語設定を取得する関数
+export const getStoredDisplayLanguage = (): string | null => {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(LOCALE_STORAGE_KEY)
+}
+
+// ローカルストレージに言語設定を保存する関数
+export const setStoredDisplayLanguage = (locale: string): void => {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+}
+
 interface LanguageProviderProps {
   children: ReactNode
 }
@@ -58,9 +70,27 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         const detectedLocale = detectBrowserLanguage()
         if (detectedLocale !== locale) {
           setLocaleState(detectedLocale)
-          localStorage.setItem(LOCALE_STORAGE_KEY, detectedLocale)
+          setStoredDisplayLanguage(detectedLocale)
         }
       }
+    }
+  }, [locale])
+
+  // 外部からの言語変更イベントを監視（AuthContextからの通知）
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleDisplayLanguageChanged = (event: CustomEvent) => {
+      const { locale: newLocale } = event.detail
+      if (AVAILABLE_LOCALES.includes(newLocale) && newLocale !== locale) {
+        setLocaleState(newLocale)
+      }
+    }
+
+    window.addEventListener('displayLanguageChanged', handleDisplayLanguageChanged as EventListener)
+    
+    return () => {
+      window.removeEventListener('displayLanguageChanged', handleDisplayLanguageChanged as EventListener)
     }
   }, [locale])
 
@@ -68,7 +98,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLocale = (newLocale: string) => {
     if (AVAILABLE_LOCALES.includes(newLocale)) {
       setLocaleState(newLocale)
-      localStorage.setItem(LOCALE_STORAGE_KEY, newLocale)
+      // ローカルストレージに即座に保存
+      setStoredDisplayLanguage(newLocale)
       
       // App Routerでは言語切り替えは状態管理のみで行う
       // URLベースの言語切り替えは使用しない

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
 import { UserSettingsResponse } from '@/types/userSettings'
+import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
 import LoginModal from '@/components/auth/LoginModal'
 
 type AuthContextType = {
@@ -246,6 +247,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setShouldRedirectToSettings(true)
       } else {
         setShouldRedirectToSettings(false)
+        
+        // 既存ユーザーの場合：母国語設定に基づいて表示言語を自動調整
+        if (userData.nativeLanguage) {
+          const nativeLanguageCode = userData.nativeLanguage.code?.toLowerCase()
+          let targetDisplayLanguage = 'en' // デフォルトは英語
+          
+          // 日本語が母国語の場合は日本語表示、それ以外は英語表示
+          if (nativeLanguageCode === 'ja' || nativeLanguageCode === 'jp' || userData.nativeLanguage.name?.toLowerCase().includes('japanese')) {
+            targetDisplayLanguage = 'ja'
+          }
+          
+          // 現在の表示言語と異なる場合は更新
+          const currentDisplayLanguage = getStoredDisplayLanguage()
+          if (currentDisplayLanguage !== targetDisplayLanguage) {
+            setStoredDisplayLanguage(targetDisplayLanguage)
+            
+            // LanguageContextに変更を通知
+            window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
+              detail: { locale: targetDisplayLanguage } 
+            }))
+          }
+        }
       }      // DBのアイコンURLがある場合は使用
       if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
@@ -262,8 +285,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
       if (error instanceof ApiError && error.status === 404) {
         try {
-          // 初回ログイン時にユーザーを自動作成
-          await api.post('/api/user/init', {}, { showErrorToast: false })
+          // ローカルストレージから言語設定を取得
+          const storedDisplayLanguage = getStoredDisplayLanguage()
+          
+          // 初回ログイン時にユーザーを自動作成（言語設定を含む）
+          const initData: { displayLanguage?: string } = {}
+          if (storedDisplayLanguage) {
+            initData.displayLanguage = storedDisplayLanguage
+          }
+          
+          await api.post('/api/user/init', initData, { showErrorToast: false })
           
           // 初期化後の状態を設定
           setIsUserSetupComplete(false) // まだ設定が完了していない
