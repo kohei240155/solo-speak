@@ -48,14 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
-    // PWA環境の検出
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                  (window.navigator as { standalone?: boolean }).standalone === true ||
-                  document.referrer.includes('android-app://')
-    
-    // PWA環境では短いタイムアウト設定（3秒後に強制的にローディング解除）
-    const timeoutDuration = isPWA ? 3000 : 5000
-    
+    // タイムアウト設定（5秒後に強制的にローディング解除）
     const loadingTimeout = setTimeout(() => {
       setLoading(false)
       setSession(null)
@@ -68,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         window.localStorage.removeItem('supabase.auth.token')
         window.sessionStorage.removeItem('supabase.auth.token')
       }
-    }, timeoutDuration)
+    }, 5000)
 
     // 現在のセッションを取得
     const getSession = async () => {
@@ -174,21 +167,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
-    // PWA環境の検出
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                  (window.navigator as { standalone?: boolean }).standalone === true ||
-                  document.referrer.includes('android-app://')
-    
-    // PWA環境では事前にエラーを返す
-    if (isPWA) {
-      return { 
-        error: { 
-          message: 'PWAモードではGoogleログインが制限されています。Safariブラウザで直接サイトを開いてログインしてください。',
-          name: 'PWAError'
-        } as AuthError 
-      }
-    }
-    
     // 本番環境では明示的に設定されたドメインを使用
     const isProduction = process.env.NODE_ENV === 'production'
     const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
@@ -198,18 +176,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ? 'https://solo-speak.com/auth/callback'
       : `${productionUrl}/auth/callback`
     
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectUrl
-        }
-      })
-      
-      return { error }
-    } catch (err) {
-      return { error: err as AuthError }
-    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl
+      }
+    })
+    return { error }
   }
 
   const updateUserMetadata = async (metadata: Record<string, string>) => {
