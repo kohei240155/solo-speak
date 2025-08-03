@@ -3,13 +3,15 @@ interface LoadingSpinnerProps {
   message?: string
   className?: string
   fullScreen?: boolean
+  withHeaderOffset?: boolean
 }
 
 export default function LoadingSpinner({ 
   size = 'md', 
   message = 'Loading...', 
   className = '', 
-  fullScreen = false 
+  fullScreen = false,
+  withHeaderOffset = false
 }: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'h-4 w-4',
@@ -29,6 +31,14 @@ export default function LoadingSpinner({
   if (fullScreen) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        {spinner}
+      </div>
+    )
+  }
+
+  if (withHeaderOffset) {
+    return (
+      <div className="min-h-screen flex justify-center bg-gray-50 pt-32">
         {spinner}
       </div>
     )
