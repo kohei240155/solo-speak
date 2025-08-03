@@ -2,7 +2,7 @@
   "name": "Solo Speak",
   "short_name": "Solo Speak",
   "description": "Language learning application",
-  "start_url": "/",
+  "start_url": "/phrase/list",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1f2937",

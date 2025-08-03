@@ -14,3 +14,28 @@ export type UserSetupFormData = z.infer<typeof userSetupSchema>
 
 // 再エクスポート（後方互換性のため）
 export type Language = LanguageInfo
+
+// ユーザー設定APIレスポンス型（サーバーサイドと共用）
+export interface UserSettingsResponse {
+  iconUrl?: string | null
+  username?: string | null
+  nativeLanguageId?: string | null
+  defaultLearningLanguageId?: string | null
+  nativeLanguage?: { id: string; name: string; code: string; } | null
+  defaultLearningLanguage?: { id: string; name: string; code: string; } | null
+  email?: string | null
+}
+
+// ユーザー設定更新リクエスト型
+export interface UserSettingsUpdateRequest {
+  username?: string
+  iconUrl?: string
+  nativeLanguageId?: string
+  defaultLearningLanguageId?: string
+  email?: string
+}
+
+// ユーザー設定作成リクエスト型
+export interface UserSettingsCreateRequest extends UserSettingsUpdateRequest {
+  email: string
+}

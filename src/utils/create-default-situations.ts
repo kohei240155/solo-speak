@@ -35,9 +35,5 @@ export async function createDefaultSituations(
         name
       }))
     })
-    
-    console.log(`Created ${situationsToCreate.length} default situations for user ${userId} in language ${languageCode}`)
-  } else {
-    console.log(`No new default situations to create for user ${userId}`)
   }
 }

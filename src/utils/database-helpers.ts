@@ -1,6 +1,7 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
 import { createDefaultSituations } from './create-default-situations'
+import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
 
 /**
  * ユーザー名の重複チェック
@@ -29,12 +30,10 @@ export async function checkUsernameConflict(
  */
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
-    console.log('checkUserExists - Checking user:', userId)
     const user = await prisma.user.findUnique({
       where: { id: userId }
     })
     const exists = !!user
-    console.log('checkUserExists - Result:', { userId, exists })
     return exists
   } catch (error) {
     console.error('checkUserExists - Error:', {
@@ -51,14 +50,36 @@ export async function checkUserExists(userId: string): Promise<boolean> {
  * @param userId ユーザーID
  * @returns ユーザー設定データ
  */
-export async function getUserSettings(userId: string) {
-  return await prisma.user.findUnique({
+export async function getUserSettings(userId: string): Promise<UserSettingsResponse | null> {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
     }
   })
+
+  if (!user) {
+    return null
+  }
+
+  return {
+    iconUrl: user.iconUrl,
+    username: user.username,
+    nativeLanguageId: user.nativeLanguageId,
+    defaultLearningLanguageId: user.defaultLearningLanguageId,
+    email: user.email,
+    nativeLanguage: user.nativeLanguage ? {
+      id: user.nativeLanguage.id,
+      name: user.nativeLanguage.name,
+      code: user.nativeLanguage.code
+    } : null,
+    defaultLearningLanguage: user.defaultLearningLanguage ? {
+      id: user.defaultLearningLanguage.id,
+      name: user.defaultLearningLanguage.name,
+      code: user.defaultLearningLanguage.code
+    } : null
+  }
 }
 
 /**
@@ -66,24 +87,11 @@ export async function getUserSettings(userId: string) {
  * @param user Supabaseユーザー情報
  * @returns 作成されたユーザーデータ
  */
-export async function initializeUser(user: User) {
+export async function initializeUser(user: User): Promise<UserSettingsResponse> {
   try {
-    console.log('initializeUser - Input data:', {
-      userId: user.id,
-      email: user.email,
-      fullName: user.user_metadata?.full_name,
-      name: user.user_metadata?.name,
-      avatarUrl: user.user_metadata?.avatar_url ? `${user.user_metadata.avatar_url.substring(0, 50)}...` : undefined
-    })
-
     // Googleから取得した情報
     const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
     const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
-
-    console.log('initializeUser - Extracted Google data:', {
-      displayName: googleDisplayName,
-      avatarUrl: googleAvatarUrl ? `${googleAvatarUrl.substring(0, 50)}...` : googleAvatarUrl
-    })
 
     const result = await prisma.user.create({
       data: {
@@ -100,14 +108,23 @@ export async function initializeUser(user: User) {
       }
     })
 
-    console.log('initializeUser - Success:', {
-      userId: result.id,
-      email: result.email,
+    return {
+      iconUrl: result.iconUrl,
       username: result.username,
-      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
-    })
-
-    return result
+      nativeLanguageId: result.nativeLanguageId,
+      defaultLearningLanguageId: result.defaultLearningLanguageId,
+      email: result.email,
+      nativeLanguage: result.nativeLanguage ? {
+        id: result.nativeLanguage.id,
+        name: result.nativeLanguage.name,
+        code: result.nativeLanguage.code
+      } : null,
+      defaultLearningLanguage: result.defaultLearningLanguage ? {
+        id: result.defaultLearningLanguage.id,
+        name: result.defaultLearningLanguage.name,
+        code: result.defaultLearningLanguage.code
+      } : null
+    }
   } catch (error) {
     console.error('initializeUser - Error:', {
       error: error,
@@ -127,24 +144,9 @@ export async function initializeUser(user: User) {
  */
 export async function createUserSettings(
   user: User, 
-  userData: {
-    username: string
-    iconUrl?: string
-    nativeLanguageId: string
-    defaultLearningLanguageId: string
-    email?: string
-  }
-) {
+  userData: UserSettingsCreateRequest
+): Promise<UserSettingsResponse> {
   try {
-    console.log('createUserSettings - Input data:', {
-      userId: user.id,
-      email: user.email,
-      userData: {
-        ...userData,
-        iconUrl: userData.iconUrl ? `${userData.iconUrl.substring(0, 50)}...` : userData.iconUrl
-      }
-    })
-
     const result = await prisma.user.create({
       data: {
         id: user.id,
@@ -170,13 +172,23 @@ export async function createUserSettings(
       // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
     }
 
-    console.log('createUserSettings - Success:', {
-      userId: result.id,
+    return {
+      iconUrl: result.iconUrl,
       username: result.username,
-      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
-    })
-
-    return result
+      nativeLanguageId: result.nativeLanguageId,
+      defaultLearningLanguageId: result.defaultLearningLanguageId,
+      email: result.email,
+      nativeLanguage: result.nativeLanguage ? {
+        id: result.nativeLanguage.id,
+        name: result.nativeLanguage.name,
+        code: result.nativeLanguage.code
+      } : null,
+      defaultLearningLanguage: result.defaultLearningLanguage ? {
+        id: result.defaultLearningLanguage.id,
+        name: result.defaultLearningLanguage.name,
+        code: result.defaultLearningLanguage.code
+      } : null
+    }
   } catch (error) {
     console.error('createUserSettings - Error:', {
       error: error,
@@ -215,13 +227,8 @@ export async function hasUserSituations(userId: string): Promise<boolean> {
  */
 export async function updateUserSettings(
   userId: string,
-  userData: {
-    username?: string
-    iconUrl?: string
-    nativeLanguageId?: string
-    defaultLearningLanguageId?: string
-  }
-){
+  userData: UserSettingsUpdateRequest
+): Promise<UserSettingsResponse> {
   const result = await prisma.user.update({
     where: { id: userId },
     data: {
@@ -247,5 +254,21 @@ export async function updateUserSettings(
     // シチュエーション作成に失敗してもユーザー更新自体は成功として扱う
   }
 
-  return result
+  return {
+    iconUrl: result.iconUrl,
+    username: result.username,
+    nativeLanguageId: result.nativeLanguageId,
+    defaultLearningLanguageId: result.defaultLearningLanguageId,
+    email: result.email,
+    nativeLanguage: result.nativeLanguage ? {
+      id: result.nativeLanguage.id,
+      name: result.nativeLanguage.name,
+      code: result.nativeLanguage.code
+    } : null,
+    defaultLearningLanguage: result.defaultLearningLanguage ? {
+      id: result.defaultLearningLanguage.id,
+      name: result.defaultLearningLanguage.name,
+      code: result.defaultLearningLanguage.code
+    } : null
+  }
 }

@@ -5,6 +5,7 @@ import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
+import { UserSettingsResponse } from '@/types/userSettings'
 
 type AuthContextType = {
   user: User | null
@@ -191,53 +192,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const userData = await api.get<{ 
-        iconUrl?: string
-        username?: string | null
-        nativeLanguageId?: string | null
-        defaultLearningLanguageId?: string | null
-        nativeLanguage?: { id: string; name: string; code: string; } | null
-        defaultLearningLanguage?: { id: string; name: string; code: string; } | null
-      }>('/api/user/settings', {
+      const userData = await api.get<UserSettingsResponse>('/api/user/settings', {
         showErrorToast: false // 404エラー時のトーストを無効化
-      })
-      
-      console.log('User settings fetched:', {
-        username: userData.username,
-        nativeLanguageId: userData.nativeLanguageId,
-        defaultLearningLanguageId: userData.defaultLearningLanguageId,
-        hasNativeLanguage: !!userData.nativeLanguage,
-        hasDefaultLearningLanguage: !!userData.defaultLearningLanguage
       })
       
       // ユーザー設定の完了判定：username、nativeLanguageId、defaultLearningLanguageIdが全て設定されている
       const hasRequiredSettings = !!(
         userData.username && 
         userData.username.trim() !== '' &&
-        userData.nativeLanguageId && 
+        userData.nativeLanguageId &&
         userData.defaultLearningLanguageId
       )
-      
-      console.log('User setup completion check:', {
-        hasUsername: !!(userData.username && userData.username.trim() !== ''),
-        hasNativeLanguageId: !!userData.nativeLanguageId,
-        hasDefaultLearningLanguageId: !!userData.defaultLearningLanguageId,
-        isComplete: hasRequiredSettings,
-        message: hasRequiredSettings ? 'Setup complete' : 'Setup incomplete - missing required fields'
-      })
       
       setIsUserSetupComplete(hasRequiredSettings)
       
       // 必須設定が不完全な場合は設定画面にリダイレクト
       if (!hasRequiredSettings) {
-        console.log('User setup incomplete - redirecting to settings')
         setShouldRedirectToSettings(true)
       } else {
-        console.log('User setup complete')
         setShouldRedirectToSettings(false)
-      }
-      
-      // DBのアイコンURLがある場合は使用
+      }      // DBのアイコンURLがある場合は使用
       if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
       } else {
@@ -252,12 +226,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
       if (error instanceof ApiError && error.status === 404) {
-        console.log('Initial user setup required - user not found in database')
-        
         try {
           // 初回ログイン時にユーザーを自動作成
           await api.post('/api/user/init', {}, { showErrorToast: false })
-          console.log('User initialized successfully')
           
           // 初期化後の状態を設定
           setIsUserSetupComplete(false) // まだ設定が完了していない

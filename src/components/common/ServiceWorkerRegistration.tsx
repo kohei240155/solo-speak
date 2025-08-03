@@ -10,11 +10,11 @@ export default function ServiceWorkerRegistration() {
       process.env.NODE_ENV === 'production'
     ) {
       navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('SW registered: ', registration);
+        .then(() => {
+          // Service worker registered successfully
         })
-        .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+        .catch(() => {
+          // Service worker registration failed
         });
     }
   }, []);

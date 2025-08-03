@@ -19,12 +19,10 @@ export const useAuthGuard = (redirectPath = '/') => {
 
     // ユーザーがログインしていない場合、指定されたパスにリダイレクト
     if (!user) {
-      console.log('User not authenticated, redirecting to:', redirectPath)
       router.push(redirectPath)
       return
     }
 
-    console.log('User authenticated:', user.email)
   }, [user, loading, router, redirectPath])
 
   return {
