@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
@@ -8,7 +8,7 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuthGuard()
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
@@ -79,6 +79,11 @@ export default function DashboardPage() {
       setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
   }, [userSettings, selectedLanguage])
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
+  }
 
   if (setupCheckLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, memo, useMemo, useCallback } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,133 +10,67 @@ import { LuSettings } from 'react-icons/lu'
 import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
-  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
+  const { user, signOut, showLoginModal } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
-  // 表示するアイコンURLを決定（フォールバック機能付き）
-  const getDisplayIconUrl = useMemo(() => {
-    if (userIconUrl) {
-      return userIconUrl
-    }
-    
-    // AuthContextでまだロードされていない場合でも、Googleアバターがあればそれを使用
-    const googleAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
-    if (!googleAvatarUrl) {
-      return null
-    }
-    
-    if (googleAvatarUrl.includes('googleusercontent.com') || 
-        googleAvatarUrl.includes('googleapis.com') || 
-        googleAvatarUrl.includes('google.com')) {
-      return googleAvatarUrl
-    }
-    
-    return null
-  }, [userIconUrl, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
+  // 表示するアイコンURL（シンプル化）
+  const userIconUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
 
   // ユーザーが変更された時の状態リセット
   useEffect(() => {
     if (!user) {
-      // ユーザーがログアウトした場合
       setIsDropdownOpen(false)
       setIsMobileDropdownOpen(false)
     }
-  }, [user]) // ユーザーオブジェクト全体が変更されたときに実行
+  }, [user])
 
-  const handleSignOut = useCallback(async () => {
+  const handleSignOut = async () => {
     await signOut()
     setIsDropdownOpen(false)
     setIsMobileDropdownOpen(false)
-  }, [signOut])
+  }
 
-  // ドロップダウンメニューのアイテムを生成
-  const getDropdownMenuItems = useMemo(() => {
-    const items = []
-    
-    if (isUserSetupComplete) {
-      items.push(
-        {
-          id: 'dashboard',
-          label: 'ダッシュボード',
-          icon: BsClipboardData,
-          onClick: () => window.location.href = '/dashboard'
-        },
-        {
-          id: 'settings',
-          label: 'ユーザー設定',
-          icon: LuSettings,
-          onClick: () => window.location.href = '/settings'
-        }
-      )
-    }
-    
-    items.push({
+  // ドロップダウンメニューのアイテム（固定）
+  const dropdownMenuItems = [
+    {
+      id: 'dashboard',
+      label: 'ダッシュボード',
+      icon: BsClipboardData,
+      onClick: () => window.location.href = '/dashboard'
+    },
+    {
+      id: 'settings',
+      label: 'ユーザー設定',
+      icon: LuSettings,
+      onClick: () => window.location.href = '/settings'
+    },
+    {
       id: 'logout',
       label: 'ログアウト',
       icon: MdLogout,
       onClick: handleSignOut
-    })
-    
-    return items
-  }, [isUserSetupComplete, handleSignOut])
+    }
+  ]
 
   const handleLoginClick = () => {
     showLoginModal()
   }
 
-  const handleImageError = () => {
-    // AuthContextでエラーハンドリングを行うため、ここでは何もしない
-  }
-
   // ロゴクリック時の処理
-  const handleLogoClick = async (e: React.MouseEvent) => {
-    // 未ログイン状態の場合はクリックを無効化
-    if (!user) {
-      e.preventDefault()
-      return
-    }
-    
+  const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    
-    // ユーザー設定が未完了の場合は自動ログアウト
-    if (user && !isUserSetupComplete) {
-      await signOut()
-      window.location.href = '/'
-      return
-    }
-    
-    // ログインしている場合はフレーズ一覧へ
-    if (user && isUserSetupComplete) {
-      window.location.href = '/phrase/list'
-    }
+    window.location.href = user ? '/phrase/list' : '/'
   }
 
-  // カスタムイベントでユーザー設定の更新を監視
-  useEffect(() => {
-    const handleUserSettingsUpdate = () => {
-      if (user?.id) {
-        refreshUserSettings()
-      }
-    }
-
-    window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-    
-    return () => {
-      window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
-    }
-  }, [user?.id, refreshUserSettings])
-
-  // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
-  const getDefaultUserIcon = useMemo(() => {
-    return (
-      <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
-        <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-        </svg>
-      </div>
-    )
-  }, [])
+  // デフォルトのユーザーアイコン
+  const defaultUserIcon = (
+    <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
+      <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+      </svg>
+    </div>
+  )
 
   return (
     <header className="bg-white">
@@ -144,7 +78,7 @@ const Header = memo(function Header() {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <div className="flex items-center">
-            {user && isUserSetupComplete ? (
+            {user ? (
               <Link 
                 href="/phrase/list" 
                 className="flex items-center space-x-2" 
@@ -180,24 +114,23 @@ const Header = memo(function Header() {
                 isOpen={isDropdownOpen}
                 onToggle={() => setIsDropdownOpen(!isDropdownOpen)}
                 onClose={() => setIsDropdownOpen(false)}
-                items={getDropdownMenuItems}
+                items={dropdownMenuItems}
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
                 customTrigger={
-                  getDisplayIconUrl ? (
+                  userIconUrl ? (
                     <Image
-                      src={getDisplayIconUrl}
+                      src={userIconUrl}
                       alt="User Avatar"
                       width={36}
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
-                      onError={handleImageError}
                       priority
                     />
                   ) : (
-                    getDefaultUserIcon
+                    defaultUserIcon
                   )
                 }
                 triggerClassName="p-1 rounded-full hover:bg-gray-100"
@@ -226,24 +159,23 @@ const Header = memo(function Header() {
                 isOpen={isMobileDropdownOpen}
                 onToggle={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
                 onClose={() => setIsMobileDropdownOpen(false)}
-                items={getDropdownMenuItems}
+                items={dropdownMenuItems}
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
                 customTrigger={
-                  getDisplayIconUrl ? (
+                  userIconUrl ? (
                     <Image
-                      src={getDisplayIconUrl}
+                      src={userIconUrl}
                       alt="User Avatar"
                       width={36}
                       height={36}
                       className="w-9 h-9 rounded-full border border-gray-300 object-cover"
                       unoptimized
-                      onError={handleImageError}
                       priority
                     />
                   ) : (
-                    getDefaultUserIcon
+                    defaultUserIcon
                   )
                 }
                 triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"

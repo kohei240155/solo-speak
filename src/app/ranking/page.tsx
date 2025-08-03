@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
@@ -10,7 +10,7 @@ import { useRankingData } from '@/hooks/useRankingData'
 import { useEffect } from 'react'
 
 export default function RankingPage() {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuthGuard()
   
   // カスタムフックを使用してランキングデータを管理
   const {
@@ -35,7 +35,7 @@ export default function RankingPage() {
     }
   }, [error, message])
 
-  if (loading) {
+  if (authLoading || isLoading) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 
