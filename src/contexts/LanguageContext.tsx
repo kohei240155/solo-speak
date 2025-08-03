@@ -20,8 +20,22 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [locale, setLocaleState] = useState<string>(DEFAULT_LOCALE)
-  const [isLoadingLocale, setIsLoadingLocale] = useState(true)
+  // サーバーサイドでも適切な初期値を設定
+  const [locale, setLocaleState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      // クライアントサイドでは即座に保存された値または検出された値を使用
+      const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY)
+      if (savedLocale && AVAILABLE_LOCALES.includes(savedLocale)) {
+        return savedLocale
+      }
+      
+      const browserLanguage = navigator.language || navigator.languages?.[0] || DEFAULT_LOCALE
+      const primaryLanguage = browserLanguage.split('-')[0].toLowerCase()
+      return AVAILABLE_LOCALES.includes(primaryLanguage) ? primaryLanguage : DEFAULT_LOCALE
+    }
+    return DEFAULT_LOCALE
+  })
+  const [isLoadingLocale] = useState(false) // 初期状態はfalse、ロードは不要
 
   // ブラウザの言語設定から優先言語を検出
   const detectBrowserLanguage = (): string => {
@@ -34,28 +48,21 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     return AVAILABLE_LOCALES.includes(primaryLanguage) ? primaryLanguage : DEFAULT_LOCALE
   }
 
-  // 初期言語設定
+  // 初期言語設定（軽量化）
   useEffect(() => {
-    const initializeLocale = () => {
-      // ローカルストレージから保存された言語設定を取得
+    // クライアントサイドでの細かい調整のみ
+    if (typeof window !== 'undefined') {
       const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY)
-      
-      let targetLocale = DEFAULT_LOCALE
-      
-      if (savedLocale && AVAILABLE_LOCALES.includes(savedLocale)) {
-        // 保存された言語設定がある場合はそれを使用
-        targetLocale = savedLocale
-      } else {
-        // 保存された設定がない場合はブラウザの言語設定を検出
-        targetLocale = detectBrowserLanguage()
+      if (!savedLocale) {
+        // 保存された設定がない場合のみブラウザ言語を検出して保存
+        const detectedLocale = detectBrowserLanguage()
+        if (detectedLocale !== locale) {
+          setLocaleState(detectedLocale)
+          localStorage.setItem(LOCALE_STORAGE_KEY, detectedLocale)
+        }
       }
-      
-      setLocaleState(targetLocale)
-      setIsLoadingLocale(false)
     }
-
-    initializeLocale()
-  }, [])
+  }, [locale])
 
   // 言語変更ハンドラー
   const setLocale = (newLocale: string) => {

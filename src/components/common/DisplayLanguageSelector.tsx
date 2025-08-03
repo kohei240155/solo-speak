@@ -17,18 +17,14 @@ export const DisplayLanguageSelector: React.FC<DisplayLanguageSelectorProps> = (
 }) => {
   const { locale, setLocale, availableLocales, isLoadingLocale } = useLanguage()
 
-  if (isLoadingLocale) {
-    return (
-      <div className={`animate-pulse bg-gray-200 rounded h-8 w-32 ${className}`} />
-    )
-  }
-
+  // ローディング中でも既存の値で表示を維持する
   return (
     <div className={`relative ${className}`}>
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value)}
         className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[100px] text-gray-900"
+        disabled={isLoadingLocale}
       >
         {availableLocales.map((lang) => (
           <option key={lang} value={lang}>
