@@ -4,6 +4,7 @@ import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface QuizModeModalProps {
   isOpen: boolean
@@ -17,15 +18,23 @@ interface QuizModeModalProps {
 export type { QuizConfig } from '@/types/quiz'
 
 export default function QuizModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage, availablePhraseCount }: QuizModeModalProps) {
+  const { t } = useTranslation('common')
   const [mode, setMode] = useState<'normal' | 'random'>('normal')
   const [questionCount, setQuestionCount] = useState<number>(10)
   const [isLoading, setIsLoading] = useState(false)
 
   // フレーズ数が変わった時に問題数を調整
   useEffect(() => {
-    // デフォルトは10、フレーズ数が10未満の場合はフレーズ数に調整
-    setQuestionCount(Math.min(10, availablePhraseCount))
+    // デフォルトは10、フレーズ数が10未満の場合でも10に設定
+    setQuestionCount(10)
   }, [availablePhraseCount])
+
+  // モーダルが開かれた時に問題数を10に初期化
+  useEffect(() => {
+    if (isOpen) {
+      setQuestionCount(10)
+    }
+  }, [isOpen])
 
   // 問題数選択のオプションを生成
   const generateQuestionCountOptions = () => {
@@ -34,7 +43,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     // 常に全ての固定オプションを表示
     return baseOptions.map(count => ({
       value: count.toString(),
-      label: `${count} questions`
+      label: `${count} ${t('quiz.modal.questions')}`
     }))
   }
 
@@ -82,18 +91,18 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     configItems: [
       {
         id: 'mode',
-        label: 'Mode',
+        label: t('quiz.modal.mode'),
         type: 'select',
         value: mode,
         options: [
-          { value: 'normal', label: 'Normal' },
-          { value: 'random', label: 'Random' }
+          { value: 'normal', label: t('quiz.modal.options.normal') },
+          { value: 'random', label: t('quiz.modal.options.random') }
         ],
         onChange: (value: string) => setMode(value as 'normal' | 'random')
       },
       {
         id: 'questionCount',
-        label: 'Quiz Length',
+        label: t('quiz.modal.quizLength'),
         type: 'select',
         value: questionCount.toString(),
         options: generateQuestionCountOptions(),

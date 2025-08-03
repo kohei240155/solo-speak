@@ -11,7 +11,6 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
-import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
   const { loading: authLoading } = useAuthGuard()
@@ -80,7 +79,7 @@ export default function PhraseAddPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner withHeaderOffset />
   }
 
   return (
@@ -161,9 +160,7 @@ export default function PhraseAddPage() {
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={availablePhraseCount}
       />
-      
-      {/* Toaster for notifications */}
-      <Toaster />
+
     </div>
   )
 }

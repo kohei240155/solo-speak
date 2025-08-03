@@ -36,7 +36,7 @@ export default function RankingPage() {
   }, [error, message])
 
   if (authLoading || isLoading) {
-    return <LoadingSpinner fullScreen message="Loading..." />
+    return <LoadingSpinner withHeaderOffset message="Loading..." />
   }
 
   return (

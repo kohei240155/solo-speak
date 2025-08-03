@@ -1,0 +1,90 @@
+{
+  "common": {
+    "language": "言語",
+    "selectLanguage": "言語を選択",
+    "dashboard": "ダッシュボード",
+    "userSettings": "ユーザー設定"
+  },
+  "settings": {
+    "userIcon": "ユーザーアイコン",
+    "displayName": "表示名",
+    "nativeLanguage": "母国語",
+    "defaultLearningLanguage": "デフォルト学習言語",
+    "contactEmail": "連絡先メールアドレス",
+    "selectLanguage": "言語を選択してください"
+  },
+  "phrase": {
+    "noPhrasesYet": "まだフレーズが登録されていません",
+    "placeholders": {
+      "phraseInput": "例：最近どこに行きましたか？",
+      "situationInput": "例：レストランの注文で"
+    },
+    "validation": {
+      "maxLength100": "100文字以内で入力してください（現在: {{count}}文字）",
+      "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）"
+    },
+    "messages": {
+      "updateSuccess": "フレーズが正常に更新されました！",
+      "updateError": "フレーズの更新に失敗しました"
+    }
+  },
+  "speak": {
+    "modal": {
+      "language": "言語",
+      "startFrom": "開始位置",
+      "excludeHighPracticeCount": "練習回数が多いフレーズを除外",
+      "options": {
+        "newest": "新しい順",
+        "oldest": "古い順",
+        "noLimit": "制限なし",
+        "exclude10": "10回以上",
+        "exclude20": "20回以上",
+        "exclude30": "30回以上",
+        "exclude40": "40回以上",
+        "exclude50": "50回以上",
+        "exclude60": "60回以上",
+        "exclude70": "70回以上",
+        "exclude80": "80回以上",
+        "exclude90": "90回以上"
+      }
+    }
+  },
+  "quiz": {
+    "modal": {
+      "mode": "モード",
+      "quizLength": "問題数",
+      "options": {
+        "normal": "通常",
+        "random": "ランダム"
+      },
+      "questions": "問"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "part1": "あなたの",
+        "highlight1": "フレーズ暗記",
+        "part2": "を",
+        "highlight2": "サポートします"
+      },
+      "subtitle": "音声認識技術を活用して、一人でも楽しく効果的に語学学習ができるWebアプリケーション",
+      "loginPrompt": "始めるには、右上のログインボタンをクリック"
+    },
+    "features": {
+      "title": "こんなことができるようになります",
+      "speechRecognition": {
+        "title": "音声認識による発音練習",
+        "description": "最新の音声認識技術を使って、正確な発音を身につけることができます。"
+      },
+      "quiz": {
+        "title": "クイズ形式での学習",
+        "description": "楽しいクイズ形式で、覚えたフレーズを定着させることができます。"
+      },
+      "progress": {
+        "title": "学習進捗の記録・管理",
+        "description": "あなたの学習状況を可視化し、継続的な学習をサポートします。"
+      }
+    }
+  }
+}

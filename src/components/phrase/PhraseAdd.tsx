@@ -3,13 +3,12 @@ import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import { BsPlusSquare } from 'react-icons/bs'
 import { AiOutlineClose } from 'react-icons/ai'
-import { MdOutlineTipsAndUpdates } from 'react-icons/md'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
-import PhraseGenerationTipsModal from '@/components/modals/PhraseGenerationTipsModal'
 import BaseModal from '@/components/common/BaseModal'
 import { useScrollPreservation } from '@/hooks/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
+import { useTranslation } from '@/hooks/useTranslation'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
@@ -57,9 +56,10 @@ export default function PhraseAdd({
   addSituation,
   deleteSituation
 }: PhraseAddProps) {
+  const { t } = useTranslation('common')
+  
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
-  const [isTipsModalOpen, setIsTipsModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -189,22 +189,15 @@ export default function PhraseAdd({
 
       {/* フレーズ入力エリア */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
+        <div className="mb-2">
           <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
-          <button
-            onClick={() => setIsTipsModalOpen(true)}
-            className="text-gray-600 hover:text-gray-800 transition-colors"
-            title="フレーズ生成のコツを見る"
-          >
-            <MdOutlineTipsAndUpdates className="text-lg" />
-          </button>
         </div>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder="例：この料理はなんですか？"
+          placeholder={t('phrase.placeholders.phraseInput')}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
               ? 'border-gray-400' 
@@ -218,7 +211,7 @@ export default function PhraseAdd({
         {desiredPhrase.length > 100 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              100文字以内で入力してください（現在: {desiredPhrase.length}文字）
+              {t('phrase.validation.maxLength100', { count: desiredPhrase.length })}
             </p>
           </div>
         )}
@@ -340,12 +333,6 @@ export default function PhraseAdd({
           </button>
         </div>
       </BaseModal>
-
-      {/* フレーズ生成のTipsモーダル */}
-      <PhraseGenerationTipsModal
-        isOpen={isTipsModalOpen}
-        onClose={() => setIsTipsModalOpen(false)}
-      />
     </>
   )
 }

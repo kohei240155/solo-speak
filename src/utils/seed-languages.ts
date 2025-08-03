@@ -1,13 +1,40 @@
 import { prisma } from '@/utils/prisma'
 
 const basicLanguages = [
-  { name: 'Japanese', code: 'ja' },
   { name: 'English', code: 'en' },
   { name: 'Chinese', code: 'zh' },
-  { name: 'Korean', code: 'ko' },
+  { name: 'Hindi', code: 'hi' },
   { name: 'Spanish', code: 'es' },
+  { name: 'French', code: 'fr' },
+  { name: 'Arabic', code: 'ar' },
+  { name: 'Bengali', code: 'bn' },
   { name: 'Portuguese', code: 'pt' },
-  { name: 'Thai', code: 'th' }
+  { name: 'Russian', code: 'ru' },
+  { name: 'Urdu', code: 'ur' },
+  { name: 'Japanese', code: 'ja' },
+  { name: 'German', code: 'de' },
+  { name: 'Korean', code: 'ko' },
+  { name: 'Swahili', code: 'sw' },
+  { name: 'Italian', code: 'it' },
+  { name: 'Turkish', code: 'tr' },
+  { name: 'Vietnamese', code: 'vi' },
+  { name: 'Nepali', code: 'ne' },
+  { name: 'Kurdish', code: 'ku' },
+  { name: 'Thai', code: 'th' },
+  { name: 'Tagalog', code: 'tl' },
+  { name: 'Czech', code: 'cs' },
+  { name: 'Hungarian', code: 'hu' },
+  { name: 'Romanian', code: 'ro' },
+  { name: 'Serbian', code: 'sr' },
+  { name: 'Bulgarian', code: 'bg' },
+  { name: 'Greek', code: 'el' },
+  { name: 'Dutch', code: 'nl' },
+  { name: 'Swedish', code: 'sv' },
+  { name: 'Finnish', code: 'fi' },
+  { name: 'Danish', code: 'da' },
+  { name: 'Norwegian', code: 'no' },
+  { name: 'Ukrainian', code: 'uk' },
+  { name: 'Polish', code: 'pl' }
 ]
 
 /**

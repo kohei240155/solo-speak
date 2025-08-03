@@ -1,6 +1,7 @@
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHandleSubmit } from 'react-hook-form'
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
+import { useTranslation } from '@/hooks/useTranslation'
 import ImageUpload from '@/components/common/ImageUpload'
 
 interface UserSettingsFormProps {
@@ -13,7 +14,7 @@ interface UserSettingsFormProps {
   dataLoading: boolean
   setError: (error: string) => void
   setIsUserSetupComplete: (complete: boolean) => void
-  onSubmit: (data: UserSetupFormData) => void
+  onSubmit?: (data: UserSetupFormData) => void // オプショナルにする
   submitting: boolean
 }
 
@@ -27,9 +28,11 @@ export default function UserSettingsForm({
   dataLoading,
   setError,
   setIsUserSetupComplete,
-  // onSubmit, // 未使用のため削除
-  submitting: submittingProp
+  submitting: submittingProp,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ...rest // onSubmitを含む残りのpropsを受け取るが使用しない
 }: UserSettingsFormProps) {
+  const { t } = useTranslation('common')
   const { submitting, imageUploadRef, onSubmit: onSubmitFromHook } = useUserSettingsSubmit(
     setError, 
     setIsUserSetupComplete
@@ -44,8 +47,8 @@ export default function UserSettingsForm({
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
       <div>
-        <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          User Icon
+        <label className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
+          {t('settings.userIcon')}
         </label>
         <ImageUpload
           ref={imageUploadRef}
@@ -65,8 +68,8 @@ export default function UserSettingsForm({
 
       {/* Display Name */}
       <div>
-        <label htmlFor="username" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Display Name
+        <label htmlFor="username" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
+          {t('settings.displayName')}
         </label>
         <input
           type="text"
@@ -83,8 +86,8 @@ export default function UserSettingsForm({
 
       {/* Native Language */}
       <div>
-        <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Native Language
+        <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
+          {t('settings.nativeLanguage')}
         </label>
         <div className="relative">
           <select
@@ -94,7 +97,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? 'Loading languages...' : 'Select a language'}
+              {dataLoading ? 'Loading languages...' : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -117,8 +120,8 @@ export default function UserSettingsForm({
 
       {/* Default Learning Language */}
       <div>
-        <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Default Learning Language
+        <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
+          {t('settings.defaultLearningLanguage')}
         </label>
         <div className="relative">
           <select
@@ -128,7 +131,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? 'Loading languages...' : 'Select a language'}
+              {dataLoading ? 'Loading languages...' : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -151,8 +154,8 @@ export default function UserSettingsForm({
 
       {/* Contact Email */}
       <div>
-        <label htmlFor="email" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Contact Email
+        <label htmlFor="email" className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
+          {t('settings.contactEmail')}
         </label>
         <input
           type="email"

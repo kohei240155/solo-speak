@@ -3,13 +3,40 @@ import { getKoreanPrompt } from './ko'
 
 // 言語コードと名前のマッピング
 export const languageNames = {
-  ja: 'Japanese',
   en: 'English',
-  ko: 'Korean',
   zh: 'Chinese',
+  hi: 'Hindi',
   es: 'Spanish',
   fr: 'French',
-  de: 'German'
+  ar: 'Arabic',
+  bn: 'Bengali',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  ur: 'Urdu',
+  ja: 'Japanese',
+  de: 'German',
+  ko: 'Korean',
+  sw: 'Swahili',
+  it: 'Italian',
+  tr: 'Turkish',
+  vi: 'Vietnamese',
+  ne: 'Nepali',
+  ku: 'Kurdish',
+  th: 'Thai',
+  tl: 'Tagalog',
+  cs: 'Czech',
+  hu: 'Hungarian',
+  ro: 'Romanian',
+  sr: 'Serbian',
+  bg: 'Bulgarian',
+  el: 'Greek',
+  nl: 'Dutch',
+  sv: 'Swedish',
+  fi: 'Finnish',
+  da: 'Danish',
+  no: 'Norwegian',
+  uk: 'Ukrainian',
+  pl: 'Polish'
 } as const
 
 // 学習言語ごとのプロンプト取得関数

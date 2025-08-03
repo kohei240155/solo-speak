@@ -1,6 +1,7 @@
 import { SavedPhrase, Language } from '@/types/phrase'
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/hooks/useTranslation'
 import SpeakModeModal from '../modals/SpeakModeModal'
 import LoadingSpinner from '../common/LoadingSpinner'
 import PhraseItem from './PhraseItem'
@@ -39,6 +40,7 @@ export default function PhraseList({
   showSpeakModal: externalShowSpeakModal = false,
   onSpeakModalStateChange
 }: PhraseListProps) {
+  const { t } = useTranslation('common')
   const router = useRouter()
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null)
@@ -120,7 +122,7 @@ export default function PhraseList({
   if (!Array.isArray(savedPhrases) || savedPhrases.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600">まだフレーズが登録されていません</p>
+        <p className="text-gray-600">{t('phrase.noPhrasesYet')}</p>
       </div>
     )
   }
@@ -144,7 +146,7 @@ export default function PhraseList({
         {/* 無限スクロール用のローディング */}
         {isLoadingMore && (
           <div className="flex justify-center py-6">
-            <LoadingSpinner size="sm" message="Loading phrases..." className="" />
+            <LoadingSpinner size="sm" message="Loading more..." className="" />
           </div>
         )}
       </div>

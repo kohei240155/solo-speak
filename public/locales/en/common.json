@@ -1,0 +1,90 @@
+{
+  "common": {
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "dashboard": "Dashboard",
+    "userSettings": "User Settings"
+  },
+  "settings": {
+    "userIcon": "User Icon",
+    "displayName": "Display Name",
+    "nativeLanguage": "Native Language",
+    "defaultLearningLanguage": "Default Learning Language",
+    "contactEmail": "Contact Email",
+    "selectLanguage": "Select a language"
+  },
+  "phrase": {
+    "noPhrasesYet": "No phrases have been registered yet",
+    "placeholders": {
+      "phraseInput": "Example: Where have you been recently?",
+      "situationInput": "Example: Ordering at a restaurant"
+    },
+    "validation": {
+      "maxLength100": "Please enter within 100 characters (Current: {{count}} characters)",
+      "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)"
+    },
+    "messages": {
+      "updateSuccess": "Phrase updated successfully!",
+      "updateError": "Failed to update phrase"
+    }
+  },
+  "speak": {
+    "modal": {
+      "language": "Language",
+      "startFrom": "Start from",
+      "excludeHighPracticeCount": "Exclude phrases with high practice count",
+      "options": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "noLimit": "No limit",
+        "exclude10": "10+ times",
+        "exclude20": "20+ times",
+        "exclude30": "30+ times",
+        "exclude40": "40+ times",
+        "exclude50": "50+ times",
+        "exclude60": "60+ times",
+        "exclude70": "70+ times",
+        "exclude80": "80+ times",
+        "exclude90": "90+ times"
+      }
+    }
+  },
+  "quiz": {
+    "modal": {
+      "mode": "Mode",
+      "quizLength": "Quiz Length",
+      "options": {
+        "normal": "Normal",
+        "random": "Random"
+      },
+      "questions": "questions"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "part1": "Supporting Your",
+        "highlight1": "Phrase Memorization",
+        "part2": "",
+        "highlight2": ""
+      },
+      "subtitle": "A web application that makes language learning fun and effective on your own using speech recognition technology",
+      "loginPrompt": "To get started, click the login button in the top right"
+    },
+    "features": {
+      "title": "What You Can Achieve",
+      "speechRecognition": {
+        "title": "Pronunciation Practice with Speech Recognition",
+        "description": "Master accurate pronunciation using the latest speech recognition technology."
+      },
+      "quiz": {
+        "title": "Quiz-style Learning",
+        "description": "Reinforce memorized phrases through fun quiz formats."
+      },
+      "progress": {
+        "title": "Learning Progress Tracking & Management",
+        "description": "Visualize your learning status and support continuous learning."
+      }
+    }
+  }
+}

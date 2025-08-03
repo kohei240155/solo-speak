@@ -85,13 +85,29 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
 /**
  * 初回ログイン時のユーザー初期化
  * @param user Supabaseユーザー情報
+ * @param displayLanguage 表示言語設定（ローカルストレージから取得）
  * @returns 作成されたユーザーデータ
  */
-export async function initializeUser(user: User): Promise<UserSettingsResponse> {
+export async function initializeUser(user: User, displayLanguage?: string): Promise<UserSettingsResponse> {
   try {
     // Googleから取得した情報
     const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
     const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
+
+    // 表示言語設定に基づいてデフォルトの母語を設定
+    // まず利用可能な言語を取得
+    const availableLanguages = await prisma.language.findMany({
+      where: { code: { in: ['ja', 'en'] } }
+    })
+    
+    let defaultNativeLanguageId: string | null = null
+    if (displayLanguage === 'ja') {
+      const japaneseLanguage = availableLanguages.find(lang => lang.code === 'ja')
+      defaultNativeLanguageId = japaneseLanguage?.id || null
+    } else if (displayLanguage === 'en') {
+      const englishLanguage = availableLanguages.find(lang => lang.code === 'en')
+      defaultNativeLanguageId = englishLanguage?.id || null
+    }
 
     const result = await prisma.user.create({
       data: {
@@ -99,38 +115,35 @@ export async function initializeUser(user: User): Promise<UserSettingsResponse> 
         email: user.email || '',
         username: googleDisplayName || null, // Googleの表示名を初期値として設定
         iconUrl: googleAvatarUrl,
-        nativeLanguageId: null, // 初期状態では空（後で設定）
+        nativeLanguageId: defaultNativeLanguageId, // 表示言語設定に基づいて初期値を設定
         defaultLearningLanguageId: null, // 初期状態では空（後で設定）
       },
-      include: {
-        nativeLanguage: true,
-        defaultLearningLanguage: true,
-      }
     })
 
+    // 関連データを取得
+    const nativeLanguage = defaultNativeLanguageId ? 
+      await prisma.language.findUnique({ where: { id: defaultNativeLanguageId } }) : null
+    
     return {
       iconUrl: result.iconUrl,
       username: result.username,
       nativeLanguageId: result.nativeLanguageId,
       defaultLearningLanguageId: result.defaultLearningLanguageId,
       email: result.email,
-      nativeLanguage: result.nativeLanguage ? {
-        id: result.nativeLanguage.id,
-        name: result.nativeLanguage.name,
-        code: result.nativeLanguage.code
+      nativeLanguage: nativeLanguage ? {
+        id: nativeLanguage.id,
+        name: nativeLanguage.name,
+        code: nativeLanguage.code
       } : null,
-      defaultLearningLanguage: result.defaultLearningLanguage ? {
-        id: result.defaultLearningLanguage.id,
-        name: result.defaultLearningLanguage.name,
-        code: result.defaultLearningLanguage.code
-      } : null
+      defaultLearningLanguage: null
     }
   } catch (error) {
     console.error('initializeUser - Error:', {
       error: error,
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      userId: user.id
+      userId: user.id,
+      displayLanguage
     })
     throw error
   }

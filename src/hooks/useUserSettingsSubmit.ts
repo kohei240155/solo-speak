@@ -158,15 +158,17 @@ export function useUserSettingsSubmit(
         window.dispatchEvent(new Event('userSettingsUpdated'))
       }, 100)
       
-      // 成功メッセージを表示
+      // 成功メッセージを表示してから遷移
       setError('')
       toast.success('Settings saved successfully!', {
         duration: 3000,
         position: 'top-center',
       })
       
-      // Phrase Add画面に遷移
-      router.push('/phrase/add')
+      // 少し遅延してからPhrase Add画面に遷移
+      setTimeout(() => {
+        router.push('/phrase/add')
+      }, 500)
     } catch (error) {
       console.error('Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import BaseModal from '../common/BaseModal'
 import { Language } from '@/types/phrase'
+import { useTranslation } from '@/hooks/useTranslation'
 
 // 共通の設定項目の型定義
 export interface ModalConfigItem {
@@ -40,6 +41,7 @@ export default function ModeModal({
   defaultLearningLanguage,
   isLoading: externalLoading = false
 }: ModeModalProps) {
+  const { t } = useTranslation('common')
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [internalLoading, setInternalLoading] = useState(false)
   
@@ -119,7 +121,7 @@ export default function ModeModal({
   // Language設定項目を作成
   const languageConfigItem: ModalConfigItem = {
     id: 'language',
-    label: 'Language',
+    label: t('speak.modal.language'),
     type: 'select',
     value: selectedLanguage,
     options: languages.map(lang => ({ value: lang.code, label: lang.name })),
@@ -134,7 +136,7 @@ export default function ModeModal({
       {/* 全ての設定項目を統一的に表示 */}
       {allConfigItems.map((item, index) => (
         <div key={item.id} className={index === allConfigItems.length - 1 ? "mb-8" : "mb-4"}>
-          <h3 className="text-base font-semibold text-gray-900 mb-3">
+          <h3 className="text-base font-medium text-gray-900 mb-3">
             {item.label}
           </h3>
           {renderConfigItem(item)}

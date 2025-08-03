@@ -108,7 +108,7 @@ function PhraseSpeakPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner />
+    return <LoadingSpinner withHeaderOffset />
   }
 
   return (
