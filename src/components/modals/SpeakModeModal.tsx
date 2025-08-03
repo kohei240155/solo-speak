@@ -19,7 +19,7 @@ export type { SpeakConfig } from '@/types/speak'
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const { t } = useTranslation('common')
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
-  const [excludeThreshold, setExcludeThreshold] = useState<string>('') // 空文字列は未選択を表す
+  const [excludeThreshold, setExcludeThreshold] = useState<string>('50') // 初期値を50回以上に設定
   const [isLoading, setIsLoading] = useState(false)
 
   // モーダルが開かれたときにsession_spokenをリセット
