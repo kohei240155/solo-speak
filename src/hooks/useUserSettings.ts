@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { UseFormSetValue } from 'react-hook-form'
-import { UserSetupFormData, Language } from '@/types/userSettings'
+import { UserSetupFormData, Language, UserSettingsResponse } from '@/types/userSettings'
 
 export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   const { user } = useAuth()
@@ -14,13 +14,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   const fetchUserSettings = useCallback(async () => {
     try {
       // ユーザー設定データの取得（常にキャッシュをバイパス）
-      const userData = await api.get<{
-        username?: string,
-        iconUrl?: string,
-        nativeLanguageId?: string,
-        defaultLearningLanguageId?: string,
-        email?: string
-      }>(`/api/user/settings?t=${Date.now()}`, {
+      const userData = await api.get<UserSettingsResponse>(`/api/user/settings?t=${Date.now()}`, {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',

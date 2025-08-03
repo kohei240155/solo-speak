@@ -1,6 +1,7 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
 import { createDefaultSituations } from './create-default-situations'
+import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
 
 /**
  * ユーザー名の重複チェック
@@ -51,14 +52,36 @@ export async function checkUserExists(userId: string): Promise<boolean> {
  * @param userId ユーザーID
  * @returns ユーザー設定データ
  */
-export async function getUserSettings(userId: string) {
-  return await prisma.user.findUnique({
+export async function getUserSettings(userId: string): Promise<UserSettingsResponse | null> {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
     }
   })
+
+  if (!user) {
+    return null
+  }
+
+  return {
+    iconUrl: user.iconUrl,
+    username: user.username,
+    nativeLanguageId: user.nativeLanguageId,
+    defaultLearningLanguageId: user.defaultLearningLanguageId,
+    email: user.email,
+    nativeLanguage: user.nativeLanguage ? {
+      id: user.nativeLanguage.id,
+      name: user.nativeLanguage.name,
+      code: user.nativeLanguage.code
+    } : null,
+    defaultLearningLanguage: user.defaultLearningLanguage ? {
+      id: user.defaultLearningLanguage.id,
+      name: user.defaultLearningLanguage.name,
+      code: user.defaultLearningLanguage.code
+    } : null
+  }
 }
 
 /**
@@ -66,7 +89,7 @@ export async function getUserSettings(userId: string) {
  * @param user Supabaseユーザー情報
  * @returns 作成されたユーザーデータ
  */
-export async function initializeUser(user: User) {
+export async function initializeUser(user: User): Promise<UserSettingsResponse> {
   try {
     console.log('initializeUser - Input data:', {
       userId: user.id,
@@ -107,7 +130,23 @@ export async function initializeUser(user: User) {
       iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
     })
 
-    return result
+    return {
+      iconUrl: result.iconUrl,
+      username: result.username,
+      nativeLanguageId: result.nativeLanguageId,
+      defaultLearningLanguageId: result.defaultLearningLanguageId,
+      email: result.email,
+      nativeLanguage: result.nativeLanguage ? {
+        id: result.nativeLanguage.id,
+        name: result.nativeLanguage.name,
+        code: result.nativeLanguage.code
+      } : null,
+      defaultLearningLanguage: result.defaultLearningLanguage ? {
+        id: result.defaultLearningLanguage.id,
+        name: result.defaultLearningLanguage.name,
+        code: result.defaultLearningLanguage.code
+      } : null
+    }
   } catch (error) {
     console.error('initializeUser - Error:', {
       error: error,
@@ -127,14 +166,8 @@ export async function initializeUser(user: User) {
  */
 export async function createUserSettings(
   user: User, 
-  userData: {
-    username: string
-    iconUrl?: string
-    nativeLanguageId: string
-    defaultLearningLanguageId: string
-    email?: string
-  }
-) {
+  userData: UserSettingsCreateRequest
+): Promise<UserSettingsResponse> {
   try {
     console.log('createUserSettings - Input data:', {
       userId: user.id,
@@ -176,7 +209,23 @@ export async function createUserSettings(
       iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
     })
 
-    return result
+    return {
+      iconUrl: result.iconUrl,
+      username: result.username,
+      nativeLanguageId: result.nativeLanguageId,
+      defaultLearningLanguageId: result.defaultLearningLanguageId,
+      email: result.email,
+      nativeLanguage: result.nativeLanguage ? {
+        id: result.nativeLanguage.id,
+        name: result.nativeLanguage.name,
+        code: result.nativeLanguage.code
+      } : null,
+      defaultLearningLanguage: result.defaultLearningLanguage ? {
+        id: result.defaultLearningLanguage.id,
+        name: result.defaultLearningLanguage.name,
+        code: result.defaultLearningLanguage.code
+      } : null
+    }
   } catch (error) {
     console.error('createUserSettings - Error:', {
       error: error,
@@ -215,13 +264,8 @@ export async function hasUserSituations(userId: string): Promise<boolean> {
  */
 export async function updateUserSettings(
   userId: string,
-  userData: {
-    username?: string
-    iconUrl?: string
-    nativeLanguageId?: string
-    defaultLearningLanguageId?: string
-  }
-){
+  userData: UserSettingsUpdateRequest
+): Promise<UserSettingsResponse> {
   const result = await prisma.user.update({
     where: { id: userId },
     data: {
@@ -247,5 +291,21 @@ export async function updateUserSettings(
     // シチュエーション作成に失敗してもユーザー更新自体は成功として扱う
   }
 
-  return result
+  return {
+    iconUrl: result.iconUrl,
+    username: result.username,
+    nativeLanguageId: result.nativeLanguageId,
+    defaultLearningLanguageId: result.defaultLearningLanguageId,
+    email: result.email,
+    nativeLanguage: result.nativeLanguage ? {
+      id: result.nativeLanguage.id,
+      name: result.nativeLanguage.name,
+      code: result.nativeLanguage.code
+    } : null,
+    defaultLearningLanguage: result.defaultLearningLanguage ? {
+      id: result.defaultLearningLanguage.id,
+      name: result.defaultLearningLanguage.name,
+      code: result.defaultLearningLanguage.code
+    } : null
+  }
 }

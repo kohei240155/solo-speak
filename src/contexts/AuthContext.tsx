@@ -5,6 +5,7 @@ import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
+import { UserSettingsResponse } from '@/types/userSettings'
 
 type AuthContextType = {
   user: User | null
@@ -191,14 +192,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const userData = await api.get<{ 
-        iconUrl?: string
-        username?: string | null
-        nativeLanguageId?: string | null
-        defaultLearningLanguageId?: string | null
-        nativeLanguage?: { id: string; name: string; code: string; } | null
-        defaultLearningLanguage?: { id: string; name: string; code: string; } | null
-      }>('/api/user/settings', {
+      const userData = await api.get<UserSettingsResponse>('/api/user/settings', {
         showErrorToast: false // 404エラー時のトーストを無効化
       })
       
