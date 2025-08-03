@@ -23,25 +23,13 @@ export async function POST(
       )
     }
 
-    // フレーズが存在し、認証されたユーザーに属しているかチェック
-    const phrase = await prisma.phrase.findFirst({
+    // session_spokenをtrueに更新（userIdも条件に含めることで権限チェックも兼ねる）
+    await prisma.phrase.update({
       where: {
         id: phraseId,
         userId: authResult.user.id,
         deletedAt: null
-      }
-    })
-
-    if (!phrase) {
-      return NextResponse.json(
-        { error: 'Phrase not found' },
-        { status: 404 }
-      )
-    }
-
-    // session_spokenをtrueに更新
-    await prisma.phrase.update({
-      where: { id: phraseId },
+      },
       data: {
         sessionSpoken: true
       }
@@ -54,6 +42,15 @@ export async function POST(
 
   } catch (error) {
     console.error('Error marking phrase as session spoken:', error)
+    
+    // Prismaの RecordNotFound エラーの場合は404を返す
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Phrase not found' },
+        { status: 404 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
