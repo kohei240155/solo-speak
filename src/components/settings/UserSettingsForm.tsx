@@ -14,7 +14,7 @@ interface UserSettingsFormProps {
   dataLoading: boolean
   setError: (error: string) => void
   setIsUserSetupComplete: (complete: boolean) => void
-  onSubmit: (data: UserSetupFormData) => void
+  onSubmit?: (data: UserSetupFormData) => void // オプショナルにする
   submitting: boolean
 }
 
@@ -28,7 +28,7 @@ export default function UserSettingsForm({
   dataLoading,
   setError,
   setIsUserSetupComplete,
-  // onSubmit, // 未使用のため削除
+  onSubmit, // 未使用だが型との整合性のため受け取る
   submitting: submittingProp
 }: UserSettingsFormProps) {
   const { t } = useTranslation('common')
