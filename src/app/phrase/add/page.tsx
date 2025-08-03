@@ -14,7 +14,7 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
-  const { user, loading: authLoading } = useAuthGuard()
+  const { loading: authLoading } = useAuthGuard()
   
   const {
     // State

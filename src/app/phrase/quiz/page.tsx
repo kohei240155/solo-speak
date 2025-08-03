@@ -18,7 +18,7 @@ import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
-  const { user, loading: authLoading } = useAuthGuard()
+  const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   const router = useRouter()

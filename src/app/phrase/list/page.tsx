@@ -14,7 +14,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseListPage() {
-  const { user, loading: authLoading } = useAuthGuard()
+  const { loading: authLoading } = useAuthGuard()
   
   const {
     // State

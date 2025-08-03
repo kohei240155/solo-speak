@@ -22,7 +22,7 @@ import { useAllDoneScreen } from '@/hooks/useAllDoneScreen'
 import { Toaster } from 'react-hot-toast'
 
 function PhraseSpeakPage() {
-  const { user, loading: authLoading } = useAuthGuard()
+  const { loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, fetchSavedPhrases } = usePhraseList()
