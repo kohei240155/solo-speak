@@ -18,7 +18,7 @@ export default function DashboardPage() {
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
   const { languages } = useLanguages()
 
-  // ユーザー設定の完了状態をチェック（簡素化）
+  // ユーザー設定の完了状態をチェック（必須項目のみ）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
       setSetupCheckLoading(false)
@@ -26,11 +26,12 @@ export default function DashboardPage() {
     }
 
     try {
-      // SWRのデータが存在する場合は設定完了とみなす
-      if (userSettings) {
+      // 必須項目（母国語と学習言語）が設定されているかチェック
+      if (userSettings && userSettings.nativeLanguage && userSettings.defaultLearningLanguage) {
         setSetupCheckLoading(false)
       } else {
-        // 初回ログイン時のみ設定ページにリダイレクト
+        // 必須項目が未設定の場合は設定ページにリダイレクト
+        console.log('Dashboard - Required settings missing, redirecting to settings')
         router.push('/settings')
       }
     } catch (error) {
@@ -41,10 +42,10 @@ export default function DashboardPage() {
   }, [user, router, userSettings])
 
   useEffect(() => {
-    if (user) {
+    if (user && userSettings !== undefined) {
       checkUserSetupComplete()
     }
-  }, [user, checkUserSetupComplete])
+  }, [user, userSettings, checkUserSetupComplete])
 
   // 言語設定の初期化
   useEffect(() => {
