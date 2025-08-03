@@ -20,6 +20,29 @@
       "situationInput": "Example: Ordering at a restaurant"
     }
   },
+  "speak": {
+    "modal": {
+      "title": "Speak Mode",
+      "language": "Language",
+      "startFrom": "Start from",
+      "excludeHighPracticeCount": "Exclude phrases with high practice count",
+      "start": "Start",
+      "options": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "noLimit": "No limit",
+        "exclude10": "10+ times",
+        "exclude20": "20+ times",
+        "exclude30": "30+ times",
+        "exclude40": "40+ times",
+        "exclude50": "50+ times",
+        "exclude60": "60+ times",
+        "exclude70": "70+ times",
+        "exclude80": "80+ times",
+        "exclude90": "90+ times"
+      }
+    }
+  },
   "home": {
     "hero": {
       "title": {

@@ -4,6 +4,7 @@ import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
 import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/useApi'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface SpeakModeModalProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ interface SpeakModeModalProps {
 export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
+  const { t } = useTranslation('common')
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [excludeThreshold, setExcludeThreshold] = useState<string>('') // 空文字列は未選択を表す
   const [isLoading, setIsLoading] = useState(false)
@@ -88,42 +90,41 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
 
   // モーダル設定を定義
   const modalConfig: ModeModalConfig = {
-    title: 'Speak Mode',
+    title: t('speak.modal.title'),
     configItems: [
       {
         id: 'order',
-        label: 'Start from',
+        label: t('speak.modal.startFrom'),
         type: 'select',
         value: order,
         options: [
-          { value: 'new-to-old', label: 'Newest' },
-          { value: 'old-to-new', label: 'Oldest' }
+          { value: 'new-to-old', label: t('speak.modal.options.newest') },
+          { value: 'old-to-new', label: t('speak.modal.options.oldest') }
         ],
         onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
       },
       {
         id: 'excludeThreshold',
-        label: 'Exclude High Practice Count',
+        label: t('speak.modal.excludeHighPracticeCount'),
         type: 'select',
         value: excludeThreshold,
         options: [
-          { value: '', label: 'No limit' },
-          { value: '10', label: 'Exclude 10+ times' },
-          { value: '20', label: 'Exclude 20+ times' },
-          { value: '30', label: 'Exclude 30+ times' },
-          { value: '40', label: 'Exclude 40+ times' },
-          { value: '50', label: 'Exclude 50+ times' },
-          { value: '60', label: 'Exclude 60+ times' },
-          { value: '70', label: 'Exclude 70+ times' },
-          { value: '80', label: 'Exclude 80+ times' },
-          { value: '90', label: 'Exclude 90+ times' },
-          { value: '100', label: 'Exclude 100+ times' }
+          { value: '', label: t('speak.modal.options.noLimit') },
+          { value: '10', label: t('speak.modal.options.exclude10') },
+          { value: '20', label: t('speak.modal.options.exclude20') },
+          { value: '30', label: t('speak.modal.options.exclude30') },
+          { value: '40', label: t('speak.modal.options.exclude40') },
+          { value: '50', label: t('speak.modal.options.exclude50') },
+          { value: '60', label: t('speak.modal.options.exclude60') },
+          { value: '70', label: t('speak.modal.options.exclude70') },
+          { value: '80', label: t('speak.modal.options.exclude80') },
+          { value: '90', label: t('speak.modal.options.exclude90') },
         ],
         onChange: (value: string) => setExcludeThreshold(value)
       }
     ],
     onStart: handleStart,
-    startButtonText: 'Start'
+    startButtonText: t('speak.modal.start')
   }
 
   return (

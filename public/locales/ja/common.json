@@ -20,6 +20,29 @@
       "situationInput": "例：レストランの注文で"
     }
   },
+  "speak": {
+    "modal": {
+      "title": "スピークモード",
+      "language": "言語",
+      "startFrom": "開始位置",
+      "excludeHighPracticeCount": "練習回数が多いフレーズを除外",
+      "start": "開始",
+      "options": {
+        "newest": "新しい順",
+        "oldest": "古い順",
+        "noLimit": "制限なし",
+        "exclude10": "10回以上",
+        "exclude20": "20回以上",
+        "exclude30": "30回以上",
+        "exclude40": "40回以上",
+        "exclude50": "50回以上",
+        "exclude60": "60回以上",
+        "exclude70": "70回以上",
+        "exclude80": "80回以上",
+        "exclude90": "90回以上"
+      }
+    }
+  },
   "home": {
     "hero": {
       "title": {
