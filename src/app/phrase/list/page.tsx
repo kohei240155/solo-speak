@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { usePhraseList } from '@/hooks/usePhraseList'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
@@ -9,9 +10,12 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseList from '@/components/phrase/PhraseList'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseListPage() {
+  const { user, loading: authLoading } = useAuthGuard()
+  
   const {
     // State
     learningLanguage,
@@ -77,6 +81,11 @@ export default function PhraseListPage() {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>

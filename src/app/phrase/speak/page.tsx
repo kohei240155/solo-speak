@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
@@ -21,6 +22,7 @@ import { useAllDoneScreen } from '@/hooks/useAllDoneScreen'
 import { Toaster } from 'react-hot-toast'
 
 function PhraseSpeakPage() {
+  const { user, loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, fetchSavedPhrases } = usePhraseList()
@@ -102,6 +104,11 @@ function PhraseSpeakPage() {
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
     return hasPendingCount
+  }
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
   }
 
   return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { usePhraseManagerSWR } from '@/hooks/usePhraseManagerSWR'
 import { useSpeakModal } from '@/hooks/useSpeakModal'
 import { useQuizModal } from '@/hooks/useQuizModal'
@@ -13,6 +14,8 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseAddPage() {
+  const { user, loading: authLoading } = useAuthGuard()
+  
   const {
     // State
     nativeLanguage,
@@ -74,6 +77,11 @@ export default function PhraseAddPage() {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [generatedVariations.length])
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
