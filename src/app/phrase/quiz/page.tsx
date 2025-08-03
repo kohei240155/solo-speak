@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
@@ -17,6 +18,7 @@ import { QuizConfig } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
+  const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
   const router = useRouter()
@@ -108,6 +110,11 @@ export default function PhraseQuizPage() {
     resetQuiz()
     handleQuizFinish()
     setShowQuizModal(true)
+  }
+
+  // 認証ローディング中は何も表示しない
+  if (authLoading) {
+    return <LoadingSpinner />
   }
 
   return (
