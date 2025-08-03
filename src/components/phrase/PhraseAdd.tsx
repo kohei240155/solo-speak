@@ -211,7 +211,7 @@ export default function PhraseAdd({
         {desiredPhrase.length > 100 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              100文字以内で入力してください（現在: {desiredPhrase.length}文字）
+              {t('phrase.validation.maxLength100', { count: desiredPhrase.length })}
             </p>
           </div>
         )}

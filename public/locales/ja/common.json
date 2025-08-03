@@ -18,6 +18,14 @@
     "placeholders": {
       "phraseInput": "例：最近どこに行きましたか？",
       "situationInput": "例：レストランの注文で"
+    },
+    "validation": {
+      "maxLength100": "100文字以内で入力してください（現在: {{count}}文字）",
+      "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）"
+    },
+    "messages": {
+      "updateSuccess": "フレーズが正常に更新されました！",
+      "updateError": "フレーズの更新に失敗しました"
     }
   },
   "speak": {

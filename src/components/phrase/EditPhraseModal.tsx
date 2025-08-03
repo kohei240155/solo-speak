@@ -6,6 +6,7 @@ import { api } from '@/utils/api'
 import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
 import AnimatedButton from '../common/AnimatedButton'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface EditPhraseModalProps {
   isOpen: boolean
@@ -27,6 +28,7 @@ export default function EditPhraseModal({
   onRefresh
 }: EditPhraseModalProps) {
   const { session } = useAuth()
+  const { t } = useTranslation('common')
   const [editedText, setEditedText] = useState('')
   const [editedTranslation, setEditedTranslation] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
@@ -71,11 +73,11 @@ export default function EditPhraseModal({
       }
 
       // 成功トースト表示
-      toast.success('Phrase updated successfully!')
+      toast.success(t('phrase.messages.updateSuccess'))
       
     } catch (error) {
       console.error('Error updating phrase:', error)
-      toast.error('Failed to update phrase')
+      toast.error(t('phrase.messages.updateError'))
     } finally {
       setIsUpdating(false)
       setSelectedAction(null)
@@ -131,7 +133,7 @@ export default function EditPhraseModal({
         {editedTranslation.length > 200 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              200文字以内で入力してください（現在: {editedTranslation.length}文字）
+              {t('phrase.validation.maxLength200', { count: editedTranslation.length })}
             </p>
           </div>
         )}
@@ -161,7 +163,7 @@ export default function EditPhraseModal({
         {editedText.length > 200 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              200文字以内で入力してください（現在: {editedText.length}文字）
+              {t('phrase.validation.maxLength200', { count: editedText.length })}
             </p>
           </div>
         )}
