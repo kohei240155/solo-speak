@@ -14,12 +14,7 @@
     "selectLanguage": "言語を選択してください"
   },
   "phrase": {
-    "noPhrasesYet": "まだフレーズが登録されていません",
-    "actions": {
-      "explanation": "解説",
-      "edit": "編集",
-      "delete": "削除"
-    }
+    "noPhrasesYet": "まだフレーズが登録されていません"
   },
   "home": {
     "hero": {

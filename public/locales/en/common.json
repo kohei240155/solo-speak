@@ -14,12 +14,7 @@
     "selectLanguage": "Select a language"
   },
   "phrase": {
-    "noPhrasesYet": "No phrases have been registered yet",
-    "actions": {
-      "explanation": "Explanation",
-      "edit": "Edit",
-      "delete": "Delete"
-    }
+    "noPhrasesYet": "No phrases have been registered yet"
   },
   "home": {
     "hero": {
