@@ -1,6 +1,14 @@
 import { supabase } from './spabase'
 import toast from 'react-hot-toast'
 
+// AuthContextからshowLoginModalを呼び出すためのヘルパー関数
+// この関数はクライアントサイドでのみ動作します
+let showLoginModalRef: (() => void) | null = null
+
+export const setShowLoginModalRef = (showLoginModal: () => void) => {
+  showLoginModalRef = showLoginModal
+}
+
 interface ApiOptions extends RequestInit {
   /**
    * Supabaseセッションを使用してAuthorizationヘッダーを自動付与するか
@@ -88,11 +96,16 @@ class ApiClient {
         const finalError = sessionError
         if (finalError || !session?.access_token) {
           if (showErrorToast) {
-            // より詳細なメッセージに変更
-            toast.error('認証情報が期限切れです。ページを再読み込みしてください。', {
-              duration: 8000, // 8秒間表示
-              id: 'auth-error', // 重複トーストを防ぐ
-            })
+            // 認証エラー時はログインモーダルを表示
+            if (showLoginModalRef) {
+              showLoginModalRef()
+            } else {
+              // フォールバック: ログインモーダルが利用できない場合はトーストを表示
+              toast.error('認証情報が期限切れです。ページを再読み込みしてください。', {
+                duration: 8000,
+                id: 'auth-error',
+              })
+            }
           }
           throw new ApiError('認証情報なし', 401)
         }
@@ -127,10 +140,16 @@ class ApiClient {
 
           // 401エラーの場合は特別なメッセージを表示
           if (response.status === 401 && showErrorToast) {
-            toast.error('認証が失効しました。ページを再読み込みしてください。', {
-              duration: 8000,
-              id: 'auth-expired'
-            })
+            // 認証エラー時はログインモーダルを表示
+            if (showLoginModalRef) {
+              showLoginModalRef()
+            } else {
+              // フォールバック: ログインモーダルが利用できない場合はトーストを表示
+              toast.error('認証が失効しました。ページを再読み込みしてください。', {
+                duration: 8000,
+                id: 'auth-expired'
+              })
+            }
           } else if (response.status === 503 && showErrorToast) {
             toast.error('認証サービスが一時的に利用できません。しばらく待ってから再試行してください。', {
               duration: 8000,

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
 import { UserSettingsResponse } from '@/types/userSettings'
+import LoginModal from '@/components/auth/LoginModal'
 
 type AuthContextType = {
   user: User | null
@@ -14,6 +15,7 @@ type AuthContextType = {
   userIconUrl: string | null
   isUserSetupComplete: boolean
   shouldRedirectToSettings: boolean
+  isLoginModalOpen: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
@@ -21,6 +23,8 @@ type AuthContextType = {
   refreshUserSettings: () => Promise<void>
   refreshSession: () => Promise<void>
   clearSettingsRedirect: () => void
+  showLoginModal: () => void
+  hideLoginModal: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -41,6 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
     // タイムアウト設定（5秒後に強制的にローディング解除）
@@ -111,6 +116,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (!session?.user) {
             setUserIconUrl(null)
             setIsUserSetupComplete(false)
+          } else {
+            // ログイン成功時はログインモーダルを閉じる
+            setIsLoginModalOpen(false)
           }
         } catch {
           setSession(null)
@@ -160,8 +168,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     // 本番環境では明示的に設定されたドメインを使用
+    const isProduction = process.env.NODE_ENV === 'production'
     const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-    const redirectUrl = `${productionUrl}/auth/callback`
+    
+    // 本番環境では強制的にsolo-speak.comを使用
+    const redirectUrl = isProduction 
+      ? 'https://solo-speak.com/auth/callback'
+      : `${productionUrl}/auth/callback`
+    
+    console.log('OAuth redirect URL:', redirectUrl) // デバッグ用
     
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -326,6 +341,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setShouldRedirectToSettings(false)
   }
 
+  const showLoginModal = () => {
+    setIsLoginModalOpen(true)
+  }
+
+  const hideLoginModal = () => {
+    setIsLoginModalOpen(false)
+  }
+
   const value = {
     user,
     session,
@@ -333,6 +356,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     userIconUrl,
     isUserSetupComplete,
     shouldRedirectToSettings,
+    isLoginModalOpen,
     signOut,
     signInWithGoogle,
     updateUserMetadata,
@@ -340,7 +364,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     refreshUserSettings,
     refreshSession,
     clearSettingsRedirect,
+    showLoginModal,
+    hideLoginModal,
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <LoginModal isOpen={isLoginModalOpen} onClose={hideLoginModal} />
+    </AuthContext.Provider>
+  )
 }

@@ -4,15 +4,13 @@ import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
-import LoginModal from '../auth/LoginModal'
 import DropdownMenu from '../common/DropdownMenu'
 import { BsClipboardData } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
-  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings } = useAuth()
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
@@ -84,11 +82,7 @@ const Header = memo(function Header() {
   }, [isUserSetupComplete, handleSignOut])
 
   const handleLoginClick = () => {
-    setIsLoginModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsLoginModalOpen(false)
+    showLoginModal()
   }
 
   const handleImageError = () => {
@@ -273,9 +267,6 @@ const Header = memo(function Header() {
           </div>
         </div>
       </div>
-
-      {/* ログインモーダル */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={handleCloseModal} />
     </header>
   )
 })

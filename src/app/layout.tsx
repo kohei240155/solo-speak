@@ -7,6 +7,7 @@ import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
 import ViewportFix from "@/components/common/ViewportFix";
 import ServiceWorkerRegistration from "@/components/common/ServiceWorkerRegistration";
 import { SettingsRedirect } from "@/components/auth/SettingsRedirect";
+import AuthApiConnection from "@/components/auth/AuthApiConnection";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
         <ViewportFix />
         <ServiceWorkerRegistration />
         <AuthProvider>
+          <AuthApiConnection />
           <SettingsRedirect />
           <Header />
           <SecondaryNavigation />
