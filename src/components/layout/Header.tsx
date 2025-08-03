@@ -2,15 +2,18 @@
 
 import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from '@/hooks/useTranslation'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from '../common/DropdownMenu'
+import { DisplayLanguageSelector } from '../common/DisplayLanguageSelector'
 import { BsClipboardData } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
+  const { t } = useTranslation('common')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
@@ -58,13 +61,13 @@ const Header = memo(function Header() {
       items.push(
         {
           id: 'dashboard',
-          label: 'ダッシュボード',
+          label: t('common.dashboard'),
           icon: BsClipboardData,
           onClick: () => window.location.href = '/dashboard'
         },
         {
           id: 'settings',
-          label: 'ユーザー設定',
+          label: t('common.userSettings'),
           icon: LuSettings,
           onClick: () => window.location.href = '/settings'
         }
@@ -73,13 +76,13 @@ const Header = memo(function Header() {
     
     items.push({
       id: 'logout',
-      label: 'ログアウト',
+      label: t('common.logout'),
       icon: MdLogout,
       onClick: handleSignOut
     })
     
     return items
-  }, [isUserSetupComplete, handleSignOut])
+  }, [isUserSetupComplete, handleSignOut, t])
 
   const handleLoginClick = () => {
     showLoginModal()
@@ -203,19 +206,24 @@ const Header = memo(function Header() {
                 triggerClassName="p-1 rounded-full hover:bg-gray-100"
               />
             ) : (
-              <button
-                onClick={handleLoginClick}
-                className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                style={{ backgroundColor: '#616161' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#525252'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#616161'
-                }}
-              >
-                ログイン
-              </button>
+              <div className="flex items-center space-x-4">
+                {/* 未ログイン時の言語選択 */}
+                <DisplayLanguageSelector />
+                
+                <button
+                  onClick={handleLoginClick}
+                  className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-[100px] flex items-center justify-center"
+                  style={{ backgroundColor: '#616161' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }}
+                >
+                  {t('common.login')}
+                </button>
+              </div>
             )}
           </nav>
 
@@ -249,19 +257,24 @@ const Header = memo(function Header() {
                 triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
               />
             ) : (
-              <button
-                onClick={handleLoginClick}
-                className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                style={{ backgroundColor: '#616161' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#525252'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#616161'
-                }}
-              >
-                ログイン
-              </button>
+              <div className="flex items-center space-x-3">
+                {/* 未ログイン時の言語選択（モバイル版） */}
+                <DisplayLanguageSelector />
+                
+                <button
+                  onClick={handleLoginClick}
+                  className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-[85px] flex items-center justify-center"
+                  style={{ backgroundColor: '#616161' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }}
+                >
+                  {t('common.login')}
+                </button>
+              </div>
             )}
           </div>
         </div>

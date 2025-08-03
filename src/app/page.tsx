@@ -1,14 +1,16 @@
 'use client'
 
 import { useRedirect } from '@/hooks/useRedirect'
+import { useTranslation } from '@/hooks/useTranslation'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function Home() {
   const { loading } = useRedirect()
+  const { t, isLoading: isLoadingTranslation } = useTranslation('common')
 
-  if (loading) {
-    return <LoadingSpinner fullScreen message="Loading..." />
+  if (loading || isLoadingTranslation) {
+    return <LoadingSpinner fullScreen message={t('common.loading')} />
   }
 
   return (
@@ -21,13 +23,18 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              あなたの
-              <span className="text-blue-600">フレーズ暗記</span>
-              を<br />
-              サポートします
+              {t('home.hero.title.part1')}
+              <span className="text-blue-600">{t('home.hero.title.highlight1')}</span>
+              {t('home.hero.title.part2')}
+              {t('home.hero.title.highlight2') && (
+                <>
+                  <br />
+                  <span className="text-blue-600">{t('home.hero.title.highlight2')}</span>
+                </>
+              )}
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              音声認識技術を活用して、一人でも楽しく効果的に語学学習ができるWebアプリケーション
+              {t('home.hero.subtitle')}
             </p>
             <div className="text-center mb-12">
               <div className="inline-flex items-center px-4 py-2 bg-blue-50 rounded-full border border-blue-200">
@@ -35,7 +42,7 @@ export default function Home() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                 </svg>
                 <p className="text-blue-700 font-medium">
-                  始めるには、右上のログインボタンをクリック
+                  {t('home.hero.loginPrompt')}
                 </p>
               </div>
             </div>
@@ -51,7 +58,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              こんなことができるようになります
+              {t('home.features.title')}
             </h2>
           </div>
           
@@ -63,10 +70,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
-                音声認識による発音練習
+                {t('home.features.speechRecognition.title')}
               </h3>
               <p className="text-gray-600 text-center">
-                最新の音声認識技術を使って、正確な発音を身につけることができます。
+                {t('home.features.speechRecognition.description')}
               </p>
             </div>
 
@@ -77,10 +84,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
-                クイズ形式での学習
+                {t('home.features.quiz.title')}
               </h3>
               <p className="text-gray-600 text-center">
-                楽しいクイズ形式で、覚えたフレーズを定着させることができます。
+                {t('home.features.quiz.description')}
               </p>
             </div>
 
@@ -91,10 +98,10 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
-                学習進捗の記録・管理
+                {t('home.features.progress.title')}
               </h3>
               <p className="text-gray-600 text-center">
-                あなたの学習状況を可視化し、継続的な学習をサポートします。
+                {t('home.features.progress.description')}
               </p>
             </div>
           </div>

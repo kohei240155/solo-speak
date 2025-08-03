@@ -1,0 +1,40 @@
+{
+  "common": {
+    "solospeak": "Solo Speak",
+    "loading": "Loading...",
+    "login": "Login",
+    "logout": "Logout",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "userSettings": "User Settings"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "part1": "Supporting Your",
+        "highlight1": "Phrase Memorization",
+        "part2": "",
+        "highlight2": ""
+      },
+      "subtitle": "A web application that makes language learning fun and effective on your own using speech recognition technology",
+      "loginPrompt": "To get started, click the login button in the top right"
+    },
+    "features": {
+      "title": "What You Can Achieve",
+      "speechRecognition": {
+        "title": "Pronunciation Practice with Speech Recognition",
+        "description": "Master accurate pronunciation using the latest speech recognition technology."
+      },
+      "quiz": {
+        "title": "Quiz-style Learning",
+        "description": "Reinforce memorized phrases through fun quiz formats."
+      },
+      "progress": {
+        "title": "Learning Progress Tracking & Management",
+        "description": "Visualize your learning status and support continuous learning."
+      }
+    }
+  }
+}

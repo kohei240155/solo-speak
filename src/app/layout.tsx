@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/layout/Header";
 import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
 import ViewportFix from "@/components/common/ViewportFix";
@@ -67,15 +68,17 @@ export default function RootLayout({
       >
         <ViewportFix />
         <ServiceWorkerRegistration />
-        <AuthProvider>
-          <AuthApiConnection />
-          <SettingsRedirect />
-          <Header />
-          <SecondaryNavigation />
-          <main className="flex-1">
-            {children}
-          </main>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <AuthApiConnection />
+            <SettingsRedirect />
+            <Header />
+            <SecondaryNavigation />
+            <main className="flex-1">
+              {children}
+            </main>
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
