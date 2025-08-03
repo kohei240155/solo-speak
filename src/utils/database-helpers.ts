@@ -30,12 +30,10 @@ export async function checkUsernameConflict(
  */
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
-    console.log('checkUserExists - Checking user:', userId)
     const user = await prisma.user.findUnique({
       where: { id: userId }
     })
     const exists = !!user
-    console.log('checkUserExists - Result:', { userId, exists })
     return exists
   } catch (error) {
     console.error('checkUserExists - Error:', {
@@ -91,22 +89,9 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
  */
 export async function initializeUser(user: User): Promise<UserSettingsResponse> {
   try {
-    console.log('initializeUser - Input data:', {
-      userId: user.id,
-      email: user.email,
-      fullName: user.user_metadata?.full_name,
-      name: user.user_metadata?.name,
-      avatarUrl: user.user_metadata?.avatar_url ? `${user.user_metadata.avatar_url.substring(0, 50)}...` : undefined
-    })
-
     // Googleから取得した情報
     const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
     const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
-
-    console.log('initializeUser - Extracted Google data:', {
-      displayName: googleDisplayName,
-      avatarUrl: googleAvatarUrl ? `${googleAvatarUrl.substring(0, 50)}...` : googleAvatarUrl
-    })
 
     const result = await prisma.user.create({
       data: {
@@ -121,13 +106,6 @@ export async function initializeUser(user: User): Promise<UserSettingsResponse> 
         nativeLanguage: true,
         defaultLearningLanguage: true,
       }
-    })
-
-    console.log('initializeUser - Success:', {
-      userId: result.id,
-      email: result.email,
-      username: result.username,
-      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
     })
 
     return {
@@ -169,15 +147,6 @@ export async function createUserSettings(
   userData: UserSettingsCreateRequest
 ): Promise<UserSettingsResponse> {
   try {
-    console.log('createUserSettings - Input data:', {
-      userId: user.id,
-      email: user.email,
-      userData: {
-        ...userData,
-        iconUrl: userData.iconUrl ? `${userData.iconUrl.substring(0, 50)}...` : userData.iconUrl
-      }
-    })
-
     const result = await prisma.user.create({
       data: {
         id: user.id,
@@ -202,12 +171,6 @@ export async function createUserSettings(
       console.error('Failed to create default situations:', situationError)
       // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
     }
-
-    console.log('createUserSettings - Success:', {
-      userId: result.id,
-      username: result.username,
-      iconUrl: result.iconUrl ? `${result.iconUrl.substring(0, 50)}...` : result.iconUrl
-    })
 
     return {
       iconUrl: result.iconUrl,

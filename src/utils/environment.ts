@@ -32,13 +32,4 @@ export const getEnvironmentConfig = () => {
   }
 }
 
-// デバッグ情報を出力
-export const logEnvironmentInfo = () => {
-  if (typeof window !== 'undefined') {
-    const config = getEnvironmentConfig()
-    console.log('Environment Config:', {
-      ...config,
-      supabaseAnonKey: config.supabaseAnonKey ? '***' : 'undefined'
-    })
-  }
-}
+

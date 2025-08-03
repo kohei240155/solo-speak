@@ -29,35 +29,19 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
 
     // 共通のgetImageFile関数
     const getImageFile = useCallback(() => {
-      console.log('ImageUpload: getImageFile called')
-      console.log('ImageUpload: croppedImageBlob:', croppedImageBlob)
-      console.log('ImageUpload: selectedFile:', selectedFile)
-      console.log('ImageUpload: selectedImage:', selectedImage)
-      console.log('ImageUpload: selectedImage type:', typeof selectedImage)
-      console.log('ImageUpload: selectedImage length:', selectedImage?.length)
-      
       // クロップされた画像があればそれを使用
       if (croppedImageBlob) {
-        console.log('ImageUpload: Using cropped image blob')
         const file = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' })
-        console.log('ImageUpload: Created file from cropped blob:', file)
         return file
       }
       
       // 元のファイルオブジェクトがある場合はそれを使用
       if (selectedFile) {
-        console.log('ImageUpload: Using original selected file')
-        console.log('ImageUpload: selectedFile:', selectedFile)
         return selectedFile
       }
       
       // selectedImageがData URLの場合の処理
-      console.log('ImageUpload: Checking selectedImage condition...')
-      console.log('ImageUpload: selectedImage exists:', !!selectedImage)
-      console.log('ImageUpload: selectedImage starts with data:', selectedImage?.startsWith('data:'))
-      
       if (selectedImage && selectedImage.startsWith('data:')) {
-        console.log('ImageUpload: Using selected image (data URL)')
         try {
           // Data URLをBlobに変換
           const [header, data] = selectedImage.split(',')
@@ -69,22 +53,13 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
           }
           const blob = new Blob([array], { type: mime })
           const file = new File([blob], 'avatar.jpg', { type: mime })
-          console.log('ImageUpload: Created file from selected image:', file)
           return file
         } catch (error) {
           console.error('ImageUpload: Failed to convert selected image to file:', error)
           return null
         }
-      } else {
-        console.log('ImageUpload: selectedImage condition not met')
-        console.log('ImageUpload: selectedImage exists:', !!selectedImage)
-        console.log('ImageUpload: selectedImage value:', selectedImage)
-        if (selectedImage) {
-          console.log('ImageUpload: selectedImage starts with data:', selectedImage.startsWith('data:'))
-        }
       }
       
-      console.log('ImageUpload: No image available, returning null')
       return null
     }, [croppedImageBlob, selectedFile, selectedImage])
 
@@ -159,11 +134,8 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     [completedCrop],
   )
 
-  const handleCropComplete = useCallback(async () => {
-    console.log('ImageUpload: handleCropComplete called')
-    
+    const handleCropComplete = useCallback(() => {
     if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
-      console.log('ImageUpload: Missing required elements for crop completion')
       return
     }
 
@@ -173,15 +145,12 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     // Blobを作成してローカル保存
     canvas.toBlob((blob) => {
       if (blob) {
-        console.log('ImageUpload: Generated blob:', blob)
         setCroppedImageBlob(blob)
       }
     })
 
     // フォーム表示用にBase64データURLを作成
     const dataUrl = canvas.toDataURL('image/png', 0.9)
-    console.log('ImageUpload: Created data URL for preview:', dataUrl.substring(0, 50) + '...')
-    console.log('ImageUpload: Calling onImageChange with dataUrl')
     onImageChange(dataUrl)
     
     // 古いBlob URLをクリーンアップ
@@ -192,7 +161,6 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     
     setShowCrop(false)
     setSelectedImage(null)
-    console.log('ImageUpload: Apply completed - image is ready for upload on Save')
   }, [completedCrop, generateCroppedImage, onImageChange])
 
   const handleCropCancel = () => {
@@ -217,12 +185,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     
     // フォームの値を空文字列に設定（Save時に削除処理が実行される）
     onImageRemove()
-    
-    console.log('ImageUpload: Delete button clicked, iconUrl will be cleared on Save')
   }
-
-  // currentImageのデバッグログ
-  console.log('ImageUpload: render with currentImage:', {
     currentImage,
     type: typeof currentImage,
     length: currentImage?.length,

@@ -124,57 +124,24 @@ export function useUserSettingsSubmit(
         const isSupabaseUrl = existingIconUrl.includes(supabaseUrl) &&
                               existingIconUrl.includes('/storage/v1/object/public/')
         
-        console.log('UserSettingsSubmit: URL analysis for deletion:', {
-          isGoogleUrl,
-          isSupabaseUrl,
-          existingIconUrl: existingIconUrl.substring(0, 50) + '...'
-        })
-        
         // Supabase Storageに保存された画像の場合は物理削除
         if (isSupabaseUrl) {
           try {
-            console.log('UserSettingsSubmit: Deleting icon from Supabase storage:', existingIconUrl.substring(0, 50) + '...')
-            
             await api.delete('/api/user/icon', { iconUrl: existingIconUrl })
-            console.log('UserSettingsSubmit: Icon deleted from storage successfully')
           } catch (deleteError) {
             console.error('UserSettingsSubmit: Error deleting icon from storage:', deleteError)
             // 削除に失敗してもユーザー設定の更新は続行
           }
-        } else {
-          console.log('UserSettingsSubmit: Icon is external URL (Google or other), no storage deletion needed')
         }
         
         // アイコンを空に設定（デフォルトのシルエットアイコンが表示される）
         finalData.iconUrl = ''
-        console.log('UserSettingsSubmit: Set finalData.iconUrl to empty string for database update')
-      } else {
-        console.log('UserSettingsSubmit: No deletion needed or conditions not met')
-        if (finalData.iconUrl === '') {
-          console.log('UserSettingsSubmit: iconUrl is empty but no existing icon to delete')
-        }
       }
-
-      console.log('Final data being sent to API:', {
-        ...finalData,
-        iconUrl: finalData.iconUrl ? `${finalData.iconUrl.substring(0, 50)}...` : 'null',
-        nativeLanguageId: finalData.nativeLanguageId,
-        defaultLearningLanguageId: finalData.defaultLearningLanguageId
-      })
-      console.log('Full iconUrl being sent:', finalData.iconUrl)
-      console.log('Language IDs being sent:', {
-        nativeLanguageId: finalData.nativeLanguageId,
-        defaultLearningLanguageId: finalData.defaultLearningLanguageId
-      })
-      console.log('Is first time setup:', isFirstTimeSetup)
 
       // 2つ目のAPI: ユーザー設定を保存
       const result = await api.post('/api/user/settings', finalData) as { iconUrl?: string }
       
-      console.log('Settings: User settings saved successfully:', { iconUrl: result.iconUrl })
-      
       // Supabaseのユーザーメタデータも更新（空文字列の場合も含む）
-      console.log('Settings: Updating user metadata with iconUrl:', JSON.stringify(finalData.iconUrl))
       await updateUserMetadata({ icon_url: finalData.iconUrl || '' })
       
       // 設定完了状態を更新
@@ -194,7 +161,6 @@ export function useUserSettingsSubmit(
       clearSettingsRedirect()
       
       // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
-      console.log('Settings: Dispatching userSettingsUpdated event')
       setTimeout(() => {
         window.dispatchEvent(new Event('userSettingsUpdated'))
       }, 100)
@@ -209,7 +175,6 @@ export function useUserSettingsSubmit(
       // Phrase Add画面に遷移
       router.push('/phrase/add')
     } catch (error) {
-      console.error('Settings save failed:', error)
       console.error('Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,

@@ -207,18 +207,7 @@ function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPh
   const cleanPhrase = desiredPhrase.replace(/\([^)]*\)/g, '').trim();
   
   // 新しいプロンプトシステムを使用
-  // デバッグ用ログ
-  console.log('Debug - buildPrompt values:', {
-    cleanPhrase,
-    situation,
-    nativeLanguage,
-    learningLanguage
-  });
-  
   const prompt = getPromptTemplate(learningLanguage, nativeLanguage, cleanPhrase, situation);
-  
-  // デバッグ用ログ - 最終的なプロンプト
-  console.log('Debug - Final prompt:', prompt);
   
   return { prompt };
 }

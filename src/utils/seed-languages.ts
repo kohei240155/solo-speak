@@ -21,8 +21,6 @@ export async function ensureBasicLanguagesExist(): Promise<void> {
     })
 
     if (existingLanguagesCount === 0) {
-      console.log('No languages found in database, seeding basic languages...')
-      
       // 基本言語データを作成
       for (const language of basicLanguages) {
         await prisma.language.upsert({
@@ -34,8 +32,6 @@ export async function ensureBasicLanguagesExist(): Promise<void> {
           }
         })
       }
-      
-      console.log('Basic languages seeded successfully!')
     }
   } catch (error) {
     console.error('Error ensuring basic languages exist:', error)
