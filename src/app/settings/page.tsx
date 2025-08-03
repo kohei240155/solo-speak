@@ -42,7 +42,7 @@ export default function UserSettingsPage() {
   } = useUserSettings(setValue)
 
   if (authLoading || dataLoading) {
-    return <LoadingSpinner fullScreen message="Loading..." />
+    return <LoadingSpinner withHeaderOffset message="Loading..." />
   }
 
   return (
