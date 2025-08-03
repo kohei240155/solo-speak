@@ -124,7 +124,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       }
     ],
     onStart: handleStart,
-    startButtonText: t('speak.modal.start')
+    startButtonText: 'Start'
   }
 
   return (
