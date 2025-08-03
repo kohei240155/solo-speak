@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import BaseModal from '../common/BaseModal'
@@ -15,24 +15,66 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signInWithGoogle } = useAuth()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
     setError('')
 
+    // 10秒後にタイムアウトでローディングを停止
+    timeoutRef.current = setTimeout(() => {
+      setLoading(false)
+      setError('認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。')
+    }, 10000)
+
     try {
+      console.log('Initiating Google Sign In...')
       const { error } = await signInWithGoogle()
       
       if (error) {
-        setError(error.message)
+        console.error('Google Sign In error:', error)
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        setError(error.message || '認証に失敗しました。再度お試しください。')
         setLoading(false)
+      } else {
+        console.log('Google Sign In initiated successfully')
+        // 認証成功時（リダイレクトが開始される）の場合
+        // OAuth リダイレクトが発生するため、タイムアウトはそのまま維持
       }
-      // 認証成功時は直接リダイレクトせず、コールバックページに処理を委ねる
-    } catch {
+    } catch (err) {
+      console.error('Exception in handleGoogleSignIn:', err)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
       setError('認証に失敗しました。再度お試しください。')
       setLoading(false)
     }
   }
+
+  // モーダルが閉じられた時やコンポーネントがアンマウントされた時のクリーンアップ
+  useEffect(() => {
+    if (!isOpen) {
+      // モーダルが閉じられた時にタイムアウトをクリア
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      setLoading(false)
+      setError('')
+    }
+
+    // コンポーネントのクリーンアップ
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [isOpen])
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} width="400px">
