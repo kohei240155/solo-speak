@@ -1,6 +1,7 @@
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHandleSubmit } from 'react-hook-form'
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
+import { useTranslation } from '@/hooks/useTranslation'
 import ImageUpload from '@/components/common/ImageUpload'
 
 interface UserSettingsFormProps {
@@ -30,6 +31,7 @@ export default function UserSettingsForm({
   // onSubmit, // 未使用のため削除
   submitting: submittingProp
 }: UserSettingsFormProps) {
+  const { t } = useTranslation('common')
   const { submitting, imageUploadRef, onSubmit: onSubmitFromHook } = useUserSettingsSubmit(
     setError, 
     setIsUserSetupComplete
@@ -45,7 +47,7 @@ export default function UserSettingsForm({
       {/* User Icon */}
       <div>
         <label className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          User Icon
+          {t('settings.userIcon')}
         </label>
         <ImageUpload
           ref={imageUploadRef}
@@ -66,14 +68,14 @@ export default function UserSettingsForm({
       {/* Display Name */}
       <div>
         <label htmlFor="username" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Display Name
+          {t('settings.displayName')}
         </label>
         <input
           type="text"
           id="username"
           {...register('username')}
           className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-          placeholder="Solo Ichiro"
+          placeholder={t('settings.placeholders.displayName')}
           disabled={isDisabled}
         />
         {errors.username && (
@@ -84,7 +86,7 @@ export default function UserSettingsForm({
       {/* Native Language */}
       <div>
         <label htmlFor="nativeLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Native Language
+          {t('settings.nativeLanguage')}
         </label>
         <div className="relative">
           <select
@@ -94,7 +96,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? 'Loading languages...' : 'Select a language'}
+              {dataLoading ? t('settings.loadingLanguages') : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -118,7 +120,7 @@ export default function UserSettingsForm({
       {/* Default Learning Language */}
       <div>
         <label htmlFor="defaultLearningLanguageId" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Default Learning Language
+          {t('settings.defaultLearningLanguage')}
         </label>
         <div className="relative">
           <select
@@ -128,7 +130,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? 'Loading languages...' : 'Select a language'}
+              {dataLoading ? t('settings.loadingLanguages') : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -152,14 +154,14 @@ export default function UserSettingsForm({
       {/* Contact Email */}
       <div>
         <label htmlFor="email" className="block text-gray-700 mb-2 text-lg md:text-xl font-bold">
-          Contact Email
+          {t('settings.contactEmail')}
         </label>
         <input
           type="email"
           id="email"
           {...register('email')}
           className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-          placeholder="solospeak@example.com"
+          placeholder={t('settings.placeholders.contactEmail')}
           disabled={isDisabled}
         />
         {errors.email && (
@@ -190,10 +192,10 @@ export default function UserSettingsForm({
           {actualSubmitting ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Saving...
+              {t('settings.saving')}
             </div>
           ) : (
-            'Save'
+            t('settings.save')
           )}
         </button>
       </div>

@@ -10,6 +10,22 @@
     "settings": "Settings",
     "userSettings": "User Settings"
   },
+  "settings": {
+    "title": "Settings",
+    "userIcon": "User Icon",
+    "displayName": "Display Name",
+    "nativeLanguage": "Native Language",
+    "defaultLearningLanguage": "Default Learning Language",
+    "contactEmail": "Contact Email",
+    "selectLanguage": "Select a language",
+    "loadingLanguages": "Loading languages...",
+    "save": "Save",
+    "saving": "Saving...",
+    "placeholders": {
+      "displayName": "Solo Ichiro",
+      "contactEmail": "solospeak@example.com"
+    }
+  },
   "home": {
     "hero": {
       "title": {

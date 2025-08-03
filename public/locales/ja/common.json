@@ -10,6 +10,22 @@
     "settings": "設定",
     "userSettings": "ユーザー設定"
   },
+  "settings": {
+    "title": "Settings",
+    "userIcon": "ユーザーアイコン",
+    "displayName": "表示名",
+    "nativeLanguage": "母国語",
+    "defaultLearningLanguage": "デフォルト学習言語",
+    "contactEmail": "連絡先メールアドレス",
+    "selectLanguage": "言語を選択してください",
+    "loadingLanguages": "言語を読み込み中...",
+    "save": "Save",
+    "saving": "Saving...",
+    "placeholders": {
+      "displayName": "Solo Ichiro",
+      "contactEmail": "solospeak@example.com"
+    }
+  },
   "home": {
     "hero": {
       "title": {

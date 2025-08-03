@@ -192,7 +192,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
       {/* 現在のアイコン表示 */}
       <div className="flex items-center space-x-4">
         <div 
-          className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300 cursor-pointer transition-all duration-200"
+          className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300 cursor-pointer transition-all duration-200"
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = '#9CA3AF'
             e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
