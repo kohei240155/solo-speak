@@ -22,7 +22,6 @@
   },
   "speak": {
     "modal": {
-      "title": "スピークモード",
       "language": "言語",
       "startFrom": "開始位置",
       "excludeHighPracticeCount": "練習回数が多いフレーズを除外",

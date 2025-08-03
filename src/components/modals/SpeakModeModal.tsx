@@ -90,7 +90,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
 
   // モーダル設定を定義
   const modalConfig: ModeModalConfig = {
-    title: t('speak.modal.title'),
+    title: 'Speak Mode',
     configItems: [
       {
         id: 'order',

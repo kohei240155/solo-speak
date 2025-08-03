@@ -22,7 +22,6 @@
   },
   "speak": {
     "modal": {
-      "title": "Speak Mode",
       "language": "Language",
       "startFrom": "Start from",
       "excludeHighPracticeCount": "Exclude phrases with high practice count",
