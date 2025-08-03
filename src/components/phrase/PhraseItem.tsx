@@ -6,6 +6,7 @@ import { BiCalendarAlt, BiCommentDetail } from 'react-icons/bi'
 import { BsPencil } from 'react-icons/bs'
 import { useMemo, memo } from 'react'
 import DropdownMenu from '../common/DropdownMenu'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface PhraseItemProps {
   phrase: SavedPhrase
@@ -26,6 +27,7 @@ const PhraseItem = memo(({
   onDelete,
   onExplanation
 }: PhraseItemProps) => {
+  const { t } = useTranslation('common')
   const borderColor = useMemo(() => 
     getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
     [phrase.correctAnswers]
@@ -73,19 +75,19 @@ const PhraseItem = memo(({
             items={[
               {
                 id: 'explanation',
-                label: 'Explanation',
+                label: t('phrase.actions.explanation'),
                 icon: BiCommentDetail,
                 onClick: () => onExplanation(phrase)
               },
               {
                 id: 'edit',
-                label: 'Edit',
+                label: t('phrase.actions.edit'),
                 icon: BsPencil,
                 onClick: () => onEdit(phrase)
               },
               {
                 id: 'delete',
-                label: 'Delete',
+                label: t('phrase.actions.delete'),
                 icon: RiDeleteBin6Line,
                 onClick: () => onDelete(phrase.id),
                 variant: 'danger'

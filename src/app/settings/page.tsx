@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
 import { useUserSettings } from '@/hooks/useUserSettings'
-import { useTranslation } from '@/hooks/useTranslation'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
 import SubscriptionTab from '@/components/settings/SubscriptionTab'
 import TabNavigation from '@/components/navigation/TabNavigation'
@@ -14,7 +13,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
   const { loading: authLoading } = useAuthGuard()
-  const { t } = useTranslation('common')
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
 
   const {
@@ -52,7 +50,7 @@ export default function UserSettingsPage() {
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Settings タイトル */}
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
-          {t('settings.title')}
+          Settings
         </h1>
         
         {/* タブメニュー */}

@@ -116,7 +116,7 @@ export default function PhraseList({
   }, [onUpdatePhrase])
 
   if (isLoadingPhrases && savedPhrases.length === 0) {
-    return <LoadingSpinner message={t('phrase.loading')} className="py-8" />
+    return <LoadingSpinner message="Loading phrases..." className="py-8" />
   }
 
   if (!Array.isArray(savedPhrases) || savedPhrases.length === 0) {
@@ -146,7 +146,7 @@ export default function PhraseList({
         {/* 無限スクロール用のローディング */}
         {isLoadingMore && (
           <div className="flex justify-center py-6">
-            <LoadingSpinner size="sm" message={t('phrase.loadingMore')} className="" />
+            <LoadingSpinner size="sm" message="Loading more..." className="" />
           </div>
         )}
       </div>

@@ -76,7 +76,7 @@ const Header = memo(function Header() {
     
     items.push({
       id: 'logout',
-      label: t('common.logout'),
+      label: 'Logout',
       icon: MdLogout,
       onClick: handleSignOut
     })

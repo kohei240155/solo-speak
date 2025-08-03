@@ -75,7 +75,7 @@ export default function UserSettingsForm({
           id="username"
           {...register('username')}
           className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-          placeholder={t('settings.placeholders.displayName')}
+          placeholder="Solo Ichiro"
           disabled={isDisabled}
         />
         {errors.username && (
@@ -96,7 +96,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? t('settings.loadingLanguages') : t('settings.selectLanguage')}
+              {dataLoading ? 'Loading languages...' : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -130,7 +130,7 @@ export default function UserSettingsForm({
             disabled={isDisabled}
           >
             <option value="">
-              {dataLoading ? t('settings.loadingLanguages') : t('settings.selectLanguage')}
+              {dataLoading ? 'Loading languages...' : t('settings.selectLanguage')}
             </option>
             {languages.map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
@@ -161,7 +161,7 @@ export default function UserSettingsForm({
           id="email"
           {...register('email')}
           className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${isDisabled ? 'bg-gray-100 cursor-not-allowed text-gray-600' : ''}`}
-          placeholder={t('settings.placeholders.contactEmail')}
+          placeholder="solospeak@example.com"
           disabled={isDisabled}
         />
         {errors.email && (
@@ -192,10 +192,10 @@ export default function UserSettingsForm({
           {actualSubmitting ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              {t('settings.saving')}
+              Saving...
             </div>
           ) : (
-            t('settings.save')
+            'Save'
           )}
         </button>
       </div>

@@ -10,7 +10,7 @@ export default function Home() {
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
 
   if (loading || isLoadingTranslation) {
-    return <LoadingSpinner fullScreen message={t('common.loading')} />
+    return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   return (
