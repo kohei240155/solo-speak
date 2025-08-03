@@ -26,6 +26,11 @@
       "contactEmail": "solospeak@example.com"
     }
   },
+  "phrase": {
+    "loading": "Loading phrases...",
+    "noPhrasesYet": "No phrases have been registered yet",
+    "loadingMore": "Loading more..."
+  },
   "home": {
     "hero": {
       "title": {

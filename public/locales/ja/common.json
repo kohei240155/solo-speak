@@ -26,6 +26,11 @@
       "contactEmail": "solospeak@example.com"
     }
   },
+  "phrase": {
+    "loading": "フレーズを読み込み中...",
+    "noPhrasesYet": "まだフレーズが登録されていません",
+    "loadingMore": "読み込み中..."
+  },
   "home": {
     "hero": {
       "title": {
