@@ -27,7 +27,7 @@ export default function Footer() {
           </div>
 
           {/* リンクセクション */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
             <div>
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">

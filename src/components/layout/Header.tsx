@@ -250,13 +250,15 @@ const Header = memo(function Header() {
                 triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
               />
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 {/* 未ログイン時の言語選択（モバイル版） */}
-                <DisplayLanguageSelector />
+                <div className="min-w-0">
+                  <DisplayLanguageSelector className="text-xs" />
+                </div>
                 
                 <button
                   onClick={handleLoginClick}
-                  className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-[85px] flex items-center justify-center"
+                  className="text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center w-[85px]"
                   style={{ backgroundColor: '#616161' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#525252'
