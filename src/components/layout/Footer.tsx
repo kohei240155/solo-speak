@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Footer() {
+  
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto block">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -25,19 +27,17 @@ export default function Footer() {
           </div>
 
           {/* リンクセクション */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
             <div>
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">
                 <li>
-                  <button
-                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors text-left"
-                    onClick={() => {
-                      window.location.href = '/'
-                    }}
+                  <Link
+                    href="/"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     Solo Speakについて
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>

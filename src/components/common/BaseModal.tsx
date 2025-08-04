@@ -21,6 +21,10 @@ export interface BaseModalProps {
   width?: string
   showCloseButton?: boolean
   closeOnOverlayClick?: boolean
+  titleButton?: {
+    icon: React.ComponentType<{ className?: string }>
+    onClick: () => void
+  }
 }
 
 export default function BaseModal({
@@ -30,7 +34,8 @@ export default function BaseModal({
   title,
   width = '500px',
   showCloseButton = true,
-  closeOnOverlayClick = true
+  closeOnOverlayClick = true,
+  titleButton
 }: BaseModalProps) {
   const prevIsOpenRef = useRef(false)
 
@@ -153,9 +158,19 @@ export default function BaseModal({
         {/* タイトル付きの場合のヘッダー */}
         {title && (
           <div className="p-6 pb-0">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 pr-8">
-              {title}
-            </h2>
+            <div className="flex items-center pr-8">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                {title}
+              </h2>
+              {titleButton && (
+                <button
+                  onClick={titleButton.onClick}
+                  className="text-gray-500 hover:text-gray-700 transition-colors ml-4 flex items-center"
+                >
+                  <titleButton.icon className="w-6 h-6" />
+                </button>
+              )}
+            </div>
           </div>
         )}
 

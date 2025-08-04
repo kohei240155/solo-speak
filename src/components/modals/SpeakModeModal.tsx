@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
+import SpeakModeExplanationModal from './SpeakModeExplanationModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
 import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/useApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/useTranslation'
+import { AiOutlineQuestionCircle } from 'react-icons/ai'
 
 interface SpeakModeModalProps {
   isOpen: boolean
@@ -21,6 +23,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [excludeThreshold, setExcludeThreshold] = useState<string>('50') // 初期値を50回以上に設定
   const [isLoading, setIsLoading] = useState(false)
+  const [showExplanationModal, setShowExplanationModal] = useState(false)
 
   // モーダルが開かれたときにsession_spokenをリセット
   useEffect(() => {
@@ -91,6 +94,10 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   // モーダル設定を定義
   const modalConfig: ModeModalConfig = {
     title: 'Speak Mode',
+    titleButton: {
+      icon: AiOutlineQuestionCircle,
+      onClick: () => setShowExplanationModal(true)
+    },
     configItems: [
       {
         id: 'order',
@@ -128,13 +135,20 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   }
 
   return (
-    <ModeModal
-      isOpen={isOpen}
-      onClose={onClose}
-      config={modalConfig}
-      languages={languages}
-      defaultLearningLanguage={defaultLearningLanguage}
-      isLoading={isLoading}
-    />
+    <>
+      <ModeModal
+        isOpen={isOpen}
+        onClose={onClose}
+        config={modalConfig}
+        languages={languages}
+        defaultLearningLanguage={defaultLearningLanguage}
+        isLoading={isLoading}
+      />
+      
+      <SpeakModeExplanationModal
+        isOpen={showExplanationModal}
+        onClose={() => setShowExplanationModal(false)}
+      />
+    </>
   )
 }

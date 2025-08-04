@@ -4,17 +4,61 @@ import { useRedirect } from '@/hooks/useRedirect'
 import { useTranslation } from '@/hooks/useTranslation'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 export default function Home() {
   const { loading } = useRedirect()
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
+  const [showSplash, setShowSplash] = useState(true)
+  const [fadeOut, setFadeOut] = useState(false)
+  const [showContent, setShowContent] = useState(false)
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setFadeOut(true)
+    }, 1500) // 1.5秒後にフェードアウト開始
+
+    const hideTimer = setTimeout(() => {
+      setShowSplash(false)
+      setShowContent(true)
+    }, 2000) // 2秒後にスプラッシュ画面を非表示、コンテンツ表示
+
+    return () => {
+      clearTimeout(fadeTimer)
+      clearTimeout(hideTimer)
+    }
+  }, [])
+
+  // スプラッシュ画面を最優先で表示
+  if (showSplash) {
+    return (
+      <div 
+        className={`fixed inset-0 bg-white flex items-center justify-center transition-opacity duration-500 ${
+          fadeOut ? 'opacity-0' : 'opacity-100'
+        }`}
+        style={{ zIndex: 9999 }}
+      >
+        <Image
+          src="/images/logo/Solo Speak Logo.png"
+          alt="Solo Speak"
+          width={300}
+          height={100}
+          priority
+          className={`transition-opacity duration-700 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}
+        />
+      </div>
+    )
+  }
 
   if (loading || isLoadingTranslation) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen bg-gray-50 transition-opacity duration-700 ease-in-out ${
+      showContent ? 'opacity-100' : 'opacity-0'
+    }`}>
       {/* ヒーローセクション */}
       <section 
         id="hero" 

@@ -1,9 +1,9 @@
 {
   "common": {
-    "language": "言語",
-    "selectLanguage": "言語を選択",
-    "dashboard": "ダッシュボード",
-    "userSettings": "ユーザー設定"
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "dashboard": "Dashboard",
+    "userSettings": "User Settings"
   },
   "settings": {
     "userIcon": "ユーザーアイコン",
@@ -46,6 +46,23 @@
         "exclude70": "70回以上",
         "exclude80": "80回以上",
         "exclude90": "90回以上"
+      }
+    },
+    "explanation": {
+      "title": "Speak Mode ガイド",
+      "dailyGoal": {
+        "title": "目標",
+        "description": "1日10回を目標に音読しましょう。継続的な練習が上達のカギです。"
+      },
+      "practiceCount": {
+        "title": "練習回数",
+        "description": "各フレーズは最低50回は音読することを推奨します。反復練習により、自然に口から出るようになります。"
+      },
+      "effectiveMethods": {
+        "title": "効果的な練習方法",
+        "naturalSpeed": "自然なスピードで読めるようになるまで繰り返す",
+        "understanding": "フレーズの意味を理解しながら練習する",
+        "pronunciation": "実際の場面で使うことをイメージする"
       }
     }
   },

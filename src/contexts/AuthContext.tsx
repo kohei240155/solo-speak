@@ -148,6 +148,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSession(null)
     setUserIconUrl(null)
     setIsUserSetupComplete(false)
+    setIsLoginModalOpen(false) // ログインモーダルを閉じる
     
     // Supabaseからのログアウト（バックグラウンドで実行）
     try {
@@ -169,14 +170,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     try {
-      // 本番環境では明示的に設定されたドメインを使用
-      const isProduction = process.env.NODE_ENV === 'production'
-      const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
-      
-      // 本番環境では強制的にsolo-speak.comを使用
-      const redirectUrl = isProduction 
-        ? 'https://solo-speak.com/auth/callback'
-        : `${productionUrl}/auth/callback`
+      // 環境変数から適切なベースURLを取得
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
+      const redirectUrl = `${baseUrl}/auth/callback`
       
       console.log('Starting Google OAuth with redirect URL:', redirectUrl)
       

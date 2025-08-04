@@ -35,7 +35,8 @@ export default function RankingPage() {
     }
   }, [error, message])
 
-  if (authLoading || isLoading) {
+  // 認証のローディング中のみ全画面ローディング
+  if (authLoading) {
     return <LoadingSpinner withHeaderOffset message="Loading..." />
   }
 

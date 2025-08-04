@@ -15,6 +15,7 @@ export interface QuizMasteryLevel {
 
 // ダッシュボードレスポンスデータの型
 export interface DashboardData {
+  phraseCreationStreak: number
   speakStreak: number
   speakCountToday: number
   speakCountTotal: number

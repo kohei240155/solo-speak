@@ -14,6 +14,8 @@ interface UseTextToSpeechReturn {
 interface CachedAudio {
   audioUrl: string
   audio: HTMLAudioElement
+  handleEnded?: () => void
+  handleError?: () => void
 }
 
 export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextToSpeechReturn {
@@ -48,6 +50,10 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
         // キャッシュされた音声を再生
         const audio = cachedAudio.audio
         
+        // 既存のイベントリスナーをクリア（重複防止）
+        audio.removeEventListener('ended', cachedAudio.handleEnded || (() => {}))
+        audio.removeEventListener('error', cachedAudio.handleError || (() => {}))
+        
         // 再生完了時のクリーンアップ
         const handleEnded = () => {
           setIsPlaying(false)
@@ -62,12 +68,41 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
           audio.removeEventListener('error', handleError)
         }
         
+        // キャッシュにイベントハンドラーを保存
+        cachedAudio.handleEnded = handleEnded
+        cachedAudio.handleError = handleError
+        
         audio.addEventListener('ended', handleEnded)
         audio.addEventListener('error', handleError)
         
         // 音声を最初から再生
         audio.currentTime = 0
-        await audio.play()
+        
+        // 音声が準備できているかチェック
+        if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+          try {
+            await audio.play()
+          } catch (playError) {
+            setIsPlaying(false)
+            setError('音声の再生に失敗しました')
+            console.error('Audio play error:', playError)
+          }
+        } else {
+          // データがまだ準備できていない場合は、loadeddata イベントを待つ
+          const handleLoadedData = async () => {
+            try {
+              await audio.play()
+            } catch (playError) {
+              setIsPlaying(false)
+              setError('音声の再生に失敗しました')
+              console.error('Audio play error:', playError)
+            }
+            audio.removeEventListener('loadeddata', handleLoadedData)
+          }
+          
+          audio.addEventListener('loadeddata', handleLoadedData)
+          audio.load() // 音声データを再ロード
+        }
         return
       }
 
@@ -102,6 +137,9 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       // 音声を再生
       const audio = new Audio(audioUrl)
       
+      // preloadを設定して音声データを先読みする
+      audio.preload = 'auto'
+      
       // キャッシュに保存
       audioCache.current.set(cacheKey, { audioUrl, audio })
       
@@ -126,7 +164,34 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       audio.addEventListener('ended', handleEnded)
       audio.addEventListener('error', handleError)
 
-      await audio.play()
+      try {
+        // 音声データがロードされるまで待つ
+        if (audio.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA) {
+          await new Promise<void>((resolve, reject) => {
+            const handleCanPlay = () => {
+              audio.removeEventListener('canplay', handleCanPlay)
+              audio.removeEventListener('error', handleLoadError)
+              resolve()
+            }
+            const handleLoadError = () => {
+              audio.removeEventListener('canplay', handleCanPlay)
+              audio.removeEventListener('error', handleLoadError)
+              reject(new Error('音声の読み込みに失敗しました'))
+            }
+            audio.addEventListener('canplay', handleCanPlay)
+            audio.addEventListener('error', handleLoadError)
+          })
+        }
+        
+        await audio.play()
+      } catch (playError) {
+        setIsPlaying(false)
+        setError('音声の再生に失敗しました')
+        console.error('Audio play error:', playError)
+        // エラー時はキャッシュからも削除
+        audioCache.current.delete(cacheKey)
+        URL.revokeObjectURL(audioUrl)
+      }
     } catch (err) {
       setIsPlaying(false)
       const errorMessage = err instanceof Error ? err.message : '音声の生成に失敗しました'

@@ -85,6 +85,7 @@ export function useDashboardData(language?: string) {
 
   return {
     dashboardData: data as {
+      phraseCreationStreak?: number
       speakStreak?: number
       speakCountToday?: number
       speakCountTotal?: number
