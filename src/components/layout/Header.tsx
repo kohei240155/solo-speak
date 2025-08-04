@@ -2,6 +2,7 @@
 
 import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from '../common/DropdownMenu'
@@ -12,6 +13,7 @@ import { MdLogout } from 'react-icons/md'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
+  const router = useRouter()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
 
@@ -61,13 +63,13 @@ const Header = memo(function Header() {
           id: 'dashboard',
           label: 'Dashboard',
           icon: BsClipboardData,
-          onClick: () => window.location.href = '/dashboard'
+          onClick: () => router.push('/dashboard')
         },
         {
           id: 'settings',
           label: 'User Settings',
           icon: LuSettings,
-          onClick: () => window.location.href = '/settings'
+          onClick: () => router.push('/settings')
         }
       )
     }
@@ -80,7 +82,7 @@ const Header = memo(function Header() {
     })
     
     return items
-  }, [isUserSetupComplete, handleSignOut])
+  }, [isUserSetupComplete, handleSignOut, router])
 
   const handleLoginClick = () => {
     showLoginModal()
@@ -102,7 +104,7 @@ const Header = memo(function Header() {
     
     // ログインしている場合はフレーズ一覧へ
     if (user) {
-      window.location.href = '/phrase/list'
+      router.push('/phrase/list')
     }
   }
 

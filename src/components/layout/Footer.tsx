@@ -1,8 +1,11 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export default function Footer() {
+  const router = useRouter()
+  
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto block">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -33,7 +36,7 @@ export default function Footer() {
                   <button
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors text-left"
                     onClick={() => {
-                      window.location.href = '/'
+                      router.push('/')
                     }}
                   >
                     Solo Speakについて
