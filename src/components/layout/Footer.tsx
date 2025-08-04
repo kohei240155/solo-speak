@@ -1,10 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Footer() {
-  const router = useRouter()
   
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto block">
@@ -33,14 +32,12 @@ export default function Footer() {
               <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
               <ul className="space-y-2">
                 <li>
-                  <button
-                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors text-left"
-                    onClick={() => {
-                      router.push('/')
-                    }}
+                  <Link
+                    href="/"
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     Solo Speakについて
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
