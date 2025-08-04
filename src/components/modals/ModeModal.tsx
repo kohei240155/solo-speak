@@ -22,6 +22,10 @@ export interface ModeModalConfig {
   configItems: ModalConfigItem[]
   onStart: (selectedLanguage: string) => Promise<void> | void
   startButtonText?: string
+  titleButton?: {
+    icon: React.ComponentType<{ className?: string }>
+    onClick: () => void
+  }
 }
 
 interface ModeModalProps {
@@ -132,7 +136,7 @@ export default function ModeModal({
   const allConfigItems = [languageConfigItem, ...config.configItems]
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title={config.title}>
+    <BaseModal isOpen={isOpen} onClose={onClose} title={config.title} titleButton={config.titleButton}>
       {/* 全ての設定項目を統一的に表示 */}
       {allConfigItems.map((item, index) => (
         <div key={item.id} className={index === allConfigItems.length - 1 ? "mb-8" : "mb-4"}>
