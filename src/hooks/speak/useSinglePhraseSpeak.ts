@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { SpeakPhrase } from '@/types/speak'
-import { useSpeakPhraseById } from '@/hooks/useSWRApi'
+import { useSpeakPhraseById } from '@/hooks/api/useSWRApi'
 
 interface UseSinglePhraseSpeakProps {
   phraseId: string | null

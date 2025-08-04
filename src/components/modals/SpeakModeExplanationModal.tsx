@@ -1,5 +1,5 @@
 import BaseModal from '../common/BaseModal'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import { AiOutlineCaretRight } from 'react-icons/ai'
 
 interface SpeakModeExplanationModalProps {

@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation } from '@/types/phrase'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/useSWRApi'
+import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
 

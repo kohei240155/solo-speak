@@ -1,9 +1,9 @@
 'use client'
 
-import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/useSWRApi'
+import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/api/useSWRApi'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 

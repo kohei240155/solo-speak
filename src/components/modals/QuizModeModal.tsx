@@ -4,7 +4,7 @@ import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface QuizModeModalProps {
   isOpen: boolean

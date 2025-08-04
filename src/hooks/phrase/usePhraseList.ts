@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/useSWRApi'
+import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 
 export const usePhraseList = () => {
   const [learningLanguage, setLearningLanguage] = useState('en')

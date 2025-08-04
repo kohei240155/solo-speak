@@ -1,12 +1,12 @@
 import { SavedPhrase, Language } from '@/types/phrase'
 import { useState, useCallback, useEffect } from 'react'
 import BaseModal from '../common/BaseModal'
-import { useScrollPreservation } from '@/hooks/useScrollPreservation'
+import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
 import { api } from '@/utils/api'
 import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
 import AnimatedButton from '../common/AnimatedButton'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface EditPhraseModalProps {
   isOpen: boolean

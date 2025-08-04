@@ -3,9 +3,9 @@ import ModeModal, { ModeModalConfig } from './ModeModal'
 import SpeakModeExplanationModal from './SpeakModeExplanationModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/useApi'
+import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/api/useApi'
 import toast from 'react-hot-toast'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import { AiOutlineQuestionCircle } from 'react-icons/ai'
 
 interface SpeakModeModalProps {
