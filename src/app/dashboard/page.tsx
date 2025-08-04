@@ -95,7 +95,7 @@ export default function DashboardPage() {
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
                 <div className="flex items-baseline">
-                  <div className="text-6xl font-bold text-gray-900 mr-3">
+                  <div className="text-4xl font-bold text-gray-900 mr-3">
                     {dashboardData.speakStreak}
                   </div>
                   <div className="text-xl text-gray-600">days</div>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               {/* Speak Count (Today) */}
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
-                <div className="text-6xl font-bold text-gray-900">
+                <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountToday}
                 </div>
               </div>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
               {/* Speak Count (Total) */}
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
-                <div className="text-6xl font-bold text-gray-900">
+                <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountTotal}
                 </div>
               </div>
@@ -129,10 +129,10 @@ export default function DashboardPage() {
                         style={{ backgroundColor: level.color }}
                       ></div>
                       <div className="flex-1 flex justify-between items-center">
-                        <span className="text-lg font-medium text-gray-900">
+                        <span className="text-xl font-semibold text-gray-900">
                           {level.level}
                         </span>
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-3xl font-bold text-gray-900">
                           {level.score}
                         </span>
                       </div>
@@ -147,19 +147,19 @@ export default function DashboardPage() {
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
                 <div className="flex items-baseline">
-                  <div className="text-6xl font-bold text-gray-900 mr-3">0</div>
+                  <div className="text-4xl font-bold text-gray-900 mr-3">0</div>
                   <div className="text-xl text-gray-600">days</div>
                 </div>
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
-                <div className="text-6xl font-bold text-gray-900">0</div>
+                <div className="text-4xl font-bold text-gray-900">0</div>
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
-                <div className="text-6xl font-bold text-gray-900">0</div>
+                <div className="text-4xl font-bold text-gray-900">0</div>
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-8">

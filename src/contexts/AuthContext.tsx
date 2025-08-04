@@ -148,6 +148,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSession(null)
     setUserIconUrl(null)
     setIsUserSetupComplete(false)
+    setIsLoginModalOpen(false) // ログインモーダルを閉じる
     
     // Supabaseからのログアウト（バックグラウンドで実行）
     try {
