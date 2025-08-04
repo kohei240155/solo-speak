@@ -91,6 +91,17 @@ export default function DashboardPage() {
             <LoadingSpinner message="Loading data..." className="py-8" />
           ) : dashboardData ? (
             <div className="space-y-6">
+              {/* Phrase Creation Streak */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Phrase Creation Streak</h2>
+                <div className="flex items-baseline">
+                  <div className="text-4xl font-bold text-gray-900 mr-3">
+                    {dashboardData.phraseCreationStreak}
+                  </div>
+                  <div className="text-xl text-gray-600">days</div>
+                </div>
+              </div>
+
               {/* Speak Streak */}
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
@@ -144,6 +155,14 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-6">
               {/* データがない場合のデフォルト表示 */}
+              <div className="bg-white rounded-lg shadow-md p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Phrase Creation Streak</h2>
+                <div className="flex items-baseline">
+                  <div className="text-4xl font-bold text-gray-900 mr-3">0</div>
+                  <div className="text-xl text-gray-600">days</div>
+                </div>
+              </div>
+
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
                 <div className="flex items-baseline">

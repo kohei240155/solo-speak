@@ -57,6 +57,53 @@ async function calculateConsecutiveSpeakingDays(userId: string, languageCode: st
   return consecutiveDays
 }
 
+// 言語ごとの連続スピーキング日数を計算する関数（実際のSpeak練習基準）
+async function calculateConsecutiveSpeakDays(userId: string, languageCode: string): Promise<number> {
+  // 指定言語のスピークログを日付降順で取得
+  const speakLogs = await prisma.speakLog.findMany({
+    where: {
+      phrase: {
+        userId,
+        language: { code: languageCode },
+        deletedAt: null,
+      },
+      deletedAt: null,
+    },
+    select: { date: true },
+    orderBy: { date: 'desc' },
+  })
+
+  if (speakLogs.length === 0) {
+    return 0
+  }
+
+  // 日付を YYYY-MM-DD 形式の文字列に変換してユニーク化し、Setに変換
+  const uniqueDatesSet = new Set(speakLogs.map(log => {
+    const date = new Date(log.date)
+    return date.toISOString().split('T')[0]
+  }))
+
+  // 今日の日付を YYYY-MM-DD 形式で取得
+  const today = new Date()
+  let consecutiveDays = 0
+
+  // 今日から過去に向かって連続日数をカウント
+  for (let i = 0; i < 365; i++) { // 最大365日まで遡る
+    const checkDate = new Date(today)
+    checkDate.setDate(checkDate.getDate() - i)
+    const checkDateStr = checkDate.toISOString().split('T')[0]
+
+    if (uniqueDatesSet.has(checkDateStr)) {
+      consecutiveDays++
+    } else {
+      // 連続が途切れた場合は終了
+      break
+    }
+  }
+
+  return consecutiveDays
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック
@@ -92,16 +139,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [
+      phraseCreationStreak,
       speakStreak,
       speakCountToday,
       speakCountTotal,
       quizResults,
       allPhraseLevels
     ] = await Promise.all([
-      // 1. Speak Streak (連続話した日数) - 言語ごとに計算
+      // 1. Phrase Creation Streak (連続フレーズ作成日数) - 言語ごとに計算
       calculateConsecutiveSpeakingDays(user.id, language),
 
-      // 2. Speak Count (Today) - 今日のスピーク回数
+      // 2. Speak Streak (連続スピーク練習日数) - 言語ごとに計算
+      calculateConsecutiveSpeakDays(user.id, language),
+
+      // 3. Speak Count (Today) - 今日のスピーク回数
       prisma.speakLog.aggregate({
         _sum: {
           count: true,
@@ -121,7 +172,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
       }),
 
-      // 3. Speak Count (Total) - 総スピーク回数
+      // 4. Speak Count (Total) - 総スピーク回数
       prisma.speakLog.aggregate({
         _sum: {
           count: true,
@@ -137,7 +188,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
       }),
 
-      // 4. Quiz Results - クイズ結果
+      // 5. Quiz Results - クイズ結果
       prisma.quizResult.findMany({
         where: {
           phrase: {
@@ -158,7 +209,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
       }),
 
-      // 5. 全てのフレーズレベルを取得
+      // 6. 全てのフレーズレベルを取得
       prisma.phraseLevel.findMany({
         where: {
           deletedAt: null,
@@ -190,6 +241,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }))
 
     const result: DashboardData = {
+      phraseCreationStreak,
       speakStreak,
       speakCountToday: speakCountToday._sum.count || 0,
       speakCountTotal: speakCountTotal._sum.count || 0,
