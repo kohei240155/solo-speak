@@ -35,62 +35,127 @@ export interface SubscriptionInfo {
  */
 export async function getUserSubscriptionStatus(stripeCustomerId: string): Promise<SubscriptionInfo> {
   try {
-    // 顧客のアクティブなサブスクリプションを取得
-    const subscriptions = await stripe.subscriptions.list({
+    console.log('Fetching subscription for customer:', stripeCustomerId)
+    
+    // まず全ステータスのサブスクリプションを確認
+    const allSubscriptions = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      limit: 10, // 最新10件を取得
+    })
+
+    console.log('All subscriptions found:', {
+      count: allSubscriptions.data.length,
+      subscriptions: allSubscriptions.data.map(sub => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const subData = sub as any
+        return {
+          id: sub.id,
+          status: sub.status,
+          current_period_start: subData.current_period_start,
+          current_period_end: subData.current_period_end,
+          billing_cycle_anchor: subData.billing_cycle_anchor,
+          created: sub.created
+        }
+      })
+    })
+
+    // アクティブなサブスクリプションを取得
+    const activeSubscriptions = await stripe.subscriptions.list({
       customer: stripeCustomerId,
       status: 'active',
       limit: 1,
+      // expand を削除してエラーを回避
     })
 
-    if (subscriptions.data.length === 0) {
+    if (activeSubscriptions.data.length === 0) {
+      console.log('No active subscriptions found')
       return { isActive: false }
     }
 
-    const subscription = subscriptions.data[0]
+    const subscription = activeSubscriptions.data[0]
+    
+    // より詳細な情報を取得するため、個別にサブスクリプションを取得
+    const detailedSubscription = await stripe.subscriptions.retrieve(subscription.id)
     
     // キャンセル予定のサブスクリプションもチェック
-    const isCanceled = subscription.cancel_at_period_end || subscription.canceled_at
+    const isCanceled = detailedSubscription.cancel_at_period_end || detailedSubscription.canceled_at
     
-    const productId = subscription.items.data[0]?.price.product as string
+    const productId = detailedSubscription.items.data[0]?.price.product as string
 
-    // Stripe APIからの生データをログに出力
-    const subscriptionData = subscription as unknown as {
-      id: string
-      status: string
-      cancel_at_period_end: boolean
-      canceled_at: number | null
-      current_period_end: number
-      billing_cycle_anchor: number
-    }
-    
-    console.log('Subscription raw data:', {
-      id: subscription.id,
-      status: subscription.status,
-      cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at,
-      isCanceled,
-      current_period_end: subscriptionData.current_period_end,
-      billing_cycle_anchor: subscriptionData.billing_cycle_anchor
+    console.log('Raw Stripe subscription object:', {
+      id: detailedSubscription.id,
+      status: detailedSubscription.status,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      current_period_start: (detailedSubscription as any).current_period_start,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      current_period_end: (detailedSubscription as any).current_period_end,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      billing_cycle_anchor: (detailedSubscription as any).billing_cycle_anchor,
+      created: detailedSubscription.created,
+      cancel_at_period_end: detailedSubscription.cancel_at_period_end,
+      canceled_at: detailedSubscription.canceled_at
     })
 
-    // Stripeから直接current_period_endを取得
-    const currentPeriodEnd = subscriptionData.current_period_end 
-      ? new Date(subscriptionData.current_period_end * 1000)
-      : new Date()
+    // Stripe APIからの生データをログに出力  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subscriptionData = detailedSubscription as any // Stripe型の制限を回避
+
+    // 日付データのバリデーション関数
+    const formatStripeDate = (timestamp: number | null | undefined): string => {
+      if (!timestamp || timestamp <= 0) {
+        return 'Invalid date'
+      }
+      try {
+        return new Date(timestamp * 1000).toISOString()
+      } catch {
+        return `Invalid timestamp: ${timestamp}`
+      }
+    }
+
+    console.log('Stripe subscription data:', {
+      current_period_start: subscriptionData.current_period_start,
+      current_period_end: subscriptionData.current_period_end,
+      billing_cycle_anchor: subscriptionData.billing_cycle_anchor,
+      created: subscriptionData.created,
+      // 日付として表示
+      current_period_start_date: formatStripeDate(subscriptionData.current_period_start),
+      current_period_end_date: formatStripeDate(subscriptionData.current_period_end),
+      billing_cycle_anchor_date: formatStripeDate(subscriptionData.billing_cycle_anchor),
+      created_date: formatStripeDate(subscriptionData.created)
+    })
+
+    // Stripeから直接current_period_endを取得（これが次回請求日）
+    let currentPeriodEnd: Date | undefined = undefined
+    
+    if (subscriptionData.current_period_end && subscriptionData.current_period_end > 0) {
+      currentPeriodEnd = new Date(subscriptionData.current_period_end * 1000)
+    } else if (subscriptionData.billing_cycle_anchor && subscriptionData.billing_cycle_anchor > 0) {
+      // billing_cycle_anchorから次回請求日を計算（月次サブスクリプションの場合）
+      const anchorDate = new Date(subscriptionData.billing_cycle_anchor * 1000)
+      const nextBillingDate = new Date(anchorDate)
+      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1)
+      currentPeriodEnd = nextBillingDate
+      
+      console.log('Calculated next billing date from anchor:', {
+        anchorDate: anchorDate.toISOString(),
+        nextBillingDate: nextBillingDate.toISOString()
+      })
+    }
 
     console.log('Processed subscription data:', {
       isActive: !isCanceled,
       currentPeriodEnd,
-      formattedDate: currentPeriodEnd.toISOString(),
-      unix_timestamp: subscriptionData.current_period_end
+      formattedDate: currentPeriodEnd?.toISOString() || 'No valid date',
+      unix_timestamp: subscriptionData.current_period_end,
+      billing_cycle_anchor: subscriptionData.billing_cycle_anchor
     })
 
     return {
       isActive: !isCanceled, // キャンセル予定の場合は非アクティブとして扱う
-      status: subscription.status,
+      status: detailedSubscription.status,
       currentPeriodEnd,
       productId,
-      subscriptionId: subscription.id,
+      subscriptionId: detailedSubscription.id,
     }
   } catch (error) {
     console.error('Error fetching subscription status:', error)

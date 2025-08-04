@@ -111,14 +111,6 @@ export default function SubscriptionTab() {
     ? subscriptionStatus.subscription.currentPeriodEnd
     : null
 
-  // デバッグログを追加
-  console.log('SubscriptionTab render data:', {
-    subscriptionStatus,
-    isSubscribed,
-    subscriptionEndDate,
-    hasCurrentPeriodEnd: !!subscriptionStatus?.subscription.currentPeriodEnd
-  })
-
   // 次回請求日の表示用フォーマット（日付のみ）
   const formatNextBillingDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -127,6 +119,17 @@ export default function SubscriptionTab() {
       day: 'numeric'
     })
   }
+
+  // デバッグログを追加
+  console.log('SubscriptionTab render data:', {
+    subscriptionStatus,
+    isSubscribed,
+    subscriptionEndDate,
+    hasCurrentPeriodEnd: !!subscriptionStatus?.subscription.currentPeriodEnd,
+    rawCurrentPeriodEnd: subscriptionStatus?.subscription.currentPeriodEnd,
+    parsedDate: subscriptionEndDate ? new Date(subscriptionEndDate) : null,
+    formattedDate: subscriptionEndDate ? formatNextBillingDate(new Date(subscriptionEndDate)) : null
+  })
 
   return (
     <div className="space-y-6">
@@ -150,9 +153,9 @@ export default function SubscriptionTab() {
       {/* Next Billing Date - 独立したセクション */}
       {isSubscribed && subscriptionEndDate && (
         <div>
-          <h3 className="text-gray-900 mb-2 text-md font-semibold">
+          <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
             Next Billing Date
-          </h3>
+          </h2>
           <input
             type="text"
             value={formatNextBillingDate(new Date(subscriptionEndDate))}
