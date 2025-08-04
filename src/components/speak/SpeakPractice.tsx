@@ -70,7 +70,10 @@ export default function SpeakPractice({
 
   // Soundボタンのハンドラー
   const handleSound = async () => {
-    if (!phrase?.original || isPlaying) return
+    if (!phrase?.original) return
+    
+    // 既に再生中の場合は何もしない
+    if (isPlaying) return
     
     try {
       await playText(phrase.original)
