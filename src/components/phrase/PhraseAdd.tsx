@@ -129,19 +129,32 @@ export default function PhraseAdd({
       {/* サブスクリプション状態の表示 */}
       <div className="mb-4">
         {hasActiveSubscription ? (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-            <p className="text-green-700 font-medium text-sm">
-              Basicプラン利用中 - 毎日5回まで生成可能
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+            <p className="text-gray-700 font-medium text-sm">
+              {t('subscription.basicPlanActive')}
             </p>
           </div>
         ) : (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <p className="text-amber-700 font-medium text-sm">
-              無料プラン - 制限付きでご利用中
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-gray-700 font-medium text-sm mb-2">
+              {t('subscription.subscriptionRequired')}
             </p>
-            <p className="text-xs text-amber-600 mt-1">
-              Basicプランなら毎日5回の生成が可能です
+            <p className="text-xs text-gray-600 mb-3">
+              {t('subscription.subscriptionDescription')}
             </p>
+            <a 
+              href="/settings?tab=subscription"
+              className="inline-block px-4 py-2 text-white text-sm rounded-md transition-colors"
+              style={{ backgroundColor: '#616161' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#525252'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#616161'
+              }}
+            >
+              {t('subscription.subscribeToBasicPlan')}
+            </a>
           </div>
         )}
       </div>
@@ -295,9 +308,9 @@ export default function PhraseAdd({
             <div className="mt-2">
               <a 
                 href="/settings"
-                className="text-sm text-blue-600 hover:text-blue-800 underline"
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
               >
-                設定画面でサブスクリプションを管理 →
+                {t('subscription.manageSubscription')}
               </a>
             </div>
           )}

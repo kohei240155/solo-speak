@@ -14,6 +14,8 @@ interface SubscriptionInfo {
 interface SubscriptionStatus {
   hasStripeCustomer: boolean
   subscription: SubscriptionInfo
+  serverTime?: string
+  serverTimezone?: string
 }
 
 export default function SubscriptionTab() {
@@ -30,7 +32,7 @@ export default function SubscriptionTab() {
         setSubscriptionStatus(response)
       } catch (error) {
         console.error('Error fetching subscription status:', error)
-        toast.error('サブスクリプション状態の取得に失敗しました')
+        toast.error('Failed to fetch subscription status')
       } finally {
         setIsLoading(false)
       }
@@ -54,14 +56,14 @@ export default function SubscriptionTab() {
       window.location.href = response.checkoutUrl
     } catch (error) {
       console.error('Error creating checkout session:', error)
-      toast.error('チェックアウトセッションの作成に失敗しました')
+      toast.error('Failed to create checkout session')
       setIsProcessing(false)
     }
   }
 
   // サブスクリプション退会
   const handleCancelSubscription = async () => {
-    if (!confirm('サブスクリプションを退会しますか？現在の請求期間の終了時に自動的にキャンセルされます。')) {
+    if (!confirm('Are you sure you want to cancel your subscription? You will lose access to AI phrase generation immediately.')) {
       return
     }
 
@@ -71,7 +73,7 @@ export default function SubscriptionTab() {
       console.log('Cancel response:', response)
       
       if (response && response.success) {
-        toast.success(response.message || 'サブスクリプションのキャンセルが完了しました')
+        toast.success('Subscription canceled successfully. You will lose access to AI features immediately.')
         // サブスクリプション状態を再取得
         const statusResponse = await api.get<SubscriptionStatus>('/api/stripe/subscription')
         setSubscriptionStatus(statusResponse)
@@ -80,7 +82,7 @@ export default function SubscriptionTab() {
       }
     } catch (error) {
       console.error('Error canceling subscription:', error)
-      toast.error('サブスクリプションのキャンセルに失敗しました')
+      toast.error('Failed to cancel subscription')
     } finally {
       setIsProcessing(false)
     }
@@ -98,8 +100,25 @@ export default function SubscriptionTab() {
 
   const isSubscribed = subscriptionStatus?.subscription.isActive || false
   const subscriptionEndDate = subscriptionStatus?.subscription.currentPeriodEnd 
-    ? new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString('ja-JP')
+    ? subscriptionStatus.subscription.currentPeriodEnd
     : null
+
+  // デバッグログを追加
+  console.log('SubscriptionTab render data:', {
+    subscriptionStatus,
+    isSubscribed,
+    subscriptionEndDate,
+    hasCurrentPeriodEnd: !!subscriptionStatus?.subscription.currentPeriodEnd
+  })
+
+  // 次回請求日の表示用フォーマット（日付のみ）
+  const formatNextBillingDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -108,38 +127,34 @@ export default function SubscriptionTab() {
         <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
           Current Status
         </h2>
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              value={isSubscribed ? `Basic Plan${subscriptionEndDate ? ` (次回更新: ${subscriptionEndDate})` : ''}` : "No Subscribe"}
-              readOnly
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
-            />
-          </div>
-          {isSubscribed && (
-            <button
-              type="button"
-              onClick={handleCancelSubscription}
-              disabled={isProcessing}
-              className="px-6 py-2 text-white rounded-md transition-colors duration-200 disabled:opacity-50"
-              style={{ backgroundColor: '#dc2626' }}
-              onMouseEnter={(e) => {
-                if (!isProcessing) {
-                  e.currentTarget.style.backgroundColor = '#b91c1c'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isProcessing) {
-                  e.currentTarget.style.backgroundColor = '#dc2626'
-                }
-              }}
-            >
-              {isProcessing ? '処理中...' : '退会する'}
-            </button>
-          )}
+        <div>
+          <input
+            type="text"
+            value={isSubscribed ? `Basic Plan` : "No Subscribe"}
+            readOnly
+            tabIndex={-1}
+            style={{ pointerEvents: 'none' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-default"
+          />
         </div>
       </div>
+
+      {/* Next Billing Date - 独立したセクション */}
+      {isSubscribed && subscriptionEndDate && (
+        <div>
+          <h3 className="text-gray-900 mb-2 text-md font-semibold">
+            Next Billing Date
+          </h3>
+          <input
+            type="text"
+            value={formatNextBillingDate(new Date(subscriptionEndDate))}
+            readOnly
+            tabIndex={-1}
+            style={{ pointerEvents: 'none' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-default"
+          />
+        </div>
+      )}
 
       {/* Plans */}
       <div>
@@ -183,22 +198,22 @@ export default function SubscriptionTab() {
             onClick={isSubscribed ? handleCancelSubscription : handleSubscribe}
             disabled={isProcessing}
             className="w-full text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50"
-            style={{ backgroundColor: isSubscribed ? '#dc2626' : '#616161' }}
+            style={{ backgroundColor: '#616161' }}
             onMouseEnter={(e) => {
               if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = isSubscribed ? '#b91c1c' : '#525252'
+                e.currentTarget.style.backgroundColor = '#525252'
               }
             }}
             onMouseLeave={(e) => {
               if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = isSubscribed ? '#dc2626' : '#616161'
+                e.currentTarget.style.backgroundColor = '#616161'
               }
             }}
           >
             {isProcessing 
-              ? '処理中...' 
+              ? 'Processing...' 
               : isSubscribed 
-                ? '退会する' 
+                ? 'Cancel Subscription' 
                 : 'Get Started'
             }
           </button>

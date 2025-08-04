@@ -102,6 +102,13 @@
         "title": "学習進捗の記録・管理",
         "description": "あなたの学習状況を可視化し、継続的な学習をサポートします。"
       }
+    },
+    "subscription": {
+      "basicPlanActive": "Basicプラン有効 - 1日最大5回まで生成可能",
+      "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
+      "subscriptionDescription": "Basicプランに登録して、AIアシスタンスで1日最大5フレーズまで生成できます。",
+      "subscribeToBasicPlan": "Basicプランに登録 →",
+      "manageSubscription": "設定画面でサブスクリプションを管理 →"
     }
   }
 }

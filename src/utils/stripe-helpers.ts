@@ -47,12 +47,48 @@ export async function getUserSubscriptionStatus(stripeCustomerId: string): Promi
     }
 
     const subscription = subscriptions.data[0]
+    
+    // キャンセル予定のサブスクリプションもチェック
+    const isCanceled = subscription.cancel_at_period_end || subscription.canceled_at
+    
     const productId = subscription.items.data[0]?.price.product as string
 
-    return {
-      isActive: true,
+    // Stripe APIからの生データをログに出力
+    const subscriptionData = subscription as unknown as {
+      id: string
+      status: string
+      cancel_at_period_end: boolean
+      canceled_at: number | null
+      current_period_end: number
+      billing_cycle_anchor: number
+    }
+    
+    console.log('Subscription raw data:', {
+      id: subscription.id,
       status: subscription.status,
-      currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      canceled_at: subscription.canceled_at,
+      isCanceled,
+      current_period_end: subscriptionData.current_period_end,
+      billing_cycle_anchor: subscriptionData.billing_cycle_anchor
+    })
+
+    // Stripeから直接current_period_endを取得
+    const currentPeriodEnd = subscriptionData.current_period_end 
+      ? new Date(subscriptionData.current_period_end * 1000)
+      : new Date()
+
+    console.log('Processed subscription data:', {
+      isActive: !isCanceled,
+      currentPeriodEnd,
+      formattedDate: currentPeriodEnd.toISOString(),
+      unix_timestamp: subscriptionData.current_period_end
+    })
+
+    return {
+      isActive: !isCanceled, // キャンセル予定の場合は非アクティブとして扱う
+      status: subscription.status,
+      currentPeriodEnd,
       productId,
       subscriptionId: subscription.id,
     }
@@ -131,17 +167,16 @@ export async function createCheckoutSession(
 }
 
 /**
- * サブスクリプションをキャンセル
+ * サブスクリプションをキャンセル（即座に無効化）
  */
 export async function cancelSubscription(subscriptionId: string): Promise<void> {
   try {
-    console.log('Canceling subscription:', subscriptionId)
+    console.log('Canceling subscription immediately:', subscriptionId)
     
-    await stripe.subscriptions.update(subscriptionId, {
-      cancel_at_period_end: true,
-    })
+    // 即座にキャンセルする（期間終了を待たない）
+    await stripe.subscriptions.cancel(subscriptionId)
     
-    console.log('Subscription canceled successfully:', subscriptionId)
+    console.log('Subscription canceled immediately:', subscriptionId)
   } catch (error) {
     console.error('Error canceling subscription:', error)
     if (error instanceof Error) {

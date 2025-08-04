@@ -27,17 +27,39 @@ export async function GET(request: NextRequest) {
 
     // サブスクリプション状態を取得
     if (user.stripeCustomerId) {
+      console.log('Fetching subscription for customer:', user.stripeCustomerId)
+      
       const subscriptionInfo = await getUserSubscriptionStatus(user.stripeCustomerId)
       
-      return NextResponse.json({
+      console.log('getUserSubscriptionStatus result:', subscriptionInfo)
+      
+      // データベースの現在時刻とタイムゾーンを取得
+      const dbTimeResult = await prisma.$queryRaw<{ now: Date; timezone: string }[]>`
+        SELECT NOW() as now, current_setting('TIMEZONE') as timezone
+      `
+      const dbInfo = dbTimeResult[0]
+      
+      const responseData = {
         hasStripeCustomer: true,
-        subscription: subscriptionInfo
-      })
+        subscription: {
+          ...subscriptionInfo,
+          // DateをISO文字列に変換してフロントエンドに送信
+          currentPeriodEnd: subscriptionInfo.currentPeriodEnd?.toISOString()
+        },
+        serverTime: dbInfo.now,
+        serverTimezone: dbInfo.timezone
+      }
+      
+      console.log('Subscription API response:', responseData)
+      
+      return NextResponse.json(responseData)
     }
 
     return NextResponse.json({
       hasStripeCustomer: false,
-      subscription: { isActive: false }
+      subscription: { isActive: false },
+      serverTime: new Date(),
+      serverTimezone: 'UTC'
     })
 
   } catch (error) {
