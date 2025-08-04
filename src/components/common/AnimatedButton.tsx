@@ -103,7 +103,8 @@ export default function AnimatedButton({
       } else {
         e.currentTarget.style.backgroundColor = variantStyles.hoverBg
       }
-      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+      // ホバー時の影効果を削除
+      // e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
     }
   }
 
@@ -114,7 +115,8 @@ export default function AnimatedButton({
       } else {
         e.currentTarget.style.backgroundColor = variantStyles.normalBg
       }
-      e.currentTarget.style.boxShadow = 'none'
+      // ホバー時の影効果を削除
+      // e.currentTarget.style.boxShadow = 'none'
     }
   }
 
