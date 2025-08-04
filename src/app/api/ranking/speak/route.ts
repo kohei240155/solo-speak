@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
       // 言語コードから言語IDを取得
       prisma.language.findFirst({
         where: {
-          code: language
+          code: language,
+          deletedAt: null // 削除されていない言語のみ
         }
       })
     ])

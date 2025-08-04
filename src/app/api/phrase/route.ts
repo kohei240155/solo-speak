@@ -43,7 +43,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }),
       
       prisma.language.findUnique({
-        where: { id: languageId }
+        where: { 
+          id: languageId,
+          deletedAt: null // 削除されていない言語のみ
+        }
       })
     ])
 
@@ -222,7 +225,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     let languageForCode = null
     if (languageCode && !languageId) {
       languageForCode = await prisma.language.findUnique({
-        where: { code: languageCode }
+        where: { 
+          code: languageCode,
+          deletedAt: null // 削除されていない言語のみ
+        }
       })
       if (languageForCode) {
         where.languageId = languageForCode.id
