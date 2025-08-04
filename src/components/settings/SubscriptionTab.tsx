@@ -59,22 +59,29 @@ export default function SubscriptionTab() {
     }
   }
 
-  // サブスクリプション管理（キャンセルなど）
-  const handleManageSubscription = async () => {
+  // サブスクリプション退会
+  const handleCancelSubscription = async () => {
+    if (!confirm('サブスクリプションを退会しますか？現在の請求期間の終了時に自動的にキャンセルされます。')) {
+      return
+    }
+
     setIsProcessing(true)
     try {
-      const response = await api.post<{ portalUrl: string }>('/api/stripe/portal')
-      console.log('Portal response:', response)
+      const response = await api.post<{ success: boolean; message: string }>('/api/stripe/cancel')
+      console.log('Cancel response:', response)
       
-      if (!response || !response.portalUrl) {
-        throw new Error('Invalid response from portal API')
+      if (response && response.success) {
+        toast.success(response.message || 'サブスクリプションのキャンセルが完了しました')
+        // サブスクリプション状態を再取得
+        const statusResponse = await api.get<SubscriptionStatus>('/api/stripe/subscription')
+        setSubscriptionStatus(statusResponse)
+      } else {
+        throw new Error('Failed to cancel subscription')
       }
-      
-      // Stripeカスタマーポータルにリダイレクト
-      window.location.href = response.portalUrl
     } catch (error) {
-      console.error('Error creating customer portal session:', error)
-      toast.error('カスタマーポータルの作成に失敗しました')
+      console.error('Error canceling subscription:', error)
+      toast.error('サブスクリプションのキャンセルに失敗しました')
+    } finally {
       setIsProcessing(false)
     }
   }
@@ -113,22 +120,22 @@ export default function SubscriptionTab() {
           {isSubscribed && (
             <button
               type="button"
-              onClick={handleManageSubscription}
+              onClick={handleCancelSubscription}
               disabled={isProcessing}
               className="px-6 py-2 text-white rounded-md transition-colors duration-200 disabled:opacity-50"
-              style={{ backgroundColor: '#616161' }}
+              style={{ backgroundColor: '#dc2626' }}
               onMouseEnter={(e) => {
                 if (!isProcessing) {
-                  e.currentTarget.style.backgroundColor = '#525252'
+                  e.currentTarget.style.backgroundColor = '#b91c1c'
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isProcessing) {
-                  e.currentTarget.style.backgroundColor = '#616161'
+                  e.currentTarget.style.backgroundColor = '#dc2626'
                 }
               }}
             >
-              {isProcessing ? '処理中...' : 'Manage'}
+              {isProcessing ? '処理中...' : '退会する'}
             </button>
           )}
         </div>
@@ -173,25 +180,25 @@ export default function SubscriptionTab() {
 
           <button
             type="button"
-            onClick={isSubscribed ? handleManageSubscription : handleSubscribe}
+            onClick={isSubscribed ? handleCancelSubscription : handleSubscribe}
             disabled={isProcessing}
             className="w-full text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50"
-            style={{ backgroundColor: '#616161' }}
+            style={{ backgroundColor: isSubscribed ? '#dc2626' : '#616161' }}
             onMouseEnter={(e) => {
               if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = '#525252'
+                e.currentTarget.style.backgroundColor = isSubscribed ? '#b91c1c' : '#525252'
               }
             }}
             onMouseLeave={(e) => {
               if (!isProcessing) {
-                e.currentTarget.style.backgroundColor = '#616161'
+                e.currentTarget.style.backgroundColor = isSubscribed ? '#dc2626' : '#616161'
               }
             }}
           >
             {isProcessing 
               ? '処理中...' 
               : isSubscribed 
-                ? 'Manage Subscription' 
+                ? '退会する' 
                 : 'Get Started'
             }
           </button>

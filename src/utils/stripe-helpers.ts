@@ -27,6 +27,7 @@ export interface SubscriptionInfo {
   status?: string
   currentPeriodEnd?: Date
   productId?: string
+  subscriptionId?: string
 }
 
 /**
@@ -53,6 +54,7 @@ export async function getUserSubscriptionStatus(stripeCustomerId: string): Promi
       status: subscription.status,
       currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
       productId,
+      subscriptionId: subscription.id,
     }
   } catch (error) {
     console.error('Error fetching subscription status:', error)
@@ -129,6 +131,27 @@ export async function createCheckoutSession(
 }
 
 /**
+ * サブスクリプションをキャンセル
+ */
+export async function cancelSubscription(subscriptionId: string): Promise<void> {
+  try {
+    console.log('Canceling subscription:', subscriptionId)
+    
+    await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    })
+    
+    console.log('Subscription canceled successfully:', subscriptionId)
+  } catch (error) {
+    console.error('Error canceling subscription:', error)
+    if (error instanceof Error) {
+      throw new Error(`Failed to cancel subscription: ${error.message}`)
+    }
+    throw new Error('Failed to cancel subscription')
+  }
+}
+
+/**
  * カスタマーポータルセッションを作成（サブスクリプション管理用）
  */
 export async function createCustomerPortalSession(
@@ -136,14 +159,23 @@ export async function createCustomerPortalSession(
   returnUrl: string
 ): Promise<string> {
   try {
+    console.log('Creating customer portal session with:', {
+      customer: stripeCustomerId,
+      returnUrl
+    })
+
     const session = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
       return_url: returnUrl,
     })
     
+    console.log('Customer portal session created successfully:', session.id)
     return session.url
   } catch (error) {
     console.error('Error creating customer portal session:', error)
+    if (error instanceof Error) {
+      throw new Error(`Failed to create customer portal session: ${error.message}`)
+    }
     throw new Error('Failed to create customer portal session')
   }
 }
