@@ -41,7 +41,20 @@ export async function POST(request: NextRequest) {
     // サブスクリプションをキャンセル
     await cancelSubscription(subscriptionInfo.subscriptionId)
 
-    return NextResponse.json({ success: true, message: 'Subscription will be canceled at the end of the current period' })
+    // サブスクリプションキャンセル時に残り生成回数を0にリセット
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        remainingPhraseGenerations: 0
+      }
+    })
+
+    console.log(`Subscription canceled and phrase generations reset to 0 for user: ${userId}`)
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Subscription canceled immediately. AI phrase generation access has been revoked.' 
+    })
 
   } catch (error) {
     console.error('Error canceling subscription:', error)

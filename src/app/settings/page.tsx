@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,10 +10,24 @@ import UserSettingsForm from '@/components/settings/UserSettingsForm'
 import SubscriptionTab from '@/components/settings/SubscriptionTab'
 import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useSearchParams } from 'next/navigation'
 
 export default function UserSettingsPage() {
   const { loading: authLoading } = useAuthGuard()
-  const [activeTab, setActiveTab] = useState<'user' | 'subscription'>('user')
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  
+  // URLパラメータからタブを決定
+  const initialTab = (tabParam === 'subscription' || tabParam === 'user') ? tabParam : 'user'
+  const [activeTab, setActiveTab] = useState<'user' | 'subscription'>(initialTab)
+
+  // URLパラメータが変更された時にタブを更新
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab === 'subscription' || tab === 'user') {
+      setActiveTab(tab)
+    }
+  }, [searchParams])
 
   const {
     register,

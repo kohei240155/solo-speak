@@ -102,6 +102,20 @@ export const usePhraseManagerSWR = () => {
     }
   }, [user])
 
+  // サブスクリプションキャンセルイベントを監視
+  useEffect(() => {
+    const handleSubscriptionCanceled = () => {
+      console.log('Subscription canceled event received, refreshing generation data...')
+      mutateGenerations()
+    }
+
+    window.addEventListener('subscriptionCanceled', handleSubscriptionCanceled)
+    
+    return () => {
+      window.removeEventListener('subscriptionCanceled', handleSubscriptionCanceled)
+    }
+  }, [mutateGenerations])
+
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
   const remainingGenerations = generationsData?.remainingGenerations || 0

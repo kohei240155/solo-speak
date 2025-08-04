@@ -307,7 +307,7 @@ export default function PhraseAdd({
           {error.includes('Basicプラン') && (
             <div className="mt-2">
               <a 
-                href="/settings"
+                href="/settings?tab=subscription"
                 className="text-sm text-gray-600 hover:text-gray-800 underline"
               >
                 {t('subscription.manageSubscription')}

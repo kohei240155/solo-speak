@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/utils/api'
 import { toast } from 'react-hot-toast'
+import { mutate } from 'swr'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 interface SubscriptionInfo {
   isActive: boolean
@@ -74,9 +76,17 @@ export default function SubscriptionTab() {
       
       if (response && response.success) {
         toast.success('Subscription canceled successfully. You will lose access to AI features immediately.')
+        
         // サブスクリプション状態を再取得
         const statusResponse = await api.get<SubscriptionStatus>('/api/stripe/subscription')
         setSubscriptionStatus(statusResponse)
+        
+        // SWRキャッシュをクリアして生成回数データを更新
+        await mutate('/api/user/phrase-generations')
+        
+        // カスタムイベントを発火してページ全体に通知
+        window.dispatchEvent(new CustomEvent('subscriptionCanceled'))
+        
       } else {
         throw new Error('Failed to cancel subscription')
       }
@@ -90,10 +100,8 @@ export default function SubscriptionTab() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
+      <div className="flex justify-center items-center" style={{ height: '400px' }}>
+        <LoadingSpinner message="Loading subscription information..." />
       </div>
     )
   }
