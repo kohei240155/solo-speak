@@ -26,7 +26,8 @@ export async function PATCH(request: NextRequest) {
     const phrase = await prisma.phrase.findFirst({
       where: {
         id: phraseId,
-        userId: authResult.user.id // 認証されたユーザーのフレーズのみ
+        userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+        deletedAt: null // 削除されていないフレーズのみ
       },
       include: {
         phraseLevel: true

@@ -59,8 +59,10 @@ export async function GET(request: NextRequest) {
         date: {
           gte: startDate
         },
+        deletedAt: null, // 削除されていないログのみ
         phrase: {
-          languageId: languageId
+          languageId: languageId,
+          deletedAt: null // 削除されていないフレーズのみ
         }
       },
       include: {
