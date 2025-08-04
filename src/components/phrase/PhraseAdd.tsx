@@ -6,9 +6,9 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import BaseModal from '@/components/common/BaseModal'
-import { useScrollPreservation } from '@/hooks/useScrollPreservation'
+import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 // GeneratedVariationsコンポーネントを動的インポート
 const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {

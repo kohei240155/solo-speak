@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLanguages, useUserSettings, useRanking } from '@/hooks/useSWRApi'
+import { useLanguages, useUserSettings, useRanking } from '@/hooks/api/useSWRApi'
 
 export const useRankingData = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('en')

@@ -2,7 +2,7 @@ import { RiSpeakLine } from 'react-icons/ri'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
-import { useTextToSpeech } from '@/hooks/useTextToSpeech'
+import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
 interface SpeakPhrase {

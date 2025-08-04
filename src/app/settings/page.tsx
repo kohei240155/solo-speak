@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
-import { useUserSettings } from '@/hooks/useUserSettings'
+import { useUserSettings } from '@/hooks/data/useUserSettings'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
 import SubscriptionTab from '@/components/settings/SubscriptionTab'
 import TabNavigation from '@/components/navigation/TabNavigation'

@@ -1,12 +1,12 @@
 'use client'
 
-import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useRankingData } from '@/hooks/useRankingData'
+import { useRankingData } from '@/hooks/data/useRankingData'
 import { useEffect } from 'react'
 
 export default function RankingPage() {

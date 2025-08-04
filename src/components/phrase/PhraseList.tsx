@@ -1,7 +1,7 @@
 import { SavedPhrase, Language } from '@/types/phrase'
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import SpeakModeModal from '../modals/SpeakModeModal'
 import LoadingSpinner from '../common/LoadingSpinner'
 import PhraseItem from './PhraseItem'

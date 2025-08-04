@@ -1,7 +1,7 @@
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHandleSubmit } from 'react-hook-form'
 import { UserSetupFormData, Language } from '@/types/userSettings'
-import { useUserSettingsSubmit } from '@/hooks/useUserSettingsSubmit'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useUserSettingsSubmit } from '@/hooks/data/useUserSettingsSubmit'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import ImageUpload from '@/components/common/ImageUpload'
 
 interface UserSettingsFormProps {

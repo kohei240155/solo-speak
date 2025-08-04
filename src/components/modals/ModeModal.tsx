@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import BaseModal from '../common/BaseModal'
 import { Language } from '@/types/phrase'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 // 共通の設定項目の型定義
 export interface ModalConfigItem {

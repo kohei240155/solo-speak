@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
-import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { api } from '@/utils/api'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
-import { useSpeakModal } from '@/hooks/useSpeakModal'
+import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useLanguages, useUserSettings } from '@/hooks/useSWRApi'
+import { useLanguages, useUserSettings } from '@/hooks/api/useSWRApi'
 
 interface SpeakPhrase {
   id: string

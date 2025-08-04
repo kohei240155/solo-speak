@@ -1,6 +1,6 @@
 import { PhraseVariation } from '@/types/phrase'
 import { AiOutlineCaretRight } from 'react-icons/ai'
-import { useScrollPreservation } from '@/hooks/useScrollPreservation'
+import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]

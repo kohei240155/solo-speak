@@ -1,7 +1,7 @@
 'use client'
 
-import { useRedirect } from '@/hooks/useRedirect'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useRedirect } from '@/hooks/navigation/useRedirect'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect } from 'react'

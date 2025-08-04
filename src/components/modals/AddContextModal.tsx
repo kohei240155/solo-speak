@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import BaseModal from '../common/BaseModal'
-import { useTranslation } from '@/hooks/useTranslation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface AddContextModalProps {
   isOpen: boolean
