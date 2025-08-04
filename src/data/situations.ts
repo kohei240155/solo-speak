@@ -30,35 +30,11 @@ export const initialSituations = {
     'En commandant dans un café',
     'En conversation d\'affaires'
   ],
-  // Arabic (アラビア語)
-  ar: [
-    'في محادثة مع الأصدقاء',
-    'عند الطلب في المقهى',
-    'في محادثة عمل'
-  ],
-  // Bengali (ベンガル語)
-  bn: [
-    'বন্ধুদের সাথে কথোপকথনে',
-    'ক্যাফেতে অর্ডার করার সময়',
-    'ব্যবসায়িক কথোপকথনে'
-  ],
   // Portuguese (ポルトガル語)
   pt: [
     'Em conversa com amigos',
     'Fazendo pedido no café',
     'Em conversa de negócios'
-  ],
-  // Russian (ロシア語)
-  ru: [
-    'В разговоре с друзьями',
-    'При заказе в кафе',
-    'В деловом разговоре'
-  ],
-  // Urdu (ウルドゥー語)
-  ur: [
-    'دوستوں کے ساتھ گفتگو میں',
-    'کیفے میں آرڈر کرتے وقت',
-    'کاروباری گفتگو میں'
   ],
   // Japanese (日本語)
   ja: [
@@ -78,41 +54,11 @@ export const initialSituations = {
     '카페에서 주문할 때',
     '비즈니스 대화에서'
   ],
-  // Swahili (スワヒリ語)
-  sw: [
-    'Katika mazungumzo na marafiki',
-    'Wakati wa kuagiza katika mkahawa',
-    'Katika mazungumzo ya biashara'
-  ],
   // Italian (イタリア語)
   it: [
     'In conversazione con gli amici',
     'Ordinando al caffè',
     'In conversazione di lavoro'
-  ],
-  // Turkish (トルコ語)
-  tr: [
-    'Arkadaşlarla sohbette',
-    'Kafede sipariş verirken',
-    'İş konuşmasında'
-  ],
-  // Vietnamese (ベトナム語)
-  vi: [
-    'Trong cuộc trò chuyện với bạn bè',
-    'Khi gọi món ở quán cà phê',
-    'Trong cuộc trò chuyện kinh doanh'
-  ],
-  // Nepali (ネパール語)
-  ne: [
-    'साथीहरूसँग कुराकानीमा',
-    'क्याफेमा अर्डर गर्दा',
-    'व्यापारिक कुराकानीमा'
-  ],
-  // Kurdish (クルド語)
-  ku: [
-    'Di axaftina bi hevalatiyên de',
-    'Di kafe de siparîş de',
-    'Di axaftina karsaziyê de'
   ],
   // Thai (タイ語)
   th: [
@@ -120,89 +66,17 @@ export const initialSituations = {
     'เมื่อสั่งในร้านกาแฟ',
     'ในการสนทนาทางธุรกิจ'
   ],
-  // Tagalog (タガログ語)
-  tl: [
-    'Sa pakikipag-usap sa mga kaibigan',
-    'Sa pag-order sa cafe',
-    'Sa pakikipag-usap sa negosyo'
-  ],
-  // Czech (チェコ語)
-  cs: [
-    'V rozhovoru s přáteli',
-    'Při objednávání v kavárně',
-    'V obchodním rozhovoru'
-  ],
-  // Hungarian (ハンガリー語)
-  hu: [
-    'Barátokkal való beszélgetésben',
-    'Kávézóban rendelés közben',
-    'Üzleti beszélgetésben'
-  ],
-  // Romanian (ルーマニア語)
-  ro: [
-    'În conversație cu prietenii',
-    'La comandă în cafenea',
-    'În conversație de afaceri'
-  ],
-  // Serbian (セルビア語)
-  sr: [
-    'У разговору са пријатељима',
-    'При наручивању у кафићу',
-    'У пословном разговору'
-  ],
-  // Bulgarian (ブルガリア語)
-  bg: [
-    'В разговор с приятели',
-    'При поръчване в кафе',
-    'В бизнес разговор'
-  ],
-  // Greek (ギリシャ語)
-  el: [
-    'Σε συνομιλία με φίλους',
-    'Όταν παραγγέλνω σε καφετέρια',
-    'Σε επιχειρηματική συνομιλία'
-  ],
   // Dutch (オランダ語)
   nl: [
     'In gesprek met vrienden',
     'Bij het bestellen in café',
     'In zakelijk gesprek'
   ],
-  // Swedish (スウェーデン語)
-  sv: [
-    'I samtal med vänner',
-    'När jag beställer på café',
-    'I affärssamtal'
-  ],
-  // Finnish (フィンランド語)
-  fi: [
-    'Keskustelussa ystävien kanssa',
-    'Tilatessa kahvilassa',
-    'Liikekeskustelussa'
-  ],
   // Danish (デンマーク語)
   da: [
     'I samtale med venner',
     'Ved bestilling på café',
     'I forretningssamtale'
-  ],
-  // Norwegian (ノルウェー語)
-  no: [
-    'I samtale med venner',
-    'Ved bestilling på kafé',
-    'I forretningssamtale'
-  ],
-  // Ukrainian (ウクライナ語)
-  uk: [
-    'У розмові з друзями',
-    'При замовленні в кафе',
-    'У діловій розмові'
-  ],
-  // Polish (ポーランド語)
-  pl: [
-    'W rozmowie z przyjaciółmi',
-    'Przy zamawianiu w kawiarni',
-    'W rozmowie biznesowej'
   ]
 } as const
 
