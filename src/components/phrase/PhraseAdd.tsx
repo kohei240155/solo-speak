@@ -17,6 +17,7 @@ const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
 
 interface PhraseAddProps {
   remainingGenerations: number
+  hasActiveSubscription?: boolean
   desiredPhrase: string
   phraseValidationError: string
   isLoading: boolean
@@ -38,6 +39,7 @@ interface PhraseAddProps {
 
 export default function PhraseAdd({
   remainingGenerations,
+  hasActiveSubscription = false,
   desiredPhrase,
   phraseValidationError,
   isLoading,
@@ -122,6 +124,26 @@ export default function PhraseAdd({
         <div className="text-sm text-gray-600">
           Left: {remainingGenerations} / 5
         </div>
+      </div>
+
+      {/* サブスクリプション状態の表示 */}
+      <div className="mb-4">
+        {hasActiveSubscription ? (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <p className="text-green-700 font-medium text-sm">
+              Basicプラン利用中 - 毎日5回まで生成可能
+            </p>
+          </div>
+        ) : (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p className="text-amber-700 font-medium text-sm">
+              無料プラン - 制限付きでご利用中
+            </p>
+            <p className="text-xs text-amber-600 mt-1">
+              Basicプランなら毎日5回の生成が可能です
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Options section */}
@@ -269,6 +291,16 @@ export default function PhraseAdd({
       {error && !isLoading && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-sm text-red-600">{error}</p>
+          {error.includes('Basicプラン') && (
+            <div className="mt-2">
+              <a 
+                href="/settings"
+                className="text-sm text-blue-600 hover:text-blue-800 underline"
+              >
+                設定画面でサブスクリプションを管理 →
+              </a>
+            </div>
+          )}
         </div>
       )}
 

@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 // 型定義
 interface GenerationsData {
   remainingGenerations: number
+  hasActiveSubscription?: boolean
 }
 
 interface SituationsData {
@@ -166,6 +167,13 @@ export const usePhraseManagerSWR = () => {
       return
     }
 
+    // サブスクリプション状態チェック
+    const hasActiveSubscription = generationsData?.hasActiveSubscription || false
+    if (remainingGenerations <= 0 && !hasActiveSubscription) {
+      setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
@@ -188,7 +196,12 @@ export const usePhraseManagerSWR = () => {
     } catch (error) {
       console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
-        setError('本日の生成回数を超過しました。明日再度お試しください。')
+        const hasActiveSubscription = generationsData?.hasActiveSubscription || false
+        if (!hasActiveSubscription) {
+          setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+        } else {
+          setError('本日の生成回数を超過しました。明日再度お試しください。')
+        }
         mutateGenerations()
       } else {
         setError('フレーズの生成中にエラーが発生しました')
@@ -196,7 +209,7 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations, generationsData?.hasActiveSubscription])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -330,6 +343,7 @@ export const usePhraseManagerSWR = () => {
     isLoading,
     error,
     remainingGenerations,
+    hasActiveSubscription: generationsData?.hasActiveSubscription || false,
     languages: languages || [],
     situations,
     isInitializing,
