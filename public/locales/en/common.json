@@ -102,13 +102,13 @@
         "title": "Learning Progress Tracking & Management",
         "description": "Visualize your learning status and support continuous learning."
       }
-    },
-    "subscription": {
-      "basicPlanActive": "Basic Plan Active - Up to 5 generations per day",
-      "subscriptionRequired": "Basic Plan subscription required to use AI phrase generation",
-      "subscriptionDescription": "Subscribe to the Basic Plan to generate up to 5 phrases per day with AI assistance.",
-      "subscribeToBasicPlan": "Subscribe to Basic Plan →",
-      "manageSubscription": "Manage subscription in settings →"
     }
+  },
+  "subscription": {
+    "basicPlanActive": "Basic Plan Active - Up to 5 generations per day",
+    "subscriptionRequired": "Basic Plan subscription required to use AI phrase generation",
+    "subscriptionDescription": "Subscribe to the Basic Plan to generate up to 5 phrases per day with AI assistance.",
+    "subscribeToBasicPlan": "Subscribe to Basic Plan →",
+    "manageSubscription": "Manage subscription in settings →"
   }
 }
