@@ -67,8 +67,18 @@ export async function POST(request: NextRequest) {
     // 言語IDの存在確認
     try {
       const [nativeLanguage, learningLanguage] = await Promise.all([
-        prisma.language.findUnique({ where: { id: nativeLanguageId } }),
-        prisma.language.findUnique({ where: { id: defaultLearningLanguageId } })
+        prisma.language.findUnique({ 
+          where: { 
+            id: nativeLanguageId,
+            deletedAt: null // 削除されていない言語のみ
+          } 
+        }),
+        prisma.language.findUnique({ 
+          where: { 
+            id: defaultLearningLanguageId,
+            deletedAt: null // 削除されていない言語のみ
+          } 
+        })
       ])
 
       if (!nativeLanguage) {

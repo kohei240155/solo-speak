@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
       // 言語コードから言語IDを取得
       prisma.language.findFirst({
         where: {
-          code: language
+          code: language,
+          deletedAt: null // 削除されていない言語のみ
         }
       })
     ])
@@ -59,8 +60,10 @@ export async function GET(request: NextRequest) {
         date: {
           gte: startDate
         },
+        deletedAt: null, // 削除されていないログのみ
         phrase: {
-          languageId: languageId
+          languageId: languageId,
+          deletedAt: null // 削除されていないフレーズのみ
         }
       },
       include: {

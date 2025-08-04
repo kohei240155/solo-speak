@@ -51,7 +51,10 @@ export async function GET(request: NextRequest) {
     const [languageExists, phrases, allPhrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
-        where: { code: language }
+        where: { 
+          code: language,
+          deletedAt: null // 削除されていない言語のみ
+        }
       }),
       
       // データベースからフレーズを取得（削除されていないもののみ）
