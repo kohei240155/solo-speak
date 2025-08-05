@@ -13,6 +13,8 @@ export default function Home() {
   const [showSplash, setShowSplash] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
   const [showContent, setShowContent] = useState(false)
+  const [isDemoActive, setIsDemoActive] = useState(false)
+  const [showTranslation, setShowTranslation] = useState(false)
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -29,6 +31,20 @@ export default function Home() {
       clearTimeout(hideTimer)
     }
   }, [])
+
+  // AI Suggestボタンクリック時の処理
+  const handleAISuggestClick = () => {
+    if (isDemoActive) return // 既に実行中なら何もしない
+    
+    setIsDemoActive(true)
+    setShowTranslation(false)
+    
+    // 3秒後にローディング停止、翻訳表示
+    setTimeout(() => {
+      setIsDemoActive(false)
+      setShowTranslation(true)
+    }, 3000)
+  }
 
   // スプラッシュ画面を最優先で表示
   if (showSplash) {
@@ -248,27 +264,31 @@ export default function Home() {
                     {/* 生成ボタン */}
                     <div className="flex justify-center py-1">
                       <button 
-                        className="text-white py-2 px-10 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 animate-pulse"
-                        style={{ backgroundColor: '#616161', boxShadow: '0 0 15px rgba(97, 97, 97, 0.4)' }}
+                        className={`text-white py-2 w-full rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ${
+                          isDemoActive ? 'animate-pulse' : ''
+                        }`}
+                        style={{ 
+                          backgroundColor: '#616161', 
+                          boxShadow: isDemoActive ? '0 0 15px rgba(97, 97, 97, 0.4)' : '0 0 8px rgba(97, 97, 97, 0.2)' 
+                        }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#525252'
-                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+                          if (!isDemoActive) {
+                            e.currentTarget.style.backgroundColor = '#525252'
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+                          }
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#616161'
-                          e.currentTarget.style.boxShadow = '0 0 15px rgba(97, 97, 97, 0.4)'
+                          if (!isDemoActive) {
+                            e.currentTarget.style.backgroundColor = '#616161'
+                            e.currentTarget.style.boxShadow = '0 0 8px rgba(97, 97, 97, 0.2)'
+                          }
                         }}
-                        onClick={(e) => {
-                          e.currentTarget.style.transform = 'scale(0.98)'
-                          setTimeout(() => {
-                            if (e.currentTarget) {
-                              e.currentTarget.style.transform = 'scale(1)'
-                            }
-                          }, 150)
-                        }}
+                        onClick={handleAISuggestClick}
                       >
                         <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          {isDemoActive && (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          )}
                           AI Suggest
                         </div>
                       </button>
@@ -281,7 +301,7 @@ export default function Home() {
                     </div>
                     
                     {/* 結果表示 */}
-                    <div className="relative">
+                    <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
                           <span className="text-gray-900 font-semibold text-lg">What brought you to Japan?</span>
