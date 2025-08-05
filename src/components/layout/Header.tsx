@@ -4,7 +4,6 @@ import { useState, useEffect, memo, useMemo, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import DropdownMenu from '../common/DropdownMenu'
 import { DisplayLanguageSelector } from '../common/DisplayLanguageSelector'
 import { BsClipboardData } from 'react-icons/bs'
@@ -94,13 +93,13 @@ const Header = memo(function Header() {
 
   // ロゴクリック時の処理
   const handleLogoClick = async (e: React.MouseEvent) => {
-    // 未ログイン状態の場合はクリックを無効化
+    e.preventDefault()
+    
     if (!user) {
-      e.preventDefault()
+      // 未ログイン状態の場合はTop画面へ
+      router.push('/')
       return
     }
-    
-    e.preventDefault()
     
     // ログインしている場合はフレーズ一覧へ
     if (user) {
@@ -140,33 +139,19 @@ const Header = memo(function Header() {
         <div className="flex justify-between items-center h-16 max-w-6xl mx-auto">
           {/* ロゴ */}
           <div className="flex items-center">
-            {user ? (
-              <Link 
-                href="/phrase/list" 
-                className="flex items-center space-x-2" 
-                onClick={handleLogoClick}
-              >
-                <Image
-                  src="/images/logo/Solo Speak Logo.png"
-                  alt="Solo Speak"
-                  width={150}
-                  height={40}
-                  className="h-8 w-auto"
-                  priority
-                />
-              </Link>
-            ) : (
-              <div className="flex items-center space-x-2 cursor-default">
-                <Image
-                  src="/images/logo/Solo Speak Logo.png"
-                  alt="Solo Speak"
-                  width={150}
-                  height={40}
-                  className="h-8 w-auto"
-                  priority
-                />
-              </div>
-            )}
+            <div 
+              className="flex items-center space-x-2 cursor-pointer" 
+              onClick={handleLogoClick}
+            >
+              <Image
+                src="/images/logo/Solo Speak Logo.png"
+                alt="Solo Speak"
+                width={150}
+                height={40}
+                className="h-8 w-auto"
+                priority
+              />
+            </div>
           </div>
 
           {/* デスクトップナビゲーション */}

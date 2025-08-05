@@ -161,11 +161,11 @@ export default function Home() {
     setIsDemoActive(true)
     setShowTranslation(false)
     
-    // 3秒後にローディング停止、翻訳表示
+    // 1.5秒後にローディング停止、翻訳表示
     setTimeout(() => {
       setIsDemoActive(false)
       setShowTranslation(true)
-    }, 3000)
+    }, 1500)
   }
 
   // スプラッシュ画面を最優先で表示
