@@ -10,8 +10,6 @@
       "sameLanguageError": "Native language and default learning language must be different"
     }
   },
-  "save": "Save",
-  "saving": "Saving...",
   "confirm": {
     "unsavedPhrase": "Generated phrases have not been saved. Do you want to leave this page?",
     "unsavedCount": "Count has not been registered. Do you want to leave this page?"
