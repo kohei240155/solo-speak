@@ -7,7 +7,8 @@ interface TabNavigationProps {
 export default function TabNavigation({ 
   activeTab, 
   setActiveTab, 
-  isUserSetupComplete 
+  // SUBSCRIPTION_DISABLED: isUserSetupComplete パラメータを一時的に無効化（未使用）
+  // isUserSetupComplete 
 }: TabNavigationProps) {
   return (
     <div className="flex mb-[18px]">

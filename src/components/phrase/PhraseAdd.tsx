@@ -39,7 +39,8 @@ interface PhraseAddProps {
 
 export default function PhraseAdd({
   remainingGenerations,
-  hasActiveSubscription = false,
+  // SUBSCRIPTION_DISABLED: hasActiveSubscription パラメータを一時的に無効化（未使用）
+  // hasActiveSubscription = false,
   desiredPhrase,
   phraseValidationError,
   isLoading,

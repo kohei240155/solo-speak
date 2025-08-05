@@ -229,8 +229,9 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
+    // SUBSCRIPTION_DISABLED: generationsData?.hasActiveSubscriptionの依存関係は削除済み
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
-  // SUBSCRIPTION_DISABLED: generationsData?.hasActiveSubscriptionの依存関係は削除
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -301,7 +302,7 @@ export const usePhraseManagerSWR = () => {
       setSavingVariationIndex(null)
       setIsSaving(false)
     }
-  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation])
+  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation, t])
 
   // バリエーションリセットハンドラー
   const handleResetVariations = useCallback(() => {

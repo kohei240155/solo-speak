@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,12 +11,14 @@ import UserSettingsForm from '@/components/settings/UserSettingsForm'
 // import SubscriptionTab from '@/components/settings/SubscriptionTab'
 import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useSearchParams } from 'next/navigation'
+// SUBSCRIPTION_DISABLED: useSearchParams import を一時的に無効化
+// import { useSearchParams } from 'next/navigation'
 
 export default function UserSettingsPage() {
   const { loading: authLoading } = useAuthGuard()
-  const searchParams = useSearchParams()
-  const tabParam = searchParams.get('tab')
+  // SUBSCRIPTION_DISABLED: URLパラメータによるタブ切り替えを一時的に無効化
+  // const searchParams = useSearchParams()
+  // const tabParam = searchParams.get('tab')
   
   // URLパラメータからタブを決定
   // SUBSCRIPTION_DISABLED: subscriptionタブを一時的に無効化し、常にuserタブにリダイレクト
