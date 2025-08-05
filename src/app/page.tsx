@@ -215,9 +215,10 @@ export default function Home() {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col items-center text-center space-y-8">
+            {/* スマホ版: 縦並びレイアウト */}
+            <div className="flex flex-col items-center text-center space-y-8 lg:hidden">
               {/* メインタイトル */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   スピーキングアプリの<br />決定版
                 </span>
@@ -232,7 +233,7 @@ export default function Home() {
                       alt="Solo Speak アプリのデモ画面"
                       width={450}
                       height={550}
-                      className="w-80 h-auto sm:w-96 md:w-[28rem] drop-shadow-2xl rounded-2xl"
+                      className="w-80 h-auto sm:w-96 drop-shadow-2xl rounded-2xl"
                       priority
                     />
                   </div>
@@ -291,6 +292,89 @@ export default function Home() {
                 <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
                   今すぐはじめる
                 </span>
+              </div>
+            </div>
+
+            {/* PC版: 左右レイアウト */}
+            <div className="hidden lg:grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+              {/* 左側: テキストコンテンツ */}
+              <div className="text-left max-w-4xl">
+                {/* メインタイトル */}
+                <h1 className="text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+                  <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                    スピーキングアプリの<br />決定版
+                  </span>
+                </h1>
+                
+                {/* 特徴リスト */}
+                <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-md">
+                  <div className="space-y-4">
+                    <div className="flex items-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-xl text-gray-800 font-medium">
+                        AIが自然なフレーズを生成
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-xl text-gray-800 font-medium">
+                        徹底的な音読学習をサポート
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-xl text-gray-800 font-medium">
+                        クイズ機能を使って瞬発力をチェック
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* CTA */}
+                <div 
+                  className="inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg"
+                  style={{ backgroundColor: '#616161' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }}
+                  onClick={handleGetStartedClick}
+                >
+                  <div className="w-5 h-5 mr-3 rounded-full bg-white flex items-center justify-center">
+                    <svg className="w-3 h-3" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
+                    今すぐはじめる
+                  </span>
+                </div>
+              </div>
+              
+              {/* 右側: アプリ画像 */}
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <div className="transform hover:scale-105 transition-transform duration-500">
+                    <Image
+                      src="/images/top/smartphone.png"
+                      alt="Solo Speak アプリのデモ画面"
+                      width={450}
+                      height={550}
+                      className="w-[28rem] h-auto drop-shadow-2xl rounded-2xl"
+                      priority
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
