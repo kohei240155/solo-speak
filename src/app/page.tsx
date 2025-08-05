@@ -196,13 +196,13 @@ export default function Home() {
   return (
     <div className={`min-h-screen transition-opacity duration-700 ease-in-out ${
       showContent ? 'opacity-100' : 'opacity-0'
-    }`} style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
+    }`}>
       
-      {/* ヒーローセクション */}
+      {/* ヒーローセクション - グレー背景 */}
       <section 
         id="hero-section"
         data-scroll-animation
-        className={`py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out ${
+        className={`py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out bg-gray-50 ${
           visibleSections.has('hero-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
@@ -381,11 +381,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 機能紹介セクション */}
+      {/* 機能紹介セクション - 白背景 */}
       <section 
         id="features-section"
         data-scroll-animation
-        className={`py-16 bg-gray-50 relative transition-all duration-1000 ease-out delay-200 ${
+        className={`py-16 bg-white relative transition-all duration-1000 ease-out delay-200 ${
           visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
@@ -452,11 +452,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 特徴セクション */}
+      {/* 特徴セクション - グレー背景 */}
       <section 
         id="solutions-section"
         data-scroll-animation
-        className={`py-32 relative overflow-hidden bg-white transition-all duration-1000 ease-out ${
+        className={`py-32 relative overflow-hidden bg-gray-50 transition-all duration-1000 ease-out ${
           visibleSections.has('solutions-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
         style={{ 
@@ -775,7 +775,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ セクション */}
+      {/* FAQ セクション - 白背景 */}
       <section 
         id="faq-section"
         data-scroll-animation
@@ -812,7 +812,7 @@ export default function Home() {
                   1日5回まで無料でご利用いただけます。
                 </p>
                 <p className="text-base text-gray-600">
-                  より多くのフレーズを生成したい場合は、有料プランをご検討ください。
+                  毎日5フレーズを確実に積み上げていきましょう。
                 </p>
               </div>
             </div>
@@ -862,7 +862,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA セクション */}
+      {/* CTA セクション - グレー背景 */}
       <section 
         id="cta-section"
         data-scroll-animation
