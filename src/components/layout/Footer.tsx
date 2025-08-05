@@ -7,7 +7,7 @@ export default function Footer() {
   
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto block">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start">
           {/* ロゴセクション */}
           <div className="mb-6 md:mb-0">
