@@ -1,5 +1,6 @@
 import { getEnglishPrompt } from './en'
 import { getKoreanPrompt } from './ko'
+import { getJapanesePrompt } from './ja'
 
 // 言語コードと名前のマッピング
 export const languageNames = {
@@ -18,10 +19,11 @@ export const languageNames = {
   da: 'Danish'
 } as const
 
-// 学習言語ごとのプロンプト取得関数
+//学習言語ごとのプロンプト取得関数
 const learningLanguagePromptGetters = {
   en: getEnglishPrompt,
   ko: getKoreanPrompt,
+  ja: getJapanesePrompt,
 } as const
 
 /**
