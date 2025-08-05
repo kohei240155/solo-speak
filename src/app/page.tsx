@@ -93,7 +93,7 @@ export default function Home() {
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
                     <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      フレーズを覚えるまで徹底的に音読
+                      フレーズが自然に口から出るまで徹底的に音読
                     </span>
                   </div>
                   
@@ -151,71 +151,40 @@ export default function Home() {
       <section className="py-32 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center justify-center px-12 py-6 rounded-full bg-gray-700 mb-6">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-                {t('home.features.title')}
-              </h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+              {t('home.features.title')}
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
-            {/* 機能カード 1 */}
-            <div className="group cursor-pointer">
-              <div className="bg-white p-10 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl flex items-center justify-center mb-8 mx-auto transform group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                    {t('home.features.speechRecognition.title')}
-                  </h3>
-                  <p className="text-gray-600 text-center leading-relaxed font-medium">
-                    {t('home.features.speechRecognition.description')}
-                  </p>
-                </div>
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* お悩み 1 */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div className="w-3 h-3 bg-gray-600 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                  {t('home.features.speechRecognition.title')}
+                </p>
               </div>
             </div>
 
-            {/* 機能カード 2 */}
-            <div className="group cursor-pointer">
-              <div className="bg-white p-10 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl flex items-center justify-center mb-8 mx-auto transform group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                    {t('home.features.quiz.title')}
-                  </h3>
-                  <p className="text-gray-600 text-center leading-relaxed font-medium">
-                    {t('home.features.quiz.description')}
-                  </p>
-                </div>
+            {/* お悩み 2 */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div className="w-3 h-3 bg-gray-600 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                  {t('home.features.quiz.title')}
+                </p>
               </div>
             </div>
 
-            {/* 機能カード 3 */}
-            <div className="group cursor-pointer">
-              <div className="bg-white p-10 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative z-10">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-500 to-gray-700 rounded-2xl flex items-center justify-center mb-8 mx-auto transform group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                    {t('home.features.progress.title')}
-                  </h3>
-                  <p className="text-gray-600 text-center leading-relaxed font-medium">
-                    {t('home.features.progress.description')}
-                  </p>
-                </div>
+            {/* お悩み 3 */}
+            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div className="w-3 h-3 bg-gray-600 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                  {t('home.features.progress.title')}
+                </p>
               </div>
             </div>
           </div>
