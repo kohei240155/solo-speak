@@ -66,7 +66,7 @@ export default function Home() {
 
   const handleSoundClick = async () => {
     try {
-      await playText("How long have you lived here?")
+      await playText("How long have you been living in Vancouver?")
     } catch (error) {
       console.error('TTS playback failed:', error)
     }
@@ -303,11 +303,11 @@ export default function Home() {
                     <div className="flex justify-center py-1">
                       <button 
                         className={`text-white py-3 w-full rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ${
-                          isDemoActive ? 'animate-pulse' : ''
+                          isDemoActive ? 'animate-pulse cursor-not-allowed opacity-75' : ''
                         }`}
                         style={{ 
-                          backgroundColor: '#616161', 
-                          boxShadow: isDemoActive ? '0 0 15px rgba(97, 97, 97, 0.4)' : '0 0 8px rgba(97, 97, 97, 0.2)' 
+                          backgroundColor: isDemoActive ? '#9ca3af' : '#616161', 
+                          boxShadow: isDemoActive ? '0 0 8px rgba(156, 163, 175, 0.2)' : '0 0 8px rgba(97, 97, 97, 0.2)' 
                         }}
                         onMouseEnter={(e) => {
                           if (!isDemoActive) {
@@ -322,6 +322,7 @@ export default function Home() {
                           }
                         }}
                         onClick={handleAISuggestClick}
+                        disabled={isDemoActive || showTranslation}
                       >
                         <div className="flex items-center justify-center">
                           {isDemoActive && (
@@ -331,8 +332,8 @@ export default function Home() {
                         </div>
                       </button>
                     </div>
-                    {/* 下向き矢印 - AI Suggestクリック後のみ表示 */}
-                    {(isDemoActive || showTranslation) && (
+                    {/* 下向き矢印 - 翻訳表示完了時に表示 */}
+                    {showTranslation && (
                       <div className="flex justify-center">
                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
@@ -385,10 +386,10 @@ export default function Home() {
                         {/* フレーズテキスト */}
                         <div className="flex-1">
                           <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
-                            How long have you lived here?
+                            How long have you been living in Vancouver?
                           </div>
                           <div className="text-base text-gray-600 leading-relaxed">
-                            どのくらいここに住んでいるの？
+                            バンクーバーにはどのぐらい住んでいるの？
                           </div>
                         </div>
                       </div>
