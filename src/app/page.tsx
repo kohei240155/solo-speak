@@ -223,7 +223,7 @@ export default function Home() {
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-2xl border border-gray-200">
-                  <div className="w-full max-w-sm mx-auto space-y-6">
+                  <div className="w-full max-w-sm mx-auto space-y-3">
                     {/* 入力フィールド */}
                     <div className="relative">
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -232,35 +232,59 @@ export default function Home() {
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                             </svg>
                           </div>
                         </div>
                       </div>
-                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-300"></div>
+                      {/* 下向き矢印 */}
+                      <div className="flex justify-center mt-4">
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
                       </div>
                     </div>
                     
                     {/* 生成ボタン */}
-                    <div className="flex justify-center py-2">
-                      <button className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3 rounded-xl text-base font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-3 transform hover:scale-105">
-                        <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        <span>AI生成</span>
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                    <div className="flex justify-center py-1">
+                      <button 
+                        className="text-white py-2 px-10 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 animate-pulse"
+                        style={{ backgroundColor: '#616161', boxShadow: '0 0 15px rgba(97, 97, 97, 0.4)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#525252'
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#616161'
+                          e.currentTarget.style.boxShadow = '0 0 15px rgba(97, 97, 97, 0.4)'
+                        }}
+                        onClick={(e) => {
+                          e.currentTarget.style.transform = 'scale(0.98)'
+                          setTimeout(() => {
+                            if (e.currentTarget) {
+                              e.currentTarget.style.transform = 'scale(1)'
+                            }
+                          }, 150)
+                        }}
+                      >
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          AI Suggest
+                        </div>
                       </button>
+                    </div>
+                    {/* 下向き矢印 */}
+                    <div className="flex justify-center">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                      </svg>
                     </div>
                     
                     {/* 結果表示 */}
                     <div className="relative">
-                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                        <div className="w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-800"></div>
-                      </div>
-                      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                      <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="font-semibold text-lg">What brought you to Japan?</span>
+                          <span className="text-gray-900 font-semibold text-lg">What brought you to Japan?</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
