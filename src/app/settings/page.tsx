@@ -7,7 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
 import { useUserSettings } from '@/hooks/data/useUserSettings'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
-import SubscriptionTab from '@/components/settings/SubscriptionTab'
+// SUBSCRIPTION_DISABLED: SubscriptionTab import を一時的に無効化
+// import SubscriptionTab from '@/components/settings/SubscriptionTab'
 import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useSearchParams } from 'next/navigation'
@@ -18,16 +19,19 @@ export default function UserSettingsPage() {
   const tabParam = searchParams.get('tab')
   
   // URLパラメータからタブを決定
-  const initialTab = (tabParam === 'subscription' || tabParam === 'user') ? tabParam : 'user'
+  // SUBSCRIPTION_DISABLED: subscriptionタブを一時的に無効化し、常にuserタブにリダイレクト
+  // const initialTab = (tabParam === 'subscription' || tabParam === 'user') ? tabParam : 'user'
+  const initialTab = 'user' // 常にuserタブに固定
   const [activeTab, setActiveTab] = useState<'user' | 'subscription'>(initialTab)
 
   // URLパラメータが変更された時にタブを更新
-  useEffect(() => {
-    const tab = searchParams.get('tab')
-    if (tab === 'subscription' || tab === 'user') {
-      setActiveTab(tab)
-    }
-  }, [searchParams])
+  // SUBSCRIPTION_DISABLED: subscriptionタブへの遷移を一時的に無効化
+  // useEffect(() => {
+  //   const tab = searchParams.get('tab')
+  //   if (tab === 'subscription' || tab === 'user') {
+  //     setActiveTab(tab)
+  //   }
+  // }, [searchParams])
 
   const {
     register,
@@ -98,10 +102,10 @@ export default function UserSettingsPage() {
             />
           )}
 
-          {/* Subscription Tab Content */}
-          {activeTab === 'subscription' && (
+          {/* SUBSCRIPTION_DISABLED: Subscription Tab Content を一時的に無効化 */}
+          {/* {activeTab === 'subscription' && (
             <SubscriptionTab />
-          )}
+          )} */}
         </div>
       </div>
     </div>

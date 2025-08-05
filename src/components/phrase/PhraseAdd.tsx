@@ -126,8 +126,8 @@ export default function PhraseAdd({
         </div>
       </div>
 
-      {/* サブスクリプション状態の表示 */}
-      <div className="mb-4">
+      {/* SUBSCRIPTION_DISABLED: サブスクリプション状態の表示を一時的に無効化 */}
+      {/* <div className="mb-4">
         {!hasActiveSubscription && (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <p className="text-gray-700 font-medium text-sm mb-2">
@@ -148,7 +148,7 @@ export default function PhraseAdd({
             </a>
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Options section */}
       <div className="mb-4">
@@ -295,7 +295,8 @@ export default function PhraseAdd({
       {error && !isLoading && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-sm text-red-600">{error}</p>
-          {error.includes('Basicプラン') && (
+          {/* SUBSCRIPTION_DISABLED: Basicプラン関連のエラーメッセージを一時的に無効化 */}
+          {/* {error.includes('Basicプラン') && (
             <div className="mt-2">
               <a 
                 href="/settings?tab=subscription"
@@ -304,7 +305,7 @@ export default function PhraseAdd({
                 {t('subscription.manageSubscription')}
               </a>
             </div>
-          )}
+          )} */}
         </div>
       )}
 

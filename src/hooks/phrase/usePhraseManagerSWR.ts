@@ -182,11 +182,15 @@ export const usePhraseManagerSWR = () => {
     if (!validatePhrase(desiredPhrase)) {
       return
     }
-
-    // サブスクリプション状態チェック
-    const hasActiveSubscription = generationsData?.hasActiveSubscription || false
-    if (remainingGenerations <= 0 && !hasActiveSubscription) {
-      setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+    // 残り回数チェック（サブスクリプション関連のメッセージのみ無効化）
+    if (remainingGenerations <= 0) {
+      // SUBSCRIPTION_DISABLED: サブスクリプション関連のメッセージを無効化
+      // const hasActiveSubscription = generationsData?.hasActiveSubscription || false
+      // if (!hasActiveSubscription) {
+      //   setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+      // } else {
+        setError('本日の生成回数を超過しました。明日再度お試しください。')
+      // }
       return
     }
 
@@ -225,7 +229,8 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations, generationsData?.hasActiveSubscription])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
+  // SUBSCRIPTION_DISABLED: generationsData?.hasActiveSubscriptionの依存関係は削除
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
