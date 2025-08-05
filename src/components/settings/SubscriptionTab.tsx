@@ -44,7 +44,8 @@ export default function SubscriptionTab() {
     }
 
     fetchSubscriptionStatus()
-  }, [t])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // 依存関係配列を空にして初回のみ実行
 
   // サブスクリプション開始
   const handleSubscribe = async () => {
@@ -123,17 +124,6 @@ export default function SubscriptionTab() {
       day: 'numeric'
     })
   }
-
-  // デバッグログを追加
-  console.log('SubscriptionTab render data:', {
-    subscriptionStatus,
-    isSubscribed,
-    subscriptionEndDate,
-    hasCurrentPeriodEnd: !!subscriptionStatus?.subscription.currentPeriodEnd,
-    rawCurrentPeriodEnd: subscriptionStatus?.subscription.currentPeriodEnd,
-    parsedDate: subscriptionEndDate ? new Date(subscriptionEndDate) : null,
-    formattedDate: subscriptionEndDate ? formatNextBillingDate(new Date(subscriptionEndDate)) : null
-  })
 
   return (
     <div className="space-y-6">
