@@ -151,7 +151,7 @@ export default function Home() {
       <section className="py-32 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('home.features.title')}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
@@ -207,10 +207,11 @@ export default function Home() {
       <section className="py-32 relative overflow-hidden bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-              Solo Speakが選ばれる理由
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
+            <div className="inline-block px-8 py-4 bg-gray-700 rounded-2xl mb-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+                \ これらの悩みをSolo Speakが解決します /
+              </h2>
+            </div>
           </div>
           
           <div className="max-w-7xl mx-auto space-y-32">
