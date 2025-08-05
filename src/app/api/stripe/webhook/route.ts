@@ -72,7 +72,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          remainingPhraseGenerations: 100, // ベーシックプランの初期値
+          remainingPhraseGenerations: 5, // ベーシックプランの初期値
         }
       })
     }
@@ -89,7 +89,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        remainingPhraseGenerations: 100, // ベーシックプランの初期値
+        remainingPhraseGenerations: 5, // ベーシックプランの初期値
       }
     })
   }

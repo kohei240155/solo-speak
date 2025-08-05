@@ -47,6 +47,20 @@ export default function SubscriptionTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // 依存関係配列を空にして初回のみ実行
 
+  // URLパラメータをチェックして決済成功時の処理
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('success') === 'true') {
+      // SWRキャッシュをクリアして最新データを取得
+      mutate('/api/user/phrase-generations')
+      mutate('/api/stripe/subscription')
+      
+      // URLパラメータをクリア
+      const newUrl = window.location.pathname + window.location.search.replace(/[?&]success=true/, '')
+      window.history.replaceState({}, '', newUrl)
+    }
+  }, [])
+
   // サブスクリプション開始
   const handleSubscribe = async () => {
     setIsProcessing(true)
@@ -112,9 +126,24 @@ export default function SubscriptionTab() {
   }
 
   const isSubscribed = subscriptionStatus?.subscription.isActive || false
+  const subscriptionStatus_status = subscriptionStatus?.subscription.status
   const subscriptionEndDate = subscriptionStatus?.subscription.currentPeriodEnd 
     ? subscriptionStatus.subscription.currentPeriodEnd
     : null
+
+  // サブスクリプション状態の表示テキストを決定
+  const getStatusDisplayText = () => {
+    if (!isSubscribed) {
+      return "No Subscribe"
+    }
+    
+    // 解約済みの場合
+    if (subscriptionStatus_status === 'canceled') {
+      return "Basic Plan (Canceled)"
+    }
+    
+    return "Basic Plan"
+  }
 
   // 次回請求日の表示用フォーマット（日付のみ）
   const formatNextBillingDate = (date: Date) => {
@@ -135,7 +164,7 @@ export default function SubscriptionTab() {
         <div>
           <input
             type="text"
-            value={isSubscribed ? `Basic Plan` : "No Subscribe"}
+            value={getStatusDisplayText()}
             readOnly
             tabIndex={-1}
             style={{ pointerEvents: 'none' }}
@@ -148,7 +177,7 @@ export default function SubscriptionTab() {
       {isSubscribed && subscriptionEndDate && (
         <div>
           <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
-            Next Billing Date
+            {subscriptionStatus_status === 'canceled' ? 'Expires On' : 'Next Billing Date'}
           </h2>
           <input
             type="text"
@@ -201,16 +230,16 @@ export default function SubscriptionTab() {
           <button
             type="button"
             onClick={isSubscribed ? handleOpenCancelModal : handleSubscribe}
-            disabled={isProcessing}
+            disabled={isProcessing || (isSubscribed && subscriptionStatus_status === 'canceled')}
             className="w-full text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50"
             style={{ backgroundColor: '#616161' }}
             onMouseEnter={(e) => {
-              if (!isProcessing) {
+              if (!isProcessing && !(isSubscribed && subscriptionStatus_status === 'canceled')) {
                 e.currentTarget.style.backgroundColor = '#525252'
               }
             }}
             onMouseLeave={(e) => {
-              if (!isProcessing) {
+              if (!isProcessing && !(isSubscribed && subscriptionStatus_status === 'canceled')) {
                 e.currentTarget.style.backgroundColor = '#616161'
               }
             }}
@@ -218,7 +247,9 @@ export default function SubscriptionTab() {
             {isProcessing 
               ? 'Processing...' 
               : isSubscribed 
-                ? 'Cancel Subscription' 
+                ? subscriptionStatus_status === 'canceled' 
+                  ? 'Subscription Canceled'
+                  : 'Cancel Subscription'
                 : 'Get Started'
             }
           </button>

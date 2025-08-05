@@ -39,6 +39,18 @@ export async function GET(request: NextRequest) {
       hasActiveSubscription = subscriptionInfo.isActive
     }
 
+    // サブスクリプションが有効で、現在の生成回数が0の場合は即座にリセット
+    if (hasActiveSubscription && remainingGenerations === 0) {
+      remainingGenerations = 5
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          remainingPhraseGenerations: 5,
+          lastPhraseGenerationDate: new Date()
+        }
+      })
+    }
+
     // 日付リセットロジック
     const today = new Date()
     today.setHours(0, 0, 0, 0) // 今日の開始時刻に設定
