@@ -211,5 +211,21 @@
     "sessionExpired": "認証情報が期限切れです。ページを再読み込みしてください。",
     "sessionInvalid": "認証が失効しました。ページを再読み込みしてください。",
     "serviceUnavailable": "認証サービスが一時的に利用できません。しばらく待ってから再試行してください。"
+  },
+  "footer": {
+    "description": "あなたのスピーキング学習をサポートします。",
+    "sections": {
+      "service": "サービス",
+      "legal": "法的事項",
+      "support": "サポート"
+    },
+    "links": {
+      "about": "Solo Speakについて",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "commercialTransaction": "特定商取引法表記",
+      "contact": "お問い合わせ"
+    },
+    "copyright": "All rights reserved."
   }
 }

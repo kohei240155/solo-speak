@@ -211,5 +211,21 @@
     "sessionExpired": "Authentication information has expired. Please reload the page.",
     "sessionInvalid": "Authentication has expired. Please reload the page.",
     "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
+  },
+  "footer": {
+    "description": "Supporting your speaking practice journey.",
+    "sections": {
+      "service": "Service",
+      "legal": "Legal",
+      "support": "Support"
+    },
+    "links": {
+      "about": "About Solo Speak",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "commercialTransaction": "Commercial Transaction Act",
+      "contact": "Contact Us"
+    },
+    "copyright": "All rights reserved."
   }
 }
