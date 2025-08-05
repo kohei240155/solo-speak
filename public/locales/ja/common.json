@@ -33,7 +33,10 @@
       "countError": "カウントの送信に失敗しました",
       "notFound": "フレーズが見つかりませんでした",
       "nextPhraseNotFound": "次のフレーズが見つかりませんでした",
-      "nextPhraseError": "次のフレーズの取得に失敗しました"
+      "nextPhraseError": "次のフレーズの取得に失敗しました",
+      "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
+      "generationFailed": "フレーズの生成に失敗しました",
+      "noContentGenerated": "コンテンツが生成されませんでした"
     }
   },
   "speak": {

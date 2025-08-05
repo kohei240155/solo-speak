@@ -2,14 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
-
-interface TranslationData {
-  [key: string]: string | TranslationData
-}
-
-interface TranslationOptions {
-  [key: string]: string | number
-}
+import { 
+  TranslationData, 
+  TranslationOptions, 
+  getNestedTranslation 
+} from '@/utils/translation-common'
 
 const translationCache = new Map<string, TranslationData>()
 
@@ -69,30 +66,7 @@ export const useTranslation = (namespace = 'common') => {
 
   // 翻訳関数
   const t = (key: string, options?: TranslationOptions): string => {
-    const keys = key.split('.')
-    let value: string | TranslationData = translations
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k]
-      } else {
-        // キーが見つからない場合はキーをそのまま返す
-        return key
-      }
-    }
-    
-    if (typeof value !== 'string') {
-      return key
-    }
-    
-    // シンプルな変数置換（{{variable}}形式）
-    if (options) {
-      return value.replace(/\{\{(\w+)\}\}/g, (match: string, varName: string) => {
-        return String(options[varName] || match)
-      })
-    }
-    
-    return value
+    return getNestedTranslation(translations, key, options)
   }
 
   return {
