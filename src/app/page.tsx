@@ -66,7 +66,7 @@ export default function Home() {
 
   const handleSoundClick = async () => {
     try {
-      await playText("How long have you been living in Vancouver?")
+      await playText("How long have you been living in Japan?")
     } catch (error) {
       console.error('TTS playback failed:', error)
     }
@@ -282,7 +282,7 @@ export default function Home() {
                     <div className="relative">
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">バンクーバーにはどのぐらい住んでいるの？</span>
+                          <span className="text-gray-900 font-semibold text-lg">日本にはどのぐらい住んでいるの？</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -345,7 +345,7 @@ export default function Home() {
                     <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">How long have you been living in Vancouver?</span>
+                          <span className="text-gray-900 font-semibold text-lg">How long have you been living in Japan?</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,10 +386,10 @@ export default function Home() {
                         {/* フレーズテキスト */}
                         <div className="flex-1">
                           <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
-                            How long have you been living in Vancouver?
+                            How long have you been living in Japan?
                           </div>
                           <div className="text-base text-gray-600 leading-relaxed">
-                            バンクーバーにはどのぐらい住んでいるの？
+                            日本にはどのぐらい住んでいるの？
                           </div>
                         </div>
                       </div>
