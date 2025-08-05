@@ -61,7 +61,7 @@ export default function Home() {
     }`} style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
       
       {/* ヒーローセクション */}
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <section className="py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden">
         {/* 背景の装飾要素 */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-20 left-20 w-72 h-72 bg-gray-200 rounded-full blur-3xl"></div>
@@ -75,14 +75,14 @@ export default function Home() {
               {/* 左側: テキストコンテンツ */}
               <div className="text-center lg:text-left">
                 {/* メインタイトル */}
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-12 leading-tight tracking-tight">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                     スピーキングアプリの<br />決定版
                   </span>
                 </h1>
                 
                 {/* 特徴リスト */}
-                <div className="space-y-4 mb-12">
+                <div className="space-y-4 mb-8">
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
                     <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
@@ -136,21 +136,12 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
-        {/* スクロールインジケーター */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-gray-500">
-          <div className="animate-bounce">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-            </svg>
-          </div>
-        </div>
       </section>
 
       {/* 機能紹介セクション */}
-      <section className="py-32 bg-gray-50 relative">
+      <section className="py-16 bg-gray-50 relative">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('home.features.title')}
             </h2>
@@ -207,7 +198,7 @@ export default function Home() {
       <section className="py-32 relative overflow-hidden bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <div className="inline-block px-8 py-4 bg-gray-700 rounded-2xl mb-6">
+            <div className="inline-block px-10 py-6 bg-gray-700 rounded-2xl mb-6">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
                 \ これらの悩みをSolo Speakが解決します /
               </h2>
