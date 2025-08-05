@@ -15,7 +15,7 @@ import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 // スクロールアニメーション用のカスタムフック
 const useScrollAnimation = () => {
   // テスト用: 全セクションを表示状態にする
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'cta-section']))
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']))
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -88,14 +88,14 @@ export default function Home() {
         setTimeout(() => {
           heroElement.classList.add('opacity-100', 'translate-y-0')
           heroElement.classList.remove('opacity-0', 'translate-y-8')
-        }, 100) // 元の100msに戻す
+        }, 100)
       }
       
       if (featuresElement) {
         setTimeout(() => {
           featuresElement.classList.add('opacity-100', 'translate-y-0')
           featuresElement.classList.remove('opacity-0', 'translate-y-8')
-        }, 300) // 元の300msに戻す
+        }, 300)
       }
       */
     }
@@ -104,12 +104,12 @@ export default function Home() {
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
       setFadeOut(true)
-    }, 1200) // 1.2秒後にフェードアウト開始（1.5秒→1.2秒）
+    }, 1500) // 1.5秒後にフェードアウト開始
 
     const hideTimer = setTimeout(() => {
       setShowSplash(false)
       setShowContent(true)
-    }, 1600) // 1.6秒後にスプラッシュ画面を非表示、コンテンツ表示（2秒→1.6秒）
+    }, 2000) // 2秒後にスプラッシュ画面を非表示、コンテンツ表示
 
     return () => {
       clearTimeout(fadeTimer)
@@ -688,6 +688,93 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ セクション */}
+      <section 
+        id="faq-section"
+        data-scroll-animation
+        className={`py-32 bg-white relative transition-all duration-1000 ease-out ${
+          visibleSections.has('faq-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+        style={{ 
+          opacity: visibleSections.has('faq-section') ? 1 : 0,
+          transform: visibleSections.has('faq-section') ? 'translateY(0)' : 'translateY(32px)'
+        }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
+              よくある質問
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* FAQ 1: フレーズ生成回数 */}
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  Q
+                </div>
+                フレーズ生成回数に制限はありますか？
+              </h3>
+              <div className="ml-12">
+                <p className="text-lg text-gray-700 font-medium mb-2">
+                  1日5回まで無料でご利用いただけます。
+                </p>
+                <p className="text-base text-gray-600">
+                  より多くのフレーズを生成したい場合は、有料プランをご検討ください。
+                </p>
+              </div>
+            </div>
+
+            {/* FAQ 2: リセット時刻 */}
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  Q
+                </div>
+                フレーズ生成回数はいつリセットされますか？
+              </h3>
+              <div className="ml-12">
+                <p className="text-lg text-gray-700 font-medium mb-2">
+                  協定世界時（UTC）の0時にリセットされます。
+                </p>
+                <p className="text-base text-gray-600">
+                  日本時間では午前9時（冬時間）または午前8時（夏時間）にリセットされます。
+                </p>
+              </div>
+            </div>
+
+            {/* FAQ 3: 使用料 */}
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  Q
+                </div>
+                Solo Speakは無料で使えますか？
+              </h3>
+              <div className="ml-12">
+                <p className="text-lg text-gray-700 font-medium mb-2">
+                  現在は基本機能を無料でご利用いただけます。
+                </p>
+                <p className="text-base text-gray-600">
+                  今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。
+                </p>
               </div>
             </div>
           </div>
