@@ -223,9 +223,14 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center space-y-8 lg:hidden">
+            <div className="flex flex-col items-center text-center lg:hidden">
+              {/* サブタイトル */}
+              <p className="text-sm sm:text-base text-gray-600 font-medium mb-4">
+                {t('home.hero.subtitle')}
+              </p>
+              
               {/* メインタイトル */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight mb-8">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -306,6 +311,11 @@ export default function Home() {
             <div className="hidden lg:grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
               {/* 左側: テキストコンテンツ */}
               <div className="text-left max-w-4xl">
+                {/* サブタイトル */}
+                <p className="text-lg text-gray-600 font-medium mb-2">
+                  {t('home.hero.subtitle')}
+                </p>
+                
                 {/* メインタイトル */}
                 <h1 className="text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
@@ -660,7 +670,7 @@ export default function Home() {
                           </p>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-0 w-full max-w-sm">
+                        <div className="flex items-center gap-4 w-full max-w-sm">
                           <button
                             onClick={handleCountClick}
                             disabled={countCooldown > 0}
@@ -683,7 +693,7 @@ export default function Home() {
                               {countCooldown > 0 ? t('home.solutions.feature2.demo.buttons.wait') : t('home.solutions.feature2.demo.buttons.count')}
                             </span>
                           </button>
-                          <div className="w-px h-[120px] md:h-[152px] bg-gray-300"></div>
+                          <div className="w-px h-[120px] md:h-[152px] bg-gray-300 mx-2"></div>
                           <button
                             onClick={handleSoundClick}
                             disabled={isPlaying}

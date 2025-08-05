@@ -95,6 +95,7 @@
   },
   "home": {
     "hero": {
+      "subtitle": "\\ Solo Practice Training /",
       "title": "The Ultimate\nSpeaking App",
       "cta": {
         "mobile": "Let's Start!",
@@ -123,7 +124,7 @@
       "feature1": {
         "number": "01",
         "title": "AI instantly generates \"phrases you couldn't say\"",
-        "description": "AI translates phrases you couldn't express into natural expressions. Since phrases are centrally managed within the app, you don't need to bother writing them down in other apps or notes.",
+        "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
         "demo": {
           "input": "How long have you been living in Canada?",
           "button": "AI Suggest",
