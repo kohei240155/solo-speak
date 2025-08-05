@@ -158,7 +158,7 @@
         "title": "Check your \"quick response\"\nwith quiz features",
         "description": "Can phrases memorized through reading practice actually be used in real conversations? Use the quiz feature to instantly respond with memorized phrases, completing the memory → repetition → practice cycle.",
         "demo": {
-          "input": "カナダにはどのぐらい住んでいるの？?",
+          "input": "カナダにはどのぐらい住んでいるの？",
           "output": "How long have you been living in Canada?"
         }
       }
