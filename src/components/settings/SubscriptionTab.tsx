@@ -120,7 +120,7 @@ export default function SubscriptionTab() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center" style={{ height: '400px' }}>
-        <LoadingSpinner message="Loading subscription information..." />
+        <LoadingSpinner message="Loading..." />
       </div>
     )
   }

@@ -133,9 +133,6 @@ export default function PhraseAdd({
             <p className="text-gray-700 font-medium text-sm mb-2">
               {t('subscription.subscriptionRequired')}
             </p>
-            <p className="text-xs text-gray-600 mb-3">
-              {t('subscription.subscriptionDescription')}
-            </p>
             <a 
               href="/settings?tab=subscription"
               className="inline-block px-4 py-2 text-white text-sm rounded-md transition-colors"

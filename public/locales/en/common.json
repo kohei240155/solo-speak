@@ -107,8 +107,7 @@
   "subscription": {
     "basicPlanActive": "Basic Plan Active - Up to 5 generations per day",
     "subscriptionRequired": "Basic Plan subscription required to use AI phrase generation",
-    "subscriptionDescription": "Subscribe to the Basic Plan to generate up to 5 phrases per day with AI assistance.",
-    "subscribeToBasicPlan": "Subscribe to Basic Plan →",
+    "subscribeToBasicPlan": "Subscribe to Basic Plan",
     "manageSubscription": "Manage subscription in settings →",
     "cancelConfirm": "Are you sure you want to cancel your subscription? You will lose access to AI phrase generation immediately.",
     "cancelSuccess": "Subscription canceled successfully. You will lose access to AI features immediately.",
