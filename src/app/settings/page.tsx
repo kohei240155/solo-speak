@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+// SETTINGS_TABS_DISABLED: useState import を一時的に無効化
+// import { useState } from 'react'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,7 +10,8 @@ import { useUserSettings } from '@/hooks/data/useUserSettings'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
 // SUBSCRIPTION_DISABLED: SubscriptionTab import を一時的に無効化
 // import SubscriptionTab from '@/components/settings/SubscriptionTab'
-import TabNavigation from '@/components/navigation/TabNavigation'
+// SETTINGS_TABS_DISABLED: TabNavigation import を一時的に無効化
+// import TabNavigation from '@/components/navigation/TabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 // SUBSCRIPTION_DISABLED: useSearchParams import を一時的に無効化
 // import { useSearchParams } from 'next/navigation'
@@ -23,8 +25,9 @@ export default function UserSettingsPage() {
   // URLパラメータからタブを決定
   // SUBSCRIPTION_DISABLED: subscriptionタブを一時的に無効化し、常にuserタブにリダイレクト
   // const initialTab = (tabParam === 'subscription' || tabParam === 'user') ? tabParam : 'user'
-  const initialTab = 'user' // 常にuserタブに固定
-  const [activeTab, setActiveTab] = useState<'user' | 'subscription'>(initialTab)
+  // SETTINGS_TABS_DISABLED: タブ機能を一時的に無効化
+  // const initialTab = 'user' // 常にuserタブに固定
+  // const [activeTab, setActiveTab] = useState<'user' | 'subscription'>(initialTab)
 
   // URLパラメータが変更された時にタブを更新
   // SUBSCRIPTION_DISABLED: subscriptionタブへの遷移を一時的に無効化
@@ -56,7 +59,8 @@ export default function UserSettingsPage() {
     languages,
     error,
     setError,
-    isUserSetupComplete,
+    // SETTINGS_TABS_DISABLED: isUserSetupComplete を一時的に無効化
+    // isUserSetupComplete,
     setIsUserSetupComplete,
     dataLoading
   } = useUserSettings(setValue)
@@ -73,12 +77,12 @@ export default function UserSettingsPage() {
           Settings
         </h1>
         
-        {/* タブメニュー */}
-        <TabNavigation 
+        {/* SETTINGS_TABS_DISABLED: タブメニューを一時的に非表示 */}
+        {/* <TabNavigation 
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isUserSetupComplete={isUserSetupComplete}
-        />
+        /> */}
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -88,8 +92,22 @@ export default function UserSettingsPage() {
             </div>
           )}
 
+          {/* SETTINGS_TABS_DISABLED: 常にUserタブの内容を表示 */}
+          <UserSettingsForm 
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            watch={watch}
+            handleSubmit={handleSubmit}
+            languages={languages}
+            dataLoading={dataLoading}
+            setError={setError}
+            setIsUserSetupComplete={setIsUserSetupComplete}
+            submitting={false}
+          />
+
           {/* User Tab Content */}
-          {activeTab === 'user' && (
+          {/* {activeTab === 'user' && (
             <UserSettingsForm 
               register={register}
               errors={errors}
@@ -102,7 +120,7 @@ export default function UserSettingsPage() {
               setIsUserSetupComplete={setIsUserSetupComplete}
               submitting={false}
             />
-          )}
+          )} */}
 
           {/* SUBSCRIPTION_DISABLED: Subscription Tab Content を一時的に無効化 */}
           {/* {activeTab === 'subscription' && (
