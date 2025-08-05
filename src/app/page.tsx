@@ -614,10 +614,10 @@ export default function Home() {
                   1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。                </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-white p-12 rounded-3xl shadow-xl border border-gray-200">
+                <div className="bg-white p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200">
                   <div className="w-full max-w-md mx-auto">
                     {/* フレーズ表示エリア */}
-                    <div className="mb-8">
+                    <div className="mb-6 md:mb-8">
                       <div className="flex items-start space-x-4 mb-6">
                         {/* フレーズテキスト */}
                         <div className="flex-1">
@@ -735,10 +735,10 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-white p-12 rounded-3xl shadow-xl border border-gray-200">
+                <div className="bg-white p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200">
                   <div className="w-full max-w-md mx-auto">
                     {/* フレーズ表示エリア */}
-                    <div className="mb-8">
+                    <div className="mb-6 md:mb-8">
                       {/* 母国語の翻訳（メイン表示） */}
                       <div className="mb-6">
                         <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
