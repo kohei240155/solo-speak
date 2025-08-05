@@ -1,10 +1,4 @@
 {
-  "common": {
-    "language": "Language",
-    "selectLanguage": "Select Language",
-    "dashboard": "Dashboard",
-    "userSettings": "User Settings"
-  },
   "settings": {
     "userIcon": "User Icon",
     "displayName": "Display Name",
@@ -109,7 +103,6 @@
     "nextBillingDate": "Next Billing Date",
     "expiresOn": "Expires On",
     "plans": "Plans",
-    "basicPlanActive": "Basic Plan Active - Up to 5 generations per day",
     "subscriptionRequired": "Basic Plan subscription required to use AI phrase generation",
     "subscribeToBasicPlan": "Subscribe to Basic Plan",
     "manageSubscription": "Manage subscription in settings →",
@@ -117,8 +110,6 @@
     "cancelSuccess": "Subscription canceled successfully. You will lose access to AI features immediately.",
     "cancelError": "Failed to cancel subscription",
     "fetchError": "Failed to fetch subscription status",
-    "checkoutError": "Failed to create checkout session",
-    "cancelButton": "Cancel",
-    "confirmCancellation": "Confirm Cancellation"
+    "checkoutError": "Failed to create checkout session"
   }
 }

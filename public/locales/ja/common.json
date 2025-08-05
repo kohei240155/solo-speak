@@ -1,10 +1,4 @@
 {
-  "common": {
-    "language": "Language",
-    "selectLanguage": "Select Language",
-    "dashboard": "Dashboard",
-    "userSettings": "User Settings"
-  },
   "settings": {
     "userIcon": "ユーザーアイコン",
     "displayName": "表示名",
@@ -109,7 +103,6 @@
     "nextBillingDate": "次回請求日",
     "expiresOn": "有効期限",
     "plans": "プラン",
-    "basicPlanActive": "Basicプラン有効 - 1日最大5回まで生成可能",
     "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
     "subscribeToBasicPlan": "Basicプランに登録",
     "manageSubscription": "設定画面でサブスクリプションを管理 →",
@@ -117,8 +110,6 @@
     "cancelSuccess": "サブスクリプションが正常にキャンセルされました。AI機能へのアクセスが即座に無効になります。",
     "cancelError": "サブスクリプションのキャンセルに失敗しました",
     "fetchError": "サブスクリプション状態の取得に失敗しました",
-    "checkoutError": "チェックアウトセッションの作成に失敗しました",
-    "cancelButton": "キャンセル",
-    "confirmCancellation": "キャンセルを確定"
+    "checkoutError": "チェックアウトセッションの作成に失敗しました"
   }
 }
