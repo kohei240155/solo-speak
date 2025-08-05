@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { RiSpeakLine } from 'react-icons/ri'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { PiHandTapLight } from 'react-icons/pi'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
   const [showTranslation, setShowTranslation] = useState(false)
   const [readingCount, setReadingCount] = useState(0)
   const [countCooldown, setCountCooldown] = useState(0)
+  const [showQuizTranslation, setShowQuizTranslation] = useState(false)
   
   // TTS機能の初期化
   const { isPlaying, error: ttsError, playText } = useTextToSpeech({
@@ -70,6 +72,10 @@ export default function Home() {
     } catch (error) {
       console.error('TTS playback failed:', error)
     }
+  }
+
+  const handleQuizHandClick = () => {
+    setShowQuizTranslation(true)
   }
   const handleAISuggestClick = () => {
     if (isDemoActive) return // 既に実行中なら何もしない
@@ -147,14 +153,14 @@ export default function Home() {
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
                     <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      フレーズが自然に口から出るまで徹底的な音読をサポート
+                      徹底的な音読学習をサポート
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
                     <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      クイズ機能を使って定着度をチェック
+                      クイズ機能を使って瞬発力をチェック
                     </span>
                   </div>
                 </div>
@@ -486,11 +492,37 @@ export default function Home() {
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
-                  <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-gray-500/20 to-gray-700/20"></div>
-                    <svg className="w-24 h-24 text-gray-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-                    </svg>
+                  <div className="w-full max-w-md mx-auto">
+                    {/* フレーズ表示エリア */}
+                    <div className="mb-8">
+                      {/* 母国語の翻訳（メイン表示） */}
+                      <div className="mb-6">
+                        <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
+                          日本にはどのぐらい住んでいるの？
+                        </div>
+                      </div>
+                      
+                      {/* 学習言語のフレーズ - タップで表示 */}
+                      <div className="min-h-[4rem] flex items-start mb-6">
+                        <div className={`text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-1000 ease-out ${
+                          showQuizTranslation 
+                            ? 'opacity-100 transform translate-y-0' 
+                            : 'opacity-0 transform translate-y-4'
+                        }`}>
+                          {showQuizTranslation ? 'How long have you been living in Japan?' : ''}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 中央のアイコン表示エリア */}
+                    <div className="flex justify-center items-center">
+                      <div 
+                        className="cursor-pointer rounded-full p-4 transition-colors hover:bg-gray-100"
+                        onClick={handleQuizHandClick}
+                      >
+                        <PiHandTapLight className="w-12 h-12 text-gray-400" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
