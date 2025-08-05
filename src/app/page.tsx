@@ -456,7 +456,7 @@ export default function Home() {
       <section 
         id="solutions-section"
         data-scroll-animation
-        className={`py-32 relative overflow-hidden bg-gray-50 transition-all duration-1000 ease-out ${
+        className={`py-16 md:py-32 relative overflow-hidden bg-gray-50 transition-all duration-1000 ease-out ${
           visibleSections.has('solutions-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
         style={{ 
@@ -779,7 +779,7 @@ export default function Home() {
       <section 
         id="faq-section"
         data-scroll-animation
-        className={`py-32 bg-white relative transition-all duration-1000 ease-out ${
+        className={`py-16 md:py-32 bg-white relative transition-all duration-1000 ease-out ${
           visibleSections.has('faq-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
         style={{ 
@@ -866,7 +866,7 @@ export default function Home() {
       <section 
         id="cta-section"
         data-scroll-animation
-        className={`py-32 relative overflow-hidden bg-gray-100 transition-all duration-1000 ease-out ${
+        className={`py-16 md:py-32 relative overflow-hidden bg-gray-100 transition-all duration-1000 ease-out ${
           visibleSections.has('cta-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
         style={{ 
