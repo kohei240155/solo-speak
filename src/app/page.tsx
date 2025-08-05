@@ -151,10 +151,11 @@ export default function Home() {
       <section className="py-32 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
-              {t('home.features.title')}
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
+            <div className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-700 rounded-full bg-transparent mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+                {t('home.features.title')}
+              </h2>
+            </div>
           </div>
           
           <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
