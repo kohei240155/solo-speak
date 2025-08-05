@@ -222,12 +222,54 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
-                  <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-gray-500/20 to-gray-700/20"></div>
-                    <svg className="w-24 h-24 text-gray-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-2xl border border-gray-200">
+                  <div className="w-full max-w-sm mx-auto space-y-6">
+                    {/* 入力フィールド */}
+                    <div className="relative">
+                      <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-900 font-semibold text-lg">なんで日本にきたの？</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-gray-300"></div>
+                      </div>
+                    </div>
+                    
+                    {/* 生成ボタン */}
+                    <div className="flex justify-center py-2">
+                      <button className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white px-8 py-3 rounded-xl text-base font-bold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-3 transform hover:scale-105">
+                        <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span>AI生成</span>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+                      </button>
+                    </div>
+                    
+                    {/* 結果表示 */}
+                    <div className="relative">
+                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                        <div className="w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-800"></div>
+                      </div>
+                      <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-lg">What brought you to Japan?</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
