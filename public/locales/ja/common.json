@@ -42,8 +42,8 @@
   "speak": {
     "modal": {
       "language": "言語",
-      "startFrom": "開始位置",
-      "excludeHighPracticeCount": "練習回数が多いフレーズを除外",
+      "startFrom": "出題順序",
+      "excludeHighPracticeCount": "除外対象フレーズ(練習回数)",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",
@@ -65,13 +65,13 @@
     },
     "explanation": {
       "title": "Speak Mode ガイド",
-      "dailyGoal": {
-        "title": "目標",
-        "description": "1日10回を目標に音読しましょう。継続的な練習が上達のカギです。"
+      "howToUse": {
+        "title": "使い方",
+        "description": "表示されたフレーズを音読し、音読するごとにカウントボタンを押して練習回数を記録します。"
       },
-      "practiceCount": {
-        "title": "練習回数",
-        "description": "各フレーズは最低50回は音読することを推奨します。反復練習により、自然に口から出るようになります。"
+      "goals": {
+        "title": "目標と練習回数",
+        "description": "1日10回を目標に音読しましょう。各フレーズは最低50回は音読することを推奨します。継続的な練習と反復練習により、自然に口から出るようになります。"
       },
       "effectiveMethods": {
         "title": "効果的な練習方法",

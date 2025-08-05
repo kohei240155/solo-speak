@@ -65,13 +65,13 @@
     },
     "explanation": {
       "title": "Speak Mode Guide",
-      "dailyGoal": {
-        "title": "Daily Goal",
-        "description": "Aim to practice reading aloud 10 times a day. Consistent practice is the key to improvement."
+      "howToUse": {
+        "title": "How to Use",
+        "description": "Read the displayed phrases aloud and press the count button each time you practice to record your practice count."
       },
-      "practiceCount": {
-        "title": "Practice Count",
-        "description": "We recommend reading each phrase aloud at least 50 times. Through repetitive practice, phrases will naturally come out of your mouth."
+      "goals": {
+        "title": "Goals and Practice Count",
+        "description": "Aim to practice reading aloud 10 times a day. We recommend reading each phrase aloud at least 50 times. Through consistent and repetitive practice, phrases will naturally come out of your mouth."
       },
       "effectiveMethods": {
         "title": "Effective Practice Methods",
