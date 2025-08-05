@@ -3,6 +3,7 @@
 import { useRedirect } from '@/hooks/navigation/useRedirect'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect } from 'react'
@@ -60,6 +61,7 @@ export default function Home() {
   const { loading } = useRedirect()
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
   const { showLoginModal } = useAuth()
+  const { locale } = useLanguage()
   const visibleSections = useScrollAnimation()
   const [showSplash, setShowSplash] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
@@ -70,9 +72,9 @@ export default function Home() {
   const [countCooldown, setCountCooldown] = useState(0)
   const [showQuizTranslation, setShowQuizTranslation] = useState(false)
   
-  // TTS機能の初期化
-  const { isPlaying, error: ttsError, playText } = useTextToSpeech({
-    languageCode: 'en'
+  // TTS機能の初期化 - 日本語のテキストを再生する場合は日本語の言語コードを使用
+  const { isPlaying, playText } = useTextToSpeech({
+    languageCode: locale === 'en' ? 'ja' : 'en'
   })
 
   // 初期表示でヒーローセクションと機能セクションを即座に表示
@@ -141,7 +143,12 @@ export default function Home() {
 
   const handleSoundClick = async () => {
     try {
-      await playText("How long have you been living in Japan?")
+      // 英語の言語設定の場合は日本語の音声を再生
+      if (locale === 'en') {
+        await playText("カナダにはどのぐらい住んでいるの？")
+      } else {
+        await playText("How long have you been living in Canada?")
+      }
     } catch (error) {
       console.error('TTS playback failed:', error)
     }
