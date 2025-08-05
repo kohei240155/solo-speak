@@ -5,7 +5,10 @@
     "nativeLanguage": "Native Language",
     "defaultLearningLanguage": "Default Learning Language",
     "contactEmail": "Contact Email",
-    "selectLanguage": "Select a language"
+    "selectLanguage": "Select a language",
+    "validation": {
+      "sameLanguageError": "Native language and default learning language must be different"
+    }
   },
   "phrase": {
     "noPhrasesYet": "No phrases have been registered yet",

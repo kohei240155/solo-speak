@@ -5,7 +5,10 @@
     "nativeLanguage": "母国語",
     "defaultLearningLanguage": "デフォルト学習言語",
     "contactEmail": "連絡先メールアドレス",
-    "selectLanguage": "言語を選択してください"
+    "selectLanguage": "言語を選択してください",
+    "validation": {
+      "sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
+    }
   },
   "phrase": {
     "noPhrasesYet": "まだフレーズが登録されていません",
