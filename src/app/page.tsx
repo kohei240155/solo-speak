@@ -130,38 +130,46 @@ export default function Home() {
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-[3fr_2fr] gap-12 lg:gap-16 items-start">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-[2fr_1fr] gap-6 lg:gap-8 items-start">
               {/* 左側: テキストコンテンツ */}
-              <div className="text-center lg:text-left">
+              <div className="text-center lg:text-left max-w-4xl mx-auto lg:mx-0">
                 {/* メインタイトル */}
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                     スピーキングアプリの<br />決定版
                   </span>
                 </h1>
                 
                 {/* 特徴リスト */}
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      AIが自然なフレーズを生成
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      徹底的な音読学習をサポート
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      クイズ機能を使って瞬発力をチェック
-                    </span>
+                <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-md mx-auto lg:mx-0">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center lg:justify-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-lg md:text-xl text-gray-800 font-medium">
+                        AIが自然なフレーズを生成
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-center lg:justify-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-lg md:text-xl text-gray-800 font-medium">
+                        徹底的な音読学習をサポート
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-center lg:justify-start text-left">
+                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                      <span className="text-lg md:text-xl text-gray-800 font-medium">
+                        クイズ機能を使って瞬発力をチェック
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
@@ -185,9 +193,9 @@ export default function Home() {
                     <Image
                       src="/images/top/smartphone.png"
                       alt="Solo Speak アプリのデモ画面"
-                      width={400}
-                      height={500}
-                      className="w-80 h-auto md:w-96 drop-shadow-2xl rounded-2xl"
+                      width={450}
+                      height={550}
+                      className="w-96 h-auto md:w-[28rem] drop-shadow-2xl rounded-2xl"
                       priority
                     />
                   </div>
