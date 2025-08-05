@@ -883,7 +883,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-gray-900 leading-tight tracking-tight">
-              今すぐ語学学習を
+              今すぐスピーキング学習を
               <br />
               <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                 始めましょう
