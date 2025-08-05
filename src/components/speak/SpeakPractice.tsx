@@ -4,6 +4,7 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
+import LoadingSpinner from '../common/LoadingSpinner'
 
 interface SpeakPhrase {
   id: string
@@ -88,10 +89,7 @@ export default function SpeakPractice({
   // ローディング中の表示
   if (isLoading) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-        <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-      </div>
+      <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
     )
   }
 
