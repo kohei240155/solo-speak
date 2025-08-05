@@ -658,7 +658,7 @@ export default function Home() {
                             onClick={handleCountClick}
                             disabled={countCooldown > 0}
                             className={`flex flex-col items-center outline-none transition-all duration-300 p-4 md:p-8 flex-1 ${
-                              countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                              countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                             }`}
                           >
                             <div className={`w-[40px] h-[30px] md:w-[60px] md:h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
@@ -681,7 +681,7 @@ export default function Home() {
                             onClick={handleSoundClick}
                             disabled={isPlaying}
                             className={`flex flex-col items-center outline-none transition-all duration-300 p-4 md:p-8 flex-1 ${
-                              isPlaying ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                              isPlaying ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                             }`}
                           >
                             <div className="w-[40px] h-[30px] md:w-[60px] md:h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2">

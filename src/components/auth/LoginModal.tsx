@@ -90,8 +90,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           />
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Solo Speakでは言えなかったフレーズを言え<br />
-          るようにする練習をサポートします。
+          Solo Speakはあなたのスピーキング学習を<br />
+          サポートします。毎日繰り返し取り組みましょう。
         </p>
       </div>
 
