@@ -23,7 +23,7 @@ export const DisplayLanguageSelector: React.FC<DisplayLanguageSelectorProps> = (
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value)}
-        className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[60px] text-gray-900 h-[40px]"
+        className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none min-w-[60px] text-gray-900 h-[40px]"
         disabled={isLoadingLocale}
       >
         {availableLocales.map((lang) => (
