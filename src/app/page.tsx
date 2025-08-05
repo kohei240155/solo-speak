@@ -93,7 +93,7 @@ export default function Home() {
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
                     <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      フレーズが自然に口から出るまで徹底的に音読
+                      フレーズが自然に口から出るまで徹底的な音読をサポート
                     </span>
                   </div>
                   
@@ -213,14 +213,12 @@ export default function Home() {
                   01
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  一人でも続けられる
+                  「言えなかったフレーズ」をAIが即生成
                   <br />
-                  <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    学習システム
-                  </span>
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  音声認識技術により、一人でも発音練習ができます。相手を必要とせず、自分のペースで学習を進められます。
+                  言えなかったフレーズを、AIが自然な表現で翻訳します。
+                  フレーズはアプリ内で一元管理できるので、アプリやノートに書き残す手間も不要です。
                 </p>
               </div>
               <div className="lg:w-1/2">
@@ -242,15 +240,15 @@ export default function Home() {
                   02
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  効果的な
+                  音読回数カウント機能で
                   <br />
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    記憶定着システム
+                    &ldquo;話せるまで&rdquo;徹底サポート
                   </span>
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  クイズ形式の学習により、覚えたフレーズを長期記憶に定着させます。繰り返し学習で確実にスキルアップできます。
-                </p>
+                  言語は「知った」だけでは話せません。
+                  1つのフレーズに対して50回を目安に、口から自然に出てくるまで徹底的に音読します。                </p>
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
@@ -271,14 +269,15 @@ export default function Home() {
                   03
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  多言語対応・
+                  クイズ機能で「瞬発力」を
                   <br />
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    無料で利用可能
+                    チェック
                   </span>
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  複数の言語に対応し、基本機能は完全無料でご利用いただけます。語学学習のハードルを下げ、誰でも気軽に始められます。
+                  音読で記憶したフレーズが、実際の会話で使えるかどうか。
+                  クイズ機能を使って覚えたフレーズを即答することで、記憶→反復→実践のサイクルを完成させます。
                 </p>
               </div>
               <div className="lg:w-1/2">
