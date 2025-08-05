@@ -151,8 +151,8 @@ export default function Home() {
       <section className="py-32 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-700 rounded-full bg-transparent mb-6">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
+            <div className="inline-flex items-center justify-center px-12 py-6 rounded-full bg-gray-700 mb-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
                 {t('home.features.title')}
               </h2>
             </div>
