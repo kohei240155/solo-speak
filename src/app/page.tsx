@@ -653,43 +653,43 @@ export default function Home() {
                           </p>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-0">
+                        <div className="flex items-center gap-0 w-full max-w-sm">
                           <button
                             onClick={handleCountClick}
                             disabled={countCooldown > 0}
-                            className={`flex flex-col items-center outline-none transition-all duration-300 p-8 w-56 ${
+                            className={`flex flex-col items-center outline-none transition-all duration-300 p-4 md:p-8 flex-1 ${
                               countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
                             }`}
                           >
-                            <div className={`w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
+                            <div className={`w-[40px] h-[30px] md:w-[60px] md:h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
                               countCooldown > 0 ? 'opacity-50' : ''
                             }`}>
-                              <svg className={`w-10 h-10 ${
+                              <svg className={`w-8 h-8 md:w-10 md:h-10 ${
                                 countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
                               }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                               </svg>
                             </div>
-                            <span className={`font-medium text-base ${
+                            <span className={`font-medium text-sm md:text-base ${
                               countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
                             }`}>
                               {countCooldown > 0 ? 'Wait...' : 'Count'}
                             </span>
                           </button>
-                          <div className="w-px h-[152px] bg-gray-300"></div>
+                          <div className="w-px h-[120px] md:h-[152px] bg-gray-300"></div>
                           <button
                             onClick={handleSoundClick}
                             disabled={isPlaying}
-                            className={`flex flex-col items-center outline-none transition-all duration-300 p-8 w-56 ${
+                            className={`flex flex-col items-center outline-none transition-all duration-300 p-4 md:p-8 flex-1 ${
                               isPlaying ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
                             }`}
                           >
-                            <div className="w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2">
-                              <HiMiniSpeakerWave className={`w-10 h-10 ${
+                            <div className="w-[40px] h-[30px] md:w-[60px] md:h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2">
+                              <HiMiniSpeakerWave className={`w-8 h-8 md:w-10 md:h-10 ${
                                 isPlaying ? 'text-gray-400' : 'text-gray-600'
                               }`} />
                             </div>
-                            <span className={`font-medium text-base ${
+                            <span className={`font-medium text-sm md:text-base ${
                               isPlaying ? 'text-gray-400' : 'text-gray-900'
                             }`}>
                               {isPlaying ? 'Playing...' : 'Sound'}
