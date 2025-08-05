@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { SpeakPhrase } from '@/types/speak'
 import { useSpeakPhraseById } from '@/hooks/api/useSWRApi'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface UseSinglePhraseSpeakProps {
   phraseId: string | null
@@ -10,6 +11,7 @@ interface UseSinglePhraseSpeakProps {
 }
 
 export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePhraseSpeakProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   
   // 状態管理
@@ -41,10 +43,10 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     }
     
     if (singlePhraseData && !singlePhraseData.success) {
-      toast.error('フレーズが見つかりませんでした')
+      toast.error(t('phrase.messages.notFound'))
       router.push('/phrase/list')
     }
-  }, [singlePhraseFromSWR, singlePhraseData, phraseId, router])
+  }, [singlePhraseFromSWR, singlePhraseData, phraseId, router, t])
 
   // ローディング状態の管理
   useEffect(() => {
@@ -65,7 +67,7 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
       
       // ちょうど100回に達した時にトーストを表示
       if (newCount === 100) {
-        toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+        toast.error(t('speak.messages.dailyLimitReached'), {
           duration: 4000
         })
       }
@@ -90,13 +92,13 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
       if (singlePhrase && singlePhrasePendingCount > 0) {
         const success = await sendPendingCount(singlePhrase.id, singlePhrasePendingCount)
         if (!success) {
-          toast.error('カウントの送信に失敗しました')
+          toast.error(t('phrase.messages.countError'))
         }
       }
       router.push('/phrase/list')
     } catch (error) {
       console.error('Error finishing single phrase practice:', error)
-      toast.error('終了処理中にエラーが発生しました')
+      toast.error(t('speak.messages.endError'))
     } finally {
       setIsFinishing(false)
     }

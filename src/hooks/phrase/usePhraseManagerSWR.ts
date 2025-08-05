@@ -6,6 +6,7 @@ import { PhraseVariation } from '@/types/phrase'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 // 型定義
 interface GenerationsData {
@@ -29,6 +30,7 @@ const fetcher = async (url: string) => {
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
@@ -286,10 +288,10 @@ export const usePhraseManagerSWR = () => {
       // フレーズリストのキャッシュを無効化して最新データを取得
       mutate((key) => typeof key === 'string' && key.includes('/api/phrase'))
 
-      toast.success('フレーズを保存しました')
+      toast.success(t('phrase.messages.saveSuccess'))
     } catch (error) {
       console.error('Error saving phrase:', error)
-      toast.error('フレーズの保存中にエラーが発生しました')
+      toast.error(t('phrase.messages.saveError'))
     } finally {
       setSavingVariationIndex(null)
       setIsSaving(false)
@@ -321,13 +323,13 @@ export const usePhraseManagerSWR = () => {
       await api.post('/api/situations', { name })
       // SWRキャッシュを更新
       mutateSituations()
-      toast.success('シチュエーションを追加しました')
+      toast.success(t('situation.addSuccess'))
     } catch (error) {
       console.error('Error adding situation:', error)
-      toast.error('シチュエーションの追加中にエラーが発生しました')
+      toast.error(t('situation.addError'))
       throw error
     }
-  }, [mutateSituations])
+  }, [mutateSituations, t])
 
   // シチュエーション削除ハンドラー
   const deleteSituation = useCallback(async (id: string) => {
@@ -335,13 +337,13 @@ export const usePhraseManagerSWR = () => {
       await api.delete(`/api/situations/${id}`)
       // SWRキャッシュを更新
       mutateSituations()
-      toast.success('シチュエーションを削除しました')
+      toast.success(t('situation.deleteSuccess'))
     } catch (error) {
       console.error('Error deleting situation:', error)
-      toast.error('シチュエーションの削除中にエラーが発生しました')
+      toast.error(t('situation.deleteError'))
       throw error
     }
-  }, [mutateSituations])
+  }, [mutateSituations, t])
 
   // 未保存変更チェック
   const checkUnsavedChanges = useCallback(() => {

@@ -2,8 +2,10 @@ import { useState, useCallback } from 'react'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 import { SpeakPhrase, SpeakConfig } from '@/types/speak'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 export const useSpeakPhrase = () => {
+  const { t } = useTranslation()
   const [currentPhrase, setCurrentPhrase] = useState<SpeakPhrase | null>(null)
   const [isLoadingPhrase, setIsLoadingPhrase] = useState(false)
   const [todayCount, setTodayCount] = useState(0)
@@ -45,12 +47,12 @@ export const useSpeakPhrase = () => {
       }
     } catch (error) {
       console.error('Error fetching speak phrase:', error)
-      toast.error('フレーズの取得中にエラーが発生しました')
+      toast.error(t('phrase.messages.fetchError'))
       return false
     } finally {
       setIsLoadingPhrase(false)
     }
-  }, [updateCountButtonState])
+  }, [updateCountButtonState, t])
 
   // カウントをサーバーに送信する関数
   const sendPendingCount = useCallback(async (phraseId: string, countToSend: number): Promise<boolean> => {
@@ -61,10 +63,10 @@ export const useSpeakPhrase = () => {
       return true
     } catch (error: unknown) {
       console.error('Error sending count:', error)
-      toast.error('カウントの送信に失敗しました')
+      toast.error(t('phrase.messages.countError'))
       return false
     }
-  }, [])
+  }, [t])
 
   // カウント機能（ローカルでのみカウントを増加）
   const handleCount = useCallback(async () => {
@@ -87,7 +89,7 @@ export const useSpeakPhrase = () => {
     
     // ちょうど100回に達した時にトーストを表示
     if (newTodayCount === 100) {
-      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+      toast.error(t('speak.messages.dailyLimitReached'), {
         duration: 4000
       })
     }
@@ -95,7 +97,7 @@ export const useSpeakPhrase = () => {
     // ボタンの状態を更新（表示されているtodayCountと同じ値で判定）
     updateCountButtonState(newTodayCount)
     
-  }, [currentPhrase, todayCount, pendingCount, updateCountButtonState])
+  }, [currentPhrase, todayCount, pendingCount, updateCountButtonState, t])
 
   // 次のフレーズを取得
   const handleNext = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
@@ -109,7 +111,7 @@ export const useSpeakPhrase = () => {
       if (success) {
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
       } else {
-        toast.error('カウントの送信に失敗しました')
+        toast.error(t('phrase.messages.countError'))
         return false // カウント送信失敗時は次のフレーズを取得しない
       }
     } else {
@@ -125,7 +127,7 @@ export const useSpeakPhrase = () => {
     // 次のフレーズを取得
     const result = await fetchSpeakPhrase(config)
     return result
-  }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase])
+  }, [currentPhrase, pendingCount, sendPendingCount, fetchSpeakPhrase, t])
 
   // 練習終了時の処理
   const handleFinish = useCallback(async () => {
@@ -135,7 +137,7 @@ export const useSpeakPhrase = () => {
     if (pendingCount > 0) {
       const success = await sendPendingCount(currentPhrase.id, pendingCount)
       if (!success) {
-        toast.error('カウントの送信に失敗しました')
+        toast.error(t('phrase.messages.countError'))
       }
     } else {
       // カウントが0でもsession_spokenをtrueに設定
@@ -152,7 +154,7 @@ export const useSpeakPhrase = () => {
     setTodayCount(0)
     setTotalCount(0)
     setPendingCount(0)
-  }, [currentPhrase, pendingCount, sendPendingCount])
+  }, [currentPhrase, pendingCount, sendPendingCount, t])
 
   return {
     currentPhrase,

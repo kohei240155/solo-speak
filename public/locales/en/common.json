@@ -19,7 +19,14 @@
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",
-      "updateError": "Failed to update phrase"
+      "updateError": "Failed to update phrase",
+      "saveSuccess": "Phrase saved successfully",
+      "saveError": "Error occurred while saving phrase",
+      "fetchError": "Error occurred while fetching phrase",
+      "countError": "Failed to send count",
+      "notFound": "Phrase not found",
+      "nextPhraseNotFound": "No next phrase found",
+      "nextPhraseError": "Failed to get next phrase"
     }
   },
   "speak": {
@@ -41,6 +48,10 @@
         "exclude80": "80+ times",
         "exclude90": "90+ times"
       }
+    },
+    "messages": {
+      "dailyLimitReached": "You have reached the daily limit of 100 speaks. Please try again tomorrow!",
+      "endError": "Error occurred during end process"
     },
     "explanation": {
       "title": "Speak Mode Guide",
@@ -69,6 +80,11 @@
         "random": "Random"
       },
       "questions": "questions"
+    },
+    "messages": {
+      "startError": "Failed to start quiz",
+      "fetchError": "Error occurred while fetching phrase",
+      "submitError": "Error occurred while submitting answer"
     }
   },
   "home": {
@@ -111,5 +127,16 @@
     "cancelError": "Failed to cancel subscription",
     "fetchError": "Failed to fetch subscription status",
     "checkoutError": "Failed to create checkout session"
+  },
+  "situation": {
+    "addSuccess": "Situation added successfully",
+    "addError": "Error occurred while adding situation",
+    "deleteSuccess": "Situation deleted successfully",
+    "deleteError": "Error occurred while deleting situation"
+  },
+  "auth": {
+    "sessionExpired": "Authentication information has expired. Please reload the page.",
+    "sessionInvalid": "Authentication has expired. Please reload the page.",
+    "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
   }
 }

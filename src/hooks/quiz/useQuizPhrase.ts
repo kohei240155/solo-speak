@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { QuizConfig, QuizPhrase, QuizSession } from '@/types/quiz'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface UseQuizPhraseReturn {
   session: QuizSession | null
@@ -16,6 +17,7 @@ interface UseQuizPhraseReturn {
 }
 
 export function useQuizPhrase(): UseQuizPhraseReturn {
+  const { t } = useTranslation()
   const [session, setSession] = useState<QuizSession | null>(null)
   const [isLoadingPhrase, setIsLoadingPhrase] = useState(false)
   const [showTranslation, setShowTranslation] = useState(false)
@@ -45,17 +47,17 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         setSession(newSession)
         return true
       } else {
-        const errorMessage = data.message || 'フレーズが見つかりませんでした'
+        const errorMessage = data.message || t('phrase.messages.notFound')
         toast.error(errorMessage)
         return false
       }
     } catch {
-      toast.error('フレーズの取得中にエラーが発生しました')
+      toast.error(t('quiz.messages.fetchError'))
       return false
     } finally {
       setIsLoadingPhrase(false)
     }
-  }, [])
+  }, [t])
 
   const handleShowTranslation = useCallback(() => {
     setShowTranslation(true)
@@ -72,9 +74,9 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
       })
 
     } catch {
-      toast.error('回答の送信中にエラーが発生しました')
+      toast.error(t('quiz.messages.submitError'))
     }
-  }, [currentPhrase, session])
+  }, [currentPhrase, session, t])
 
   const handleNext = useCallback(() => {
     if (!session) return
