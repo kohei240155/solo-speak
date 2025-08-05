@@ -5,6 +5,8 @@ import { api } from '@/utils/api'
 import { toast } from 'react-hot-toast'
 import { mutate } from 'swr'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useTranslation } from '@/hooks/ui/useTranslation'
+import BaseModal from '@/components/common/BaseModal'
 
 interface SubscriptionInfo {
   isActive: boolean
@@ -21,34 +23,34 @@ interface SubscriptionStatus {
 }
 
 export default function SubscriptionTab() {
+  const { t } = useTranslation('common')
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
   // サブスクリプション状態を取得
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
       try {
         const response = await api.get<SubscriptionStatus>('/api/stripe/subscription')
-        console.log('Subscription status response:', response)
         setSubscriptionStatus(response)
       } catch (error) {
         console.error('Error fetching subscription status:', error)
-        toast.error('Failed to fetch subscription status')
+        toast.error(t('subscription.fetchError'))
       } finally {
         setIsLoading(false)
       }
     }
 
     fetchSubscriptionStatus()
-  }, [])
+  }, [t])
 
   // サブスクリプション開始
   const handleSubscribe = async () => {
     setIsProcessing(true)
     try {
       const response = await api.post<{ checkoutUrl: string }>('/api/stripe/checkout')
-      console.log('Checkout response:', response)
       
       if (!response || !response.checkoutUrl) {
         throw new Error('Invalid response from checkout API')
@@ -58,24 +60,26 @@ export default function SubscriptionTab() {
       window.location.href = response.checkoutUrl
     } catch (error) {
       console.error('Error creating checkout session:', error)
-      toast.error('Failed to create checkout session')
+      toast.error(t('subscription.checkoutError'))
       setIsProcessing(false)
     }
   }
 
-  // サブスクリプション退会
-  const handleCancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? You will lose access to AI phrase generation immediately.')) {
-      return
-    }
+  // サブスクリプション退会モーダルを開く
+  const handleOpenCancelModal = () => {
+    setShowCancelModal(true)
+  }
 
+  // サブスクリプション退会実行
+  const handleConfirmCancel = async () => {
+    setShowCancelModal(false)
     setIsProcessing(true)
+    
     try {
       const response = await api.post<{ success: boolean; message: string }>('/api/stripe/cancel')
-      console.log('Cancel response:', response)
       
       if (response && response.success) {
-        toast.success('Subscription canceled successfully. You will lose access to AI features immediately.')
+        toast.success(t('subscription.cancelSuccess'))
         
         // サブスクリプション状態を再取得
         const statusResponse = await api.get<SubscriptionStatus>('/api/stripe/subscription')
@@ -92,7 +96,7 @@ export default function SubscriptionTab() {
       }
     } catch (error) {
       console.error('Error canceling subscription:', error)
-      toast.error('Failed to cancel subscription')
+      toast.error(t('subscription.cancelError'))
     } finally {
       setIsProcessing(false)
     }
@@ -206,7 +210,7 @@ export default function SubscriptionTab() {
 
           <button
             type="button"
-            onClick={isSubscribed ? handleCancelSubscription : handleSubscribe}
+            onClick={isSubscribed ? handleOpenCancelModal : handleSubscribe}
             disabled={isProcessing}
             className="w-full text-white py-2 px-4 rounded-md transition-colors duration-200 disabled:opacity-50"
             style={{ backgroundColor: '#616161' }}
@@ -230,6 +234,36 @@ export default function SubscriptionTab() {
           </button>
         </div>
       </div>
+
+      {/* Cancel Subscription Confirmation Modal */}
+      <BaseModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        title="Cancel Subscription"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-700">
+            {t('subscription.cancelConfirm')}
+          </p>
+          
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setShowCancelModal(false)}
+              className="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmCancel}
+              className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Confirm Cancellation
+            </button>
+          </div>
+        </div>
+      </BaseModal>
     </div>
   )
 }

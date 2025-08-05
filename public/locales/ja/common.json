@@ -109,6 +109,13 @@
     "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
     "subscriptionDescription": "Basicプランに登録して、AIアシスタンスで1日最大5フレーズまで生成できます。",
     "subscribeToBasicPlan": "Basicプランに登録 →",
-    "manageSubscription": "設定画面でサブスクリプションを管理 →"
+    "manageSubscription": "設定画面でサブスクリプションを管理 →",
+    "cancelConfirm": "本当にサブスクリプションをキャンセルしますか？AIフレーズ生成機能へのアクセスが即座に無効になります。",
+    "cancelSuccess": "サブスクリプションが正常にキャンセルされました。AI機能へのアクセスが即座に無効になります。",
+    "cancelError": "サブスクリプションのキャンセルに失敗しました",
+    "fetchError": "サブスクリプション状態の取得に失敗しました",
+    "checkoutError": "チェックアウトセッションの作成に失敗しました",
+    "cancelButton": "キャンセル",
+    "confirmCancellation": "キャンセルを確定"
   }
 }
