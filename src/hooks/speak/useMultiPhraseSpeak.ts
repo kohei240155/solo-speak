@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { SpeakConfig } from '@/types/speak'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface SpeakMode {
   active: boolean
@@ -21,6 +22,7 @@ export function useMultiPhraseSpeak({
   handleNext,
   handleFinish
 }: UseMultiPhraseSpeakProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [isFinishing, setIsFinishing] = useState(false)
   const [isNextLoading, setIsNextLoading] = useState(false)
@@ -46,7 +48,7 @@ export function useMultiPhraseSpeak({
       // 練習準備画面ではなく、直接Listページに遷移
       router.push('/phrase/list')
     } catch {
-      toast.error('終了処理中にエラーが発生しました')
+      toast.error(t('speak.messages.endError'))
     } finally {
       setIsFinishing(false)
     }

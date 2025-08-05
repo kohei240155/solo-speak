@@ -1,17 +1,18 @@
 {
-  "common": {
-    "language": "Language",
-    "selectLanguage": "Select Language",
-    "dashboard": "Dashboard",
-    "userSettings": "User Settings"
-  },
   "settings": {
     "userIcon": "ユーザーアイコン",
     "displayName": "表示名",
     "nativeLanguage": "母国語",
     "defaultLearningLanguage": "デフォルト学習言語",
     "contactEmail": "連絡先メールアドレス",
-    "selectLanguage": "言語を選択してください"
+    "selectLanguage": "言語を選択してください",
+    "validation": {
+      "sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
+    }
+  },
+  "confirm": {
+    "unsavedPhrase": "生成されたフレーズが保存されていません。このページを離れますか？",
+    "unsavedCount": "Countが登録されていません。このページを離れますか？"
   },
   "phrase": {
     "noPhrasesYet": "まだフレーズが登録されていません",
@@ -25,14 +26,24 @@
     },
     "messages": {
       "updateSuccess": "フレーズが正常に更新されました！",
-      "updateError": "フレーズの更新に失敗しました"
+      "updateError": "フレーズの更新に失敗しました",
+      "saveSuccess": "フレーズを保存しました",
+      "saveError": "フレーズの保存中にエラーが発生しました",
+      "fetchError": "フレーズの取得中にエラーが発生しました",
+      "countError": "カウントの送信に失敗しました",
+      "notFound": "フレーズが見つかりませんでした",
+      "nextPhraseNotFound": "次のフレーズが見つかりませんでした",
+      "nextPhraseError": "次のフレーズの取得に失敗しました",
+      "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
+      "generationFailed": "フレーズの生成に失敗しました",
+      "noContentGenerated": "コンテンツが生成されませんでした"
     }
   },
   "speak": {
     "modal": {
       "language": "言語",
-      "startFrom": "開始位置",
-      "excludeHighPracticeCount": "練習回数が多いフレーズを除外",
+      "startFrom": "出題順序",
+      "excludeHighPracticeCount": "除外対象フレーズ(練習回数)",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",
@@ -48,15 +59,19 @@
         "exclude90": "90回以上"
       }
     },
+    "messages": {
+      "dailyLimitReached": "1日100回のSpeak制限に到達しました。明日また挑戦してください！",
+      "endError": "終了処理中にエラーが発生しました"
+    },
     "explanation": {
       "title": "Speak Mode ガイド",
-      "dailyGoal": {
-        "title": "目標",
-        "description": "1日10回を目標に音読しましょう。継続的な練習が上達のカギです。"
+      "howToUse": {
+        "title": "使い方",
+        "description": "表示されたフレーズを音読し、音読するごとにカウントボタンを押して練習回数を記録します。"
       },
-      "practiceCount": {
-        "title": "練習回数",
-        "description": "各フレーズは最低50回は音読することを推奨します。反復練習により、自然に口から出るようになります。"
+      "goals": {
+        "title": "目標と練習回数",
+        "description": "1日10回を目標に音読しましょう。各フレーズは最低50回は音読することを推奨します。継続的な練習と反復練習により、自然に口から出るようになります。"
       },
       "effectiveMethods": {
         "title": "効果的な練習方法",
@@ -75,6 +90,11 @@
         "random": "ランダム"
       },
       "questions": "問"
+    },
+    "messages": {
+      "startError": "クイズの開始に失敗しました",
+      "fetchError": "フレーズの取得中にエラーが発生しました",
+      "submitError": "回答の送信中にエラーが発生しました"
     }
   },
   "home": {
@@ -103,5 +123,30 @@
         "description": "あなたの学習状況を可視化し、継続的な学習をサポートします。"
       }
     }
+  },
+  "subscription": {
+    "status": "ステータス",
+    "nextBillingDate": "次回請求日",
+    "expiresOn": "有効期限",
+    "plans": "プラン",
+    "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
+    "subscribeToBasicPlan": "Basicプランに登録",
+    "manageSubscription": "設定画面でサブスクリプションを管理 →",
+    "cancelConfirm": "本当にサブスクリプションをキャンセルしますか？AIフレーズ生成機能へのアクセスが即座に無効になります。",
+    "cancelSuccess": "サブスクリプションが正常にキャンセルされました。",
+    "cancelError": "サブスクリプションのキャンセルに失敗しました",
+    "fetchError": "サブスクリプション状態の取得に失敗しました",
+    "checkoutError": "チェックアウトセッションの作成に失敗しました"
+  },
+  "situation": {
+    "addSuccess": "シチュエーションを追加しました",
+    "addError": "シチュエーションの追加中にエラーが発生しました",
+    "deleteSuccess": "シチュエーションを削除しました",
+    "deleteError": "シチュエーションの削除中にエラーが発生しました"
+  },
+  "auth": {
+    "sessionExpired": "認証情報が期限切れです。ページを再読み込みしてください。",
+    "sessionInvalid": "認証が失効しました。ページを再読み込みしてください。",
+    "serviceUnavailable": "認証サービスが一時的に利用できません。しばらく待ってから再試行してください。"
   }
 }

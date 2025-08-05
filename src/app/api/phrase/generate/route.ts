@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { getTranslation, getLocaleFromRequest } from '@/utils/api-i18n'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { prisma } from '@/utils/prisma'
 import { getPromptTemplate } from '@/prompts'
@@ -31,6 +32,9 @@ interface GeneratePhraseResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // リクエストから言語を取得
+    const locale = getLocaleFromRequest(request)
+    
     // 認証チェック
     const authResult = await authenticateRequest(request)
     if ('error' in authResult) {
@@ -94,7 +98,7 @@ export async function POST(request: NextRequest) {
     // 残り回数が0の場合はエラーを返す
     if (remainingGenerations <= 0) {
       return NextResponse.json(
-        { error: '本日の生成回数を超過しました。明日再度お試しください。' },
+        { error: getTranslation(locale, 'phrase.messages.dailyLimitExceeded') },
         { status: 403 }
       )
     }
@@ -133,7 +137,7 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: 'Failed to generate phrases' },
+        { error: getTranslation(locale, 'phrase.messages.generationFailed') },
         { status: 500 }
       )
     }
@@ -143,7 +147,7 @@ export async function POST(request: NextRequest) {
 
     if (!generatedContent) {
       return NextResponse.json(
-        { error: 'No content generated' },
+        { error: getTranslation(locale, 'phrase.messages.noContentGenerated') },
         { status: 500 }
       )
     }

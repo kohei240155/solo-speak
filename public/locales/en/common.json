@@ -1,17 +1,18 @@
 {
-  "common": {
-    "language": "Language",
-    "selectLanguage": "Select Language",
-    "dashboard": "Dashboard",
-    "userSettings": "User Settings"
-  },
   "settings": {
     "userIcon": "User Icon",
     "displayName": "Display Name",
     "nativeLanguage": "Native Language",
     "defaultLearningLanguage": "Default Learning Language",
     "contactEmail": "Contact Email",
-    "selectLanguage": "Select a language"
+    "selectLanguage": "Select a language",
+    "validation": {
+      "sameLanguageError": "Native language and default learning language must be different"
+    }
+  },
+  "confirm": {
+    "unsavedPhrase": "Generated phrases have not been saved. Do you want to leave this page?",
+    "unsavedCount": "Count has not been registered. Do you want to leave this page?"
   },
   "phrase": {
     "noPhrasesYet": "No phrases have been registered yet",
@@ -25,7 +26,17 @@
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",
-      "updateError": "Failed to update phrase"
+      "updateError": "Failed to update phrase",
+      "saveSuccess": "Phrase saved successfully",
+      "saveError": "Error occurred while saving phrase",
+      "fetchError": "Error occurred while fetching phrase",
+      "countError": "Failed to send count",
+      "notFound": "Phrase not found",
+      "nextPhraseNotFound": "No next phrase found",
+      "nextPhraseError": "Failed to get next phrase",
+      "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
+      "generationFailed": "Failed to generate phrases",
+      "noContentGenerated": "No content generated"
     }
   },
   "speak": {
@@ -48,15 +59,19 @@
         "exclude90": "90+ times"
       }
     },
+    "messages": {
+      "dailyLimitReached": "You have reached the daily limit of 100 speaks. Please try again tomorrow!",
+      "endError": "Error occurred during end process"
+    },
     "explanation": {
       "title": "Speak Mode Guide",
-      "dailyGoal": {
-        "title": "Daily Goal",
-        "description": "Aim to practice reading aloud 10 times a day. Consistent practice is the key to improvement."
+      "howToUse": {
+        "title": "How to Use",
+        "description": "Read the displayed phrases aloud and press the count button each time you practice to record your practice count."
       },
-      "practiceCount": {
-        "title": "Practice Count",
-        "description": "We recommend reading each phrase aloud at least 50 times. Through repetitive practice, phrases will naturally come out of your mouth."
+      "goals": {
+        "title": "Goals and Practice Count",
+        "description": "Aim to practice reading aloud 10 times a day. We recommend reading each phrase aloud at least 50 times. Through consistent and repetitive practice, phrases will naturally come out of your mouth."
       },
       "effectiveMethods": {
         "title": "Effective Practice Methods",
@@ -75,6 +90,11 @@
         "random": "Random"
       },
       "questions": "questions"
+    },
+    "messages": {
+      "startError": "Failed to start quiz",
+      "fetchError": "Error occurred while fetching phrase",
+      "submitError": "Error occurred while submitting answer"
     }
   },
   "home": {
@@ -103,5 +123,30 @@
         "description": "Visualize your learning status and support continuous learning."
       }
     }
+  },
+  "subscription": {
+    "status": "Status",
+    "nextBillingDate": "Next Billing Date",
+    "expiresOn": "Expires On",
+    "plans": "Plans",
+    "subscriptionRequired": "Basic Plan subscription required to use AI phrase generation",
+    "subscribeToBasicPlan": "Subscribe to Basic Plan",
+    "manageSubscription": "Manage subscription in settings →",
+    "cancelConfirm": "Are you sure you want to cancel your subscription? You will lose access to AI phrase generation immediately.",
+    "cancelSuccess": "Subscription canceled successfully.",
+    "cancelError": "Failed to cancel subscription",
+    "fetchError": "Failed to fetch subscription status",
+    "checkoutError": "Failed to create checkout session"
+  },
+  "situation": {
+    "addSuccess": "Situation added successfully",
+    "addError": "Error occurred while adding situation",
+    "deleteSuccess": "Situation deleted successfully",
+    "deleteError": "Error occurred while deleting situation"
+  },
+  "auth": {
+    "sessionExpired": "Authentication information has expired. Please reload the page.",
+    "sessionInvalid": "Authentication has expired. Please reload the page.",
+    "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
   }
 }

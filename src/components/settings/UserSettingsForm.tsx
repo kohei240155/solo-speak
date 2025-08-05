@@ -1,4 +1,5 @@
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHandleSubmit } from 'react-hook-form'
+import { useEffect } from 'react'
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/data/useUserSettingsSubmit'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -38,10 +39,22 @@ export default function UserSettingsForm({
     setIsUserSetupComplete
   )
   const watchIconUrl = watch('iconUrl')
+  const watchNativeLanguageId = watch('nativeLanguageId')
+  const watchDefaultLearningLanguageId = watch('defaultLearningLanguageId')
   const isDisabled = dataLoading || submitting || submittingProp
   
   // 実際に使用するsubmitting状態を統一
   const actualSubmitting = submitting || submittingProp
+
+  // 言語が同じかどうかをチェック
+  const isSameLanguage = watchNativeLanguageId && watchDefaultLearningLanguageId && watchNativeLanguageId === watchDefaultLearningLanguageId
+
+  // 母国語が変更された時、同じ言語が選択されていたらデフォルト学習言語をリセット
+  useEffect(() => {
+    if (isSameLanguage) {
+      setValue('defaultLearningLanguageId', '')
+    }
+  }, [watchNativeLanguageId, isSameLanguage, setValue])
 
   return (
     <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
@@ -133,7 +146,7 @@ export default function UserSettingsForm({
             <option value="">
               {dataLoading ? 'Loading languages...' : t('settings.selectLanguage')}
             </option>
-            {languages.map(lang => (
+            {languages.filter(lang => lang.id !== watchNativeLanguageId).map(lang => (
               <option key={lang.id} value={lang.id}>{lang.name}</option>
             ))}
           </select>
@@ -149,6 +162,9 @@ export default function UserSettingsForm({
         </div>
         {errors.defaultLearningLanguageId && (
           <p className="mt-1 text-sm text-red-600">{errors.defaultLearningLanguageId.message}</p>
+        )}
+        {isSameLanguage && (
+          <p className="mt-1 text-sm text-red-600">{t('settings.validation.sameLanguageError')}</p>
         )}
       </div>
 
@@ -174,19 +190,19 @@ export default function UserSettingsForm({
       <div className="pt-4">
         <button
           type="submit"
-          disabled={actualSubmitting}
+          disabled={actualSubmitting || !!isSameLanguage}
           className="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-colors duration-200"
           style={{ 
-            backgroundColor: actualSubmitting ? '#9CA3AF' : '#616161'
+            backgroundColor: (actualSubmitting || !!isSameLanguage) ? '#9CA3AF' : '#616161'
           }}
           onMouseEnter={(e) => {
-            if (!actualSubmitting && e.currentTarget) {
+            if (!actualSubmitting && !isSameLanguage && e.currentTarget) {
               e.currentTarget.style.backgroundColor = '#525252'
             }
           }}
           onMouseLeave={(e) => {
             if (!actualSubmitting && e.currentTarget) {
-              e.currentTarget.style.backgroundColor = '#616161'
+              e.currentTarget.style.backgroundColor = (actualSubmitting || !!isSameLanguage) ? '#9CA3AF' : '#616161'
             }
           }}
         >

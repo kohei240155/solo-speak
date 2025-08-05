@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from './useTranslation'
 
 interface UsePageLeaveWarningProps {
   hasPendingChanges: boolean
@@ -7,8 +8,10 @@ interface UsePageLeaveWarningProps {
 
 export function usePageLeaveWarning({ 
   hasPendingChanges, 
-  warningMessage = 'Countが登録されていません。このページを離れますか？' 
+  warningMessage 
 }: UsePageLeaveWarningProps) {
+  const { t } = useTranslation('common')
+  const defaultMessage = warningMessage || t('confirm.unsavedCount')
   const pendingChangesRef = useRef(hasPendingChanges)
   
   // ref を更新
@@ -27,7 +30,7 @@ export function usePageLeaveWarning({
 
     const handleRouteChange = () => {
       if (pendingChangesRef.current) {
-        const confirmLeave = window.confirm(warningMessage)
+        const confirmLeave = window.confirm(defaultMessage)
         if (!confirmLeave) {
           // ナビゲーションをキャンセルする
           window.history.pushState(null, '', window.location.pathname + window.location.search)
@@ -59,7 +62,7 @@ export function usePageLeaveWarning({
           link.getAttribute('href') || 
           link.getAttribute('data-navigate') // 明示的にナビゲーションを示すdata属性がある場合のみ
         )) {
-          const confirmLeave = window.confirm(warningMessage)
+          const confirmLeave = window.confirm(defaultMessage)
           if (!confirmLeave) {
             e.preventDefault()
             e.stopPropagation()
@@ -78,5 +81,5 @@ export function usePageLeaveWarning({
       window.removeEventListener('popstate', handleRouteChange)
       document.removeEventListener('click', handleLinkClick, true)
     }
-  }, [warningMessage])
+  }, [defaultMessage, warningMessage])
 }

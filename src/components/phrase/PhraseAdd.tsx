@@ -17,6 +17,7 @@ const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
 
 interface PhraseAddProps {
   remainingGenerations: number
+  hasActiveSubscription?: boolean
   desiredPhrase: string
   phraseValidationError: string
   isLoading: boolean
@@ -38,6 +39,8 @@ interface PhraseAddProps {
 
 export default function PhraseAdd({
   remainingGenerations,
+  // SUBSCRIPTION_DISABLED: hasActiveSubscription パラメータを一時的に無効化（未使用）
+  // hasActiveSubscription = false,
   desiredPhrase,
   phraseValidationError,
   isLoading,
@@ -123,6 +126,30 @@ export default function PhraseAdd({
           Left: {remainingGenerations} / 5
         </div>
       </div>
+
+      {/* SUBSCRIPTION_DISABLED: サブスクリプション状態の表示を一時的に無効化 */}
+      {/* <div className="mb-4">
+        {!hasActiveSubscription && (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p className="text-gray-700 font-medium text-sm mb-2">
+              {t('subscription.subscriptionRequired')}
+            </p>
+            <a 
+              href="/settings?tab=subscription"
+              className="inline-block px-4 py-2 text-white text-sm rounded-md transition-colors"
+              style={{ backgroundColor: '#616161' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#525252'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#616161'
+              }}
+            >
+              {t('subscription.subscribeToBasicPlan')}
+            </a>
+          </div>
+        )}
+      </div> */}
 
       {/* Options section */}
       <div className="mb-4">
@@ -269,6 +296,17 @@ export default function PhraseAdd({
       {error && !isLoading && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-sm text-red-600">{error}</p>
+          {/* SUBSCRIPTION_DISABLED: Basicプラン関連のエラーメッセージを一時的に無効化 */}
+          {/* {error.includes('Basicプラン') && (
+            <div className="mt-2">
+              <a 
+                href="/settings?tab=subscription"
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+              >
+                {t('subscription.manageSubscription')}
+              </a>
+            </div>
+          )} */}
         </div>
       )}
 

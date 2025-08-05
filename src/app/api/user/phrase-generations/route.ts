@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
+import { getUserSubscriptionStatus } from '@/utils/stripe-helpers'
 
 /**
  * ユーザーのフレーズ生成回数を取得し、日付リセットを実行
@@ -19,7 +20,8 @@ export async function GET(request: NextRequest) {
       where: { id: userId },
       select: {
         remainingPhraseGenerations: true,
-        lastPhraseGenerationDate: true
+        lastPhraseGenerationDate: true,
+        stripeCustomerId: true
       }
     })
 
@@ -29,6 +31,25 @@ export async function GET(request: NextRequest) {
 
     let remainingGenerations = user.remainingPhraseGenerations
     const lastGenerationDate = user.lastPhraseGenerationDate
+
+    // サブスクリプション状態を確認
+    let hasActiveSubscription = false
+    if (user.stripeCustomerId) {
+      const subscriptionInfo = await getUserSubscriptionStatus(user.stripeCustomerId)
+      hasActiveSubscription = subscriptionInfo.isActive
+    }
+
+    // サブスクリプションが有効で、現在の生成回数が0の場合は即座にリセット
+    if (hasActiveSubscription && remainingGenerations === 0) {
+      remainingGenerations = 5
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          remainingPhraseGenerations: 5,
+          lastPhraseGenerationDate: new Date()
+        }
+      })
+    }
 
     // 日付リセットロジック
     const today = new Date()
@@ -51,25 +72,40 @@ export async function GET(request: NextRequest) {
       const lastGenerationDay = new Date(lastGenerationDate)
       lastGenerationDay.setHours(0, 0, 0, 0) // 最後の生成日の開始時刻に設定
       
-      // 最後の生成日が今日より前の場合のみリセット
+      // 最後の生成日が今日より前の場合のリセット処理
       if (lastGenerationDay.getTime() < today.getTime()) {
-        remainingGenerations = 5
-        
-        // データベースを更新
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            remainingPhraseGenerations: 5,
-            lastPhraseGenerationDate: new Date()
-          }
-        })
+        // サブスクリプションが有効な場合のみリセット、無効な場合は0のまま
+        if (hasActiveSubscription) {
+          remainingGenerations = 5
+          
+          // データベースを更新
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              remainingPhraseGenerations: 5,
+              lastPhraseGenerationDate: new Date()
+            }
+          })
+        } else {
+          // サブスクリプションが無効な場合は0に設定
+          remainingGenerations = 0
+          
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              remainingPhraseGenerations: 0,
+              lastPhraseGenerationDate: new Date()
+            }
+          })
+        }
       }
       // 今日の場合は現在の値をそのまま使用（更新しない）
     }
 
     return NextResponse.json({
       remainingGenerations,
-      lastGenerationDate: lastGenerationDate || null
+      lastGenerationDate: lastGenerationDate || null,
+      hasActiveSubscription
     })
 
   } catch (error) {

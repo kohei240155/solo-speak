@@ -1,6 +1,6 @@
 import { prisma } from '@/utils/prisma'
 import { User } from '@supabase/supabase-js'
-import { createDefaultSituations } from './create-default-situations'
+import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
 
 /**
@@ -178,7 +178,7 @@ export async function createUserSettings(
     // ユーザー作成後、ネイティブ言語に応じたデフォルトシチュエーションを作成
     try {
       if (result.nativeLanguage) {
-        await createDefaultSituations(prisma, result.id, result.nativeLanguage.code)
+        await createDefaultSituationsForUser(prisma, result.id, result.nativeLanguage.code)
       }
     } catch (situationError) {
       console.error('Failed to create default situations:', situationError)
@@ -260,7 +260,7 @@ export async function updateUserSettings(
   try {
     const hasSituations = await hasUserSituations(userId)
     if (!hasSituations && result.nativeLanguage) {
-      await createDefaultSituations(prisma, userId, result.nativeLanguage.code)
+      await createDefaultSituationsForUser(prisma, userId, result.nativeLanguage.code)
     }
   } catch (situationError) {
     console.error('Failed to create default situations during update:', situationError)
@@ -283,5 +283,42 @@ export async function updateUserSettings(
       name: result.defaultLearningLanguage.name,
       code: result.defaultLearningLanguage.code
     } : null
+  }
+}
+
+/**
+ * ユーザーのデフォルトシチュエーションを作成
+ * @param prisma Prismaクライアント
+ * @param userId ユーザーID
+ * @param languageCode ユーザーのネイティブ言語コード
+ */
+async function createDefaultSituationsForUser(
+  prisma: typeof import('@/utils/prisma').prisma,
+  userId: string,
+  languageCode: string
+): Promise<void> {
+  const defaultSituations = getInitialSituations(languageCode)
+  
+  // 既存のシチュエーションをチェック（重複作成を防ぐ）
+  const existingSituations = await prisma.situation.findMany({
+    where: {
+      userId,
+      deletedAt: null
+    }
+  })
+  
+  // 既存のシチュエーション名を取得
+  const existingNames = existingSituations.map(s => s.name)
+  
+  // 重複しないシチュエーションのみを作成
+  const situationsToCreate = defaultSituations.filter(name => !existingNames.includes(name))
+  
+  if (situationsToCreate.length > 0) {
+    await prisma.situation.createMany({
+      data: situationsToCreate.map(name => ({
+        userId,
+        name
+      }))
+    })
   }
 }

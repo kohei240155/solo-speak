@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useLanguages, useUserSettings } from '@/hooks/api/useSWRApi'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface SpeakPhrase {
   id: string
@@ -24,6 +25,7 @@ interface SpeakPhrase {
 
 export default function SpeakPage() {
   const { user, loading: authLoading } = useAuthGuard()
+  const { t } = useTranslation()
   const params = useParams()
   const router = useRouter()
   const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
@@ -130,7 +132,7 @@ export default function SpeakPage() {
     // ちょうど100回に達した時にトーストを表示
     const newDailyCount = currentDailyCount + 1
     if (newDailyCount === 100) {
-      toast.error('1日100回のSpeak制限に到達しました。明日また挑戦してください！', {
+      toast.error(t('speak.messages.dailyLimitReached'), {
         duration: 4000
       })
     }
@@ -144,7 +146,7 @@ export default function SpeakPage() {
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
       } catch (error: unknown) {
         console.error('Error sending pending count:', error)
-        toast.error('カウントの送信に失敗しました')
+        toast.error(t('phrase.messages.countError'))
         return // エラーの場合は次のフレーズ取得を中止
       }
     } else if (phrase) {
@@ -167,11 +169,11 @@ export default function SpeakPage() {
       if (data.success) {
         setPhrase(data.phrase!)
       } else {
-        toast.error('次のフレーズが見つかりませんでした')
+        toast.error(t('phrase.messages.nextPhraseNotFound'))
       }
     } catch (error) {
       console.error('Error fetching next phrase:', error)
-      toast.error('次のフレーズの取得に失敗しました')
+      toast.error(t('phrase.messages.nextPhraseError'))
     }
   }
 
@@ -183,7 +185,7 @@ export default function SpeakPage() {
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
       } catch (error: unknown) {
         console.error('Error sending pending count:', error)
-        toast.error('カウントの送信に失敗しました')
+        toast.error(t('phrase.messages.countError'))
         // Finishの場合はエラーがあってもページ遷移を実行
       }
     } else if (phrase) {

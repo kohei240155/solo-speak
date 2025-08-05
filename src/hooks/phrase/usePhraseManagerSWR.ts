@@ -6,10 +6,12 @@ import { PhraseVariation } from '@/types/phrase'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 // 型定義
 interface GenerationsData {
   remainingGenerations: number
+  hasActiveSubscription?: boolean
 }
 
 interface SituationsData {
@@ -28,6 +30,7 @@ const fetcher = async (url: string) => {
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
@@ -101,6 +104,20 @@ export const usePhraseManagerSWR = () => {
     }
   }, [user])
 
+  // サブスクリプションキャンセルイベントを監視
+  useEffect(() => {
+    const handleSubscriptionCanceled = () => {
+      console.log('Subscription canceled event received, refreshing generation data...')
+      mutateGenerations()
+    }
+
+    window.addEventListener('subscriptionCanceled', handleSubscriptionCanceled)
+    
+    return () => {
+      window.removeEventListener('subscriptionCanceled', handleSubscriptionCanceled)
+    }
+  }, [mutateGenerations])
+
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
   const remainingGenerations = generationsData?.remainingGenerations || 0
@@ -165,6 +182,17 @@ export const usePhraseManagerSWR = () => {
     if (!validatePhrase(desiredPhrase)) {
       return
     }
+    // 残り回数チェック（サブスクリプション関連のメッセージのみ無効化）
+    if (remainingGenerations <= 0) {
+      // SUBSCRIPTION_DISABLED: サブスクリプション関連のメッセージを無効化
+      // const hasActiveSubscription = generationsData?.hasActiveSubscription || false
+      // if (!hasActiveSubscription) {
+      //   setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+      // } else {
+        setError('本日の生成回数を超過しました。明日再度お試しください。')
+      // }
+      return
+    }
 
     setIsLoading(true)
     setError('')
@@ -188,7 +216,12 @@ export const usePhraseManagerSWR = () => {
     } catch (error) {
       console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
-        setError('本日の生成回数を超過しました。明日再度お試しください。')
+        const hasActiveSubscription = generationsData?.hasActiveSubscription || false
+        if (!hasActiveSubscription) {
+          setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
+        } else {
+          setError('本日の生成回数を超過しました。明日再度お試しください。')
+        }
         mutateGenerations()
       } else {
         setError('フレーズの生成中にエラーが発生しました')
@@ -196,7 +229,9 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations])
+    // SUBSCRIPTION_DISABLED: generationsData?.hasActiveSubscriptionの依存関係は削除済み
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -259,15 +294,15 @@ export const usePhraseManagerSWR = () => {
       // フレーズリストのキャッシュを無効化して最新データを取得
       mutate((key) => typeof key === 'string' && key.includes('/api/phrase'))
 
-      toast.success('フレーズを保存しました')
+      toast.success(t('phrase.messages.saveSuccess'))
     } catch (error) {
       console.error('Error saving phrase:', error)
-      toast.error('フレーズの保存中にエラーが発生しました')
+      toast.error(t('phrase.messages.saveError'))
     } finally {
       setSavingVariationIndex(null)
       setIsSaving(false)
     }
-  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation])
+  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation, t])
 
   // バリエーションリセットハンドラー
   const handleResetVariations = useCallback(() => {
@@ -294,13 +329,13 @@ export const usePhraseManagerSWR = () => {
       await api.post('/api/situations', { name })
       // SWRキャッシュを更新
       mutateSituations()
-      toast.success('シチュエーションを追加しました')
+      toast.success(t('situation.addSuccess'))
     } catch (error) {
       console.error('Error adding situation:', error)
-      toast.error('シチュエーションの追加中にエラーが発生しました')
+      toast.error(t('situation.addError'))
       throw error
     }
-  }, [mutateSituations])
+  }, [mutateSituations, t])
 
   // シチュエーション削除ハンドラー
   const deleteSituation = useCallback(async (id: string) => {
@@ -308,13 +343,13 @@ export const usePhraseManagerSWR = () => {
       await api.delete(`/api/situations/${id}`)
       // SWRキャッシュを更新
       mutateSituations()
-      toast.success('シチュエーションを削除しました')
+      toast.success(t('situation.deleteSuccess'))
     } catch (error) {
       console.error('Error deleting situation:', error)
-      toast.error('シチュエーションの削除中にエラーが発生しました')
+      toast.error(t('situation.deleteError'))
       throw error
     }
-  }, [mutateSituations])
+  }, [mutateSituations, t])
 
   // 未保存変更チェック
   const checkUnsavedChanges = useCallback(() => {
@@ -330,6 +365,7 @@ export const usePhraseManagerSWR = () => {
     isLoading,
     error,
     remainingGenerations,
+    hasActiveSubscription: generationsData?.hasActiveSubscription || false,
     languages: languages || [],
     situations,
     isInitializing,
