@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { RiSpeakLine } from 'react-icons/ri'
 
 export default function Home() {
   const { loading } = useRedirect()
@@ -16,6 +17,7 @@ export default function Home() {
   const [isDemoActive, setIsDemoActive] = useState(false)
   const [showTranslation, setShowTranslation] = useState(false)
   const [readingCount, setReadingCount] = useState(0)
+  const [countCooldown, setCountCooldown] = useState(0)
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -33,10 +35,22 @@ export default function Home() {
     }
   }, [])
 
+  // カウントダウンの管理
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (countCooldown > 0) {
+      timer = setTimeout(() => {
+        setCountCooldown(countCooldown - 1)
+      }, 1000)
+    }
+    return () => clearTimeout(timer)
+  }, [countCooldown])
+
   // カウントボタンクリック時の処理
   const handleCountClick = () => {
-    if (readingCount < 10) {
+    if (readingCount < 10 && countCooldown === 0) {
       setReadingCount(readingCount + 1)
+      setCountCooldown(1) // 1秒の待機時間
     }
   }
   const handleAISuggestClick = () => {
@@ -361,60 +375,50 @@ export default function Home() {
                       
                       {/* カウント表示 */}
                       <div className="flex items-center text-sm text-gray-600 mb-4">
-                        {/* 話している人のアイコン */}
-                        <div className="w-4 h-4 mr-2 flex-shrink-0">
-                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                          </svg>
-                        </div>
-                        <span className={`${readingCount >= 10 ? 'font-bold text-green-600' : ''}`}>
-                          Count: {readingCount}/10
-                        </span>
+                        <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
+                        <span className={`break-words ${readingCount >= 10 ? 'font-bold' : ''}`}>Count: {readingCount}</span>
                       </div>
                     </div>
 
                     {/* カウントボタン */}
                     <div className="flex justify-center">
-                      <button
-                        onClick={handleCountClick}
-                        disabled={readingCount >= 10}
-                        className={`flex flex-col items-center focus:outline-none transition-all duration-300 rounded-lg p-6 w-32 ${
-                          readingCount >= 10 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-100'
-                        }`}
-                      >
-                        <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-2 shadow-md ${
-                          readingCount >= 10 ? 'opacity-50' : ''
-                        }`}>
-                          <svg className={`w-10 h-10 ${
-                            readingCount >= 10 ? 'text-gray-400' : 'text-gray-600'
-                          }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                          </svg>
-                        </div>
-                        <span className={`font-medium text-base ${
-                          readingCount >= 10 ? 'text-gray-400' : 'text-gray-900'
-                        }`}>
-                          {readingCount >= 10 ? 'Complete!' : 'Count'}
-                        </span>
-                      </button>
-                    </div>
-
-                    {/* 完了メッセージ */}
-                    {readingCount >= 10 && (
-                      <div className="mt-6 text-center">
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      {readingCount >= 10 ? (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-6 w-full max-w-xs">
                           <div className="flex items-center justify-center mb-2">
                             <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <span className="text-green-700 font-semibold">目標達成！</span>
                           </div>
-                          <p className="text-green-600 text-sm">
+                          <p className="text-green-600 text-sm text-center">
                             10回の音読が完了しました
                           </p>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <button
+                          onClick={handleCountClick}
+                          disabled={countCooldown > 0}
+                          className={`flex flex-col items-center outline-none transition-all duration-300 rounded-lg p-6 w-32 ${
+                            countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                          }`}
+                        >
+                          <div className={`w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
+                            countCooldown > 0 ? 'opacity-50' : ''
+                          }`}>
+                            <svg className={`w-10 h-10 ${
+                              countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
+                            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                          </div>
+                          <span className={`font-medium text-base ${
+                            countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
+                          }`}>
+                            {countCooldown > 0 ? 'Wait...' : 'Count'}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
