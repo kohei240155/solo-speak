@@ -2,6 +2,7 @@
 
 import { useRedirect } from '@/hooks/navigation/useRedirect'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { useAuth } from '@/contexts/AuthContext'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect } from 'react'
@@ -14,6 +15,7 @@ import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 export default function Home() {
   const { loading } = useRedirect()
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
+  const { showLoginModal } = useAuth()
   const [showSplash, setShowSplash] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
   const [showContent, setShowContent] = useState(false)
@@ -77,6 +79,11 @@ export default function Home() {
   const handleQuizHandClick = () => {
     setShowQuizTranslation(true)
   }
+
+  const handleGetStartedClick = () => {
+    showLoginModal()
+  }
+
   const handleAISuggestClick = () => {
     if (isDemoActive) return // 既に実行中なら何もしない
     
@@ -174,9 +181,19 @@ export default function Home() {
                 </div>
                 
                 {/* CTA */}
-                <div className="inline-flex items-center px-6 py-3 bg-gray-700 hover:bg-gray-800 rounded-xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg">
+                <div 
+                  className="inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg"
+                  style={{ backgroundColor: '#616161' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#525252'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#616161'
+                  }}
+                  onClick={handleGetStartedClick}
+                >
                   <div className="w-5 h-5 mr-3 rounded-full bg-white flex items-center justify-center">
-                    <svg className="w-3 h-3 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-3 h-3" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                     </svg>
                   </div>
@@ -220,7 +237,10 @@ export default function Home() {
             {/* お悩み 1 */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
-                <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mt-1 flex-shrink-0">
+                <div 
+                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
@@ -234,7 +254,10 @@ export default function Home() {
             {/* お悩み 2 */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
-                <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mt-1 flex-shrink-0">
+                <div 
+                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
@@ -248,7 +271,10 @@ export default function Home() {
             {/* お悩み 3 */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
-                <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mt-1 flex-shrink-0">
+                <div 
+                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
@@ -266,18 +292,19 @@ export default function Home() {
       <section className="py-32 relative overflow-hidden bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
-            <div className="inline-block px-10 py-6 bg-gray-700 rounded-2xl mb-6">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-                \ これらの悩みをSolo Speakが解決します /
-              </h2>
-            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
+              \ これらの悩みをSolo Speakが解決します /
+            </h2>
           </div>
           
           <div className="max-w-7xl mx-auto space-y-32">
             {/* 特徴 1 */}
             <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
               <div className="lg:w-1/2 space-y-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 text-white rounded-2xl text-2xl font-bold mb-6">
+                <div 
+                  className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   01
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -375,7 +402,10 @@ export default function Home() {
             {/* 特徴 2 */}
             <div className="flex flex-col lg:flex-row-reverse items-center gap-16 lg:gap-20">
               <div className="lg:w-1/2 space-y-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-900 text-white rounded-2xl text-2xl font-bold mb-6">
+                <div 
+                  className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   02
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -482,7 +512,10 @@ export default function Home() {
             {/* 特徴 3 */}
             <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
               <div className="lg:w-1/2 space-y-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-700 text-white rounded-2xl text-2xl font-bold mb-6">
+                <div 
+                  className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
+                  style={{ backgroundColor: '#616161' }}
+                >
                   03
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -559,9 +592,19 @@ export default function Home() {
               Solo Speakで、あなたの語学学習を次のレベルへ
             </p>
             
-            <div className="inline-flex items-center px-10 py-5 bg-gray-700 hover:bg-gray-800 rounded-2xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg">
+            <div 
+              className="inline-flex items-center px-10 py-5 rounded-2xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg"
+              style={{ backgroundColor: '#616161' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#525252'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#616161'
+              }}
+              onClick={handleGetStartedClick}
+            >
               <div className="w-8 h-8 mr-4 rounded-full bg-white flex items-center justify-center">
-                <svg className="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                 </svg>
               </div>
