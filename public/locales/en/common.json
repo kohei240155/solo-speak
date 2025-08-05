@@ -107,7 +107,7 @@
     "subscribeToBasicPlan": "Subscribe to Basic Plan",
     "manageSubscription": "Manage subscription in settings →",
     "cancelConfirm": "Are you sure you want to cancel your subscription? You will lose access to AI phrase generation immediately.",
-    "cancelSuccess": "Subscription canceled successfully. You will lose access to AI features immediately.",
+    "cancelSuccess": "Subscription canceled successfully.",
     "cancelError": "Failed to cancel subscription",
     "fetchError": "Failed to fetch subscription status",
     "checkoutError": "Failed to create checkout session"

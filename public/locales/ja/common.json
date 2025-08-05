@@ -107,7 +107,7 @@
     "subscribeToBasicPlan": "Basicプランに登録",
     "manageSubscription": "設定画面でサブスクリプションを管理 →",
     "cancelConfirm": "本当にサブスクリプションをキャンセルしますか？AIフレーズ生成機能へのアクセスが即座に無効になります。",
-    "cancelSuccess": "サブスクリプションが正常にキャンセルされました。AI機能へのアクセスが即座に無効になります。",
+    "cancelSuccess": "サブスクリプションが正常にキャンセルされました。",
     "cancelError": "サブスクリプションのキャンセルに失敗しました",
     "fetchError": "サブスクリプション状態の取得に失敗しました",
     "checkoutError": "チェックアウトセッションの作成に失敗しました"
