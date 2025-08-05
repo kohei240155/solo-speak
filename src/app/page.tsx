@@ -220,7 +220,12 @@ export default function Home() {
               {/* メインタイトル */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                  スピーキングアプリの<br />決定版
+                  {t('home.hero.title').split('\n').map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < t('home.hero.title').split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
                 </span>
               </h1>
               
@@ -241,14 +246,14 @@ export default function Home() {
               </div>
                 
               {/* 特徴リスト */}
-              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg max-w-md">
+              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg max-w-lg">
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      AIが自然なフレーズを生成
+                      {t('home.hero.features.aiGeneration')}
                     </span>
                   </div>
                   
@@ -257,7 +262,7 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      徹底的な音読学習をサポート
+                      {t('home.hero.features.practiceSupport')}
                     </span>
                   </div>
                   
@@ -266,7 +271,7 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
-                      クイズ機能を使って瞬発力をチェック
+                      {t('home.hero.features.quizFunction')}
                     </span>
                   </div>
                 </div>
@@ -285,7 +290,7 @@ export default function Home() {
                 onClick={handleGetStartedClick}
               >
                 <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
-                  Let's Start!
+                  {t('home.hero.cta.mobile')}
                 </span>
               </div>
             </div>
@@ -297,19 +302,24 @@ export default function Home() {
                 {/* メインタイトル */}
                 <h1 className="text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    スピーキングアプリの<br />決定版
+                    {t('home.hero.title').split('\n').map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        {index < t('home.hero.title').split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
                   </span>
                 </h1>
                 
                 {/* 特徴リスト */}
-                <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-md">
+                <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-lg">
                   <div className="space-y-4">
                     <div className="flex items-start text-left">
                       <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
-                        AIが自然なフレーズを生成
+                        {t('home.hero.features.aiGeneration')}
                       </span>
                     </div>
                     
@@ -318,7 +328,7 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
-                        徹底的な音読学習をサポート
+                        {t('home.hero.features.practiceSupport')}
                       </span>
                     </div>
                     
@@ -327,7 +337,7 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
-                        クイズ機能を使って瞬発力をチェック
+                        {t('home.hero.features.quizFunction')}
                       </span>
                     </div>
                   </div>
@@ -346,7 +356,7 @@ export default function Home() {
                   onClick={handleGetStartedClick}
                 >
                   <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
-                    今すぐはじめる →
+                    {t('home.hero.cta.desktop')}
                   </span>
                 </div>
               </div>
@@ -457,7 +467,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
-              \ これらの悩みをSolo Speakが解決します /
+              {t('home.solutions.title')}
             </h2>
           </div>
           
@@ -479,15 +489,14 @@ export default function Home() {
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
                   style={{ backgroundColor: '#616161' }}
                 >
-                  01
+                  {t('home.solutions.feature1.number')}
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  「言えなかったフレーズ」をAIが即生成
+                  {t('home.solutions.feature1.title')}
                   <br />
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  言えなかったフレーズを、AIが自然な表現で翻訳します。
-                  フレーズはアプリ内で一元管理できるので、アプリやノートに書き残す手間も不要です。
+                  {t('home.solutions.feature1.description')}
                 </p>
               </div>
               <div className="lg:w-1/2">
@@ -497,7 +506,7 @@ export default function Home() {
                     <div className="relative">
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">日本にはどのぐらい住んでいるの？</span>
+                          <span className="text-gray-900 font-semibold text-lg">{t('home.solutions.feature1.demo.input')}</span>
                           <div className="flex items-center space-x-2">
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -542,7 +551,7 @@ export default function Home() {
                           {isDemoActive && (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           )}
-                          AI Suggest
+                          {t('home.solutions.feature1.demo.button')}
                         </div>
                       </button>
                     </div>
@@ -559,7 +568,7 @@ export default function Home() {
                     <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">How long have you been living in Japan?</span>
+                          <span className="text-gray-900 font-semibold text-lg">{t('home.solutions.feature1.demo.output')}</span>
                           <div className="flex items-center space-x-2">
                             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -590,18 +599,19 @@ export default function Home() {
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
                   style={{ backgroundColor: '#616161' }}
                 >
-                  02
+                  {t('home.solutions.feature2.number')}
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  音読回数カウント機能で
-                  <br />
-                  <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    &ldquo;話せるまで&rdquo;徹底サポート
-                  </span>
+                  {t('home.solutions.feature2.title').split('\n').map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < t('home.solutions.feature2.title').split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  言語は「知った」だけでは話せません。
-                  1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。                </p>
+                  {t('home.solutions.feature2.description')}
+                </p>
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-white p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200">
@@ -612,10 +622,10 @@ export default function Home() {
                         {/* フレーズテキスト */}
                         <div className="flex-1">
                           <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
-                            How long have you been living in Japan?
+                            {t('home.solutions.feature2.demo.input')}
                           </div>
                           <div className="text-base text-gray-600 leading-relaxed">
-                            日本にはどのぐらい住んでいるの？
+                            {t('home.solutions.feature2.demo.output')}
                           </div>
                         </div>
                       </div>
@@ -623,8 +633,8 @@ export default function Home() {
                       {/* カウント表示 */}
                       <div className="flex items-center text-sm text-gray-600 mb-4">
                         <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
-                        <span className={`break-words ${readingCount >= 10 ? 'font-bold' : ''}`}>Today: {readingCount}</span>
-                        <span className={`break-words ml-4 ${(readingCount + 40) >= 50 ? 'font-bold' : ''}`}>Total: {readingCount + 40}</span>
+                        <span className={`break-words ${readingCount >= 10 ? 'font-bold' : ''}`}>{t('home.solutions.feature2.demo.todayLabel')} {readingCount}</span>
+                        <span className={`break-words ml-4 ${(readingCount + 40) >= 50 ? 'font-bold' : ''}`}>{t('home.solutions.feature2.demo.totalLabel')} {readingCount + 40}</span>
                       </div>
                     </div>
 
@@ -636,10 +646,10 @@ export default function Home() {
                             <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span className="text-green-700 font-semibold">目標達成！</span>
+                            <span className="text-green-700 font-semibold">{t('home.solutions.feature2.demo.goalAchieved')}</span>
                           </div>
                           <p className="text-green-600 text-sm text-center">
-                            10回の音読が完了しました
+                            {t('home.solutions.feature2.demo.goalAchievedMessage')}
                           </p>
                         </div>
                       ) : (
@@ -663,7 +673,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {countCooldown > 0 ? 'Wait...' : 'Count'}
+                              {countCooldown > 0 ? t('home.solutions.feature2.demo.buttons.wait') : t('home.solutions.feature2.demo.buttons.count')}
                             </span>
                           </button>
                           <div className="w-px h-[120px] md:h-[152px] bg-gray-300"></div>
@@ -682,7 +692,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               isPlaying ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {isPlaying ? 'Playing...' : 'Sound'}
+                              {isPlaying ? t('home.solutions.feature2.demo.buttons.playing') : t('home.solutions.feature2.demo.buttons.sound')}
                             </span>
                           </button>
                         </div>
@@ -710,18 +720,18 @@ export default function Home() {
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
                   style={{ backgroundColor: '#616161' }}
                 >
-                  03
+                  {t('home.solutions.feature3.number')}
                 </div>
                 <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  クイズ機能で「瞬発力」を
-                  <br />
-                  <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                    チェック
-                  </span>
+                  {t('home.solutions.feature3.title').split('\n').map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < t('home.solutions.feature3.title').split('\n').length - 1 && <br />}
+                    </span>
+                  ))}
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
-                  音読で記憶したフレーズが、実際の会話で使えるかどうか。
-                  クイズ機能を使って覚えたフレーズを即答することで、記憶→反復→実践のサイクルを完成させます。
+                  {t('home.solutions.feature3.description')}
                 </p>
               </div>
               <div className="lg:w-1/2">
@@ -732,7 +742,7 @@ export default function Home() {
                       {/* 母国語の翻訳（メイン表示） */}
                       <div className="mb-6">
                         <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
-                          日本にはどのぐらい住んでいるの？
+                          {t('home.solutions.feature3.demo.output')}
                         </div>
                       </div>
                       
@@ -743,7 +753,7 @@ export default function Home() {
                             ? 'opacity-100 transform translate-y-0' 
                             : 'opacity-0 transform translate-y-4'
                         }`}>
-                          {showQuizTranslation ? 'How long have you been living in Japan?' : ''}
+                          {showQuizTranslation ? t('home.solutions.feature3.demo.input') : ''}
                         </div>
                       </div>
                     </div>
@@ -780,7 +790,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
-              よくある質問
+              {t('home.faq.title')}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
@@ -795,14 +805,14 @@ export default function Home() {
                 >
                   Q
                 </div>
-                フレーズ生成回数に制限はありますか？
+                {t('home.faq.q1.question')}
               </h3>
               <div className="ml-12">
                 <p className="text-lg text-gray-700 font-medium mb-2">
-                  1日5回まで無料でご利用いただけます。
+                  {t('home.faq.q1.answer')}
                 </p>
                 <p className="text-base text-gray-600">
-                  毎日5フレーズを確実に積み上げていきましょう。
+                  {t('home.faq.q1.answerDetail')}
                 </p>
               </div>
             </div>
@@ -816,14 +826,14 @@ export default function Home() {
                 >
                   Q
                 </div>
-                フレーズ生成回数はいつリセットされますか？
+                {t('home.faq.q2.question')}
               </h3>
               <div className="ml-12">
                 <p className="text-lg text-gray-700 font-medium mb-2">
-                  協定世界時（UTC）の0時にリセットされます。
+                  {t('home.faq.q2.answer')}
                 </p>
                 <p className="text-base text-gray-600">
-                  日本時間では午前9時（冬時間）または午前8時（夏時間）にリセットされます。
+                  {t('home.faq.q2.answerDetail')}
                 </p>
               </div>
             </div>
@@ -837,14 +847,14 @@ export default function Home() {
                 >
                   Q
                 </div>
-                Solo Speakは無料で使えますか？
+                {t('home.faq.q3.question')}
               </h3>
               <div className="ml-12">
                 <p className="text-lg text-gray-700 font-medium mb-2">
-                  現在は基本機能を無料でご利用いただけます。
+                  {t('home.faq.q3.answer')}
                 </p>
                 <p className="text-base text-gray-600">
-                  今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。
+                  {t('home.faq.q3.answerDetail')}
                 </p>
               </div>
             </div>
@@ -873,14 +883,20 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-gray-900 leading-tight tracking-tight">
-              今すぐスピーキング学習を
-              <br />
-              <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
-                始めましょう
-              </span>
+              {t('home.cta.title').split('\n').map((line, index) => (
+                <span key={index}>
+                  {index === 0 && line}
+                  {index === 1 && (
+                    <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                      {line}
+                    </span>
+                  )}
+                  {index === 0 && <br />}
+                </span>
+              ))}
             </h2>
             <p className="text-xl md:text-2xl lg:text-3xl text-gray-700 mb-16 max-w-3xl mx-auto font-medium leading-relaxed">
-              Solo Speakで、あなたの語学学習を次のレベルへ
+              {t('home.cta.subtitle')}
             </p>
             
             <div 
@@ -895,7 +911,7 @@ export default function Home() {
               onClick={handleGetStartedClick}
             >
               <span className="font-bold text-xl group-hover:text-gray-100 transition-colors duration-300">
-                今すぐはじめる →
+                {t('home.cta.button')}
               </span>
             </div>
           </div>

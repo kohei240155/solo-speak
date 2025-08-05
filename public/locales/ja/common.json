@@ -99,29 +99,92 @@
   },
   "home": {
     "hero": {
-      "title": {
-        "part1": "あなたの",
-        "highlight1": "フレーズ暗記",
-        "part2": "を",
-        "highlight2": "サポートします"
+      "title": "スピーキングアプリの\n決定版",
+      "cta": {
+        "mobile": "Let's Start!",
+        "desktop": "今すぐはじめる →"
       },
-      "subtitle": "音声認識技術を活用して、一人でも楽しく効果的に語学学習ができるWebアプリケーション",
-      "loginPrompt": "始めるには、右上のログインボタンをクリック"
+      "features": {
+        "aiGeneration": "AIが自然なフレーズを生成",
+        "practiceSupport": "徹底的な音読学習をサポート",
+        "quizFunction": "クイズ機能を使って瞬発力をチェック"
+      }
     },
     "features": {
       "title": "こんなお悩みありませんか？",
       "speechRecognition": {
-        "title": "AIを使って言語を学びたいけど、どう活用すればいいか分からない",
-        "description": "• 音声認識技術で発音練習\n• 一人でも実践的な会話練習\n• 正確な発音フィードバック"
+        "title": "AIを使って言語を学びたいけど、どう活用すればいいか分からない"
       },
       "quiz": {
-        "title": "単語や文法は覚えたのに、話すとなると何も出てこない",
-        "description": "• 楽しいクイズ形式で復習\n• 自動的に復習タイミングを管理\n• 継続しやすい仕組み"
+        "title": "単語や文法は覚えたのに、話すとなると何も出てこない"
       },
       "progress": {
-        "title": "言えなかったフレーズ、復習しなきゃと思いつつ放置してしまう",
-        "description": "• 反復練習で長期記憶に定着\n• 学習進捗の可視化\n• 効果的な暗記システム"
+        "title": "言えなかったフレーズ、復習しなきゃと思いつつ放置してしまう"
       }
+    },
+    "solutions": {
+      "title": "\\ これらの悩みをSolo Speakが解決します /",
+      "feature1": {
+        "number": "01",
+        "title": "「言えなかったフレーズ」をAIが即生成",
+        "description": "言えなかったフレーズを、AIが自然な表現で翻訳します。フレーズはアプリ内で一元管理できるので、アプリやノートに書き残す手間も不要です。",
+        "demo": {
+          "input": "日本にはどのぐらい住んでいるの？",
+          "button": "AI Suggest",
+          "output": "How long have you been living in Japan?"
+        }
+      },
+      "feature2": {
+        "number": "02",
+        "title": "音読回数カウント機能で\n\"話せるまで\"徹底サポート",
+        "description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "日本にはどのぐらい住んでいるの？",
+          "todayLabel": "Today:",
+          "totalLabel": "Total:",
+          "goalAchieved": "目標達成！",
+          "goalAchievedMessage": "10回の音読が完了しました",
+          "buttons": {
+            "count": "Count",
+            "sound": "Sound",
+            "wait": "Wait...",
+            "playing": "Playing..."
+          }
+        }
+      },
+      "feature3": {
+        "number": "03",
+        "title": "クイズ機能で「瞬発力」を\nチェック",
+        "description": "音読で記憶したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答することで、記憶→反復→実践のサイクルを完成させます。",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "日本にはどのぐらい住んでいるの？"
+        }
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "q1": {
+        "question": "フレーズ生成回数に制限はありますか？",
+        "answer": "1日5回まで無料でご利用いただけます。",
+        "answerDetail": "毎日5フレーズを確実に積み上げていきましょう。"
+      },
+      "q2": {
+        "question": "フレーズ生成回数はいつリセットされますか？",
+        "answer": "協定世界時（UTC）の0時にリセットされます。",
+        "answerDetail": "日本時間では午前9時（冬時間）または午前8時（夏時間）にリセットされます。"
+      },
+      "q3": {
+        "question": "Solo Speakは無料で使えますか？",
+        "answer": "現在は基本機能を無料でご利用いただけます。",
+        "answerDetail": "今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。"
+      }
+    },
+    "cta": {
+      "title": "今すぐスピーキング学習を\n始めましょう",
+      "subtitle": "Solo Speakで、あなたの語学学習を次のレベルへ",
+      "button": "今すぐはじめる →"
     }
   },
   "subscription": {

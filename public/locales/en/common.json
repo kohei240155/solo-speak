@@ -99,29 +99,92 @@
   },
   "home": {
     "hero": {
-      "title": {
-        "part1": "Supporting Your",
-        "highlight1": "Phrase Memorization",
-        "part2": "",
-        "highlight2": ""
+      "title": "The Ultimate\nSpeaking App",
+      "cta": {
+        "mobile": "Let's Start!",
+        "desktop": "Get Started →"
       },
-      "subtitle": "A web application that makes language learning fun and effective on your own using speech recognition technology",
-      "loginPrompt": "To get started, click the login button in the top right"
+      "features": {
+        "aiGeneration": "AI generates natural phrases",
+        "practiceSupport": "Comprehensive reading practice support",
+        "quizFunction": "Test your quick response with quiz features"
+      }
     },
     "features": {
-      "title": "What You Can Achieve",
+      "title": "Are you facing these challenges?",
       "speechRecognition": {
-        "title": "Pronunciation Practice with Speech Recognition",
-        "description": "Master accurate pronunciation using the latest speech recognition technology."
+        "title": "Want to learn languages using AI but don't know how to utilize it effectively"
       },
       "quiz": {
-        "title": "Quiz-style Learning",
-        "description": "Reinforce memorized phrases through fun quiz formats."
+        "title": "You've learned vocabulary and grammar, but nothing comes out when speaking"
       },
       "progress": {
-        "title": "Learning Progress Tracking & Management",
-        "description": "Visualize your learning status and support continuous learning."
+        "title": "Phrases you couldn't say - you think you should review them but end up leaving them untouched"
       }
+    },
+    "solutions": {
+      "title": "\\ Solo Speak solves these problems /",
+      "feature1": {
+        "number": "01",
+        "title": "AI instantly generates \"phrases you couldn't say\"",
+        "description": "AI translates phrases you couldn't express into natural expressions. Since phrases are centrally managed within the app, you don't need to bother writing them down in other apps or notes.",
+        "demo": {
+          "input": "How long have you been living in Canada?",
+          "button": "AI Suggest",
+          "output": "カナダにはどのぐらい住んでいるの？"
+        }
+      },
+      "feature2": {
+        "number": "02",
+        "title": "Reading count feature for\nthorough support \"until you can speak\"",
+        "description": "Simply \"knowing\" a language isn't enough to speak it. Aim for 10 readings per day and a total of 50 readings per phrase until it comes out naturally from your mouth.",
+        "demo": {
+          "input": "カナダにはどのぐらい住んでいるの？",
+          "output": "How long have you been living in Canada?",
+          "todayLabel": "Today:",
+          "totalLabel": "Total:",
+          "goalAchieved": "Goal Achieved!",
+          "goalAchievedMessage": "10 readings completed",
+          "buttons": {
+            "count": "Count",
+            "sound": "Sound",
+            "wait": "Wait...",
+            "playing": "Playing..."
+          }
+        }
+      },
+      "feature3": {
+        "number": "03",
+        "title": "Check your \"quick response\"\nwith quiz features",
+        "description": "Can phrases memorized through reading practice actually be used in real conversations? Use the quiz feature to instantly respond with memorized phrases, completing the memory → repetition → practice cycle.",
+        "demo": {
+          "input": "カナダにはどのぐらい住んでいるの？?",
+          "output": "How long have you been living in Canada?"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "question": "Is there a limit to phrase generation?",
+        "answer": "You can use it for free up to 5 times per day.",
+        "answerDetail": "Let's steadily build up 5 phrases every day."
+      },
+      "q2": {
+        "question": "When does the phrase generation count reset?",
+        "answer": "It resets at 0:00 UTC (Coordinated Universal Time).",
+        "answerDetail": "In Japan Standard Time, it resets at 9:00 AM (winter time) or 8:00 AM (summer time)."
+      },
+      "q3": {
+        "question": "Is Solo Speak free to use?",
+        "answer": "Basic features are currently available for free.",
+        "answerDetail": "We may introduce paid features in the future as we expand our services, but we will notify you in advance."
+      }
+    },
+    "cta": {
+      "title": "Start your speaking practice\nright now",
+      "subtitle": "Take your language learning to the next level with Solo Speak",
+      "button": "Get Started →"
     }
   },
   "subscription": {
