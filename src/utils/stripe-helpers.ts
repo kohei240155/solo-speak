@@ -49,28 +49,40 @@ export async function getUserSubscriptionStatus(stripeCustomerId: string): Promi
     const subscription = activeSubscriptions.data[0]
     
     // より詳細な情報を取得するため、個別にサブスクリプションを取得
-    const detailedSubscription = await stripe.subscriptions.retrieve(subscription.id)
+    const detailedSubscription = await stripe.subscriptions.retrieve(subscription.id, {
+      expand: ['latest_invoice', 'default_payment_method']
+    })
     
     // キャンセル予定のサブスクリプションもチェック
     const isCanceled = detailedSubscription.cancel_at_period_end || detailedSubscription.canceled_at
     
     const productId = detailedSubscription.items.data[0]?.price.product as string
 
-    // Stripe APIからの生データをログに出力  
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const subscriptionData = detailedSubscription as any // Stripe型の制限を回避
-
-    // Stripeから直接current_period_endを取得（これが次回請求日）
+    // Stripeから次回請求日を取得
     let currentPeriodEnd: Date | undefined = undefined
     
-    if (subscriptionData.current_period_end && subscriptionData.current_period_end > 0) {
+    // TypeScript型定義を回避してサブスクリプションデータにアクセス
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subscriptionData = detailedSubscription as any
+    
+    // current_period_endが存在する場合（通常のケース）
+    if (subscriptionData.current_period_end) {
       currentPeriodEnd = new Date(subscriptionData.current_period_end * 1000)
-    } else if (subscriptionData.billing_cycle_anchor && subscriptionData.billing_cycle_anchor > 0) {
-      // billing_cycle_anchorから次回請求日を計算（月次サブスクリプションの場合）
-      const anchorDate = new Date(subscriptionData.billing_cycle_anchor * 1000)
-      const nextBillingDate = new Date(anchorDate)
-      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1)
-      currentPeriodEnd = nextBillingDate
+    } 
+    // current_period_endが存在しない場合、billing_cycle_anchorから計算
+    else if (subscriptionData.billing_cycle_anchor) {
+      const billingAnchor = new Date(subscriptionData.billing_cycle_anchor * 1000)
+      const now = new Date()
+      
+      // 請求サイクルアンカーから次回請求日を計算（月次の場合）
+      const nextBilling = new Date(billingAnchor)
+      
+      // 現在日時よりも前の場合、月を追加していく
+      while (nextBilling <= now) {
+        nextBilling.setMonth(nextBilling.getMonth() + 1)
+      }
+      
+      currentPeriodEnd = nextBilling
     }
 
     return {

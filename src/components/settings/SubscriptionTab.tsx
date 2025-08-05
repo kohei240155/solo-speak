@@ -145,13 +145,20 @@ export default function SubscriptionTab() {
     return "Basic Plan"
   }
 
-  // 次回請求日の表示用フォーマット（日付のみ）
+  // 次回請求日の表示用フォーマット（日付とStripeのタイムゾーン）
   const formatNextBillingDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    const utcDate = new Date(date)
+    
+    // UTC時間での日付表示
+    const formattedDate = utcDate.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC'
     })
+    
+    // StripeのタイムゾーンはUTC
+    return `${formattedDate} (UTC)`
   }
 
   return (
@@ -159,7 +166,7 @@ export default function SubscriptionTab() {
       {/* Current Status */}
       <div>
         <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
-          Current Status
+          {t('subscription.status')}
         </h2>
         <div>
           <input
@@ -174,14 +181,18 @@ export default function SubscriptionTab() {
       </div>
 
       {/* Next Billing Date - 独立したセクション */}
-      {isSubscribed && subscriptionEndDate && (
+      {isSubscribed && (
         <div>
           <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
-            {subscriptionStatus_status === 'canceled' ? 'Expires On' : 'Next Billing Date'}
+            {subscriptionStatus_status === 'canceled' ? t('subscription.expiresOn') : t('subscription.nextBillingDate')}
           </h2>
           <input
             type="text"
-            value={formatNextBillingDate(new Date(subscriptionEndDate))}
+            value={
+              subscriptionEndDate 
+                ? formatNextBillingDate(new Date(subscriptionEndDate))
+                : 'Loading billing date...'
+            }
             readOnly
             tabIndex={-1}
             style={{ pointerEvents: 'none' }}
@@ -193,7 +204,7 @@ export default function SubscriptionTab() {
       {/* Plans */}
       <div>
         <h2 className="text-gray-900 mb-4 text-lg md:text-xl font-bold">
-          Plans
+          {t('subscription.plans')}
         </h2>
         <div className="border border-gray-300 rounded-lg p-6">
           <h3 className="text-gray-900 mb-2 text-xl md:text-2xl font-bold">

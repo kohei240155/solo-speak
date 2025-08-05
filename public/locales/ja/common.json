@@ -105,6 +105,10 @@
     }
   },
   "subscription": {
+    "status": "ステータス",
+    "nextBillingDate": "次回請求日",
+    "expiresOn": "有効期限",
+    "plans": "プラン",
     "basicPlanActive": "Basicプラン有効 - 1日最大5回まで生成可能",
     "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
     "subscribeToBasicPlan": "Basicプランに登録",
