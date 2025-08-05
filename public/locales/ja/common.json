@@ -43,15 +43,11 @@
     "modal": {
       "language": "言語",
       "startFrom": "出題順序",
-      "excludeHighPracticeCount": "除外対象フレーズ(練習回数)",
+      "excludeHighPracticeCount": "音読回数が多いフレーズを除外",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",
         "noLimit": "制限なし",
-        "exclude10": "10回以上",
-        "exclude20": "20回以上",
-        "exclude30": "30回以上",
-        "exclude40": "40回以上",
         "exclude50": "50回以上",
         "exclude60": "60回以上",
         "exclude70": "70回以上",

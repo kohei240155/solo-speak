@@ -117,10 +117,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         value: excludeThreshold,
         options: [
           { value: '', label: t('speak.modal.options.noLimit') },
-          { value: '10', label: t('speak.modal.options.exclude10') },
-          { value: '20', label: t('speak.modal.options.exclude20') },
-          { value: '30', label: t('speak.modal.options.exclude30') },
-          { value: '40', label: t('speak.modal.options.exclude40') },
           { value: '50', label: t('speak.modal.options.exclude50') },
           { value: '60', label: t('speak.modal.options.exclude60') },
           { value: '70', label: t('speak.modal.options.exclude70') },
