@@ -290,7 +290,6 @@ export default function Home() {
                         <div className="flex items-center justify-between">
                           <span className="text-gray-900 font-semibold text-lg">日本にはどのぐらい住んでいるの？</span>
                           <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                             </svg>
@@ -353,7 +352,6 @@ export default function Home() {
                         <div className="flex items-center justify-between">
                           <span className="text-gray-900 font-semibold text-lg">How long have you been living in Japan?</span>
                           <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
