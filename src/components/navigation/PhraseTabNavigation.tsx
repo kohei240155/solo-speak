@@ -1,5 +1,6 @@
 import { TabType } from '@/types/phrase'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface PhraseTabNavigationProps {
   activeTab: TabType
@@ -11,6 +12,7 @@ interface PhraseTabNavigationProps {
 
 export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen, onQuizModalOpen }: PhraseTabNavigationProps) {
   const router = useRouter()
+  const { t } = useTranslation('common')
 
   const tabs: { key: TabType; label: string; path: string }[] = [
     { key: 'List', label: 'List', path: '/phrase/list' },
@@ -29,8 +31,8 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
     if ((activeTab === 'Add' || activeTab === 'Speak') && tab.key !== activeTab && checkUnsavedChanges) {
       if (checkUnsavedChanges()) {
         const message = activeTab === 'Add' 
-          ? '生成されたフレーズが保存されていません。このページを離れますか？'
-          : 'Countが登録されていません。このページを離れますか？'
+          ? t('confirm.unsavedPhrase')
+          : t('confirm.unsavedCount')
         const confirmLeave = window.confirm(message)
         if (!confirmLeave) {
           return // ユーザーがキャンセルした場合は何もしない

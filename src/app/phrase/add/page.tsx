@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { usePhraseManagerSWR } from '@/hooks/phrase/usePhraseManagerSWR'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizModal } from '@/hooks/quiz/useQuizModal'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -13,6 +14,7 @@ import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
 
 export default function PhraseAddPage() {
+  const { t } = useTranslation('common')
   const { loading: authLoading } = useAuthGuard()
   
   const {
@@ -67,8 +69,8 @@ export default function PhraseAddPage() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (generatedVariations.length > 0) {
         e.preventDefault()
-        e.returnValue = '生成されたフレーズが保存されていません。このページを離れますか？'
-        return '生成されたフレーズが保存されていません。このページを離れますか？'
+        e.returnValue = t('confirm.unsavedPhrase')
+        return t('confirm.unsavedPhrase')
       }
     }
 
@@ -76,7 +78,7 @@ export default function PhraseAddPage() {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [generatedVariations.length])
+  }, [generatedVariations.length, t])
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {

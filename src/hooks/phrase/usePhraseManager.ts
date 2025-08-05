@@ -4,10 +4,12 @@ import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { Language, SavedPhrase, PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import toast from 'react-hot-toast'
 
 export const usePhraseManager = () => {
   const { user } = useAuth()
+  const { t } = useTranslation('common')
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [desiredPhrase, setDesiredPhrase] = useState('')
@@ -363,10 +365,10 @@ export const usePhraseManager = () => {
   // 警告チェック関数を公開（他のコンポーネントから使用可能）
   const checkUnsavedChanges = useCallback(() => {
     if (generatedVariations.length > 0) {
-      return window.confirm('生成されたフレーズが保存されていません。このページを離れますか？')
+      return window.confirm(t('confirm.unsavedPhrase'))
     }
     return true
-  }, [generatedVariations.length])
+  }, [generatedVariations.length, t])
 
   useEffect(() => {
     // ユーザーの初期データを並列取得

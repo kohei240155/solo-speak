@@ -10,6 +10,12 @@
       "sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
     }
   },
+  "save": "保存",
+  "saving": "保存中...",
+  "confirm": {
+    "unsavedPhrase": "生成されたフレーズが保存されていません。このページを離れますか？",
+    "unsavedCount": "Countが登録されていません。このページを離れますか？"
+  },
   "phrase": {
     "noPhrasesYet": "まだフレーズが登録されていません",
     "placeholders": {
