@@ -245,7 +245,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       AIが自然なフレーズを生成
@@ -254,7 +254,7 @@ export default function Home() {
                   
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       徹底的な音読学習をサポート
@@ -263,7 +263,7 @@ export default function Home() {
                   
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                     </svg>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       クイズ機能を使って瞬発力をチェック
@@ -284,13 +284,8 @@ export default function Home() {
                 }}
                 onClick={handleGetStartedClick}
               >
-                <div className="w-5 h-5 mr-3 rounded-full bg-white flex items-center justify-center">
-                  <svg className="w-3 h-3" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
-                </div>
                 <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
-                  今すぐはじめる
+                  Let's Start!
                 </span>
               </div>
             </div>
@@ -311,7 +306,7 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="flex items-start text-left">
                       <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
                         AIが自然なフレーズを生成
@@ -320,7 +315,7 @@ export default function Home() {
                     
                     <div className="flex items-start text-left">
                       <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
                         徹底的な音読学習をサポート
@@ -329,7 +324,7 @@ export default function Home() {
                     
                     <div className="flex items-start text-left">
                       <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                       </svg>
                       <span className="text-xl text-gray-800 font-medium">
                         クイズ機能を使って瞬発力をチェック
@@ -350,13 +345,8 @@ export default function Home() {
                   }}
                   onClick={handleGetStartedClick}
                 >
-                  <div className="w-5 h-5 mr-3 rounded-full bg-white flex items-center justify-center">
-                    <svg className="w-3 h-3" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
                   <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
-                    今すぐはじめる
+                    今すぐはじめる →
                   </span>
                 </div>
               </div>
@@ -904,13 +894,8 @@ export default function Home() {
               }}
               onClick={handleGetStartedClick}
             >
-              <div className="w-8 h-8 mr-4 rounded-full bg-white flex items-center justify-center">
-                <svg className="w-4 h-4" style={{ color: '#616161' }} fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                </svg>
-              </div>
               <span className="font-bold text-xl group-hover:text-gray-100 transition-colors duration-300">
-                今すぐはじめる
+                今すぐはじめる →
               </span>
             </div>
           </div>
