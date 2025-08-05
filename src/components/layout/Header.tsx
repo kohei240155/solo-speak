@@ -258,7 +258,7 @@ const Header = memo(function Header() {
                 
                 <button
                   onClick={handleLoginClick}
-                  className="text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center w-[85px]"
+                  className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center w-[85px] h-[40px]"
                   style={{ backgroundColor: '#616161' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#525252'
