@@ -15,6 +15,7 @@ export default function Home() {
   const [showContent, setShowContent] = useState(false)
   const [isDemoActive, setIsDemoActive] = useState(false)
   const [showTranslation, setShowTranslation] = useState(false)
+  const [readingCount, setReadingCount] = useState(0)
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -32,7 +33,12 @@ export default function Home() {
     }
   }, [])
 
-  // AI Suggestボタンクリック時の処理
+  // カウントボタンクリック時の処理
+  const handleCountClick = () => {
+    if (readingCount < 10) {
+      setReadingCount(readingCount + 1)
+    }
+  }
   const handleAISuggestClick = () => {
     if (isDemoActive) return // 既に実行中なら何もしない
     
@@ -338,11 +344,77 @@ export default function Home() {
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
-                  <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-gray-500/20 to-gray-700/20"></div>
-                    <svg className="w-24 h-24 text-gray-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
+                  <div className="w-full max-w-md mx-auto">
+                    {/* フレーズ表示エリア */}
+                    <div className="mb-8">
+                      <div className="flex items-start space-x-4 mb-6">
+                        {/* フレーズテキスト */}
+                        <div className="flex-1">
+                          <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
+                            How long have you been living in Vancouver?
+                          </div>
+                          <div className="text-base text-gray-600 leading-relaxed">
+                            バンクーバーにはどのぐらい住んでいるの？
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* カウント表示 */}
+                      <div className="flex items-center text-sm text-gray-600 mb-4">
+                        {/* 話している人のアイコン */}
+                        <div className="w-4 h-4 mr-2 flex-shrink-0">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                        <span className={`${readingCount >= 10 ? 'font-bold text-green-600' : ''}`}>
+                          Count: {readingCount}/10
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* カウントボタン */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleCountClick}
+                        disabled={readingCount >= 10}
+                        className={`flex flex-col items-center focus:outline-none transition-all duration-300 rounded-lg p-6 w-32 ${
+                          readingCount >= 10 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className={`w-[60px] h-[40px] bg-white rounded-full flex items-center justify-center mb-2 shadow-md ${
+                          readingCount >= 10 ? 'opacity-50' : ''
+                        }`}>
+                          <svg className={`w-10 h-10 ${
+                            readingCount >= 10 ? 'text-gray-400' : 'text-gray-600'
+                          }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                        <span className={`font-medium text-base ${
+                          readingCount >= 10 ? 'text-gray-400' : 'text-gray-900'
+                        }`}>
+                          {readingCount >= 10 ? 'Complete!' : 'Count'}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* 完了メッセージ */}
+                    {readingCount >= 10 && (
+                      <div className="mt-6 text-center">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <div className="flex items-center justify-center mb-2">
+                            <svg className="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span className="text-green-700 font-semibold">目標達成！</span>
+                          </div>
+                          <p className="text-green-600 text-sm">
+                            10回の音読が完了しました
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
