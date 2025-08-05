@@ -264,7 +264,7 @@ export default function Home() {
                     {/* 生成ボタン */}
                     <div className="flex justify-center py-1">
                       <button 
-                        className={`text-white py-2 w-full rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ${
+                        className={`text-white py-3 w-full rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ${
                           isDemoActive ? 'animate-pulse' : ''
                         }`}
                         style={{ 
