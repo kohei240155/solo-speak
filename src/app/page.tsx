@@ -12,10 +12,55 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { PiHandTapLight } from 'react-icons/pi'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
+// スクロールアニメーション用のカスタムフック
+const useScrollAnimation = () => {
+  // テスト用: 全セクションを表示状態にする
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'cta-section']))
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          console.log('Section intersecting:', entry.target.id, entry.isIntersecting) // デバッグ用
+          if (entry.isIntersecting) {
+            setVisibleSections((prev) => {
+              const newSet = new Set([...prev, entry.target.id])
+              console.log('Visible sections:', Array.from(newSet)) // デバッグ用
+              return newSet
+            })
+          }
+        })
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    )
+
+    // 少し遅延させてDOMが完全に構築されてから監視開始
+    const timer = setTimeout(() => {
+      const sections = document.querySelectorAll('[data-scroll-animation]')
+      console.log('Found sections for observation:', sections.length) // デバッグ用
+      sections.forEach((section, index) => {
+        console.log(`Section ${index}:`, section.id) // デバッグ用
+        observer.observe(section)
+      })
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+    }
+  }, [])
+
+  return visibleSections
+}
+
 export default function Home() {
   const { loading } = useRedirect()
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
   const { showLoginModal } = useAuth()
+  const visibleSections = useScrollAnimation()
   const [showSplash, setShowSplash] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
   const [showContent, setShowContent] = useState(false)
@@ -30,15 +75,41 @@ export default function Home() {
     languageCode: 'en'
   })
 
+  // 初期表示でヒーローセクションと機能セクションを即座に表示
+  useEffect(() => {
+    if (showContent) {
+      // 初期表示処理を一時的にコメントアウト
+      console.log('Content is shown, initializing sections...') // デバッグ用
+      /*
+      const heroElement = document.getElementById('hero-section')
+      const featuresElement = document.getElementById('features-section')
+      
+      if (heroElement) {
+        setTimeout(() => {
+          heroElement.classList.add('opacity-100', 'translate-y-0')
+          heroElement.classList.remove('opacity-0', 'translate-y-8')
+        }, 100) // 元の100msに戻す
+      }
+      
+      if (featuresElement) {
+        setTimeout(() => {
+          featuresElement.classList.add('opacity-100', 'translate-y-0')
+          featuresElement.classList.remove('opacity-0', 'translate-y-8')
+        }, 300) // 元の300msに戻す
+      }
+      */
+    }
+  }, [showContent])
+
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
       setFadeOut(true)
-    }, 1500) // 1.5秒後にフェードアウト開始
+    }, 1200) // 1.2秒後にフェードアウト開始（1.5秒→1.2秒）
 
     const hideTimer = setTimeout(() => {
       setShowSplash(false)
       setShowContent(true)
-    }, 2000) // 2秒後にスプラッシュ画面を非表示、コンテンツ表示
+    }, 1600) // 1.6秒後にスプラッシュ画面を非表示、コンテンツ表示（2秒→1.6秒）
 
     return () => {
       clearTimeout(fadeTimer)
@@ -128,7 +199,13 @@ export default function Home() {
     }`} style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
       
       {/* ヒーローセクション */}
-      <section className="py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden">
+      <section 
+        id="hero-section"
+        data-scroll-animation
+        className={`py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out ${
+          visibleSections.has('hero-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
         {/* 背景の装飾要素 */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-20 left-20 w-72 h-72 bg-gray-200 rounded-full blur-3xl"></div>
@@ -224,7 +301,13 @@ export default function Home() {
       </section>
 
       {/* 機能紹介セクション */}
-      <section className="py-16 bg-gray-50 relative">
+      <section 
+        id="features-section"
+        data-scroll-animation
+        className={`py-16 bg-gray-50 relative transition-all duration-1000 ease-out delay-200 ${
+          visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
@@ -289,7 +372,17 @@ export default function Home() {
       </section>
 
       {/* 特徴セクション */}
-      <section className="py-32 relative overflow-hidden bg-white">
+      <section 
+        id="solutions-section"
+        data-scroll-animation
+        className={`py-32 relative overflow-hidden bg-white transition-all duration-1000 ease-out ${
+          visibleSections.has('solutions-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+        style={{ 
+          opacity: visibleSections.has('solutions-section') ? 1 : 0,
+          transform: visibleSections.has('solutions-section') ? 'translateY(0)' : 'translateY(32px)'
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
@@ -299,7 +392,17 @@ export default function Home() {
           
           <div className="max-w-7xl mx-auto space-y-32">
             {/* 特徴 1 */}
-            <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+            <div 
+              id="feature-1"
+              data-scroll-animation
+              className={`flex flex-col lg:flex-row items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+                visibleSections.has('feature-1') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ 
+                opacity: visibleSections.has('feature-1') ? 1 : 0,
+                transform: visibleSections.has('feature-1') ? 'translateY(0)' : 'translateY(32px)'
+              }}
+            >
               <div className="lg:w-1/2 space-y-8">
                 <div 
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
@@ -400,7 +503,17 @@ export default function Home() {
             </div>
 
             {/* 特徴 2 */}
-            <div className="flex flex-col lg:flex-row-reverse items-center gap-16 lg:gap-20">
+            <div 
+              id="feature-2"
+              data-scroll-animation
+              className={`flex flex-col lg:flex-row-reverse items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+                visibleSections.has('feature-2') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ 
+                opacity: visibleSections.has('feature-2') ? 1 : 0,
+                transform: visibleSections.has('feature-2') ? 'translateY(0)' : 'translateY(32px)'
+              }}
+            >
               <div className="lg:w-1/2 space-y-8">
                 <div 
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
@@ -510,7 +623,17 @@ export default function Home() {
             </div>
 
             {/* 特徴 3 */}
-            <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+            <div 
+              id="feature-3"
+              data-scroll-animation
+              className={`flex flex-col lg:flex-row items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+                visibleSections.has('feature-3') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ 
+                opacity: visibleSections.has('feature-3') ? 1 : 0,
+                transform: visibleSections.has('feature-3') ? 'translateY(0)' : 'translateY(32px)'
+              }}
+            >
               <div className="lg:w-1/2 space-y-8">
                 <div 
                   className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
@@ -572,7 +695,17 @@ export default function Home() {
       </section>
 
       {/* CTA セクション */}
-      <section className="py-32 relative overflow-hidden bg-gray-100">
+      <section 
+        id="cta-section"
+        data-scroll-animation
+        className={`py-32 relative overflow-hidden bg-gray-100 transition-all duration-1000 ease-out ${
+          visibleSections.has('cta-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+        style={{ 
+          opacity: visibleSections.has('cta-section') ? 1 : 0,
+          transform: visibleSections.has('cta-section') ? 'translateY(0)' : 'translateY(32px)'
+        }}
+      >
         {/* 背景の装飾要素 */}
         <div className="absolute inset-0 opacity-40">
           <div className="absolute top-10 left-10 w-64 h-64 bg-gray-200 rounded-full blur-3xl"></div>
