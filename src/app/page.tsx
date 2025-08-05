@@ -282,7 +282,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-2xl border border-gray-200">
+                <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl border border-gray-200">
                   <div className="w-full max-w-lg mx-auto space-y-3">
                     {/* 入力フィールド */}
                     <div className="relative">
@@ -384,7 +384,7 @@ export default function Home() {
                   1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。                </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
+                <div className="bg-white p-12 rounded-3xl shadow-xl border border-gray-200">
                   <div className="w-full max-w-md mx-auto">
                     {/* フレーズ表示エリア */}
                     <div className="mb-8">
@@ -492,7 +492,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
+                <div className="bg-white p-12 rounded-3xl shadow-xl border border-gray-200">
                   <div className="w-full max-w-md mx-auto">
                     {/* フレーズ表示エリア */}
                     <div className="mb-8">
