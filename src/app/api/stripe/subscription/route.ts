@@ -27,11 +27,7 @@ export async function GET(request: NextRequest) {
 
     // サブスクリプション状態を取得
     if (user.stripeCustomerId) {
-      console.log('Fetching subscription for customer:', user.stripeCustomerId)
-      
       const subscriptionInfo = await getUserSubscriptionStatus(user.stripeCustomerId)
-      
-      console.log('getUserSubscriptionStatus result:', subscriptionInfo)
       
       // データベースの現在時刻とタイムゾーンを取得
       const dbTimeResult = await prisma.$queryRaw<{ now: Date; timezone: string }[]>`
@@ -49,8 +45,6 @@ export async function GET(request: NextRequest) {
         serverTime: dbInfo.now,
         serverTimezone: dbInfo.timezone
       }
-      
-      console.log('Subscription API response:', responseData)
       
       return NextResponse.json(responseData)
     }

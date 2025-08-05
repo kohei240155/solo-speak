@@ -24,8 +24,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
     }
 
-    console.log('Stripe webhook event received:', event.type)
-
     // サブスクリプション関連のイベントを処理
     switch (event.type) {
       case 'checkout.session.completed':
@@ -61,8 +59,6 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  console.log('Checkout completed:', session.id)
-  
   if (session.mode === 'subscription' && session.customer) {
     const customerId = session.customer as string
     
@@ -72,8 +68,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     })
 
     if (user) {
-      console.log(`Updating user ${user.id} subscription status after checkout`)
-      
       // フレーズ生成回数をリセット（新しいサブスクリプション）
       await prisma.user.update({
         where: { id: user.id },
@@ -86,16 +80,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  console.log('Subscription created:', subscription.id)
-  
   const customerId = subscription.customer as string
   const user = await prisma.user.findFirst({
     where: { stripeCustomerId: customerId }
   })
 
   if (user) {
-    console.log(`User ${user.id} subscription created: ${subscription.id}`)
-    
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -106,16 +96,12 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  console.log('Subscription updated:', subscription.id, 'Status:', subscription.status)
-  
   const customerId = subscription.customer as string
   const user = await prisma.user.findFirst({
     where: { stripeCustomerId: customerId }
   })
 
   if (user) {
-    console.log(`User ${user.id} subscription updated: ${subscription.id}`)
-    
     // サブスクリプションがキャンセルされた場合は生成回数を0にリセット
     if (subscription.status === 'canceled' || subscription.cancel_at_period_end) {
       await prisma.user.update({
@@ -129,16 +115,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  console.log('Subscription deleted:', subscription.id)
-  
   const customerId = subscription.customer as string
   const user = await prisma.user.findFirst({
     where: { stripeCustomerId: customerId }
   })
 
   if (user) {
-    console.log(`User ${user.id} subscription deleted: ${subscription.id}`)
-    
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -149,8 +131,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
-  console.log('Payment succeeded:', invoice.id)
-  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const invoiceData = invoice as any
   if (invoiceData.subscription) {
@@ -160,8 +140,6 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     })
 
     if (user) {
-      console.log(`User ${user.id} payment succeeded for subscription: ${invoiceData.subscription}`)
-      
       // 支払い成功時にフレーズ生成回数をリセット（月次更新）
       await prisma.user.update({
         where: { id: user.id },
@@ -174,8 +152,6 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  console.log('Payment failed:', invoice.id)
-  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const invoiceData = invoice as any
   if (invoiceData.subscription) {
@@ -185,7 +161,6 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     })
 
     if (user) {
-      console.log(`User ${user.id} payment failed for subscription: ${invoiceData.subscription}`)
       // 支払い失敗時の処理（必要に応じて）
     }
   }

@@ -49,8 +49,6 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`Subscription canceled and phrase generations reset to 0 for user: ${userId}`)
-
     return NextResponse.json({ 
       success: true, 
       message: 'Subscription canceled immediately. AI phrase generation access has been revoked.' 

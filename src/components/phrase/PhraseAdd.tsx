@@ -128,13 +128,7 @@ export default function PhraseAdd({
 
       {/* サブスクリプション状態の表示 */}
       <div className="mb-4">
-        {hasActiveSubscription ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-            <p className="text-gray-700 font-medium text-sm">
-              {t('subscription.basicPlanActive')}
-            </p>
-          </div>
-        ) : (
+        {!hasActiveSubscription && (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <p className="text-gray-700 font-medium text-sm mb-2">
               {t('subscription.subscriptionRequired')}
