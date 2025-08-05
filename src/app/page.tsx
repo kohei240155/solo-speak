@@ -84,33 +84,21 @@ export default function Home() {
                 {/* 特徴リスト */}
                 <div className="space-y-4 mb-12">
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mr-4 flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                    </div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       AIが自然なフレーズを生成
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mr-4 flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                    </div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       フレーズが自然に口から出るまで徹底的に音読
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-center lg:justify-start text-left bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 shadow-lg">
-                    <div className="w-6 h-6 bg-gray-700 rounded flex items-center justify-center mr-4 flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                    </div>
+                    <div className="w-2 h-2 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full mr-4 flex-shrink-0"></div>
                     <span className="text-lg md:text-xl text-gray-800 font-medium">
                       クイズ機能を使って定着度をチェック
                     </span>
