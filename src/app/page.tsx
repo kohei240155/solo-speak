@@ -403,7 +403,7 @@ export default function Home() {
                       {/* カウント表示 */}
                       <div className="flex items-center text-sm text-gray-600 mb-4">
                         <RiSpeakLine className="w-4 h-4 mr-1 flex-shrink-0" />
-                        <span className={`break-words ${readingCount >= 10 ? 'font-bold' : ''}`}>Count: {readingCount}</span>
+                        <span className={`break-words ${readingCount >= 10 ? 'font-bold' : ''}`}>Today: {readingCount}  Total: {readingCount + 40}</span>
                       </div>
                     </div>
 
