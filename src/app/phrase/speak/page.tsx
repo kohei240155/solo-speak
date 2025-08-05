@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
@@ -65,13 +65,13 @@ function PhraseSpeakPage() {
   const multiPhraseSpeak = useMultiPhraseSpeak({
     speakMode,
     handleCount,
-    handleNext: async (config) => {
+    handleNext: useCallback(async (config: import('@/types/speak').SpeakConfig) => {
       const result = await handleNext(config)
       if (result === 'allDone') {
         setIsSpeakCompleted(true)
       }
       return result
-    },
+    }, [handleNext]),
     handleFinish
   })
 
@@ -96,10 +96,10 @@ function PhraseSpeakPage() {
 
   // ページ読み込み時にフレーズを取得
   useEffect(() => {
-    if (learningLanguage && !isSinglePhraseMode) {
+    if (learningLanguage && !isSinglePhraseMode && fetchSavedPhrases) {
       fetchSavedPhrases(1, false)
     }
-  }, [learningLanguage, fetchSavedPhrases, isSinglePhraseMode])
+  }, [learningLanguage, isSinglePhraseMode, fetchSavedPhrases])
 
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
@@ -216,7 +216,34 @@ function PhraseSpeakPage() {
         />
       </div>
       
-      <Toaster />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#4aed88',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#f56565',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { 
   TranslationData, 
@@ -64,10 +64,10 @@ export const useTranslation = (namespace = 'common') => {
     loadTranslations()
   }, [locale, namespace, isLoadingLocale])
 
-  // 翻訳関数
-  const t = (key: string, options?: TranslationOptions): string => {
+  // 翻訳関数をuseCallbackでメモ化
+  const t = useCallback((key: string, options?: TranslationOptions): string => {
     return getNestedTranslation(translations, key, options)
-  }
+  }, [translations])
 
   return {
     t,
