@@ -7,6 +7,8 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { RiSpeakLine } from 'react-icons/ri'
+import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 export default function Home() {
   const { loading } = useRedirect()
@@ -18,6 +20,11 @@ export default function Home() {
   const [showTranslation, setShowTranslation] = useState(false)
   const [readingCount, setReadingCount] = useState(0)
   const [countCooldown, setCountCooldown] = useState(0)
+  
+  // TTS機能の初期化
+  const { isPlaying, error: ttsError, playText } = useTextToSpeech({
+    languageCode: 'en'
+  })
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -47,10 +54,21 @@ export default function Home() {
   }, [countCooldown])
 
   // カウントボタンクリック時の処理
-  const handleCountClick = () => {
-    if (readingCount < 10 && countCooldown === 0) {
-      setReadingCount(readingCount + 1)
-      setCountCooldown(1) // 1秒の待機時間
+    const handleCountClick = () => {
+    if (countCooldown > 0) return;
+    
+    if (readingCount < 10) {
+      setReadingCount(prev => prev + 1)
+      setCountCooldown(1000)
+      setTimeout(() => setCountCooldown(0), 1000)
+    }
+  }
+
+  const handleSoundClick = async () => {
+    try {
+      await playText("How long have you lived here?")
+    } catch (error) {
+      console.error('TTS playback failed:', error)
     }
   }
   const handleAISuggestClick = () => {
@@ -259,12 +277,12 @@ export default function Home() {
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-2xl shadow-2xl border border-gray-200">
-                  <div className="w-full max-w-sm mx-auto space-y-3">
+                  <div className="w-full max-w-lg mx-auto space-y-3">
                     {/* 入力フィールド */}
                     <div className="relative">
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">なんで日本にきたの？</span>
+                          <span className="text-gray-900 font-semibold text-lg">バンクーバーにはどのぐらい住んでいるの？</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,18 +331,20 @@ export default function Home() {
                         </div>
                       </button>
                     </div>
-                    {/* 下向き矢印 */}
-                    <div className="flex justify-center">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                      </svg>
-                    </div>
+                    {/* 下向き矢印 - AI Suggestクリック後のみ表示 */}
+                    {(isDemoActive || showTranslation) && (
+                      <div className="flex justify-center">
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                      </div>
+                    )}
                     
                     {/* 結果表示 */}
                     <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">What brought you to Japan?</span>
+                          <span className="text-gray-900 font-semibold text-lg">How long have you been living in Vancouver?</span>
                           <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                             <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -354,7 +374,7 @@ export default function Home() {
                 </h3>
                 <p className="text-gray-600 text-lg md:text-xl leading-relaxed font-medium">
                   言語は「知った」だけでは話せません。
-                  1つのフレーズに対して50回を目安に、口から自然に出てくるまで徹底的に音読します。                </p>
+                  1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。                </p>
               </div>
               <div className="lg:w-1/2">
                 <div className="bg-gray-50 p-12 rounded-3xl shadow-xl border border-gray-200">
@@ -365,10 +385,10 @@ export default function Home() {
                         {/* フレーズテキスト */}
                         <div className="flex-1">
                           <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
-                            How long have you been living in Vancouver?
+                            How long have you lived here?
                           </div>
                           <div className="text-base text-gray-600 leading-relaxed">
-                            バンクーバーにはどのぐらい住んでいるの？
+                            どのくらいここに住んでいるの？
                           </div>
                         </div>
                       </div>
@@ -395,28 +415,49 @@ export default function Home() {
                           </p>
                         </div>
                       ) : (
-                        <button
-                          onClick={handleCountClick}
-                          disabled={countCooldown > 0}
-                          className={`flex flex-col items-center outline-none transition-all duration-300 rounded-lg p-6 w-32 ${
-                            countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                          }`}
-                        >
-                          <div className={`w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
-                            countCooldown > 0 ? 'opacity-50' : ''
-                          }`}>
-                            <svg className={`w-10 h-10 ${
-                              countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
-                            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                          </div>
-                          <span className={`font-medium text-base ${
-                            countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
-                          }`}>
-                            {countCooldown > 0 ? 'Wait...' : 'Count'}
-                          </span>
-                        </button>
+                        <div className="flex items-center gap-0">
+                          <button
+                            onClick={handleCountClick}
+                            disabled={countCooldown > 0}
+                            className={`flex flex-col items-center outline-none transition-all duration-300 p-8 w-56 ${
+                              countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className={`w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
+                              countCooldown > 0 ? 'opacity-50' : ''
+                            }`}>
+                              <svg className={`w-10 h-10 ${
+                                countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
+                              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                              </svg>
+                            </div>
+                            <span className={`font-medium text-base ${
+                              countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
+                            }`}>
+                              {countCooldown > 0 ? 'Wait...' : 'Count'}
+                            </span>
+                          </button>
+                          <div className="w-px h-[152px] bg-gray-300"></div>
+                          <button
+                            onClick={handleSoundClick}
+                            disabled={isPlaying}
+                            className={`flex flex-col items-center outline-none transition-all duration-300 p-8 w-56 ${
+                              isPlaying ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="w-[60px] h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2">
+                              <HiMiniSpeakerWave className={`w-10 h-10 ${
+                                isPlaying ? 'text-gray-400' : 'text-gray-600'
+                              }`} />
+                            </div>
+                            <span className={`font-medium text-base ${
+                              isPlaying ? 'text-gray-400' : 'text-gray-900'
+                            }`}>
+                              {isPlaying ? 'Playing...' : 'Sound'}
+                            </span>
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
