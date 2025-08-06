@@ -15,8 +15,8 @@ export default function SecondaryNavigation() {
 
   return (
     <div className="bg-white sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex space-x-8">
+      <div className="container mx-auto px-4">
+        <div className="flex space-x-8 max-w-6xl mx-auto">
           <Link 
             href="/phrase/list"
             className={`py-2 px-1 border-b-2 font-medium text-[15px] lg:text-[16px] ${
