@@ -110,7 +110,7 @@
     "features": {
       "title": "Are you facing these challenges?",
       "speechRecognition": {
-        "title": "Want to learn languages using AI but don't know how to utilize it effectively"
+        "title": "Want to practice speaking using AI but don't know how to utilize it effectively"
       },
       "quiz": {
         "title": "You've learned vocabulary and grammar, but nothing comes out when speaking"
@@ -164,7 +164,7 @@
       "title": "Frequently Asked Questions",
       "q1": {
         "question": "Is there a limit to phrase generation?",
-        "answer": "You can use it for free up to 5 times per day.",
+        "answer": "You can use it up to 5 times per day.",
         "answerDetail": "Let's steadily build up 5 phrases every day."
       },
       "q2": {
