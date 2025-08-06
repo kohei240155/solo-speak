@@ -39,7 +39,8 @@ function PhraseSpeakPage() {
     sendPendingCount,
     handleCount,
     handleNext,
-    handleFinish
+    handleFinish,
+    resetSavedConfig
   } = useSpeakPhrase()
 
   const { speakMode, handleSpeakStart } = useSpeakMode({
@@ -103,7 +104,8 @@ function PhraseSpeakPage() {
   // All Done画面管理
   const allDoneScreen = useAllDoneScreen({
     setIsSpeakCompleted,
-    openSpeakModal: modalManager.openSpeakModal
+    openSpeakModal: modalManager.openSpeakModal,
+    resetSavedConfig
   })
 
   // ページ離脱警告
