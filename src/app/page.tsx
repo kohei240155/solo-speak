@@ -177,7 +177,7 @@ export default function Home() {
       <section 
         id="hero-section"
         data-scroll-animation
-        className={`py-16 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out bg-gray-50 ${
+        className={`py-8 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out bg-gray-50 ${
           visibleSections.has('hero-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
@@ -198,7 +198,7 @@ export default function Home() {
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -774,7 +774,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.faq.title')}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
