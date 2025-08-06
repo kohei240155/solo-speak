@@ -270,7 +270,7 @@ export default function Home() {
                 onClick={handleGetStartedClick}
               >
                 <span className="font-semibold text-sm group-hover:text-gray-100 transition-colors duration-300">
-                  {t('home.hero.cta.mobile')}
+                  {t('home.hero.cta.desktop')}
                 </span>
               </div>
             </div>
