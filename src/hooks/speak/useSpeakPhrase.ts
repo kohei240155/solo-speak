@@ -294,6 +294,14 @@ export const useSpeakPhrase = () => {
     window.history.replaceState({}, '', newUrl)
   }, [currentPhrase, pendingCount, sendPendingCount, t])
 
+  // 設定リセット用の関数（URLパラメータもクリア）
+  const resetSavedConfig = useCallback(() => {
+    setSavedConfig(null)
+    // URLパラメータもクリア
+    const newUrl = window.location.pathname
+    window.history.replaceState({}, '', newUrl)
+  }, [])
+
   return {
     currentPhrase,
     isLoadingPhrase,
@@ -306,6 +314,6 @@ export const useSpeakPhrase = () => {
     handleCount,
     handleNext,
     handleFinish,
-    resetSavedConfig: () => setSavedConfig(null) // 設定リセット用の関数
+    resetSavedConfig
   }
 }

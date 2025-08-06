@@ -1,12 +1,11 @@
 import { useRouter } from 'next/navigation'
 
 interface UseAllDoneScreenProps {
-  setIsSpeakCompleted: (completed: boolean) => void
   openSpeakModal: () => void
   resetSavedConfig: () => void
 }
 
-export function useAllDoneScreen({ setIsSpeakCompleted, openSpeakModal, resetSavedConfig }: UseAllDoneScreenProps) {
+export function useAllDoneScreen({ openSpeakModal, resetSavedConfig }: UseAllDoneScreenProps) {
   const router = useRouter()
 
   // All Done完了処理
@@ -18,7 +17,7 @@ export function useAllDoneScreen({ setIsSpeakCompleted, openSpeakModal, resetSav
   const handleAllDoneRetry = () => {
     // 保存された設定をリセットして、新しい設定を選択できるようにする
     resetSavedConfig()
-    setIsSpeakCompleted(false)
+    // All Done画面はそのままにして、モーダルだけ開く
     openSpeakModal()
   }
 

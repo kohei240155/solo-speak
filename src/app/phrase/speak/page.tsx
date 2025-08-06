@@ -103,7 +103,6 @@ function PhraseSpeakPage() {
 
   // All Done画面管理
   const allDoneScreen = useAllDoneScreen({
-    setIsSpeakCompleted,
     openSpeakModal: modalManager.openSpeakModal,
     resetSavedConfig
   })

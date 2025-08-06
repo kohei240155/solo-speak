@@ -25,6 +25,8 @@ export function useModalManager({ handleSpeakStart, setIsSpeakCompleted }: UseMo
     const success = await handleSpeakStart(config as SpeakConfig)
     if (success) {
       setShowSpeakModal(false)
+      // 練習が正常に開始された場合、All Done状態を解除
+      setIsSpeakCompleted(false)
     }
   }
 

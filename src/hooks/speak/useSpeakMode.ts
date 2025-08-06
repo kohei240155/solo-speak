@@ -99,8 +99,23 @@ export const useSpeakMode = ({
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.replaceState({}, '', newUrl)
     
-    // フレーズを取得
-    const result = await fetchSpeakPhrase(config)
+    // 更新されたURLパラメータから設定を取得してAPIリクエストに使用
+    const updatedParams = new URLSearchParams(window.location.search)
+    const urlConfig: SpeakConfig = {
+      order: (updatedParams.get('order') as 'new-to-old' | 'old-to-new') || config.order,
+      language: updatedParams.get('language') || config.language,
+      excludeIfSpeakCountGTE: updatedParams.get('excludeIfSpeakCountGTE') ? 
+        parseInt(updatedParams.get('excludeIfSpeakCountGTE')!, 10) : 
+        config.excludeIfSpeakCountGTE,
+      excludeTodayPracticed: updatedParams.get('excludeTodayPracticed') ? 
+        updatedParams.get('excludeTodayPracticed') === 'true' : 
+        config.excludeTodayPracticed
+    }
+    
+    console.log('useSpeakMode - handleSpeakStart using URL config:', urlConfig)
+    
+    // フレーズを取得（URLから取得した設定を使用）
+    const result = await fetchSpeakPhrase(urlConfig)
     
     // All Done状態の場合はfalseを返して、SpeakModalでAll Done画面を表示させる
     if (result === 'allDone') {
