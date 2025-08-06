@@ -60,10 +60,18 @@ export default function Home() {
   const [showQuizTranslation, setShowQuizTranslation] = useState(false)
   
   // FAQ accordion state
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [expandedFaq, setExpandedFaq] = useState<Set<number>>(new Set())
 
   const toggleFaq = (faqNumber: number) => {
-    setExpandedFaq(expandedFaq === faqNumber ? null : faqNumber)
+    setExpandedFaq(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(faqNumber)) {
+        newSet.delete(faqNumber)
+      } else {
+        newSet.add(faqNumber)
+      }
+      return newSet
+    })
   }
   
   // TTS機能の初期化 - 日本語のテキストを再生する場合は日本語の言語コードを使用
@@ -724,16 +732,16 @@ export default function Home() {
                 <div className="bg-white p-6 sm:p-8 md:p-12 rounded-3xl shadow-xl border border-gray-200 mx-0">
                   <div className="w-full max-w-none lg:max-w-lg mx-auto">
                     {/* フレーズ表示エリア */}
-                    <div className="mb-6 md:mb-8">
+                    <div className="mb-4 md:mb-8">
                       {/* 母国語の翻訳（メイン表示） */}
-                      <div className="mb-6">
+                      <div className="mb-4">
                         <div className="text-lg md:text-xl font-semibold text-gray-900 mb-2 leading-relaxed">
                           {t('home.solutions.feature3.demo.output')}
                         </div>
                       </div>
                       
                       {/* 学習言語のフレーズ - タップで表示 */}
-                      <div className="min-h-[4rem] flex items-start mb-6">
+                      <div className="min-h-[3rem] flex items-start mb-4">
                         <div className={`text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-1000 ease-out ${
                           showQuizTranslation 
                             ? 'opacity-100 transform translate-y-0' 
@@ -783,16 +791,16 @@ export default function Home() {
           
           <div className="max-w-4xl mx-auto space-y-6 px-4">
             {/* FAQ 1: フレーズ生成回数 */}
-            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
               <button 
                 onClick={() => toggleFaq(1)}
-                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
               >
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 flex-1">
                   {t('home.faq.q1.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq === 1 ? (
+                  {expandedFaq.has(1) ? (
                     <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                     </svg>
@@ -803,7 +811,7 @@ export default function Home() {
                   )}
                 </div>
               </button>
-              {expandedFaq === 1 && (
+              {expandedFaq.has(1) && (
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q1.answer')}
@@ -816,16 +824,16 @@ export default function Home() {
             </div>
 
             {/* FAQ 2: リセット時刻 */}
-            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
               <button 
                 onClick={() => toggleFaq(2)}
-                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
               >
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 flex-1">
                   {t('home.faq.q2.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq === 2 ? (
+                  {expandedFaq.has(2) ? (
                     <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                     </svg>
@@ -836,7 +844,7 @@ export default function Home() {
                   )}
                 </div>
               </button>
-              {expandedFaq === 2 && (
+              {expandedFaq.has(2) && (
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q2.answer')}
@@ -849,16 +857,16 @@ export default function Home() {
             </div>
 
             {/* FAQ 3: 使用料 */}
-            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
               <button 
                 onClick={() => toggleFaq(3)}
-                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
               >
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 flex-1">
                   {t('home.faq.q3.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq === 3 ? (
+                  {expandedFaq.has(3) ? (
                     <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                     </svg>
@@ -869,7 +877,7 @@ export default function Home() {
                   )}
                 </div>
               </button>
-              {expandedFaq === 3 && (
+              {expandedFaq.has(3) && (
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q3.answer')}
