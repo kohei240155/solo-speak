@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { RiSpeakLine } from 'react-icons/ri'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
@@ -100,22 +100,25 @@ export default function Home() {
     let timer: NodeJS.Timeout
     if (countCooldown > 0) {
       timer = setTimeout(() => {
-        setCountCooldown(countCooldown - 1)
+        setCountCooldown(prev => prev - 1)
       }, 1000)
     }
-    return () => clearTimeout(timer)
+    return () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    }
   }, [countCooldown])
 
   // カウントボタンクリック時の処理
-    const handleCountClick = () => {
-    if (countCooldown > 0) return;
+  const handleCountClick = useCallback(() => {
+    if (countCooldown > 0) return
     
     if (readingCount < 10) {
       setReadingCount(prev => prev + 1)
-      setCountCooldown(1000)
-      setTimeout(() => setCountCooldown(0), 1000)
+      setCountCooldown(1) // 1秒のクールダウンを設定
     }
-  }
+  }, [countCooldown, readingCount])
 
   const handleSoundClick = async () => {
     try {
@@ -651,8 +654,14 @@ export default function Home() {
                           <button
                             onClick={handleCountClick}
                             disabled={countCooldown > 0}
+                            style={{ 
+                              WebkitTapHighlightColor: 'transparent',
+                              touchAction: 'manipulation',
+                              WebkitUserSelect: 'none',
+                              userSelect: 'none'
+                            }}
                             className={`flex flex-col items-center outline-none transition-all duration-300 p-4 md:p-8 flex-1 ${
-                              countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                              countCooldown > 0 ? 'cursor-not-allowed opacity-50 pointer-events-none' : 'cursor-pointer active:scale-95'
                             }`}
                           >
                             <div className={`w-[40px] h-[30px] md:w-[60px] md:h-[40px] bg-transparent rounded-full flex items-center justify-center mb-2 ${
