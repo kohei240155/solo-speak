@@ -191,14 +191,14 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center lg:hidden space-y-3 px-2">
+            <div className="flex flex-col items-center text-center lg:hidden space-y-6 px-2">
               {/* サブタイトル */}
               <p className="text-base sm:text-lg md:text-xl text-gray-600 font-medium w-full max-w-2xl">
                 {t('home.hero.subtitle')}
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight w-full max-w-2xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight w-full max-w-2xl mb-4">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -210,7 +210,7 @@ export default function Home() {
               </h1>
               
               {/* アプリ画像 */}
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center mt-6">
                 <div className="relative">
                   <div className="transform hover:scale-105 transition-transform duration-500">
                     <Image
@@ -226,7 +226,7 @@ export default function Home() {
               </div>
                 
               {/* 特徴リスト */}
-              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg w-full max-w-2xl mx-2">
+              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg w-full max-w-2xl mx-2 mt-6">
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +259,7 @@ export default function Home() {
               
               {/* CTA */}
               <div 
-                className="inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg"
+                className="inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg mt-6"
                 style={{ backgroundColor: '#616161' }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#525252'
