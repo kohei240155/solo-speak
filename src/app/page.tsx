@@ -181,17 +181,17 @@ export default function Home() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gray-100 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-6 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center lg:hidden">
+            <div className="flex flex-col items-center text-center lg:hidden space-y-8">
               {/* サブタイトル */}
-              <p className="text-sm sm:text-base text-gray-600 font-medium mb-4">
+              <p className="text-sm sm:text-base text-gray-600 font-medium">
                 {t('home.hero.subtitle')}
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -219,7 +219,7 @@ export default function Home() {
               </div>
                 
               {/* 特徴リスト */}
-              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg max-w-lg">
+              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg max-w-lg w-full mx-4">
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,7 +367,7 @@ export default function Home() {
           visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 sm:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('home.features.title')}
@@ -375,7 +375,7 @@ export default function Home() {
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
           
-                    <div className="max-w-4xl mx-auto space-y-8">
+                    <div className="max-w-4xl mx-auto space-y-8 px-4">
             {/* お悩み 1 */}
             <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
@@ -442,14 +442,14 @@ export default function Home() {
           transform: visibleSections.has('solutions-section') ? 'translateY(0)' : 'translateY(32px)'
         }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 sm:px-8">
           <div className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.solutions.title')}
             </h2>
           </div>
           
-          <div className="max-w-7xl mx-auto space-y-32">
+          <div className="max-w-7xl mx-auto space-y-32 px-4">
             {/* 特徴 1 */}
             <div 
               id="feature-1"
@@ -765,7 +765,7 @@ export default function Home() {
           transform: visibleSections.has('faq-section') ? 'translateY(0)' : 'translateY(32px)'
         }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 sm:px-8">
           <div className="text-center mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.faq.title')}
@@ -773,7 +773,7 @@ export default function Home() {
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
           
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6 px-4">
             {/* FAQ 1: フレーズ生成回数 */}
             <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
               <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
@@ -858,7 +858,7 @@ export default function Home() {
           <div className="absolute bottom-10 right-10 w-80 h-80 bg-gray-300 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="container mx-auto px-4 text-center relative z-10">
+        <div className="container mx-auto px-6 sm:px-8 text-center relative z-10">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-gray-900 leading-tight tracking-tight">
               {t('home.cta.title').split('\n').map((line, index) => (
@@ -873,7 +873,7 @@ export default function Home() {
                 </span>
               ))}
             </h2>
-            <p className="text-xl md:text-2xl lg:text-3xl text-gray-700 mb-16 max-w-3xl mx-auto font-medium leading-relaxed">
+            <p className="text-xl md:text-2xl lg:text-3xl text-gray-700 mb-16 max-w-3xl mx-auto font-medium leading-relaxed px-4">
               {t('home.cta.subtitle')}
             </p>
             
