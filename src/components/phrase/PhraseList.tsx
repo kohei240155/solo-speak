@@ -80,7 +80,7 @@ export default function PhraseList({
     const queryParams = new URLSearchParams({
       order: config.order,
       language: config.language,
-      excludeTodayPracticed: (config.excludeTodayPracticed ?? false).toString()
+      excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString()
     })
     
     // excludeIfSpeakCountGTEパラメータを追加（undefinedでない場合のみ）

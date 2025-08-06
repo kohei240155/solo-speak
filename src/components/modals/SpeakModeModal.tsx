@@ -22,7 +22,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   const { t } = useTranslation('common')
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [excludeThreshold, setExcludeThreshold] = useState<string>('50') // 初期値を50回以上に設定
-  const [excludeTodayPracticed, setExcludeTodayPracticed] = useState<boolean>(false) // 今日練習済みのフレーズを除外するかどうか
+  const [excludeTodayPracticed, setExcludeTodayPracticed] = useState<boolean>(true) // 今日練習済みのフレーズを除外するかどうか（デフォルトはtrue）
   const [isLoading, setIsLoading] = useState(false)
   const [showExplanationModal, setShowExplanationModal] = useState(false)
 
@@ -54,6 +54,13 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         excludeTodayPracticed: excludeTodayPracticed.toString() // 常に文字列として送信
       }
 
+      console.log('SpeakModeModal - Modal state before API call:', {
+        excludeTodayPracticed: excludeTodayPracticed,
+        excludeThreshold: excludeThreshold,
+        order: order
+      })
+      console.log('SpeakModeModal - API params:', params)
+
       const data = await getSpeakPhrase(params)
 
       if (data.success && data.phrase) {
@@ -64,6 +71,9 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined, // 未選択の場合はundefined
           excludeTodayPracticed: excludeTodayPracticed // 今日練習済みを除外するかどうか
         }
+        
+        console.log('SpeakModeModal - Final config to pass:', config)
+        
         // onStartの呼び出し前にモーダルを閉じる
         onClose()
         onStart(config)
@@ -72,13 +82,16 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // モーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
         onClose()
         // onStartにall doneフラグを付けて呼び出し
-        onStart({ 
+        const allDoneConfig = { 
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
           excludeTodayPracticed: excludeTodayPracticed, // 今日練習済みを除外するかどうか
           allDone: true 
-        } as SpeakConfig & { allDone: boolean })
+        } as SpeakConfig & { allDone: boolean }
+        
+        console.log('SpeakModeModal - AllDone config to pass:', allDoneConfig)
+        onStart(allDoneConfig)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
         const errorMessage = data.message || 'フレーズが見つかりませんでした'

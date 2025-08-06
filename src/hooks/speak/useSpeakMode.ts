@@ -93,7 +93,7 @@ export const useSpeakMode = ({
     }
     
     // excludeTodayPracticedパラメータを追加
-    params.set('excludeTodayPracticed', (config.excludeTodayPracticed ?? false).toString())
+    params.set('excludeTodayPracticed', (config.excludeTodayPracticed ?? true).toString())
     
     // URLを更新（ページリロードは発生しない）
     const newUrl = `${window.location.pathname}?${params.toString()}`

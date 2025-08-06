@@ -119,13 +119,12 @@ export default function ModeModal({
               type="checkbox"
               checked={item.value as boolean}
               onChange={(e) => item.onChange?.(e.target.checked)}
-              className="h-4 w-4 border-gray-300 rounded focus:outline-none accent-gray-500"
+              className="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
             />
             {item.checkboxLabel && (
               <label 
                 htmlFor={`checkbox-${item.id}`}
                 className="text-sm text-gray-700 cursor-pointer select-none"
-                onClick={() => item.onChange?.(!item.value)}
               >
                 {item.checkboxLabel}
               </label>
