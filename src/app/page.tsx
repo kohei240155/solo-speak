@@ -382,9 +382,9 @@ export default function Home() {
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
           
-                    <div className="max-w-4xl mx-auto space-y-8 px-4">
+                    <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
             {/* お悩み 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
@@ -401,7 +401,7 @@ export default function Home() {
             </div>
 
             {/* お悩み 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
@@ -418,7 +418,7 @@ export default function Home() {
             </div>
 
             {/* お悩み 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
@@ -456,12 +456,12 @@ export default function Home() {
             </h2>
           </div>
           
-          <div className="max-w-7xl mx-auto space-y-32 px-4">
+          <div className="max-w-7xl mx-auto space-y-24 px-4">
             {/* 特徴 1 */}
             <div 
               id="feature-1"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+              className={`flex flex-col lg:flex-row items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out ${
                 visibleSections.has('feature-1') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
@@ -485,8 +485,8 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl border border-gray-200">
-                  <div className="w-full max-w-lg mx-auto space-y-3">
+                <div className="bg-gradient-to-br from-white to-gray-50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-200 mx-2 sm:mx-0">
+                  <div className="w-full max-w-xl mx-auto space-y-3">
                     {/* 入力フィールド */}
                     <div className="relative">
                       <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -571,7 +571,7 @@ export default function Home() {
             <div 
               id="feature-2"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row-reverse items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+              className={`flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out ${
                 visibleSections.has('feature-2') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
@@ -599,8 +599,8 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-white p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200">
-                  <div className="w-full max-w-md mx-auto">
+                <div className="bg-white p-4 sm:p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200 mx-2 sm:mx-0">
+                  <div className="w-full max-w-lg mx-auto">
                     {/* フレーズ表示エリア */}
                     <div className="mb-6 md:mb-8">
                       <div className="flex items-start space-x-4 mb-6">
@@ -692,7 +692,7 @@ export default function Home() {
             <div 
               id="feature-3"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row items-center gap-16 lg:gap-20 transition-all duration-1000 ease-out ${
+              className={`flex flex-col lg:flex-row items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out ${
                 visibleSections.has('feature-3') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
@@ -720,8 +720,8 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:w-1/2">
-                <div className="bg-white p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200">
-                  <div className="w-full max-w-md mx-auto">
+                <div className="bg-white p-4 sm:p-6 md:p-12 rounded-3xl shadow-xl border border-gray-200 mx-2 sm:mx-0">
+                  <div className="w-full max-w-lg mx-auto">
                     {/* フレーズ表示エリア */}
                     <div className="mb-6 md:mb-8">
                       {/* 母国語の翻訳（メイン表示） */}
