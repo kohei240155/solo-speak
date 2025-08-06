@@ -43,18 +43,19 @@
     "modal": {
       "language": "Language",
       "startFrom": "Start from",
-      "excludeHighPracticeCount": "Exclude phrases with high practice count",
+      "targetPhrases": "Target phrases",
       "optionsTitle": "Options",
       "excludeTodayPracticedLabel": "Exclude phrases practiced today",
       "options": {
         "newest": "Newest",
         "oldest": "Oldest",
         "noLimit": "No limit",
-        "exclude50": "50+ times",
-        "exclude60": "60+ times",
-        "exclude70": "70+ times",
-        "exclude80": "80+ times",
-        "exclude90": "90+ times"
+        "under50": "Under 50 times",
+        "under60": "Under 60 times",
+        "under70": "Under 70 times",
+        "under80": "Under 80 times",
+        "under90": "Under 90 times",
+        "under100": "Under 100 times"
       }
     },
     "messages": {

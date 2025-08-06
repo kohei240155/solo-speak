@@ -116,16 +116,17 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       },
       {
         id: 'excludeThreshold',
-        label: t('speak.modal.excludeHighPracticeCount'),
+        label: t('speak.modal.targetPhrases'),
         type: 'select',
         value: excludeThreshold,
         options: [
           { value: '', label: t('speak.modal.options.noLimit') },
-          { value: '50', label: t('speak.modal.options.exclude50') },
-          { value: '60', label: t('speak.modal.options.exclude60') },
-          { value: '70', label: t('speak.modal.options.exclude70') },
-          { value: '80', label: t('speak.modal.options.exclude80') },
-          { value: '90', label: t('speak.modal.options.exclude90') },
+          { value: '50', label: t('speak.modal.options.under50') },
+          { value: '60', label: t('speak.modal.options.under60') },
+          { value: '70', label: t('speak.modal.options.under70') },
+          { value: '80', label: t('speak.modal.options.under80') },
+          { value: '90', label: t('speak.modal.options.under90') },
+          { value: '100', label: t('speak.modal.options.under100') }
         ],
         onChange: (value: string | boolean) => setExcludeThreshold(value as string)
       },

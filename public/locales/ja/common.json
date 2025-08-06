@@ -43,18 +43,19 @@
     "modal": {
       "language": "言語",
       "startFrom": "練習順序",
-      "excludeHighPracticeCount": "音読回数が多いフレーズを除外",
+      "targetPhrases": "出題対象",
       "optionsTitle": "オプション",
       "excludeTodayPracticedLabel": "今日既に練習したフレーズを除外する",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",
         "noLimit": "制限なし",
-        "exclude50": "50回以上",
-        "exclude60": "60回以上",
-        "exclude70": "70回以上",
-        "exclude80": "80回以上",
-        "exclude90": "90回以上"
+        "under50": "50回以下",
+        "under60": "60回以下",
+        "under70": "70回以下",
+        "under80": "80回以下",
+        "under90": "90回以下",
+        "under100": "100回以下"
       }
     },
     "messages": {
