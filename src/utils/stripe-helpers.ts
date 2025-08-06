@@ -11,13 +11,6 @@ if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
   throw new Error('Invalid Stripe secret key format')
 }
 
-console.log('Stripe configuration loaded:', {
-  hasSecretKey: !!process.env.STRIPE_SECRET_KEY,
-  hasPublishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-  hasProductId: !!process.env.STRIPE_PRODUCT_ID,
-  hasPriceId: !!process.env.STRIPE_BASIC_PLAN_PRICE_ID,
-})
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-07-30.basil',
 })
@@ -103,8 +96,6 @@ export async function getUserSubscriptionStatus(stripeCustomerId: string): Promi
  */
 export async function createStripeCustomer(email: string, userId: string): Promise<string> {
   try {
-    console.log('Creating Stripe customer for:', { email, userId })
-    
     const customer = await stripe.customers.create({
       email,
       metadata: {
@@ -112,7 +103,6 @@ export async function createStripeCustomer(email: string, userId: string): Promi
       },
     })
     
-    console.log('Stripe customer created successfully:', customer.id)
     return customer.id
   } catch (error) {
     console.error('Error creating Stripe customer:', error)

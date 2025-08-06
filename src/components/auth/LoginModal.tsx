@@ -28,7 +28,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }, 10000)
 
     try {
-      console.log('Initiating Google Sign In...')
       const { error } = await signInWithGoogle()
       
       if (error) {
@@ -40,7 +39,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setError(error.message || '認証に失敗しました。再度お試しください。')
         setLoading(false)
       } else {
-        console.log('Google Sign In initiated successfully')
         // 認証成功時（リダイレクトが開始される）の場合
         // OAuth リダイレクトが発生するため、タイムアウトはそのまま維持
       }
