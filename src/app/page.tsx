@@ -191,14 +191,14 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center lg:hidden space-y-4">
+            <div className="flex flex-col items-center text-center lg:hidden space-y-3 px-2">
               {/* サブタイトル */}
-              <p className="text-sm sm:text-base text-gray-600 font-medium">
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 font-medium w-full max-w-2xl">
                 {t('home.hero.subtitle')}
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight w-full max-w-2xl">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -226,7 +226,7 @@ export default function Home() {
               </div>
                 
               {/* 特徴リスト */}
-              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg max-w-lg w-full mx-4">
+              <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg w-full max-w-2xl mx-2">
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,14 +269,14 @@ export default function Home() {
                 }}
                 onClick={handleGetStartedClick}
               >
-                <span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
+                <span className="font-semibold text-sm group-hover:text-gray-100 transition-colors duration-300">
                   {t('home.hero.cta.mobile')}
                 </span>
               </div>
             </div>
 
             {/* PC版: 左右レイアウト */}
-            <div className="hidden lg:grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+            <div className="hidden lg:grid lg:grid-cols-[3fr_2fr] gap-4 items-start">
               {/* 左側: テキストコンテンツ */}
               <div className="text-left max-w-4xl">
                 {/* サブタイトル */}
@@ -285,7 +285,7 @@ export default function Home() {
                 </p>
                 
                 {/* メインタイトル */}
-                <h1 className="text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+                <h1 className="text-6xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                     {t('home.hero.title').split('\n').map((line, index) => (
                       <span key={index}>
@@ -461,7 +461,7 @@ export default function Home() {
             <div 
               id="feature-1"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
+              className={`flex flex-col lg:flex-row items-center gap-8 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
                 visibleSections.has('feature-1') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
@@ -571,7 +571,7 @@ export default function Home() {
             <div 
               id="feature-2"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
+              className={`flex flex-col lg:flex-row-reverse items-center gap-8 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
                 visibleSections.has('feature-2') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
@@ -692,7 +692,7 @@ export default function Home() {
             <div 
               id="feature-3"
               data-scroll-animation
-              className={`flex flex-col lg:flex-row items-center gap-8 lg:gap-12 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
+              className={`flex flex-col lg:flex-row items-center gap-8 transition-all duration-1000 ease-out mx-0 lg:mx-auto max-w-none lg:max-w-7xl ${
                 visibleSections.has('feature-3') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
