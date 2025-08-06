@@ -198,7 +198,7 @@ export default function Home() {
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight w-full max-w-2xl mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight w-full max-w-2xl mb-4" style={{ lineHeight: '1.2' }}>
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
