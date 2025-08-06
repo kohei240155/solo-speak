@@ -136,7 +136,9 @@ export default function SpeakPractice({
         
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
-          <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed">
+          <div className={`text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed ${
+            phrase?.explanation && onExplanation ? 'pr-8' : ''
+          }`}>
             {phrase.original}
           </div>
         </div>
