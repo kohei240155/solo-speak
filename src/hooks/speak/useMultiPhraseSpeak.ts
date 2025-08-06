@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { SpeakConfig } from '@/types/speak'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -28,7 +28,7 @@ export function useMultiPhraseSpeak({
   const [isNextLoading, setIsNextLoading] = useState(false)
 
   // 次のフレーズを取得（設定付き）
-  const handleNextWithConfig = async () => {
+  const handleNextWithConfig = useCallback(async () => {
     if (speakMode.config) {
       setIsNextLoading(true)
       try {
@@ -38,10 +38,10 @@ export function useMultiPhraseSpeak({
         setIsNextLoading(false)
       }
     }
-  }
+  }, [speakMode.config, handleNext])
 
   // 練習終了処理
-  const handleSpeakFinishComplete = async () => {
+  const handleSpeakFinishComplete = useCallback(async () => {
     setIsFinishing(true)
     try {
       await handleFinish()
@@ -52,7 +52,7 @@ export function useMultiPhraseSpeak({
     } finally {
       setIsFinishing(false)
     }
-  }
+  }, [handleFinish, router, t])
 
   return {
     isFinishing,

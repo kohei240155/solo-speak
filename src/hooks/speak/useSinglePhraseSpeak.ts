@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { SpeakPhrase } from '@/types/speak'
@@ -26,6 +26,12 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
   // SWRフックを使用してフレーズを取得
   const { data: singlePhraseData, phrase: singlePhraseFromSWR, isLoading: isLoadingSinglePhraseSWR } = useSpeakPhraseById(phraseId || undefined)
 
+  // エラーハンドリング用のコールバック
+  const handleNotFoundError = useCallback(() => {
+    toast.error(t('phrase.messages.notFound'))
+    router.push('/phrase/list')
+  }, [t, router])
+
   // SWRから取得したデータを状態に反映
   useEffect(() => {
     if (!phraseId) {
@@ -43,10 +49,9 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     }
     
     if (singlePhraseData && !singlePhraseData.success) {
-      toast.error(t('phrase.messages.notFound'))
-      router.push('/phrase/list')
+      handleNotFoundError()
     }
-  }, [singlePhraseFromSWR, singlePhraseData, phraseId, router, t])
+  }, [singlePhraseFromSWR, singlePhraseData, phraseId, handleNotFoundError])
 
   // ローディング状態の管理
   useEffect(() => {
@@ -56,7 +61,7 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
   }, [phraseId, isLoadingSinglePhraseSWR])
 
   // 音読回数を更新（ローカルでのみカウントを増加）
-  const handleCount = () => {
+  const handleCount = useCallback(() => {
     if (!singlePhrase) return
 
     // ローカル状態のみを更新（APIは呼ばない）
@@ -82,10 +87,10 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
       totalSpeakCount: prev.totalSpeakCount + 1
       // dailySpeakCount は実際のAPIレスポンスベースで管理するため更新しない
     } : null)
-  }
+  }, [singlePhrase, t])
 
   // 練習終了処理
-  const handleFinish = async () => {
+  const handleFinish = useCallback(async () => {
     setIsFinishing(true)
     try {
       // 保留中のカウントを送信
@@ -102,7 +107,7 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     } finally {
       setIsFinishing(false)
     }
-  }
+  }, [singlePhrase, singlePhrasePendingCount, sendPendingCount, t, router])
 
   return {
     singlePhrase,

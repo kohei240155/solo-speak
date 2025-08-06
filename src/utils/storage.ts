@@ -9,7 +9,6 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
     if (serverMode) {
       const { createServerSupabaseClient } = await import('@/utils/supabase-server')
       supabaseClient = createServerSupabaseClient()
-      console.log('Using server-side Supabase client')
     } else {
       // 認証状態を確認（クライアントサイドのみ）
       const { data: { session } } = await supabase.auth.getSession()
@@ -99,12 +98,8 @@ export async function testStoragePermissions(): Promise<void> {
 
 export async function deleteUserIcon(iconUrl: string): Promise<void> {
   try {
-    console.log('Starting user icon deletion process...')
-    console.log('Icon URL to delete:', iconUrl)
-    
     // ローカルのBlob URLの場合は削除処理をスキップ
     if (iconUrl.startsWith('blob:')) {
-      console.log('Skipping deletion of local blob URL')
       return
     }
     

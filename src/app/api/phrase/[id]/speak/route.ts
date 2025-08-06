@@ -47,6 +47,7 @@ export async function GET(
         id: phrase.id,
         original: phrase.original,
         translation: phrase.translation,
+        explanation: phrase.explanation,
         totalSpeakCount: phrase.totalSpeakCount || 0,
         dailySpeakCount: dailySpeakCount,
         languageCode: phrase.language.code

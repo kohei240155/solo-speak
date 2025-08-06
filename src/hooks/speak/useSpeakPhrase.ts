@@ -18,6 +18,20 @@ export const useSpeakPhrase = () => {
     setIsCountDisabled(actualTodayCount >= 100)
   }, [])
 
+  // カウントをサーバーに送信する関数
+  const sendPendingCount = useCallback(async (phraseId: string, countToSend: number): Promise<boolean> => {
+    if (countToSend === 0) return true // 送信するカウントがない場合は成功として扱う
+
+    try {
+      await api.post(`/api/phrase/${phraseId}/count`, { count: countToSend })
+      return true
+    } catch (error: unknown) {
+      console.error('Error sending count:', error)
+      toast.error(t('phrase.messages.countError'))
+      return false
+    }
+  }, [t])
+
   // フレーズを取得する関数
   const fetchSpeakPhrase = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     setIsLoadingPhrase(true)
@@ -53,20 +67,6 @@ export const useSpeakPhrase = () => {
       setIsLoadingPhrase(false)
     }
   }, [updateCountButtonState, t])
-
-  // カウントをサーバーに送信する関数
-  const sendPendingCount = useCallback(async (phraseId: string, countToSend: number): Promise<boolean> => {
-    if (countToSend === 0) return true // 送信するカウントがない場合は成功として扱う
-
-    try {
-      await api.post(`/api/phrase/${phraseId}/count`, { count: countToSend })
-      return true
-    } catch (error: unknown) {
-      console.error('Error sending count:', error)
-      toast.error(t('phrase.messages.countError'))
-      return false
-    }
-  }, [t])
 
   // カウント機能（ローカルでのみカウントを増加）
   const handleCount = useCallback(async () => {

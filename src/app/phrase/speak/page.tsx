@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
+import ExplanationModal from '@/components/phrase/ExplanationModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
@@ -50,6 +51,24 @@ function PhraseSpeakPage() {
   })
 
   const [isSpeakCompleted, setIsSpeakCompleted] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(false)
+
+  // Explanationモーダルのハンドラー
+  const handleExplanation = () => {
+    setShowExplanation(true)
+  }
+
+  const handleExplanationClose = () => {
+    setShowExplanation(false)
+  }
+
+  // 現在のフレーズを取得
+  const getCurrentPhrase = () => {
+    if (isSinglePhraseMode) {
+      return singlePhraseSpeak.singlePhrase
+    }
+    return currentPhrase
+  }
 
   // URLパラメータからphraseIdを取得
   const phraseId = searchParams.get('phraseId')
@@ -65,13 +84,13 @@ function PhraseSpeakPage() {
   const multiPhraseSpeak = useMultiPhraseSpeak({
     speakMode,
     handleCount,
-    handleNext: async (config) => {
+    handleNext: useCallback(async (config: import('@/types/speak').SpeakConfig) => {
       const result = await handleNext(config)
       if (result === 'allDone') {
         setIsSpeakCompleted(true)
       }
       return result
-    },
+    }, [handleNext]),
     handleFinish
   })
 
@@ -96,10 +115,10 @@ function PhraseSpeakPage() {
 
   // ページ読み込み時にフレーズを取得
   useEffect(() => {
-    if (learningLanguage && !isSinglePhraseMode) {
+    if (learningLanguage && !isSinglePhraseMode && fetchSavedPhrases) {
       fetchSavedPhrases(1, false)
     }
-  }, [learningLanguage, fetchSavedPhrases, isSinglePhraseMode])
+  }, [learningLanguage, isSinglePhraseMode, fetchSavedPhrases])
 
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
@@ -153,6 +172,7 @@ function PhraseSpeakPage() {
                   isFinishing={singlePhraseSpeak.isFinishing}
                   isCountDisabled={singlePhraseSpeak.singlePhraseCountDisabled}
                   learningLanguage={learningLanguage}
+                  onExplanation={handleExplanation}
                 />
               ) : (
                 <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
@@ -181,6 +201,7 @@ function PhraseSpeakPage() {
                     isFinishing={multiPhraseSpeak.isFinishing}
                     isCountDisabled={isCountDisabled}
                     learningLanguage={learningLanguage}
+                    onExplanation={handleExplanation}
                   />
                 ) : (
                   <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
@@ -213,10 +234,44 @@ function PhraseSpeakPage() {
             languages={languages}
             defaultLearningLanguage={learningLanguage}
             availablePhraseCount={savedPhrases.length}
-        />
+          />
+
+          {/* Explanation モーダル */}
+          <ExplanationModal
+            isOpen={showExplanation}
+            phrase={getCurrentPhrase() as { explanation?: string } | null}
+            onClose={handleExplanationClose}
+          />
       </div>
       
-      <Toaster />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#4aed88',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#f56565',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   )
 }

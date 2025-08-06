@@ -241,10 +241,7 @@ export default function SpeakPage() {
 
           {/* ローディング表示エリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-              <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-            </div>
+            <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
           </div>
         </div>
       </div>

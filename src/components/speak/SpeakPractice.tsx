@@ -1,9 +1,11 @@
 import { RiSpeakLine } from 'react-icons/ri'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { BiCommentDetail } from 'react-icons/bi'
 import { useState, useEffect } from 'react'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
+import LoadingSpinner from '../common/LoadingSpinner'
 
 interface SpeakPhrase {
   id: string
@@ -11,6 +13,7 @@ interface SpeakPhrase {
   translation: string
   totalSpeakCount: number
   dailySpeakCount: number
+  explanation?: string
 }
 
 interface SpeakPracticeProps {
@@ -26,6 +29,7 @@ interface SpeakPracticeProps {
   isFinishing?: boolean // Finish処理中かどうか
   isCountDisabled?: boolean // Countボタンを無効にするかどうか
   learningLanguage?: string // 学習言語コード（TTS用）
+  onExplanation?: () => void // Explanationボタンのコールバック
 }
 
 export default function SpeakPractice({
@@ -40,7 +44,8 @@ export default function SpeakPractice({
   isHideNext = false,
   isFinishing = false,
   isCountDisabled = false,
-  learningLanguage = 'en'
+  learningLanguage = 'en',
+  onExplanation
 }: SpeakPracticeProps) {
   const [countCooldown, setCountCooldown] = useState(0)
   
@@ -88,10 +93,7 @@ export default function SpeakPractice({
   // ローディング中の表示
   if (isLoading) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-        <p className="mt-2 text-gray-600">フレーズを読み込み中...</p>
-      </div>
+      <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
     )
   }
 
@@ -120,7 +122,18 @@ export default function SpeakPractice({
       )}
       
       {/* フレーズ表示エリア - Phrase Listと同じレイアウト */}
-      <div className="mb-6">
+      <div className="mb-6 relative">
+        {/* Explanationアイコン */}
+        {phrase?.explanation && onExplanation && (
+          <button
+            onClick={onExplanation}
+            className="absolute top-0 right-0 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+            title="Explanation"
+          >
+            <BiCommentDetail className="w-5 h-5" />
+          </button>
+        )}
+        
         {/* 学習言語のフレーズ（メイン表示） */}
         <div className="mb-2">
           <div className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed">

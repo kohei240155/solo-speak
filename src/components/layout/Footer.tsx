@@ -2,13 +2,16 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 export default function Footer() {
+  const { t } = useTranslation('common')
   
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto block">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start">
           {/* ロゴセクション */}
           <div className="mb-6 md:mb-0">
             <div className="flex items-center">
@@ -22,35 +25,35 @@ export default function Footer() {
               <span className="text-xl font-bold text-gray-800">Solo Speak</span>
             </div>
             <p className="text-gray-600 mt-2 text-sm max-w-xs">
-              あなたのフレーズ暗記をサポートします。
+              {t('footer.description')}
             </p>
           </div>
 
           {/* リンクセクション */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 md:ml-auto">
             <div>
-              <h3 className="text-sm font-semibold text-gray-800 mb-3">サービス</h3>
+              <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('footer.sections.service')}</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    Solo Speakについて
+                    {t('footer.links.about')}
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-800 mb-3">法的事項</h3>
+              <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('footer.sections.legal')}</h3>
               <ul className="space-y-2">
                 <li>
                   <a
                     href="/terms"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    利用規約
+                    {t('footer.links.terms')}
                   </a>
                 </li>
                 <li>
@@ -58,7 +61,7 @@ export default function Footer() {
                     href="/privacy"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    プライバシーポリシー
+                    {t('footer.links.privacy')}
                   </a>
                 </li>
                 <li>
@@ -66,21 +69,21 @@ export default function Footer() {
                     href="/commercial-transaction"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    特定商取引法表記
+                    {t('footer.links.commercialTransaction')}
                   </a>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-800 mb-3">サポート</h3>
+              <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('footer.sections.support')}</h3>
               <ul className="space-y-2">
                 <li>
                   <a
                     href="/contact"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
-                    お問い合わせ
+                    {t('footer.links.contact')}
                   </a>
                 </li>
               </ul>
@@ -91,8 +94,9 @@ export default function Footer() {
         {/* コピーライト */}
         <div className="border-t border-gray-200 mt-4 pt-4">
           <p className="text-sm text-gray-500 text-center">
-            © {new Date().getFullYear()} Solo Speak. All rights reserved.
+            © {new Date().getFullYear()} Solo Speak. {t('footer.copyright')}
           </p>
+        </div>
         </div>
       </div>
     </footer>

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import BaseModal from '../common/BaseModal'
-import LoadingSpinner from '../common/LoadingSpinner'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -28,7 +27,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }, 10000)
 
     try {
-      console.log('Initiating Google Sign In...')
       const { error } = await signInWithGoogle()
       
       if (error) {
@@ -40,7 +38,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setError(error.message || '認証に失敗しました。再度お試しください。')
         setLoading(false)
       } else {
-        console.log('Google Sign In initiated successfully')
         // 認証成功時（リダイレクトが開始される）の場合
         // OAuth リダイレクトが発生するため、タイムアウトはそのまま維持
       }
@@ -77,7 +74,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   }, [isOpen])
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} width="400px">
+    <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={false} width="440px">
       {/* ロゴとタイトル */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center mb-4">
@@ -90,8 +87,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           />
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Solo Speakでは言えなかったフレーズを言え<br />
-          るようにする練習をサポートします。
+          Solo Speakはあなたのスピーキング学習を<br />
+          サポートします。毎日繰り返し取り組みましょう。
         </p>
       </div>
 
@@ -109,11 +106,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
       >
         {loading ? (
-          <LoadingSpinner 
-            size="sm" 
-            message="Signing in..." 
-            className="flex items-center text-gray-700 [&>div]:border-gray-700 [&>p]:mt-0 [&>p]:ml-3 [&>p]:text-gray-700"
-          />
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-3"></div>
+            <span>Signing in...</span>
+          </div>
         ) : (
           <div className="flex items-center">
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">

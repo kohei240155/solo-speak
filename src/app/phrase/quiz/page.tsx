@@ -152,24 +152,22 @@ export default function PhraseQuizPage() {
             />
           ) : quizMode.active && !session ? (
             // セッション読み込み中の表示
-            <div className="flex items-center justify-center" style={{ minHeight: '200px' }}>
-              <LoadingSpinner 
-                size="md" 
-                message="Starting quiz..." 
-                className="text-center"
-              />
-            </div>
+            <LoadingSpinner 
+              size="md" 
+              message="Starting Quiz..." 
+              className="text-center"
+              minHeight="400px"
+            />
           ) : (
             // クイズがアクティブでない場合は何も表示しない（モーダルで操作）
             <div className="text-center py-8">
               {isLoadingPhrases ? (
-                <div className="flex items-center justify-center" style={{ minHeight: '200px' }}>
-                  <LoadingSpinner 
-                    size="md" 
-                    message="Loading phrases..." 
-                    className="text-center"
-                  />
-                </div>
+                <LoadingSpinner 
+                  size="md" 
+                  message="Loading phrases..." 
+                  className="text-center"
+                  minHeight="400px"
+                />
               ) : savedPhrases.length === 0 ? (
                 <>
                   <p className="text-gray-600 mb-4">No phrases found for quiz.</p>

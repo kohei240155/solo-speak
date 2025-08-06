@@ -43,15 +43,11 @@
     "modal": {
       "language": "言語",
       "startFrom": "出題順序",
-      "excludeHighPracticeCount": "除外対象フレーズ(練習回数)",
+      "excludeHighPracticeCount": "音読回数が多いフレーズを除外",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",
         "noLimit": "制限なし",
-        "exclude10": "10回以上",
-        "exclude20": "20回以上",
-        "exclude30": "30回以上",
-        "exclude40": "40回以上",
         "exclude50": "50回以上",
         "exclude60": "60回以上",
         "exclude70": "70回以上",
@@ -99,29 +95,96 @@
   },
   "home": {
     "hero": {
-      "title": {
-        "part1": "あなたの",
-        "highlight1": "フレーズ暗記",
-        "part2": "を",
-        "highlight2": "サポートします"
+      "subtitle": "\\ 独り言トレーニング /",
+      "title": "スピーキングアプリの\n決定版",
+      "cta": {
+        "mobile": "Let's Start!",
+        "desktop": "今すぐはじめる →"
       },
-      "subtitle": "音声認識技術を活用して、一人でも楽しく効果的に語学学習ができるWebアプリケーション",
-      "loginPrompt": "始めるには、右上のログインボタンをクリック"
+      "features": {
+        "aiGeneration": "AIが自然なフレーズを生成",
+        "practiceSupport": "徹底的な音読学習をサポート",
+        "quizFunction": "クイズ機能を使って瞬発力をUP"
+      }
     },
     "features": {
-      "title": "こんなことができるようになります",
+      "title": "こんなお悩みありませんか？",
       "speechRecognition": {
-        "title": "音声認識による発音練習",
-        "description": "最新の音声認識技術を使って、正確な発音を身につけることができます。"
+        "title": "AIを使ってスピーキング練習したいけど、どう活用すればいいか分からない"
       },
       "quiz": {
-        "title": "クイズ形式での学習",
-        "description": "楽しいクイズ形式で、覚えたフレーズを定着させることができます。"
+        "title": "単語や文法は覚えたのに、話すとなると何も出てこない"
       },
       "progress": {
-        "title": "学習進捗の記録・管理",
-        "description": "あなたの学習状況を可視化し、継続的な学習をサポートします。"
+        "title": "言えなかったフレーズ、復習しなきゃと思いつつ放置してしまう"
       }
+    },
+    "solutions": {
+      "title": {
+        "mobile": "\\ これらの悩みを解決します /",
+        "desktop": "\\ これらの悩みをSolo Speakが解決します /"
+      },
+      "feature1": {
+        "number": "01",
+        "title": "「言えなかったフレーズ」をAIが即生成",
+        "description": "言えなかったフレーズを、AIが自然な表現で翻訳します。実際に言えなかったフレーズがベースになるので、より実践的な学習が可能です。",
+        "demo": {
+          "input": "日本にはどのぐらい住んでいるの？",
+          "button": "AI Suggest",
+          "output": "How long have you been living in Japan?"
+        }
+      },
+      "feature2": {
+        "number": "02",
+        "title": "音読回数カウント機能で\n\"話せるまで\"徹底サポート",
+        "description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "日本にはどのぐらい住んでいるの？",
+          "todayLabel": "Today:",
+          "totalLabel": "Total:",
+          "goalAchieved": "目標達成！",
+          "goalAchievedMessage": "10回の音読が完了しました",
+          "buttons": {
+            "count": "Count",
+            "sound": "Sound",
+            "wait": "Wait...",
+            "playing": "Playing..."
+          }
+        }
+      },
+      "feature3": {
+        "number": "03",
+        "title": "クイズ機能で「瞬発力」を\nチェック",
+        "description": "音読で記憶したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答することで、記憶→反復→実践のサイクルを完成させます。",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "日本にはどのぐらい住んでいるの？"
+        }
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "q1": {
+        "question": "フレーズ生成回数に制限はありますか？",
+        "answer": "1日5回までご利用いただけます。",
+        "answerDetail": "毎日5フレーズを確実に積み上げていきましょう。"
+      },
+      "q2": {
+        "question": "フレーズ生成回数はいつリセットされますか？",
+        "answer": "協定世界時（UTC）の0時にリセットされます。",
+        "answerDetail": "日本時間では午前9時（冬時間）または午前8時（夏時間）にリセットされます。"
+      },
+      "q3": {
+        "question": "Solo Speakは無料で使えますか？",
+        "answer": "現在は基本機能を無料でご利用いただけます。",
+        "answerDetail": "今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。"
+      }
+    },
+    "cta": {
+      "title": "今すぐスピーキング学習を\n始めましょう",
+      "subtitle": "Solo Speakで、あなたの語学学習を次のレベルへ",
+      "button": "今すぐはじめる →"
     }
   },
   "subscription": {
@@ -148,5 +211,21 @@
     "sessionExpired": "認証情報が期限切れです。ページを再読み込みしてください。",
     "sessionInvalid": "認証が失効しました。ページを再読み込みしてください。",
     "serviceUnavailable": "認証サービスが一時的に利用できません。しばらく待ってから再試行してください。"
+  },
+  "footer": {
+    "description": "あなたのスピーキング学習をサポートします。",
+    "sections": {
+      "service": "サービス",
+      "legal": "法的事項",
+      "support": "サポート"
+    },
+    "links": {
+      "about": "Solo Speakについて",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "commercialTransaction": "特定商取引法表記",
+      "contact": "お問い合わせ"
+    },
+    "copyright": "All rights reserved."
   }
 }
