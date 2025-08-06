@@ -98,7 +98,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
           { value: 'normal', label: t('quiz.modal.options.normal') },
           { value: 'random', label: t('quiz.modal.options.random') }
         ],
-        onChange: (value: string) => setMode(value as 'normal' | 'random')
+        onChange: (value: string | boolean) => setMode(value as 'normal' | 'random')
       },
       {
         id: 'questionCount',
@@ -106,7 +106,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         type: 'select',
         value: questionCount.toString(),
         options: generateQuestionCountOptions(),
-        onChange: (value: string) => setQuestionCount(parseInt(value, 10))
+        onChange: (value: string | boolean) => setQuestionCount(parseInt(value as string, 10))
       }
     ],
     onStart: handleStart,
