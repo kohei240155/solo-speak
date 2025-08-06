@@ -188,7 +188,7 @@ export default function Home() {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gray-100 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="container mx-auto px-6 sm:px-8 relative z-10">
+        <div className="container mx-auto px-4 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
             <div className="flex flex-col items-center text-center lg:hidden space-y-4">
@@ -374,7 +374,7 @@ export default function Home() {
           visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <div className="container mx-auto px-6 sm:px-8">
+        <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('home.features.title')}
@@ -449,7 +449,7 @@ export default function Home() {
           transform: visibleSections.has('solutions-section') ? 'translateY(0)' : 'translateY(32px)'
         }}
       >
-        <div className="container mx-auto px-6 sm:px-8">
+        <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.solutions.title')}
@@ -772,7 +772,7 @@ export default function Home() {
           transform: visibleSections.has('faq-section') ? 'translateY(0)' : 'translateY(32px)'
         }}
       >
-        <div className="container mx-auto px-6 sm:px-8">
+        <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.faq.title')}
@@ -901,7 +901,7 @@ export default function Home() {
           <div className="absolute bottom-10 right-10 w-80 h-80 bg-gray-300 rounded-full blur-3xl"></div>
         </div>
         
-        <div className="container mx-auto px-6 sm:px-8 text-center relative z-10">
+        <div className="container mx-auto px-4 sm:px-8 text-center relative z-10">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-gray-900 leading-tight tracking-tight">
               {t('home.cta.title').split('\n').map((line, index) => (
