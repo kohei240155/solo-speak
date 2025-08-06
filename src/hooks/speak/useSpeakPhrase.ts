@@ -46,9 +46,16 @@ export const useSpeakPhrase = () => {
         params.append('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
       }
 
+      // excludeTodayPracticedパラメータを追加
+      if (config.excludeTodayPracticed !== undefined) {
+        params.append('excludeTodayPracticed', config.excludeTodayPracticed.toString())
+      }
+
       const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string, allDone?: boolean, dailyLimitReached?: boolean }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {
+        console.log('useSpeakPhrase - Setting todayCount from API:', data.phrase.dailySpeakCount)
+        console.log('useSpeakPhrase - Setting totalCount from API:', data.phrase.totalSpeakCount)
         setCurrentPhrase(data.phrase)
         setTodayCount(data.phrase.dailySpeakCount || 0)
         setTotalCount(data.phrase.totalSpeakCount || 0)

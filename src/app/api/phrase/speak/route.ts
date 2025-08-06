@@ -31,6 +31,10 @@ export async function GET(request: NextRequest) {
       excludeTodayPracticed
     }
 
+    // デバッグ用ログ
+    console.log('Speak API - excludeTodayPracticed:', excludeTodayPracticed)
+    console.log('Speak API - config.excludeTodayPracticed:', config.excludeTodayPracticed)
+
     // フィルタリング条件を構築
     const whereClause = {
       userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
@@ -51,6 +55,9 @@ export async function GET(request: NextRequest) {
         }
       })
     }
+
+    // デバッグ用ログ
+    console.log('Speak API - WHERE clause dailySpeakCount:', whereClause.dailySpeakCount)
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases, allPhrases] = await Promise.all([
@@ -105,6 +112,10 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
+    // デバッグ用ログ
+    console.log('Speak API - Daily speak count condition:', config.excludeTodayPracticed ? '= 0' : '< 100')
+    console.log('Speak API - Found phrases count:', phrases.length)
+
     if (phrases.length === 0) {
       // すべてのフレーズがセッション完了済みかチェック
       const allSessionCompleted = allPhrases.length > 0 && allPhrases.every(p => p.sessionSpoken)
@@ -154,9 +165,28 @@ export async function GET(request: NextRequest) {
     const firstPhrase = sortedPhrases[0]
     const currentDate = new Date()
 
+    // デバッグ用ログ - 日付変更判定前
+    console.log('Speak API - Date check details:', {
+      phraseId: firstPhrase.id.substring(0, 10),
+      lastSpeakDate: firstPhrase.lastSpeakDate,
+      currentDate: currentDate,
+      dbDailySpeakCount: firstPhrase.dailySpeakCount
+    })
+
     // 日付が変わった場合はdailySpeakCountを0として扱う
     const isDayChangedFlag = isDayChanged(firstPhrase.lastSpeakDate, currentDate)
-    const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
+    // 暫定的に、常にDBの実際の値を返す（日付変更判定は一時的に無効化）
+    const dailySpeakCount = firstPhrase.dailySpeakCount || 0
+    // const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
+
+    // デバッグ用ログ
+    console.log('Speak API - Selected phrase:', {
+      id: firstPhrase.id.substring(0, 10),
+      original: firstPhrase.original.substring(0, 30),
+      dailySpeakCount: firstPhrase.dailySpeakCount,
+      isDayChanged: isDayChangedFlag,
+      finalDailySpeakCount: dailySpeakCount
+    })
 
     return NextResponse.json({
       success: true,

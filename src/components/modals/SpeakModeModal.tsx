@@ -52,7 +52,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         order: order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
         excludeIfSpeakCountGTE: excludeThreshold || undefined, // 未選択の場合はundefined
-        excludeTodayPracticed: excludeTodayPracticed ? 'true' : undefined // 今日練習済みを除外する場合のみパラメータを送信
+        excludeTodayPracticed: excludeTodayPracticed ? 'true' : 'false' // 明示的にfalseも送信
       }
 
       const data = await getSpeakPhrase(params)
