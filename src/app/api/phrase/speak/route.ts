@@ -156,6 +156,7 @@ export async function GET(request: NextRequest) {
         id: firstPhrase.id,
         original: firstPhrase.original,
         translation: firstPhrase.translation,
+        explanation: firstPhrase.explanation,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
         dailySpeakCount: dailySpeakCount,
         languageCode: firstPhrase.language.code
