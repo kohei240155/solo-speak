@@ -809,18 +809,25 @@ export default function Home() {
                   {t('home.faq.q1.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq.has(1) ? (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  )}
+                  <svg 
+                    className={`w-6 h-6 text-gray-600 transition-transform duration-300 ease-in-out ${
+                      expandedFaq.has(1) ? 'rotate-45' : 'rotate-0'
+                    }`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
               </button>
-              {expandedFaq.has(1) && (
+              <div 
+                className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                  expandedFaq.has(1) 
+                    ? 'max-h-96 opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}
+              >
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q1.answer')}
@@ -829,7 +836,7 @@ export default function Home() {
                     {t('home.faq.q1.answerDetail')}
                   </p>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* FAQ 2: リセット時刻 */}
@@ -842,18 +849,25 @@ export default function Home() {
                   {t('home.faq.q2.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq.has(2) ? (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  )}
+                  <svg 
+                    className={`w-6 h-6 text-gray-600 transition-transform duration-300 ease-in-out ${
+                      expandedFaq.has(2) ? 'rotate-45' : 'rotate-0'
+                    }`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
               </button>
-              {expandedFaq.has(2) && (
+              <div 
+                className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                  expandedFaq.has(2) 
+                    ? 'max-h-96 opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}
+              >
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q2.answer')}
@@ -862,7 +876,7 @@ export default function Home() {
                     {t('home.faq.q2.answerDetail')}
                   </p>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* FAQ 3: 使用料 */}
@@ -875,18 +889,25 @@ export default function Home() {
                   {t('home.faq.q3.question')}
                 </h3>
                 <div className="ml-4 flex-shrink-0">
-                  {expandedFaq.has(3) ? (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  )}
+                  <svg 
+                    className={`w-6 h-6 text-gray-600 transition-transform duration-300 ease-in-out ${
+                      expandedFaq.has(3) ? 'rotate-45' : 'rotate-0'
+                    }`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
               </button>
-              {expandedFaq.has(3) && (
+              <div 
+                className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                  expandedFaq.has(3) 
+                    ? 'max-h-96 opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}
+              >
                 <div className="px-8 pb-8 border-t border-gray-200">
                   <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
                     {t('home.faq.q3.answer')}
@@ -895,7 +916,7 @@ export default function Home() {
                     {t('home.faq.q3.answerDetail')}
                   </p>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
