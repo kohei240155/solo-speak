@@ -59,6 +59,13 @@ export default function Home() {
   const [countCooldown, setCountCooldown] = useState(0)
   const [showQuizTranslation, setShowQuizTranslation] = useState(false)
   
+  // FAQ accordion state
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+
+  const toggleFaq = (faqNumber: number) => {
+    setExpandedFaq(expandedFaq === faqNumber ? null : faqNumber)
+  }
+  
   // TTS機能の初期化 - 日本語のテキストを再生する場合は日本語の言語コードを使用
   const { isPlaying, playText } = useTextToSpeech({
     languageCode: locale === 'en' ? 'ja' : 'en'
@@ -184,14 +191,14 @@ export default function Home() {
         <div className="container mx-auto px-6 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center lg:hidden space-y-8">
+            <div className="flex flex-col items-center text-center lg:hidden space-y-6">
               {/* サブタイトル */}
               <p className="text-sm sm:text-base text-gray-600 font-medium">
                 {t('home.hero.subtitle')}
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -369,7 +376,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 sm:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('home.features.title')}
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
@@ -444,7 +451,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 sm:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
               {t('home.solutions.title')}
             </h2>
           </div>
@@ -469,7 +476,7 @@ export default function Home() {
                 >
                   {t('home.solutions.feature1.number')}
                 </div>
-                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                <h3 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                   {t('home.solutions.feature1.title')}
                   <br />
                 </h3>
@@ -579,7 +586,7 @@ export default function Home() {
                 >
                   {t('home.solutions.feature2.number')}
                 </div>
-                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                <h3 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                   {t('home.solutions.feature2.title').split('\n').map((line, index) => (
                     <span key={index}>
                       {line}
@@ -700,7 +707,7 @@ export default function Home() {
                 >
                   {t('home.solutions.feature3.number')}
                 </div>
-                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                <h3 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                   {t('home.solutions.feature3.title').split('\n').map((line, index) => (
                     <span key={index}>
                       {line}
@@ -775,66 +782,102 @@ export default function Home() {
           
           <div className="max-w-4xl mx-auto space-y-6 px-4">
             {/* FAQ 1: フレーズ生成回数 */}
-            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
-                  style={{ backgroundColor: '#616161' }}
-                >
-                  Q
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+              <button 
+                onClick={() => toggleFaq(1)}
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+              >
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {t('home.faq.q1.question')}
+                </h3>
+                <div className="ml-4 flex-shrink-0">
+                  {expandedFaq === 1 ? (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  )}
                 </div>
-                {t('home.faq.q1.question')}
-              </h3>
-              <div className="ml-12">
-                <p className="text-lg text-gray-700 font-medium mb-2">
-                  {t('home.faq.q1.answer')}
-                </p>
-                <p className="text-base text-gray-600">
-                  {t('home.faq.q1.answerDetail')}
-                </p>
-              </div>
+              </button>
+              {expandedFaq === 1 && (
+                <div className="px-8 pb-8 border-t border-gray-200">
+                  <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
+                    {t('home.faq.q1.answer')}
+                  </p>
+                  <p className="text-base text-gray-600">
+                    {t('home.faq.q1.answerDetail')}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* FAQ 2: リセット時刻 */}
-            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
-                  style={{ backgroundColor: '#616161' }}
-                >
-                  Q
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+              <button 
+                onClick={() => toggleFaq(2)}
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+              >
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {t('home.faq.q2.question')}
+                </h3>
+                <div className="ml-4 flex-shrink-0">
+                  {expandedFaq === 2 ? (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  )}
                 </div>
-                {t('home.faq.q2.question')}
-              </h3>
-              <div className="ml-12">
-                <p className="text-lg text-gray-700 font-medium mb-2">
-                  {t('home.faq.q2.answer')}
-                </p>
-                <p className="text-base text-gray-600">
-                  {t('home.faq.q2.answerDetail')}
-                </p>
-              </div>
+              </button>
+              {expandedFaq === 2 && (
+                <div className="px-8 pb-8 border-t border-gray-200">
+                  <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
+                    {t('home.faq.q2.answer')}
+                  </p>
+                  <p className="text-base text-gray-600">
+                    {t('home.faq.q2.answerDetail')}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* FAQ 3: 使用料 */}
-            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                <div 
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-4"
-                  style={{ backgroundColor: '#616161' }}
-                >
-                  Q
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
+              <button 
+                onClick={() => toggleFaq(3)}
+                className="w-full p-8 text-left flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+              >
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {t('home.faq.q3.question')}
+                </h3>
+                <div className="ml-4 flex-shrink-0">
+                  {expandedFaq === 3 ? (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  )}
                 </div>
-                {t('home.faq.q3.question')}
-              </h3>
-              <div className="ml-12">
-                <p className="text-lg text-gray-700 font-medium mb-2">
-                  {t('home.faq.q3.answer')}
-                </p>
-                <p className="text-base text-gray-600">
-                  {t('home.faq.q3.answerDetail')}
-                </p>
-              </div>
+              </button>
+              {expandedFaq === 3 && (
+                <div className="px-8 pb-8 border-t border-gray-200">
+                  <p className="text-lg text-gray-700 font-medium mb-2 mt-4">
+                    {t('home.faq.q3.answer')}
+                  </p>
+                  <p className="text-base text-gray-600">
+                    {t('home.faq.q3.answerDetail')}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
