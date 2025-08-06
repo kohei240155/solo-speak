@@ -69,6 +69,7 @@ export async function getSpeakPhrase(params: {
   order?: string
   prioritizeLowPractice?: string
   excludeIfSpeakCountGTE?: string
+  excludeTodayPracticed?: string
 }): Promise<SpeakPhraseApiResponse> {
   try {
     // undefinedの値を除去してクエリストリングを作成

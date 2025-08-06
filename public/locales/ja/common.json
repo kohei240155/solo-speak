@@ -42,8 +42,10 @@
   "speak": {
     "modal": {
       "language": "言語",
-      "startFrom": "出題順序",
+      "startFrom": "練習順序",
       "excludeHighPracticeCount": "音読回数が多いフレーズを除外",
+      "optionsTitle": "オプション",
+      "excludeTodayPracticedLabel": "今日既に練習したフレーズを除外する",
       "options": {
         "newest": "新しい順",
         "oldest": "古い順",

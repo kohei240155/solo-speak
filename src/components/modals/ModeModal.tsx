@@ -9,11 +9,12 @@ import { useTranslation } from '@/hooks/ui/useTranslation'
 export interface ModalConfigItem {
   id: string
   label: string
-  type: 'select' | 'info'
+  type: 'select' | 'info' | 'checkbox'
   options?: { value: string; label: string }[]
-  value?: string | number
-  onChange?: (value: string) => void
+  value?: string | number | boolean
+  onChange?: (value: string | boolean) => void
   readonly?: boolean
+  checkboxLabel?: string // チェックボックスの右側に表示するラベル
 }
 
 // 共通のモーダル設定の型
@@ -110,6 +111,27 @@ export default function ModeModal({
             </select>
           </div>
         )
+      case 'checkbox':
+        return (
+          <div className="flex items-center space-x-2">
+            <input
+              id={`checkbox-${item.id}`}
+              type="checkbox"
+              checked={item.value as boolean}
+              onChange={(e) => item.onChange?.(e.target.checked)}
+              className="h-4 w-4 border-gray-300 rounded focus:outline-none accent-gray-500"
+            />
+            {item.checkboxLabel && (
+              <label 
+                htmlFor={`checkbox-${item.id}`}
+                className="text-sm text-gray-700 cursor-pointer select-none"
+                onClick={() => item.onChange?.(!item.value)}
+              >
+                {item.checkboxLabel}
+              </label>
+            )}
+          </div>
+        )
       case 'info':
         // 情報表示の場合
         return (
@@ -129,7 +151,7 @@ export default function ModeModal({
     type: 'select',
     value: selectedLanguage,
     options: languages.map(lang => ({ value: lang.code, label: lang.name })),
-    onChange: (value: string) => setSelectedLanguage(value)
+    onChange: (value: string | boolean) => setSelectedLanguage(value as string)
   }
 
   // Language設定項目を最初に追加した設定項目配列を作成

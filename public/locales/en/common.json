@@ -44,6 +44,8 @@
       "language": "Language",
       "startFrom": "Start from",
       "excludeHighPracticeCount": "Exclude phrases with high practice count",
+      "optionsTitle": "Options",
+      "excludeTodayPracticedLabel": "Exclude phrases practiced today",
       "options": {
         "newest": "Newest",
         "oldest": "Oldest",

@@ -22,6 +22,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   const { t } = useTranslation('common')
   const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [excludeThreshold, setExcludeThreshold] = useState<string>('50') // 初期値を50回以上に設定
+  const [excludeTodayPracticed, setExcludeTodayPracticed] = useState<boolean>(false) // 今日練習済みのフレーズを除外するかどうか
   const [isLoading, setIsLoading] = useState(false)
   const [showExplanationModal, setShowExplanationModal] = useState(false)
 
@@ -50,7 +51,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         language: selectedLanguage,
         order: order.replace('-', '_'), // new-to-old → new_to_old
         prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
-        excludeIfSpeakCountGTE: excludeThreshold || undefined // 未選択の場合はundefined
+        excludeIfSpeakCountGTE: excludeThreshold || undefined, // 未選択の場合はundefined
+        excludeTodayPracticed: excludeTodayPracticed ? 'true' : undefined // 今日練習済みを除外する場合のみパラメータを送信
       }
 
       const data = await getSpeakPhrase(params)
@@ -61,7 +63,8 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
           prioritizeLowPractice: true, // 常に少ない練習回数から表示
-          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined // 未選択の場合はundefined
+          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined, // 未選択の場合はundefined
+          excludeTodayPracticed: excludeTodayPracticed // 今日練習済みを除外するかどうか
         }
         // onStartの呼び出し前にモーダルを閉じる
         onClose()
@@ -76,6 +79,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           language: selectedLanguage,
           prioritizeLowPractice: true,
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
+          excludeTodayPracticed: excludeTodayPracticed, // 今日練習済みを除外するかどうか
           allDone: true 
         } as SpeakConfig & { allDone: boolean })
       } else {
@@ -108,7 +112,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           { value: 'new-to-old', label: t('speak.modal.options.newest') },
           { value: 'old-to-new', label: t('speak.modal.options.oldest') }
         ],
-        onChange: (value: string) => setOrder(value as 'new-to-old' | 'old-to-new')
+        onChange: (value: string | boolean) => setOrder(value as 'new-to-old' | 'old-to-new')
       },
       {
         id: 'excludeThreshold',
@@ -123,7 +127,15 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           { value: '80', label: t('speak.modal.options.exclude80') },
           { value: '90', label: t('speak.modal.options.exclude90') },
         ],
-        onChange: (value: string) => setExcludeThreshold(value)
+        onChange: (value: string | boolean) => setExcludeThreshold(value as string)
+      },
+      {
+        id: 'excludeTodayPracticed',
+        label: t('speak.modal.optionsTitle'),
+        type: 'checkbox',
+        value: excludeTodayPracticed,
+        checkboxLabel: t('speak.modal.excludeTodayPracticedLabel'), // チェックボックスの右側に表示するラベル
+        onChange: (value: string | boolean) => setExcludeTodayPracticed(value as boolean)
       }
     ],
     onStart: handleStart,

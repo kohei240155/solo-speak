@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
     const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
+    const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
 
     if (!language) {
       return NextResponse.json(
@@ -26,7 +27,8 @@ export async function GET(request: NextRequest) {
     // モード設定をクエリパラメータから取得
     const config = {
       order,
-      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined
+      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
+      excludeTodayPracticed
     }
 
     // フィルタリング条件を構築
@@ -38,7 +40,10 @@ export async function GET(request: NextRequest) {
       deletedAt: null, // 削除されていないフレーズのみ
       sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
       dailySpeakCount: {
-        lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+        ...(config.excludeTodayPracticed 
+          ? { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+          : { lt: 100 } // デフォルト：今日のSpeak回数が100回未満のフレーズのみ
+        )
       },
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
@@ -75,7 +80,10 @@ export async function GET(request: NextRequest) {
           },
           deletedAt: null,
           dailySpeakCount: {
-            lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
+            ...(config.excludeTodayPracticed 
+              ? { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+              : { lt: 100 } // デフォルト：今日のSpeak回数が100回未満のフレーズのみ
+            )
           },
           ...(config.excludeIfSpeakCountGTE !== undefined && {
             totalSpeakCount: {
