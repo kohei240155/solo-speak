@@ -49,10 +49,9 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       // モード設定でAPI呼び出し
       const params = {
         language: selectedLanguage,
-        order: order.replace('-', '_'), // new-to-old → new_to_old
-        prioritizeLowPractice: 'true', // 常に少ない練習回数から表示
+        order: order.replaceAll('-', '_'), // new-to-old → new_to_old
         excludeIfSpeakCountGTE: excludeThreshold || undefined, // 未選択の場合はundefined
-        excludeTodayPracticed: excludeTodayPracticed ? 'true' : 'false' // 明示的にfalseも送信
+        excludeTodayPracticed: excludeTodayPracticed.toString() // 常に文字列として送信
       }
 
       const data = await getSpeakPhrase(params)
@@ -62,7 +61,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         const config: SpeakConfig = {
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
-          prioritizeLowPractice: true, // 常に少ない練習回数から表示
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined, // 未選択の場合はundefined
           excludeTodayPracticed: excludeTodayPracticed // 今日練習済みを除外するかどうか
         }
@@ -77,7 +75,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         onStart({ 
           order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
-          prioritizeLowPractice: true,
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
           excludeTodayPracticed: excludeTodayPracticed, // 今日練習済みを除外するかどうか
           allDone: true 

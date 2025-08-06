@@ -43,12 +43,9 @@ export async function GET(request: NextRequest) {
       },
       deletedAt: null, // 削除されていないフレーズのみ
       sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
-      dailySpeakCount: {
-        ...(config.excludeTodayPracticed 
-          ? { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
-          : { lt: 100 } // デフォルト：今日のSpeak回数が100回未満のフレーズのみ
-        )
-      },
+      ...(config.excludeTodayPracticed && {
+        dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+      }),
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
           lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
@@ -57,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     // デバッグ用ログ
-    console.log('Speak API - WHERE clause dailySpeakCount:', whereClause.dailySpeakCount)
+    console.log('Speak API - WHERE clause dailySpeakCount condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases, allPhrases] = await Promise.all([
@@ -86,12 +83,9 @@ export async function GET(request: NextRequest) {
             code: language
           },
           deletedAt: null,
-          dailySpeakCount: {
-            ...(config.excludeTodayPracticed 
-              ? { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
-              : { lt: 100 } // デフォルト：今日のSpeak回数が100回未満のフレーズのみ
-            )
-          },
+          ...(config.excludeTodayPracticed && {
+            dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+          }),
           ...(config.excludeIfSpeakCountGTE !== undefined && {
             totalSpeakCount: {
               lt: config.excludeIfSpeakCountGTE
@@ -113,7 +107,7 @@ export async function GET(request: NextRequest) {
     }
 
     // デバッグ用ログ
-    console.log('Speak API - Daily speak count condition:', config.excludeTodayPracticed ? '= 0' : '< 100')
+    console.log('Speak API - Daily speak count condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
     console.log('Speak API - Found phrases count:', phrases.length)
 
     if (phrases.length === 0) {

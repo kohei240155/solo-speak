@@ -67,7 +67,6 @@ export async function resetSessionSpoken() {
 export async function getSpeakPhrase(params: {
   language?: string
   order?: string
-  prioritizeLowPractice?: string
   excludeIfSpeakCountGTE?: string
   excludeTodayPracticed?: string
 }): Promise<SpeakPhraseApiResponse> {

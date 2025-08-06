@@ -38,7 +38,7 @@ export const useSpeakPhrase = () => {
     try {
       const params = new URLSearchParams({
         language: config.language,
-        order: config.order.replace('-', '_'), // new-to-old → new_to_old
+        order: config.order.replaceAll('-', '_'), // new-to-old → new_to_old
       })
 
       // excludeIfSpeakCountGTEパラメータを追加
