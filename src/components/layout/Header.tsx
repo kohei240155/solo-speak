@@ -15,6 +15,22 @@ const Header = memo(function Header() {
   const router = useRouter()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // スクロール検知（未ログイン時のみ）
+  useEffect(() => {
+    if (user) {
+      setIsScrolled(false)
+      return
+    }
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [user])
 
   // 表示するアイコンURLを決定（フォールバック機能付き）
   const getDisplayIconUrl = useMemo(() => {
@@ -125,8 +141,8 @@ const Header = memo(function Header() {
   // デフォルトのユーザーアイコン（ImageUploadコンポーネントと同じスタイル）を生成
   const getDefaultUserIcon = useMemo(() => {
     return (
-      <div className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
-        <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+      <div className="w-9 h-9 md:w-10 md:h-10 bg-gray-300 rounded-full flex items-center justify-center border border-gray-300">
+        <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
       </div>
@@ -134,9 +150,11 @@ const Header = memo(function Header() {
   }, [])
 
   return (
-    <header className="bg-white">
+    <header className={`bg-white transition-shadow duration-200 ${
+      !user ? 'sticky top-0 z-40' : ''
+    } ${isScrolled && !user ? 'shadow-md' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16 max-w-6xl mx-auto">
+        <div className="flex justify-between items-center h-16 md:h-20 max-w-6xl mx-auto">
           {/* ロゴ */}
           <div className="flex items-center">
             <div 
@@ -148,7 +166,7 @@ const Header = memo(function Header() {
                 alt="Solo Speak"
                 width={150}
                 height={40}
-                className="h-8 w-auto"
+                className="h-8 md:h-10 w-auto"
                 priority
               />
             </div>
@@ -165,8 +183,6 @@ const Header = memo(function Header() {
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
-                fontSize="base"
-                itemHeight="base"
                 customTrigger={
                   getDisplayIconUrl ? (
                     <Image
@@ -174,7 +190,7 @@ const Header = memo(function Header() {
                       alt="User Avatar"
                       width={36}
                       height={36}
-                      className="w-9 h-9 rounded-full border border-gray-300 object-cover"
+                      className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-gray-300 object-cover"
                       unoptimized
                       onError={handleImageError}
                       priority
@@ -218,8 +234,6 @@ const Header = memo(function Header() {
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
-                fontSize="base"
-                itemHeight="base"
                 customTrigger={
                   getDisplayIconUrl ? (
                     <Image
