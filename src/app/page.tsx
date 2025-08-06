@@ -191,7 +191,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* スマホ版: 縦並びレイアウト */}
-            <div className="flex flex-col items-center text-center lg:hidden space-y-6 px-2">
+            <div className="flex flex-col items-center text-center lg:hidden space-y-2 px-2">
               {/* サブタイトル */}
               <p className="text-base sm:text-lg md:text-xl text-gray-600 font-medium w-full max-w-2xl">
                 {t('home.hero.subtitle')}
