@@ -23,36 +23,13 @@ export const useSpeakPhrase = () => {
     const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
     const excludeTodayPracticed = params.get('excludeTodayPracticed')
     
-    console.log('useSpeakPhrase - URL params found:', {
-      order,
-      language,
-      excludeIfSpeakCountGTE,
-      excludeTodayPracticed,
-      excludeTodayPracticedType: typeof excludeTodayPracticed
-    })
-    
     if (order && language) {
-      // excludeTodayPracticedの値を詳細にログ出力
-      console.log('useSpeakPhrase - excludeTodayPracticed parsing:', {
-        rawValue: excludeTodayPracticed,
-        isEqualToTrue: excludeTodayPracticed === 'true',
-        isEqualToFalse: excludeTodayPracticed === 'false',
-        booleanResult: excludeTodayPracticed === 'true'
-      })
-      
       const restoredConfig: SpeakConfig = {
         order,
         language,
         excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
-        excludeTodayPracticed: excludeTodayPracticed === 'true' // orderとlanguageと同じように、常に値が存在する前提
+        excludeTodayPracticed: excludeTodayPracticed === 'true'
       }
-      console.log('useSpeakPhrase - Restored config from URL (detailed):', {
-        ...restoredConfig,
-        excludeTodayPracticedDetailed: {
-          value: restoredConfig.excludeTodayPracticed,
-          type: typeof restoredConfig.excludeTodayPracticed
-        }
-      })
       setSavedConfig(restoredConfig)
     }
   }, [])
@@ -80,87 +57,37 @@ export const useSpeakPhrase = () => {
   const fetchSpeakPhrase = useCallback(async (config: SpeakConfig): Promise<boolean | 'allDone'> => {
     // 最初の呼び出し時に設定を保存（Start時）
     if (!savedConfig) {
-      console.log('useSpeakPhrase - Received config from modal:', config)
-      console.log('useSpeakPhrase - Config types:', {
-        orderType: typeof config.order,
-        languageType: typeof config.language,
-        excludeIfSpeakCountGTEType: typeof config.excludeIfSpeakCountGTE,
-        excludeTodayPracticedType: typeof config.excludeTodayPracticed,
-        excludeIfSpeakCountGTEValue: config.excludeIfSpeakCountGTE,
-        excludeTodayPracticedValue: config.excludeTodayPracticed
-      })
-      console.log('useSpeakPhrase - Saving config for future use:', {
-        order: config.order,
-        language: config.language,
-        excludeIfSpeakCountGTE: config.excludeIfSpeakCountGTE,
-        excludeTodayPracticed: config.excludeTodayPracticed
-      })
       setSavedConfig(config)
       
       // URLパラメータに設定を保存
       const params = new URLSearchParams(window.location.search)
-      console.log('useSpeakPhrase - Current URL params before update:', params.toString())
       
       params.set('order', config.order)
       params.set('language', config.language)
       
-      // orderとlanguageと同じように、常にURLパラメータに設定
       if (config.excludeIfSpeakCountGTE !== undefined) {
-        const valueToSet = config.excludeIfSpeakCountGTE.toString()
-        params.set('excludeIfSpeakCountGTE', valueToSet)
-        console.log('useSpeakPhrase - Setting excludeIfSpeakCountGTE to URL:', config.excludeIfSpeakCountGTE, '→', valueToSet)
+        params.set('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
       } else {
-        params.set('excludeIfSpeakCountGTE', '') // 空文字で設定
-        console.log('useSpeakPhrase - Setting excludeIfSpeakCountGTE to empty string')
+        params.set('excludeIfSpeakCountGTE', '')
       }
       
-      // excludeTodayPracticedも常に設定（orderとlanguageと同じパターン）
       const excludeTodayPracticedValue = (config.excludeTodayPracticed ?? true).toString()
       params.set('excludeTodayPracticed', excludeTodayPracticedValue)
-      console.log('useSpeakPhrase - Setting excludeTodayPracticed to URL:', config.excludeTodayPracticed, '→', excludeTodayPracticedValue)
       
       // URLを更新（ページリロードは発生しない）
       const newUrl = `${window.location.pathname}?${params.toString()}`
-      console.log('useSpeakPhrase - Updating URL to:', newUrl)
-      console.log('useSpeakPhrase - Final URL params after update:', params.toString())
-      
-      // 実際にURLの各パラメータを確認
-      console.log('useSpeakPhrase - URL param check:', {
-        order: params.get('order'),
-        language: params.get('language'),
-        excludeIfSpeakCountGTE: params.get('excludeIfSpeakCountGTE'),
-        excludeTodayPracticed: params.get('excludeTodayPracticed')
-      })
-      
       window.history.replaceState({}, '', newUrl)
     }
     
     // 保存された設定を使用（Next時は保存された設定を優先）
     const configToUse = savedConfig || config
-    console.log('useSpeakPhrase - Config selection:', {
-      savedConfig: savedConfig ? {
-        ...savedConfig,
-        excludeTodayPracticedValue: savedConfig.excludeTodayPracticed,
-        excludeTodayPracticedType: typeof savedConfig.excludeTodayPracticed
-      } : null,
-      passedConfig: {
-        ...config,
-        excludeTodayPracticedValue: config.excludeTodayPracticed,
-        excludeTodayPracticedType: typeof config.excludeTodayPracticed
-      },
-      finalConfigToUse: {
-        ...configToUse,
-        excludeTodayPracticedValue: configToUse.excludeTodayPracticed,
-        excludeTodayPracticedType: typeof configToUse.excludeTodayPracticed
-      }
-    })
     
     setIsLoadingPhrase(true)
     try {
       const params = new URLSearchParams({
         language: configToUse.language,
         order: configToUse.order.replaceAll('-', '_'), // new-to-old → new_to_old
-        excludeTodayPracticed: (configToUse.excludeTodayPracticed ?? true).toString() // orderとlanguageと同じように常に設定
+        excludeTodayPracticed: (configToUse.excludeTodayPracticed ?? true).toString()
       })
 
       // excludeIfSpeakCountGTEパラメータを追加（オプションなので条件分岐）
@@ -168,20 +95,9 @@ export const useSpeakPhrase = () => {
         params.append('excludeIfSpeakCountGTE', configToUse.excludeIfSpeakCountGTE.toString())
       }
 
-      // デバッグ用ログ - Next押下時の設定確認
-      console.log('useSpeakPhrase - fetchSpeakPhrase configToUse:', {
-        excludeTodayPracticed: configToUse.excludeTodayPracticed,
-        excludeIfSpeakCountGTE: configToUse.excludeIfSpeakCountGTE,
-        order: configToUse.order,
-        language: configToUse.language
-      })
-      console.log('useSpeakPhrase - Final URL params:', params.toString())
-
       const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, message?: string, allDone?: boolean, dailyLimitReached?: boolean }>(`/api/phrase/speak?${params.toString()}`)
 
       if (data.success && data.phrase) {
-        console.log('useSpeakPhrase - Setting todayCount from API:', data.phrase.dailySpeakCount)
-        console.log('useSpeakPhrase - Setting totalCount from API:', data.phrase.totalSpeakCount)
         setCurrentPhrase(data.phrase)
         setTodayCount(data.phrase.dailySpeakCount || 0)
         setTotalCount(data.phrase.totalSpeakCount || 0)
