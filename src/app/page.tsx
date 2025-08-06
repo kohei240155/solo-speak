@@ -452,7 +452,8 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight mb-6">
-              {t('home.solutions.title')}
+              <span className="lg:hidden">{t('home.solutions.title.mobile')}</span>
+              <span className="hidden lg:block">{t('home.solutions.title.desktop')}</span>
             </h2>
           </div>
           
