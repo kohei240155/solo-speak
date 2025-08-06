@@ -15,6 +15,22 @@ const Header = memo(function Header() {
   const router = useRouter()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // スクロール検知（未ログイン時のみ）
+  useEffect(() => {
+    if (user) {
+      setIsScrolled(false)
+      return
+    }
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [user])
 
   // 表示するアイコンURLを決定（フォールバック機能付き）
   const getDisplayIconUrl = useMemo(() => {
@@ -134,7 +150,9 @@ const Header = memo(function Header() {
   }, [])
 
   return (
-    <header className="bg-white">
+    <header className={`bg-white transition-shadow duration-200 ${
+      !user ? 'sticky top-0 z-40' : ''
+    } ${isScrolled && !user ? 'shadow-md' : ''}`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16 md:h-20 max-w-6xl mx-auto">
           {/* ロゴ */}
