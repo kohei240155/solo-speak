@@ -177,7 +177,7 @@ export default function Home() {
       <section 
         id="hero-section"
         data-scroll-animation
-        className={`py-8 md:py-20 lg:py-24 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out bg-gray-50 ${
+        className={`py-8 md:py-12 lg:py-16 flex items-center justify-center relative overflow-hidden transition-all duration-1000 ease-out bg-gray-50 ${
           visibleSections.has('hero-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
