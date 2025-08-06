@@ -2,14 +2,17 @@ import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
-import { Language, SavedPhrase, PhraseVariation } from '@/types/phrase'
+import { SavedPhrase, PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import toast from 'react-hot-toast'
+import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
 
 export const usePhraseManager = () => {
   const { user } = useAuth()
   const { t } = useTranslation('common')
+  const { userSettings } = useUserSettings() // SWRベースのフックを使用
+  const { languages } = useLanguages() // SWRベースの言語取得フック
   const [nativeLanguage, setNativeLanguage] = useState('ja')
   const [learningLanguage, setLearningLanguage] = useState('en')
   const [desiredPhrase, setDesiredPhrase] = useState('')
@@ -18,7 +21,6 @@ export const usePhraseManager = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [remainingGenerations, setRemainingGenerations] = useState(0)
-  const [languages, setLanguages] = useState<Language[]>([])
   const [situations, setSituations] = useState<SituationResponse[]>([])
   const [isInitializing, setIsInitializing] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -43,27 +45,10 @@ export const usePhraseManager = () => {
       // ログアウト時に状態をクリア
       setRemainingGenerations(0)
       setSavedPhrases([])
-      setLanguages([])
       setSituations([])
       setUserSettingsInitialized(false)
       setLearningLanguage('en')
       setIsInitializing(true)
-    }
-  }, [user])
-
-  // 認証ヘッダーを取得するヘルパー関数（削除予定）
-  
-  const fetchLanguages = useCallback(async () => {
-    // ユーザーがログインしていない場合は何もしない
-    if (!user) {
-      return
-    }
-
-    try {
-      const data = await api.get<Language[]>('/api/languages')
-      setLanguages(data)
-    } catch {
-      setLanguages([])
     }
   }, [user])
 
@@ -81,29 +66,19 @@ export const usePhraseManager = () => {
     }
   }, [user])
 
-  const fetchUserSettings = useCallback(async () => {
-    try {
-      const userData = await api.get<{ nativeLanguage?: { code: string }, defaultLearningLanguage?: { code: string } }>('/api/user/settings', {
-        showErrorToast: false // LP画面のエラーはトーストを表示しない
-      })
-      
-      // 初期化済みの場合は何もしない
-      if (userSettingsInitialized) {
-        return
-      }
-      
+  // SWRのuserSettingsからデータを設定
+  useEffect(() => {
+    if (userSettings && !userSettingsInitialized) {
       // ユーザー設定を適用
-      if (userData.nativeLanguage?.code) {
-        setNativeLanguage(userData.nativeLanguage.code)
+      if (userSettings.nativeLanguage?.code) {
+        setNativeLanguage(userSettings.nativeLanguage.code)
       }
-      if (userData.defaultLearningLanguage?.code) {
-        setLearningLanguage(userData.defaultLearningLanguage.code)
+      if (userSettings.defaultLearningLanguage?.code) {
+        setLearningLanguage(userSettings.defaultLearningLanguage.code)
       }
       setUserSettingsInitialized(true)
-    } catch {
-      // エラーが発生した場合はスキップ
     }
-  }, [userSettingsInitialized])
+  }, [userSettings, userSettingsInitialized])
 
   const fetchUserRemainingGenerations = useCallback(async () => {
     if (!user) {
@@ -280,7 +255,7 @@ export const usePhraseManager = () => {
 
     try {
       // 学習言語のIDを取得
-      const learningLang = languages.find(lang => lang.code === learningLanguage)
+      const learningLang = languages?.find(lang => lang.code === learningLanguage)
       if (!learningLang) {
         throw new Error('学習言語が見つかりません')
       }
@@ -375,10 +350,8 @@ export const usePhraseManager = () => {
     if (user) {
       setIsInitializing(true)
       Promise.all([
-        fetchLanguages(),
         fetchSituations(),
         fetchUserRemainingGenerations(),
-        fetchUserSettings(),
         fetchSavedPhrases(1, false)
       ]).then(() => {
         setIsInitializing(false)
@@ -387,7 +360,7 @@ export const usePhraseManager = () => {
         setIsInitializing(false)
       })
     }
-  }, [user, fetchUserSettings, fetchSavedPhrases, fetchUserRemainingGenerations, fetchLanguages, fetchSituations])
+  }, [user, fetchSavedPhrases, fetchUserRemainingGenerations, fetchSituations])
 
   // 学習言語が変更されたときにフレーズを再取得
   useEffect(() => {
@@ -406,7 +379,7 @@ export const usePhraseManager = () => {
     isLoading,
     error,
     remainingGenerations,
-    languages,
+    languages: languages || [], // SWRベースのlanguagesを使用
     situations,
     isInitializing,
     isSaving,
