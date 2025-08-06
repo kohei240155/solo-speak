@@ -28,13 +28,16 @@ export const useSpeakMode = ({
     const params = new URLSearchParams(window.location.search)
     const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
     const urlLanguage = params.get('language')
+    const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
+    const excludeTodayPracticed = params.get('excludeTodayPracticed')
     
     // URLパラメータに設定がある場合、自動的に練習モードを開始
     if (order && (order === 'new-to-old' || order === 'old-to-new')) {
       const config: SpeakConfig = {
         order,
         language: urlLanguage || learningLanguage,
-        prioritizeLowPractice: false // デフォルト値
+        excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
+        excludeTodayPracticed: excludeTodayPracticed === 'true'
       }
       setSpeakMode({ active: true, config })
       fetchSpeakPhrase(config)
@@ -80,6 +83,17 @@ export const useSpeakMode = ({
     const params = new URLSearchParams(window.location.search)
     params.set('order', config.order)
     params.set('language', config.language)
+    
+    // excludeIfSpeakCountGTEパラメータを追加
+    if (config.excludeIfSpeakCountGTE !== undefined) {
+      params.set('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
+    } else {
+      // undefinedの場合は空文字ではなくパラメータ自体を削除
+      params.delete('excludeIfSpeakCountGTE')
+    }
+    
+    // excludeTodayPracticedパラメータを追加
+    params.set('excludeTodayPracticed', (config.excludeTodayPracticed ?? false).toString())
     
     // URLを更新（ページリロードは発生しない）
     const newUrl = `${window.location.pathname}?${params.toString()}`
