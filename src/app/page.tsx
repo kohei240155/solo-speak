@@ -750,7 +750,7 @@ export default function Home() {
                       </div>
                       
                       {/* 学習言語のフレーズ - タップで表示 */}
-                      <div className="min-h-[3rem] flex items-start mb-4">
+                      <div className="min-h-[4rem] flex items-start mb-4">
                         <div className={`text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-1000 ease-out ${
                           showQuizTranslation 
                             ? 'opacity-100 transform translate-y-0' 
