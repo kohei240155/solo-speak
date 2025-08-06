@@ -1,4 +1,5 @@
 import { SavedPhrase, Language } from '@/types/phrase'
+import { SpeakConfig } from '@/types/speak'
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -8,12 +9,6 @@ import PhraseItem from './PhraseItem'
 import EditPhraseModal from './EditPhraseModal'
 import DeleteConfirmationModal from './DeleteConfirmationModal'
 import ExplanationModal from './ExplanationModal'
-
-interface SpeakConfig {
-  order: 'new-to-old' | 'old-to-new'
-  prioritizeLowPractice: boolean
-  language: string
-}
 
 interface PhraseListProps {
   savedPhrases: SavedPhrase[]
@@ -84,9 +79,15 @@ export default function PhraseList({
     // 設定に基づいてSpeak画面に遷移
     const queryParams = new URLSearchParams({
       order: config.order,
-      prioritizeLowPractice: config.prioritizeLowPractice.toString(),
-      language: config.language
+      language: config.language,
+      excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString()
     })
+    
+    // excludeIfSpeakCountGTEパラメータを追加（undefinedでない場合のみ）
+    if (config.excludeIfSpeakCountGTE !== undefined) {
+      queryParams.set('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
+    }
+    
     router.push(`/phrase/speak?${queryParams.toString()}`)
   }
 

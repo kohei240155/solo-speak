@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const language = searchParams.get('language')
     const order = searchParams.get('order') || 'new_to_old'
     const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
+    const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
 
     if (!language) {
       return NextResponse.json(
@@ -26,8 +27,13 @@ export async function GET(request: NextRequest) {
     // モード設定をクエリパラメータから取得
     const config = {
       order,
-      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined
+      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
+      excludeTodayPracticed
     }
+
+    // デバッグ用ログ
+    console.log('Speak API - excludeTodayPracticed:', excludeTodayPracticed)
+    console.log('Speak API - config.excludeTodayPracticed:', config.excludeTodayPracticed)
 
     // フィルタリング条件を構築
     const whereClause = {
@@ -37,15 +43,18 @@ export async function GET(request: NextRequest) {
       },
       deletedAt: null, // 削除されていないフレーズのみ
       sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
-      dailySpeakCount: {
-        lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
-      },
+      ...(config.excludeTodayPracticed && {
+        dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+      }),
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
           lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
         }
       })
     }
+
+    // デバッグ用ログ
+    console.log('Speak API - WHERE clause dailySpeakCount condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases, allPhrases] = await Promise.all([
@@ -74,9 +83,9 @@ export async function GET(request: NextRequest) {
             code: language
           },
           deletedAt: null,
-          dailySpeakCount: {
-            lt: 100 // 今日のSpeak回数が100回未満のフレーズのみ
-          },
+          ...(config.excludeTodayPracticed && {
+            dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+          }),
           ...(config.excludeIfSpeakCountGTE !== undefined && {
             totalSpeakCount: {
               lt: config.excludeIfSpeakCountGTE
@@ -96,6 +105,10 @@ export async function GET(request: NextRequest) {
         message: `Language with code '${language}' not found`
       }, { status: 400 })
     }
+
+    // デバッグ用ログ
+    console.log('Speak API - Daily speak count condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
+    console.log('Speak API - Found phrases count:', phrases.length)
 
     if (phrases.length === 0) {
       // すべてのフレーズがセッション完了済みかチェック
@@ -146,9 +159,28 @@ export async function GET(request: NextRequest) {
     const firstPhrase = sortedPhrases[0]
     const currentDate = new Date()
 
+    // デバッグ用ログ - 日付変更判定前
+    console.log('Speak API - Date check details:', {
+      phraseId: firstPhrase.id.substring(0, 10),
+      lastSpeakDate: firstPhrase.lastSpeakDate,
+      currentDate: currentDate,
+      dbDailySpeakCount: firstPhrase.dailySpeakCount
+    })
+
     // 日付が変わった場合はdailySpeakCountを0として扱う
     const isDayChangedFlag = isDayChanged(firstPhrase.lastSpeakDate, currentDate)
-    const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
+    // 暫定的に、常にDBの実際の値を返す（日付変更判定は一時的に無効化）
+    const dailySpeakCount = firstPhrase.dailySpeakCount || 0
+    // const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
+
+    // デバッグ用ログ
+    console.log('Speak API - Selected phrase:', {
+      id: firstPhrase.id.substring(0, 10),
+      original: firstPhrase.original.substring(0, 30),
+      dailySpeakCount: firstPhrase.dailySpeakCount,
+      isDayChanged: isDayChangedFlag,
+      finalDailySpeakCount: dailySpeakCount
+    })
 
     return NextResponse.json({
       success: true,

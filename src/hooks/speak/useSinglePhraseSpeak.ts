@@ -39,6 +39,10 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     }
     
     if (singlePhraseFromSWR) {
+      console.log('useSinglePhraseSpeak - Setting from SWR:', {
+        dailySpeakCount: singlePhraseFromSWR.dailySpeakCount,
+        totalSpeakCount: singlePhraseFromSWR.totalSpeakCount
+      })
       setSinglePhrase(singlePhraseFromSWR)
       setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0)
       setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0)

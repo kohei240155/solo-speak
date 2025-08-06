@@ -156,6 +156,11 @@ export default function SpeakPractice({
           <span className={`break-words ${todayCount >= 10 ? 'font-bold' : ''}`}>Today: {todayCount}</span>
           <span className={`break-words ml-4 ${totalCount >= 50 ? 'font-bold' : ''}`}>Total: {totalCount}</span>
         </div>
+        {/* デバッグ用ログ */}
+        {(() => {
+          console.log('SpeakPractice - todayCount:', todayCount, 'totalCount:', totalCount, 'phrase.dailySpeakCount:', phrase?.dailySpeakCount)
+          return null
+        })()}
       </div>
 
       {/* Sound と Count ボタン */}

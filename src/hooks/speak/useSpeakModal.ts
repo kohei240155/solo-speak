@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-export interface SpeakConfig {
-  order: 'new-to-old' | 'old-to-new'
-  language: string
-}
+import { SpeakConfig } from '@/types/speak'
 
 export function useSpeakModal() {
   const [showSpeakModal, setShowSpeakModal] = useState(false)
@@ -22,8 +18,15 @@ export function useSpeakModal() {
     // 設定に基づいてSpeak画面に遷移
     const queryParams = new URLSearchParams({
       order: config.order,
-      language: config.language
+      language: config.language,
+      excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString()
     })
+    
+    // excludeIfSpeakCountGTEパラメータを追加（undefinedでない場合のみ）
+    if (config.excludeIfSpeakCountGTE !== undefined) {
+      queryParams.set('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
+    }
+    
     router.push(`/phrase/speak?${queryParams.toString()}`)
   }
 

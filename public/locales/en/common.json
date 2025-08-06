@@ -44,6 +44,8 @@
       "language": "Language",
       "startFrom": "Start from",
       "excludeHighPracticeCount": "Exclude phrases with high practice count",
+      "optionsTitle": "Options",
+      "excludeTodayPracticedLabel": "Exclude phrases practiced today",
       "options": {
         "newest": "Newest",
         "oldest": "Oldest",
@@ -52,7 +54,8 @@
         "exclude60": "60+ times",
         "exclude70": "70+ times",
         "exclude80": "80+ times",
-        "exclude90": "90+ times"
+        "exclude90": "90+ times",
+        "under100": "Under 100 times"
       }
     },
     "messages": {
@@ -120,7 +123,10 @@
       }
     },
     "solutions": {
-      "title": "\\ Solo Speak solves these problems /",
+      "title": {
+        "mobile": "\\ Solo Speak solves these problems /",
+        "desktop": "\\ Solo Speak solves these problems /"
+      },
       "feature1": {
         "number": "01",
         "title": "AI instantly generates \"phrases you couldn't say\"",

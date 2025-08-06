@@ -2,8 +2,8 @@
 export interface SpeakConfig {
   order: 'new-to-old' | 'old-to-new'
   language: string
-  prioritizeLowPractice: boolean
   excludeIfSpeakCountGTE?: number // 指定回数以上のフレーズを除外（未設定の場合は制限なし）
+  excludeTodayPracticed?: boolean // 今日既に練習したフレーズを除外
 }
 
 // 練習用フレーズの型定義
