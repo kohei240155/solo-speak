@@ -39,6 +39,8 @@ interface DropdownMenuProps {
   menuClassName?: string
   /** メニューアイテムの文字サイズ */
   fontSize?: 'sm' | 'base' | 'lg'
+  /** メニューアイテムの高さ */
+  itemHeight?: 'sm' | 'base' | 'lg'
 }
 
 export default function DropdownMenu({
@@ -54,7 +56,8 @@ export default function DropdownMenu({
   zIndex = 10,
   triggerClassName = '',
   menuClassName = '',
-  fontSize = 'sm'
+  fontSize = 'sm',
+  itemHeight = 'sm'
 }: DropdownMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -108,6 +111,17 @@ export default function DropdownMenu({
         return 'text-lg'
       default:
         return 'text-sm'
+    }
+  }
+
+  const getItemHeight = () => {
+    switch (itemHeight) {
+      case 'base':
+        return 'py-3'
+      case 'lg':
+        return 'py-4'
+      default:
+        return 'py-2'
     }
   }
 
@@ -165,7 +179,7 @@ export default function DropdownMenu({
                 onClick={(e) => handleItemClick(item, e)}
                 disabled={isDisabled}
                 className={`
-                  w-full px-3 py-2 text-left ${getFontSize()} flex items-center gap-2 transition-colors
+                  w-full px-3 ${getItemHeight()} text-left ${getFontSize()} flex items-center gap-2 transition-colors
                   ${isDisabled 
                     ? 'text-gray-400 cursor-not-allowed' 
                     : isDanger 

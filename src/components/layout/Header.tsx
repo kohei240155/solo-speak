@@ -165,6 +165,8 @@ const Header = memo(function Header() {
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
+                fontSize="base"
+                itemHeight="base"
                 customTrigger={
                   getDisplayIconUrl ? (
                     <Image
@@ -216,6 +218,8 @@ const Header = memo(function Header() {
                 position="bottom-right"
                 width="w-48"
                 zIndex={60}
+                fontSize="base"
+                itemHeight="base"
                 customTrigger={
                   getDisplayIconUrl ? (
                     <Image

@@ -70,6 +70,7 @@ const PhraseItem = memo(({
             triggerSize="lg"
             width="w-36"
             fontSize="base"
+            itemHeight="base"
             items={[
               {
                 id: 'explanation',
