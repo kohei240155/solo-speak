@@ -126,9 +126,9 @@
         "title": "AI instantly generates \"phrases you couldn't say\"",
         "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
         "demo": {
-          "input": "How long have you been living in Canada?",
+          "input": "How long have you been living in Japan?",
           "button": "AI Suggest",
-          "output": "カナダにはどのぐらい住んでいるの？"
+          "output": "日本にはどのぐらい住んでいるの？"
         }
       },
       "feature2": {
@@ -136,8 +136,8 @@
         "title": "Reading count feature for\nthorough support \"until you can speak\"",
         "description": "Simply \"knowing\" a language isn't enough to speak it. Aim for 10 readings per day and a total of 50 readings per phrase until it comes out naturally from your mouth.",
         "demo": {
-          "input": "カナダにはどのぐらい住んでいるの？",
-          "output": "How long have you been living in Canada?",
+          "input": "日本にはどのぐらい住んでいるの？",
+          "output": "How long have you been living in Japan?",
           "todayLabel": "Today:",
           "totalLabel": "Total:",
           "goalAchieved": "Goal Achieved!",
@@ -155,8 +155,8 @@
         "title": "Check your \"quick response\"\nwith quiz features",
         "description": "Can phrases memorized through reading practice actually be used in real conversations? Use the quiz feature to instantly respond with memorized phrases, completing the memory → repetition → practice cycle.",
         "demo": {
-          "input": "カナダにはどのぐらい住んでいるの？",
-          "output": "How long have you been living in Canada?"
+          "input": "日本にはどのぐらい住んでいるの？",
+          "output": "How long have you been living in Japan?"
         }
       }
     },

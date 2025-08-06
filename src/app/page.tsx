@@ -13,45 +13,32 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { PiHandTapLight } from 'react-icons/pi'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
-// スクロールアニメーション用のカスタムフック
+// シンプルなスクロールアニメーション
 const useScrollAnimation = () => {
-  // テスト用: 全セクションを表示状態にする
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']))
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section']))
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          console.log('Section intersecting:', entry.target.id, entry.isIntersecting) // デバッグ用
-          if (entry.isIntersecting) {
-            setVisibleSections((prev) => {
-              const newSet = new Set([...prev, entry.target.id])
-              console.log('Visible sections:', Array.from(newSet)) // デバッグ用
-              return newSet
-            })
+    const handleScroll = () => {
+      const sections = ['solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
+      
+      sections.forEach(sectionId => {
+        const element = document.getElementById(sectionId)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          const isVisible = rect.top < window.innerHeight * 0.8
+          
+          if (isVisible) {
+            setVisibleSections(prev => new Set([...prev, sectionId]))
           }
-        })
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '50px'
-      }
-    )
-
-    // 少し遅延させてDOMが完全に構築されてから監視開始
-    const timer = setTimeout(() => {
-      const sections = document.querySelectorAll('[data-scroll-animation]')
-      console.log('Found sections for observation:', sections.length) // デバッグ用
-      sections.forEach((section, index) => {
-        console.log(`Section ${index}:`, section.id) // デバッグ用
-        observer.observe(section)
+        }
       })
-    }, 100)
-
-    return () => {
-      clearTimeout(timer)
-      observer.disconnect()
     }
+
+    window.addEventListener('scroll', handleScroll)
+    // 初回チェック
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return visibleSections
@@ -76,32 +63,6 @@ export default function Home() {
   const { isPlaying, playText } = useTextToSpeech({
     languageCode: locale === 'en' ? 'ja' : 'en'
   })
-
-  // 初期表示でヒーローセクションと機能セクションを即座に表示
-  useEffect(() => {
-    if (showContent) {
-      // 初期表示処理を一時的にコメントアウト
-      console.log('Content is shown, initializing sections...') // デバッグ用
-      /*
-      const heroElement = document.getElementById('hero-section')
-      const featuresElement = document.getElementById('features-section')
-      
-      if (heroElement) {
-        setTimeout(() => {
-          heroElement.classList.add('opacity-100', 'translate-y-0')
-          heroElement.classList.remove('opacity-0', 'translate-y-8')
-        }, 100)
-      }
-      
-      if (featuresElement) {
-        setTimeout(() => {
-          featuresElement.classList.add('opacity-100', 'translate-y-0')
-          featuresElement.classList.remove('opacity-0', 'translate-y-8')
-        }, 300)
-      }
-      */
-    }
-  }, [showContent])
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -145,9 +106,9 @@ export default function Home() {
     try {
       // 英語の言語設定の場合は日本語の音声を再生
       if (locale === 'en') {
-        await playText("カナダにはどのぐらい住んでいるの？")
+        await playText("日本にはどのぐらい住んでいるの？")
       } else {
-        await playText("How long have you been living in Canada?")
+        await playText("How long have you been living in Japan?")
       }
     } catch (error) {
       console.error('TTS playback failed:', error)
