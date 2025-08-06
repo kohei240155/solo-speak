@@ -124,7 +124,7 @@ export default function ModeModal({
             {item.checkboxLabel && (
               <label 
                 htmlFor={`checkbox-${item.id}`}
-                className="text-sm text-gray-700 cursor-pointer select-none"
+                className="text-sm text-gray-700 select-none"
               >
                 {item.checkboxLabel}
               </label>
