@@ -24,7 +24,7 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
   const [isFinishing, setIsFinishing] = useState(false)
   
   // SWRフックを使用してフレーズを取得
-  const { data: singlePhraseData, phrase: singlePhraseFromSWR, isLoading: isLoadingSinglePhraseSWR } = useSpeakPhraseById(phraseId || undefined)
+  const { data: singlePhraseData, phrase: singlePhraseFromSWR, isLoading: isLoadingSinglePhraseSWR, refetch: refetchPhrase } = useSpeakPhraseById(phraseId || undefined)
 
   // エラーハンドリング用のコールバック
   const handleNotFoundError = useCallback(() => {
@@ -39,10 +39,6 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     }
     
     if (singlePhraseFromSWR) {
-      console.log('useSinglePhraseSpeak - Setting from SWR:', {
-        dailySpeakCount: singlePhraseFromSWR.dailySpeakCount,
-        totalSpeakCount: singlePhraseFromSWR.totalSpeakCount
-      })
       setSinglePhrase(singlePhraseFromSWR)
       setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0)
       setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0)
@@ -112,6 +108,27 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
       setIsFinishing(false)
     }
   }, [singlePhrase, singlePhrasePendingCount, sendPendingCount, t, router])
+
+  // 日付変更の検出（UTC基準）- 単一フレーズSpeak練習用
+  useEffect(() => {
+    if (!phraseId) return
+    
+    let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
+    
+    const checkDateChange = () => {
+      const newUTCDate = new Date().toISOString().split('T')[0]
+      if (newUTCDate !== currentUTCDate) {
+        currentUTCDate = newUTCDate
+        // 日付が変わったらフレーズデータを再取得
+        refetchPhrase()
+      }
+    }
+    
+    // 1分ごとに日付変更をチェック
+    const interval = setInterval(checkDateChange, 60 * 1000)
+    
+    return () => clearInterval(interval)
+  }, [phraseId, refetchPhrase])
 
   return {
     singlePhrase,

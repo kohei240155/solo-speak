@@ -210,6 +210,27 @@ export const useSpeakPhrase = () => {
     window.history.replaceState({}, '', newUrl)
   }, [currentPhrase, pendingCount, sendPendingCount, t])
 
+  // 日付変更の検出（UTC基準）- Speak練習用
+  useEffect(() => {
+    let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
+    
+    const checkDateChange = () => {
+      const newUTCDate = new Date().toISOString().split('T')[0]
+      if (newUTCDate !== currentUTCDate) {
+        currentUTCDate = newUTCDate
+        // 日付が変わったら現在のフレーズの情報を再取得
+        if (currentPhrase && savedConfig) {
+          fetchSpeakPhrase(savedConfig)
+        }
+      }
+    }
+    
+    // 1分ごとに日付変更をチェック
+    const interval = setInterval(checkDateChange, 60 * 1000)
+    
+    return () => clearInterval(interval)
+  }, [currentPhrase, savedConfig, fetchSpeakPhrase])
+
   // 設定リセット用の関数（URLパラメータもクリア）
   const resetSavedConfig = useCallback(() => {
     setSavedConfig(null)

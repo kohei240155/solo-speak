@@ -37,25 +37,9 @@ export async function GET(
 
     const currentDate = new Date()
 
-    // デバッグ用ログ - 日付変更判定前
-    console.log('Single phrase API - Date check details:', {
-      phraseId: phrase.id.substring(0, 10),
-      lastSpeakDate: phrase.lastSpeakDate,
-      currentDate: currentDate,
-      dbDailySpeakCount: phrase.dailySpeakCount
-    })
-
-    // 日付が変わった場合はdailySpeakCountを0として扱う
+    // 日付が変わった場合はdailySpeakCountを0として扱う（UTC基準）
     const isDayChangedFlag = isDayChanged(phrase.lastSpeakDate, currentDate)
-    // 暫定的に、常にDBの実際の値を返す（日付変更判定は一時的に無効化）
-    const dailySpeakCount = phrase.dailySpeakCount || 0
-    // const dailySpeakCount = isDayChangedFlag ? 0 : (phrase.dailySpeakCount || 0)
-
-    console.log('Single phrase API - Final values:', {
-      isDayChanged: isDayChangedFlag,
-      dbValue: phrase.dailySpeakCount,
-      finalValue: dailySpeakCount
-    })
+    const dailySpeakCount = isDayChangedFlag ? 0 : (phrase.dailySpeakCount || 0)
 
     return NextResponse.json({
       success: true,
