@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         }
       }),
 
-      // セッション管理を除いた全フレーズ数を取得（デバッグ用）
+      // All Done状態の判定用：セッション管理を除いた全フレーズを取得
       prisma.phrase.findMany({
         where: {
           userId: authResult.user.id,
