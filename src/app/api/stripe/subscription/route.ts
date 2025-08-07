@@ -3,6 +3,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { getUserSubscriptionStatus } from '@/utils/stripe-helpers'
 
+/** * ユーザーのサブスクリプション情報を取得するAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { isActive: boolean, subscriptionId?: string } - サブスクリプションの状態とID
+ */
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック

@@ -23,8 +23,19 @@ export interface QuizSession {
 }
 
 // クイズモードの状態型
+// クイズモードの状態管理
 export interface QuizModeState {
   active: boolean
   config: QuizConfig | null
   session: QuizSession | null
+}
+
+// クイズ回答APIのレスポンス型定義
+export interface QuizAnswerResponse {
+  success: true
+  phrase: {
+    id: string
+    correctQuizCount: number
+    incorrectQuizCount: number
+  }
 }

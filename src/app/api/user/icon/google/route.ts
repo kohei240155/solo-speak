@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { downloadAndUploadGoogleAvatar } from '@/utils/storage'
 
-// Googleアバターのダウンロードとアップロード
+/** * Googleアバター画像をSupabase StorageにアップロードするAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { iconUrl: string, message: string } - アップロードされたアバター画像のURLとメッセージ
+ */
 export async function POST(request: NextRequest) {
   try {
     const authResult = await authenticateRequest(request)

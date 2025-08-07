@@ -124,25 +124,6 @@ export function createErrorResponse(error: unknown, context: string): NextRespon
 }
 
 /**
- * 言語データのフォールバック処理
- * @param isError エラー時のフォールバックかどうか
- * @returns フォールバック言語データのレスポンス
- */
-export function createLanguageFallbackResponse(): NextResponse {
-  // フォールバックではなく、エラーレスポンスを返すようにする
-  console.error('Language data not available, returning error instead of fallback')
-  
-  return new NextResponse(JSON.stringify({ 
-    error: 'Language data not available. Please ensure the database is properly seeded.' 
-  }), {
-    status: 500,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    },
-  })
-}
-
-/**
  * 必須フィールドのバリデーション
  * @param data バリデーション対象のデータ
  * @param requiredFields 必須フィールドのリスト

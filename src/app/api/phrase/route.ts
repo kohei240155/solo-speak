@@ -7,7 +7,7 @@ import {
   CreatePhraseResponseData, 
   PhrasesListResponseData 
 } from '@/types/phrase-api'
-import { ApiErrorResponse } from '@/types/api'
+import { ApiErrorResponse } from '@/types/api-responses'
 import { prisma } from '@/utils/prisma'
 
 const createPhraseSchema = z.object({
@@ -20,6 +20,10 @@ const createPhraseSchema = z.object({
   context: z.string().nullable().optional(),
 })
 
+/** * フレーズの作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns CreatePhraseResponseData - 作成されたフレーズデータ
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック

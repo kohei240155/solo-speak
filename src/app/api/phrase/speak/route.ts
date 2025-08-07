@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { isDayChanged } from '@/utils/date-helpers'
+import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
 
+/** * フレーズの音読練習用APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns SpeakPhraseResponse - 音読練習用のフレーズデータ
+ */
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
@@ -18,10 +23,10 @@ export async function GET(request: NextRequest) {
     const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
 
     if (!language) {
-      return NextResponse.json(
-        { error: 'Language parameter is required' },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Language parameter is required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // モード設定をクエリパラメータから取得
@@ -30,10 +35,6 @@ export async function GET(request: NextRequest) {
       excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
       excludeTodayPracticed
     }
-
-    // デバッグ用ログ
-    console.log('Speak API - excludeTodayPracticed:', excludeTodayPracticed)
-    console.log('Speak API - config.excludeTodayPracticed:', config.excludeTodayPracticed)
 
     // フィルタリング条件を構築
     const whereClause = {
@@ -52,9 +53,6 @@ export async function GET(request: NextRequest) {
         }
       })
     }
-
-    // デバッグ用ログ
-    console.log('Speak API - WHERE clause dailySpeakCount condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases, allPhrases] = await Promise.all([
@@ -75,7 +73,7 @@ export async function GET(request: NextRequest) {
         }
       }),
 
-      // セッション管理を除いた全フレーズ数を取得（デバッグ用）
+      // All Done状態の判定用：セッション管理を除いた全フレーズを取得
       prisma.phrase.findMany({
         where: {
           userId: authResult.user.id,
@@ -100,15 +98,12 @@ export async function GET(request: NextRequest) {
     ])
 
     if (!languageExists) {
-      return NextResponse.json({
+      const errorResponse: SpeakPhraseResponse = {
         success: false,
         message: `Language with code '${language}' not found`
-      }, { status: 400 })
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
-
-    // デバッグ用ログ
-    console.log('Speak API - Daily speak count condition:', config.excludeTodayPracticed ? 'equals 0' : 'no filter')
-    console.log('Speak API - Found phrases count:', phrases.length)
 
     if (phrases.length === 0) {
       // すべてのフレーズがセッション完了済みかチェック
@@ -116,18 +111,20 @@ export async function GET(request: NextRequest) {
       
       if (allSessionCompleted) {
         // All Done状態の場合は成功レスポンスとして返す（トーストエラーを防ぐため）
-        return NextResponse.json({
+        const responseData: SpeakPhraseResponse = {
           success: true,
           allDone: true,
           message: 'All available phrases have been practiced in this session'
-        })
+        }
+        return NextResponse.json(responseData)
       } else {
         // フレーズがない場合はエラーとして返す
-        return NextResponse.json({
+        const responseData: SpeakPhraseResponse = {
           success: false,
           message: 'No phrases available for practice in this session',
           allDone: false
-        })
+        }
+        return NextResponse.json(responseData)
       }
     }
 
@@ -157,48 +154,26 @@ export async function GET(request: NextRequest) {
 
     // 最初のフレーズを返す
     const firstPhrase = sortedPhrases[0]
-    const currentDate = new Date()
 
-    // デバッグ用ログ - 日付変更判定前
-    console.log('Speak API - Date check details:', {
-      phraseId: firstPhrase.id.substring(0, 10),
-      lastSpeakDate: firstPhrase.lastSpeakDate,
-      currentDate: currentDate,
-      dbDailySpeakCount: firstPhrase.dailySpeakCount
-    })
-
-    // 日付が変わった場合はdailySpeakCountを0として扱う
-    const isDayChangedFlag = isDayChanged(firstPhrase.lastSpeakDate, currentDate)
-    // 暫定的に、常にDBの実際の値を返す（日付変更判定は一時的に無効化）
-    const dailySpeakCount = firstPhrase.dailySpeakCount || 0
-    // const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
-
-    // デバッグ用ログ
-    console.log('Speak API - Selected phrase:', {
-      id: firstPhrase.id.substring(0, 10),
-      original: firstPhrase.original.substring(0, 30),
-      dailySpeakCount: firstPhrase.dailySpeakCount,
-      isDayChanged: isDayChangedFlag,
-      finalDailySpeakCount: dailySpeakCount
-    })
-
-    return NextResponse.json({
+    const responseData: SpeakPhraseResponse = {
       success: true,
       phrase: {
         id: firstPhrase.id,
         original: firstPhrase.original,
         translation: firstPhrase.translation,
-        explanation: firstPhrase.explanation,
+        explanation: firstPhrase.explanation || undefined,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
-        dailySpeakCount: dailySpeakCount,
+        dailySpeakCount: firstPhrase.dailySpeakCount || 0,
         languageCode: firstPhrase.language.code
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

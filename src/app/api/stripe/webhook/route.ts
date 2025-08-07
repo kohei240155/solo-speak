@@ -3,6 +3,10 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { prisma } from '@/utils/prisma'
 
+/** Stripe Webhookハンドラー
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { received: boolean } - Webhook受信確認
+ */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-07-30.basil',
 })

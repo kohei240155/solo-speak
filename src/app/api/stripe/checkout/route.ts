@@ -3,6 +3,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { createStripeCustomer, createCheckoutSession } from '@/utils/stripe-helpers'
 
+/** * Stripe Checkoutセッションを作成するAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { sessionId: string } - 作成されたCheckoutセッションのID
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック

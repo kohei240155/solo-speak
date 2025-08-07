@@ -37,17 +37,7 @@ export async function updatePhrase(phraseId: string, updates: Record<string, unk
   }
 }
 
-/**
- * 個別フレーズのsession_spokenをtrueに設定する関数
- */
-export async function markPhraseAsSessionSpoken(phraseId: string) {
-  try {
-    return await api.post(`/api/phrase/${phraseId}/session-spoken`)
-  } catch (error) {
-    console.error('Failed to mark phrase as session spoken:', error)
-    throw error
-  }
-}
+
 
 /**
  * ユーザーの全フレーズのsession_spokenをfalseにリセットする関数
@@ -57,6 +47,18 @@ export async function resetSessionSpoken() {
     return await api.post('/api/phrases/reset-session')
   } catch (error) {
     console.error('Failed to reset session spoken:', error)
+    throw error
+  }
+}
+
+/**
+ * ユーザーの全フレーズのdailySpeakCountをリセットする関数（UTC基準での日付変更時のみ）
+ */
+export async function resetDailySpeakCount() {
+  try {
+    return await api.post('/api/user/reset-daily-speak-count')
+  } catch (error) {
+    console.error('Failed to reset daily speak count:', error)
     throw error
   }
 }

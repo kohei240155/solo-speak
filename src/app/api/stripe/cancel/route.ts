@@ -3,6 +3,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { getUserSubscriptionStatus, cancelSubscription } from '@/utils/stripe-helpers'
 
+/** * サブスクリプションキャンセルAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { success: boolean, message: string } - キャンセル結果
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック

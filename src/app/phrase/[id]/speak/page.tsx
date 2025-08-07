@@ -71,21 +71,29 @@ export default function SpeakPage() {
     const fetchPhrase = async () => {
       try {
         if (phraseId) {
-          // phraseIdが指定されている場合は特定のフレーズを取得
-          const data = await api.get(`/api/phrase/${phraseId}`) as {
-            id: string
-            text: string
-            translation: string
-            totalSpeakCount?: number
-            dailySpeakCount?: number
+          // phraseIdが指定されている場合は特定のフレーズを取得（Speak専用API使用）
+          const data = await api.get(`/api/phrase/${phraseId}/speak`) as {
+            success: boolean
+            phrase?: {
+              id: string
+              original: string
+              translation: string
+              totalSpeakCount: number
+              dailySpeakCount: number
+            }
+            message?: string
           }
-          setPhrase({
-            id: data.id,
-            text: data.text,
-            translation: data.translation,
-            totalSpeakCount: data.totalSpeakCount || 0,
-            dailySpeakCount: data.dailySpeakCount || 0
-          })
+          if (data.success && data.phrase) {
+            setPhrase({
+              id: data.phrase.id,
+              text: data.phrase.original,
+              translation: data.phrase.translation,
+              totalSpeakCount: data.phrase.totalSpeakCount || 0,
+              dailySpeakCount: data.phrase.dailySpeakCount || 0
+            })
+          } else {
+            setError(data.message || 'フレーズが見つかりませんでした')
+          }
         } else {
           // phraseIdがない場合は従来通りのAPIを呼び出し
           const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
@@ -150,9 +158,9 @@ export default function SpeakPage() {
         return // エラーの場合は次のフレーズ取得を中止
       }
     } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
@@ -189,9 +197,9 @@ export default function SpeakPage() {
         // Finishの場合はエラーがあってもページ遷移を実行
       }
     } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーはページ遷移を阻害しない

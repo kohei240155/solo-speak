@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { isDayChanged } from '@/utils/date-helpers'
+import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
 
+/** * フレーズの音読練習用APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns SpeakPhraseResponse - 音読練習用のフレーズデータ
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -29,52 +34,32 @@ export async function GET(
     })
 
     if (!phrase) {
-      return NextResponse.json({
-        success: false,
-        message: 'Phrase not found or access denied'
-      }, { status: 404 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or access denied'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
-    const currentDate = new Date()
-
-    // デバッグ用ログ - 日付変更判定前
-    console.log('Single phrase API - Date check details:', {
-      phraseId: phrase.id.substring(0, 10),
-      lastSpeakDate: phrase.lastSpeakDate,
-      currentDate: currentDate,
-      dbDailySpeakCount: phrase.dailySpeakCount
-    })
-
-    // 日付が変わった場合はdailySpeakCountを0として扱う
-    const isDayChangedFlag = isDayChanged(phrase.lastSpeakDate, currentDate)
-    // 暫定的に、常にDBの実際の値を返す（日付変更判定は一時的に無効化）
-    const dailySpeakCount = phrase.dailySpeakCount || 0
-    // const dailySpeakCount = isDayChangedFlag ? 0 : (phrase.dailySpeakCount || 0)
-
-    console.log('Single phrase API - Final values:', {
-      isDayChanged: isDayChangedFlag,
-      dbValue: phrase.dailySpeakCount,
-      finalValue: dailySpeakCount
-    })
-
-    return NextResponse.json({
+    const responseData: SpeakPhraseResponse = {
       success: true,
       phrase: {
         id: phrase.id,
         original: phrase.original,
         translation: phrase.translation,
-        explanation: phrase.explanation,
+        explanation: phrase.explanation || undefined,
         totalSpeakCount: phrase.totalSpeakCount || 0,
-        dailySpeakCount: dailySpeakCount,
+        dailySpeakCount: phrase.dailySpeakCount || 0,
         languageCode: phrase.language.code
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error fetching specific phrase for speak:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

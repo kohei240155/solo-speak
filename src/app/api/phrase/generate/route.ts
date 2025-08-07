@@ -30,11 +30,15 @@ interface GeneratePhraseResponse {
   variations: PhraseVariation[]
 }
 
+/** フレーズ生成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns GeneratePhraseResponse - 生成されたフレーズのバリエーション
+ */
 export async function POST(request: NextRequest) {
   try {
     // リクエストから言語を取得
     const locale = getLocaleFromRequest(request)
-    
+
     // 認証チェック
     const authResult = await authenticateRequest(request)
     if ('error' in authResult) {
@@ -50,8 +54,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        remainingPhraseGenerations: true,
-        lastPhraseGenerationDate: true
+        remainingPhraseGenerations: true
       }
     })
 
@@ -62,41 +65,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 日付リセットロジック
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    let remainingGenerations = user.remainingPhraseGenerations
-
-    if (!user.lastPhraseGenerationDate) {
-      // 初回の場合は5回に設定
-      remainingGenerations = 5
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          remainingPhraseGenerations: 5,
-          lastPhraseGenerationDate: new Date()
-        }
-      })
-    } else {
-      const lastGenerationDay = new Date(user.lastPhraseGenerationDate)
-      lastGenerationDay.setHours(0, 0, 0, 0)
-      
-      // 最後の生成日が今日より前の場合のみリセット
-      if (lastGenerationDay.getTime() < today.getTime()) {
-        remainingGenerations = 5
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            remainingPhraseGenerations: 5,
-            lastPhraseGenerationDate: new Date()
-          }
-        })
-      }
-    }
-
     // 残り回数が0の場合はエラーを返す
-    if (remainingGenerations <= 0) {
+    if (user.remainingPhraseGenerations <= 0) {
       return NextResponse.json(
         { error: getTranslation(locale, 'phrase.messages.dailyLimitExceeded') },
         { status: 403 }
@@ -112,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ChatGPT APIに送信するプロンプトを構築
-    const { prompt } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
+    const prompt = getPromptTemplate(learningLanguage, nativeLanguage, desiredPhrase, selectedContext || undefined)
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -171,7 +141,7 @@ export async function POST(request: NextRequest) {
       await prisma.user.update({
         where: { id: userId },
         data: {
-          remainingPhraseGenerations: remainingGenerations - 1,
+          remainingPhraseGenerations: user.remainingPhraseGenerations - 1,
           lastPhraseGenerationDate: new Date()
         }
       })
@@ -194,24 +164,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// ChatGPT API関連関数
-
-function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string } {
-  // 括弧内のシチュエーションを抽出
-  const situationMatch = desiredPhrase.match(/\(([^)]+)\)/);
-  const bracketSituation = situationMatch ? situationMatch[1] : undefined;
-  
-  // selectedContextを優先し、なければ括弧内のシチュエーションを使用
-  // nullの場合はundefinedとして扱う
-  const situation = selectedContext || bracketSituation;
-  
-  // シチュエーション部分を除いたフレーズを取得
-  const cleanPhrase = desiredPhrase.replace(/\([^)]*\)/g, '').trim();
-  
-  // 新しいプロンプトシステムを使用
-  const prompt = getPromptTemplate(learningLanguage, nativeLanguage, cleanPhrase, situation);
-  
-  return { prompt };
 }

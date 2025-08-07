@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { CreateSituationRequest } from '@/types/situation'
+import { ApiErrorResponse } from '@/types/api-responses'
 
 const prisma = new PrismaClient()
 
-// GET: ユーザーのシチュエーション一覧を取得
+/** シチュエーションの一覧取得と新規作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns シチュエーションの一覧または新規作成されたシチュエーションデータ
+ */
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
@@ -44,11 +48,17 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching situations:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
 
-// POST: 新しいシチュエーションを作成
+ /** シチュエーションの新規作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns CreateSituationResponseData - 作成されたシチュエーションデータ
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック
@@ -63,11 +73,17 @@ export async function POST(request: NextRequest) {
     
     // バリデーション
     if (!body.name || body.name.trim().length === 0) {
-      return NextResponse.json({ error: 'Situation name is required' }, { status: 400 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'Situation name is required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     if (body.name.length > 20) {
-      return NextResponse.json({ error: 'Situation name must be 20 characters or less' }, { status: 400 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'Situation name must be 20 characters or less'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // 同じ名前のシチュエーションが既に存在するかチェック
@@ -80,7 +96,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingSituation) {
-      return NextResponse.json({ error: 'Situation with this name already exists' }, { status: 409 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'Situation with this name already exists'
+      }
+      return NextResponse.json(errorResponse, { status: 409 })
     }
 
     // 新しいシチュエーションを作成
@@ -100,6 +119,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error creating situation:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

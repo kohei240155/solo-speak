@@ -16,6 +16,10 @@ const client = new TextToSpeechClient({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 })
 
+/** * Google Cloud Text-to-Speech APIを使用してテキストを音声に変換するAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { success: boolean, audioData?: string, mimeType?: string, error?: string } - 音声データまたはエラー情報
+ */
 export async function POST(request: NextRequest) {
   try {
     const { text, languageCode = 'en' } = await request.json()

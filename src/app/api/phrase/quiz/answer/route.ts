@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { QuizAnswerResponse } from '@/types/quiz'
 
+/** * クイズ回答APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns QuizAnswerResponse - クイズの回答結果
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック
@@ -52,7 +57,7 @@ export async function POST(request: NextRequest) {
         correctQuizCount: result.correctQuizCount,
         incorrectQuizCount: result.incorrectQuizCount
       }
-    })
+    } satisfies QuizAnswerResponse)
 
   } catch (error) {
     console.error('Error updating quiz result:', error)

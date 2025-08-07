@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
-    const mode = searchParams.get('mode') || 'normal'
+    const mode = searchParams.get('mode')
     const count = searchParams.get('count')
 
     if (!language) {
@@ -22,28 +22,35 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    if (!mode || (mode !== 'normal' && mode !== 'random')) {
+      return NextResponse.json(
+        { error: 'Mode parameter is required and must be either "normal" or "random"' },
+        { status: 400 }
+      )
+    }
+
     // URLパラメータから問題数を取得（デフォルトは10）
     const questionCount = count ? parseInt(count, 10) : 10
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageExists, phrases] = await Promise.all([      
+    const [languageExists, phrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { 
           code: language,
-          deletedAt: null // 削除されていない言語のみ
+          deletedAt: null
         }
       }),
-      
+
       // データベースからフレーズを取得（削除されていないもののみ）
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
         where: {
-          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          userId: authResult.user.id,
           language: {
             code: language
           },
-          deletedAt: null // 削除されていないフレーズのみ
+          deletedAt: null
         },
         include: {
           language: true
@@ -73,13 +80,13 @@ export async function GET(request: NextRequest) {
     if (mode === 'random') {
       // ランダムモード：Fisher-Yates シャッフルを使用して確実にランダム化
       const shuffledPhrases = [...phrases]
-      
+
       // Fisher-Yates シャッフルアルゴリズム
       for (let i = shuffledPhrases.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledPhrases[i], shuffledPhrases[j]] = [shuffledPhrases[j], shuffledPhrases[i]]
       }
-      
+
       // 重複なしで必要な数だけ選択
       selectedPhrases = shuffledPhrases.slice(0, actualQuestionCount)
     } else {
@@ -90,17 +97,17 @@ export async function GET(request: NextRequest) {
         // 正解数で比較（少ない順）
         const correctA = a.correctQuizCount || 0
         const correctB = b.correctQuizCount || 0
-        
+
         if (correctA !== correctB) {
           return correctA - correctB // 正解数が少ない順
         }
-        
+
         // 正解数が同じ場合は登録日時で比較（古い順）
         const dateA = new Date(a.createdAt).getTime()
         const dateB = new Date(b.createdAt).getTime()
         return dateA - dateB // 古い順
       })
-      
+
       selectedPhrases = sortedPhrases.slice(0, actualQuestionCount)
     }
 
