@@ -1,6 +1,5 @@
 // Speak練習設定の型定義
 export interface SpeakConfig {
-  order: 'new-to-old' | 'old-to-new'
   language: string
   excludeIfSpeakCountGTE?: number // 指定回数以上のフレーズを除外（未設定の場合は制限なし）
   excludeTodayPracticed?: boolean // 今日既に練習したフレーズを除外

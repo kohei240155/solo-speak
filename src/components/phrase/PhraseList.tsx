@@ -78,7 +78,6 @@ export default function PhraseList({
   const handleSpeakStart = (config: SpeakConfig) => {
     // 設定に基づいてSpeak画面に遷移
     const queryParams = new URLSearchParams({
-      order: config.order,
       language: config.language,
       excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString()
     })

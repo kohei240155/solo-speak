@@ -26,15 +26,13 @@ export const useSpeakMode = ({
     if (!learningLanguage) return
 
     const params = new URLSearchParams(window.location.search)
-    const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
     const urlLanguage = params.get('language')
     const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
     const excludeTodayPracticed = params.get('excludeTodayPracticed')
-    
+
     // URLパラメータに設定がある場合、自動的に練習モードを開始
-    if (order && (order === 'new-to-old' || order === 'old-to-new')) {
+    if (urlLanguage) {
       const config: SpeakConfig = {
-        order,
         language: urlLanguage || learningLanguage,
         excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
         excludeTodayPracticed: excludeTodayPracticed === 'true'
@@ -81,7 +79,6 @@ export const useSpeakMode = ({
     
     // URLパラメータに選択した設定を反映
     const params = new URLSearchParams(window.location.search)
-    params.set('order', config.order)
     params.set('language', config.language)
     
     // excludeIfSpeakCountGTEパラメータを追加
@@ -102,7 +99,6 @@ export const useSpeakMode = ({
     // 更新されたURLパラメータから設定を取得してAPIリクエストに使用
     const updatedParams = new URLSearchParams(window.location.search)
     const urlConfig: SpeakConfig = {
-      order: (updatedParams.get('order') as 'new-to-old' | 'old-to-new') || config.order,
       language: updatedParams.get('language') || config.language,
       excludeIfSpeakCountGTE: updatedParams.get('excludeIfSpeakCountGTE') ? 
         parseInt(updatedParams.get('excludeIfSpeakCountGTE')!, 10) : 
