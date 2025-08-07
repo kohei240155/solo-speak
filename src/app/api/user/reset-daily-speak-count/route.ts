@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
+import { ApiErrorResponse, UserDailyResetResponse } from '@/types/api-responses'
 
 /**
  * ユーザーの日次スピーキング練習開始時にdailySpeakCountをリセット
@@ -25,7 +26,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // UTC基準での日付比較
@@ -68,7 +72,7 @@ export async function POST(request: NextRequest) {
       resetCount = updateResult.count
     }
 
-    return NextResponse.json({
+    const responseData: UserDailyResetResponse = {
       success: true,
       reset: shouldReset,
       message: shouldReset 
@@ -76,13 +80,15 @@ export async function POST(request: NextRequest) {
         : 'No reset needed - already practiced today',
       count: resetCount,
       lastSpeakingDate: user.lastSpeakingDate
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error resetting daily speak count:', error)
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

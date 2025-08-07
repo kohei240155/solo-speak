@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking-api'
-import { ApiErrorResponse } from '@/types/api'
+import { ApiErrorResponse } from '@/types/api-responses'
 
 export async function GET(request: NextRequest) {
   try {

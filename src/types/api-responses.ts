@@ -36,7 +36,7 @@ export interface PhraseResponse {
 
 // Speak API レスポンス型
 export interface SpeakPhraseResponse extends BaseApiResponse {
-  success: true
+  success: boolean
   phrase?: PhraseResponse
   message?: string
   allDone?: boolean
@@ -58,3 +58,12 @@ export interface PhraseDetailResponse {
 
 // API呼び出し結果のユニオン型
 export type ApiResult<T> = T | ApiErrorResponse
+
+// ユーザー日次リセットレスポンス型
+export interface UserDailyResetResponse {
+  success: boolean
+  reset: boolean
+  message: string
+  count: number
+  lastSpeakingDate: Date | null
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
 
 export async function GET(
   request: NextRequest,
@@ -28,30 +29,32 @@ export async function GET(
     })
 
     if (!phrase) {
-      return NextResponse.json({
-        success: false,
-        message: 'Phrase not found or access denied'
-      }, { status: 404 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or access denied'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
-    return NextResponse.json({
+    const responseData: SpeakPhraseResponse = {
       success: true,
       phrase: {
         id: phrase.id,
         original: phrase.original,
         translation: phrase.translation,
-        explanation: phrase.explanation,
+        explanation: phrase.explanation || undefined,
         totalSpeakCount: phrase.totalSpeakCount || 0,
         dailySpeakCount: phrase.dailySpeakCount || 0,
         languageCode: phrase.language.code
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error fetching specific phrase for speak:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

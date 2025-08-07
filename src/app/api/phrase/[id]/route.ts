@@ -7,7 +7,7 @@ import {
   UpdatePhraseResponseData, 
   DeletePhraseResponseData 
 } from '@/types/phrase-api'
-import { ApiErrorResponse } from '@/types/api'
+import { ApiErrorResponse } from '@/types/api-responses'
 
 export async function GET(
   request: NextRequest,

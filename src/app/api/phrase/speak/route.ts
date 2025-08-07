@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { ApiErrorResponse } from '@/types/api'
+import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
 
 export async function GET(request: NextRequest) {
   try {
@@ -93,10 +93,11 @@ export async function GET(request: NextRequest) {
     ])
 
     if (!languageExists) {
-      return NextResponse.json({
+      const errorResponse: SpeakPhraseResponse = {
         success: false,
         message: `Language with code '${language}' not found`
-      }, { status: 400 })
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     if (phrases.length === 0) {
@@ -105,18 +106,20 @@ export async function GET(request: NextRequest) {
       
       if (allSessionCompleted) {
         // All Done状態の場合は成功レスポンスとして返す（トーストエラーを防ぐため）
-        return NextResponse.json({
+        const responseData: SpeakPhraseResponse = {
           success: true,
           allDone: true,
           message: 'All available phrases have been practiced in this session'
-        })
+        }
+        return NextResponse.json(responseData)
       } else {
         // フレーズがない場合はエラーとして返す
-        return NextResponse.json({
+        const responseData: SpeakPhraseResponse = {
           success: false,
           message: 'No phrases available for practice in this session',
           allDone: false
-        })
+        }
+        return NextResponse.json(responseData)
       }
     }
 
@@ -147,18 +150,20 @@ export async function GET(request: NextRequest) {
     // 最初のフレーズを返す
     const firstPhrase = sortedPhrases[0]
 
-    return NextResponse.json({
+    const responseData: SpeakPhraseResponse = {
       success: true,
       phrase: {
         id: firstPhrase.id,
         original: firstPhrase.original,
         translation: firstPhrase.translation,
-        explanation: firstPhrase.explanation,
+        explanation: firstPhrase.explanation || undefined,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
         dailySpeakCount: firstPhrase.dailySpeakCount || 0,
         languageCode: firstPhrase.language.code
       }
-    })
+    }
+
+    return NextResponse.json(responseData)
 
   } catch {
     const errorResponse: ApiErrorResponse = {

@@ -14,7 +14,7 @@ import {
   checkUsernameConflict 
 } from '@/utils/database-helpers'
 import { prisma } from '@/utils/prisma'
-import { ApiErrorResponse } from '@/types/api'
+import { ApiErrorResponse } from '@/types/api-responses'
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
