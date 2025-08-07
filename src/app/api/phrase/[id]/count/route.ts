@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { UpdatePhraseCountResponseData } from '@/types/phrase-api'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function POST(
   request: NextRequest,
@@ -17,10 +18,10 @@ export async function POST(
     const { id: phraseId } = await params
 
     if (!phraseId) {
-      return NextResponse.json(
-        { error: 'Phrase ID is required' },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase ID is required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // リクエストボディから増加するカウント数を取得（0以上の値を許可）
@@ -36,10 +37,10 @@ export async function POST(
     })
 
     if (!existingPhrase) {
-      return NextResponse.json(
-        { error: 'Phrase not found or you do not have permission to access it' },
-        { status: 404 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Phrase not found or you do not have permission to access it'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     const currentDate = new Date()
@@ -96,7 +97,7 @@ export async function POST(
       return phrase
     })
 
-    return NextResponse.json({
+    const responseData: UpdatePhraseCountResponseData = {
       success: true,
       phrase: {
         id: updatedPhrase.id,
@@ -105,13 +106,15 @@ export async function POST(
         totalSpeakCount: updatedPhrase.totalSpeakCount,
         dailySpeakCount: updatedPhrase.dailySpeakCount
       }
-    } satisfies UpdatePhraseCountResponseData)
+    }
+
+    return NextResponse.json(responseData)
 
   } catch (error) {
     console.error('Error updating phrase count:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }

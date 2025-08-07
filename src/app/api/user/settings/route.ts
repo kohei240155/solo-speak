@@ -14,6 +14,7 @@ import {
   checkUsernameConflict 
 } from '@/utils/database-helpers'
 import { prisma } from '@/utils/prisma'
+import { ApiErrorResponse } from '@/types/api'
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
@@ -26,7 +27,10 @@ export async function GET(request: NextRequest) {
     const userSettings = await getUserSettings(authResult.user.id)
 
     if (!userSettings) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      const errorResponse: ApiErrorResponse = {
+        error: 'User not found'
+      }
+      return NextResponse.json(errorResponse, { status: 404 })
     }
 
     // ユーザー切り替え対応のためキャッシュを無効化
@@ -61,7 +65,10 @@ export async function POST(request: NextRequest) {
     // 必須フィールドのバリデーション
     const requiredValidation = validateRequiredFields(body, ['username', 'nativeLanguageId', 'defaultLearningLanguageId'])
     if (!requiredValidation.isValid) {
-      return NextResponse.json({ error: requiredValidation.error }, { status: 400 })
+      const errorResponse: ApiErrorResponse = {
+        error: requiredValidation.error || 'Required fields validation failed'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // 言語IDの存在確認
@@ -154,7 +161,10 @@ export async function PUT(request: NextRequest) {
     if (username) {
       const usernameValidation = validateUsername(username)
       if (!usernameValidation.isValid) {
-        return NextResponse.json({ error: usernameValidation.error }, { status: 400 })
+        const errorResponse: ApiErrorResponse = {
+          error: usernameValidation.error || 'Username validation failed'
+        }
+        return NextResponse.json(errorResponse, { status: 400 })
       }
 
       // ユーザー名の重複チェック
@@ -170,7 +180,10 @@ export async function PUT(request: NextRequest) {
     if (email) {
       const emailValidation = validateEmail(email)
       if (!emailValidation.isValid) {
-        return NextResponse.json({ error: emailValidation.error }, { status: 400 })
+        const errorResponse: ApiErrorResponse = {
+          error: emailValidation.error || 'Email validation failed'
+        }
+        return NextResponse.json(errorResponse, { status: 400 })
       }
     }
 

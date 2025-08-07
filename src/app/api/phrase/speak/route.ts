@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { ApiErrorResponse } from '@/types/api'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,10 +18,10 @@ export async function GET(request: NextRequest) {
     const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
 
     if (!language) {
-      return NextResponse.json(
-        { error: 'Language parameter is required' },
-        { status: 400 }
-      )
+      const errorResponse: ApiErrorResponse = {
+        error: 'Language parameter is required'
+      }
+      return NextResponse.json(errorResponse, { status: 400 })
     }
 
     // モード設定をクエリパラメータから取得
@@ -160,9 +161,9 @@ export async function GET(request: NextRequest) {
     })
 
   } catch {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    const errorResponse: ApiErrorResponse = {
+      error: 'Internal server error'
+    }
+    return NextResponse.json(errorResponse, { status: 500 })
   }
 }
