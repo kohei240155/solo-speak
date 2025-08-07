@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
+import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
 interface QuizPracticeProps {
@@ -9,6 +10,7 @@ interface QuizPracticeProps {
   currentPhrase: QuizPhrase
   showTranslation: boolean
   onShowTranslation: () => void
+  onHideTranslation: () => void
   onAnswer: (isCorrect: boolean) => void
   onNext: () => void
   onFinish: () => void
@@ -19,6 +21,7 @@ export default function QuizPractice({
   currentPhrase,
   showTranslation,
   onShowTranslation,
+  onHideTranslation,
   onAnswer,
   onNext,
   onFinish
@@ -26,8 +29,17 @@ export default function QuizPractice({
   const [hasAnswered, setHasAnswered] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
 
+  // TTS機能の初期化
+  const { isPlaying, error: ttsError, playText } = useTextToSpeech({
+    languageCode: currentPhrase?.languageCode || 'en'
+  })
+
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
+    
+    // Got It/No Ideaボタンを押した瞬間に翻訳を隠す
+    onHideTranslation()
+    
     setHasAnswered(true)
     setSelectedAnswer(isCorrect)
     onAnswer(isCorrect)
@@ -37,18 +49,37 @@ export default function QuizPractice({
       if (isLastQuestion) {
         onFinish()
       } else {
+        // ローカル状態をリセットしてから次の問題に進む
         setHasAnswered(false)
         setSelectedAnswer(null)
+        // onNextが呼ばれることで、useQuizPhraseのhandleNextが実行され、showTranslationがfalseになる
         onNext()
       }
     }, 1000)
   }
 
-  const isLastQuestion = session.currentIndex >= session.totalCount - 1
+  // 音声再生ハンドラー
+  const handlePlayAudio = async () => {
+    if (!currentPhrase?.original || isPlaying) return
+    
+    try {
+      await playText(currentPhrase.original)
+    } catch (error) {
+      console.error('Failed to play audio:', error)
+    }
+  }
 
+  const isLastQuestion = session.currentIndex >= session.totalCount - 1
 
   return (
     <>
+      {/* TTS エラー表示 */}
+      {ttsError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">{ttsError}</p>
+        </div>
+      )}
+      
       {/* プログレスバー */}
       <div className="w-full mb-2">
         <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
@@ -80,22 +111,22 @@ export default function QuizPractice({
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
-          {showTranslation ? (
-            <div 
-              className="text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium"
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
-              }}
-            >
-              {currentPhrase.original}
-            </div>
-          ) : (
-            <div className="w-full">
-              {/* 翻訳が表示されていない時は空のスペース */}
-            </div>
-          )}
+          <div 
+            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium cursor-pointer transition-all duration-500 ease-out ${
+              showTranslation 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-2'
+            } ${isPlaying ? 'opacity-70' : 'hover:text-gray-800'}`}
+            style={{ 
+              wordWrap: 'break-word',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word'
+            }}
+            onClick={showTranslation ? handlePlayAudio : undefined}
+            title={showTranslation ? "Click to play audio" : undefined}
+          >
+            {currentPhrase.original}
+          </div>
         </div>
       </div>
 

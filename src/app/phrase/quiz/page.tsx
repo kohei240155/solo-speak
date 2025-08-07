@@ -33,6 +33,7 @@ export default function PhraseQuizPage() {
     showTranslation,
     fetchQuizSession,
     handleShowTranslation,
+    handleHideTranslation,
     handleAnswer,
     handleNext,
     resetQuiz
@@ -146,6 +147,7 @@ export default function PhraseQuizPage() {
               currentPhrase={currentPhrase}
               showTranslation={showTranslation}
               onShowTranslation={handleShowTranslation}
+              onHideTranslation={handleHideTranslation}
               onAnswer={handleAnswer}
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}

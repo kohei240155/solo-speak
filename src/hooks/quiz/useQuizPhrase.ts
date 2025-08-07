@@ -11,6 +11,7 @@ interface UseQuizPhraseReturn {
   showTranslation: boolean
   fetchQuizSession: (config: QuizConfig) => Promise<boolean>
   handleShowTranslation: () => void
+  handleHideTranslation: () => void
   handleAnswer: (isCorrect: boolean) => Promise<void>
   handleNext: () => void
   resetQuiz: () => void
@@ -63,6 +64,10 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     setShowTranslation(true)
   }, [])
 
+  const handleHideTranslation = useCallback(() => {
+    setShowTranslation(false)
+  }, [])
+
   const handleAnswer = useCallback(async (isCorrect: boolean) => {
     if (!currentPhrase || !session) return
 
@@ -106,6 +111,7 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     showTranslation,
     fetchQuizSession,
     handleShowTranslation,
+    handleHideTranslation,
     handleAnswer,
     handleNext,
     resetQuiz
