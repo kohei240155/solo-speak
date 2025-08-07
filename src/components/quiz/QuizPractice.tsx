@@ -10,6 +10,7 @@ interface QuizPracticeProps {
   currentPhrase: QuizPhrase
   showTranslation: boolean
   onShowTranslation: () => void
+  onHideTranslation: () => void
   onAnswer: (isCorrect: boolean) => void
   onNext: () => void
   onFinish: () => void
@@ -20,6 +21,7 @@ export default function QuizPractice({
   currentPhrase,
   showTranslation,
   onShowTranslation,
+  onHideTranslation,
   onAnswer,
   onNext,
   onFinish
@@ -34,6 +36,10 @@ export default function QuizPractice({
 
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
+    
+    // Got It/No Ideaボタンを押した瞬間に翻訳を隠す
+    onHideTranslation()
+    
     setHasAnswered(true)
     setSelectedAnswer(isCorrect)
     onAnswer(isCorrect)
@@ -43,8 +49,10 @@ export default function QuizPractice({
       if (isLastQuestion) {
         onFinish()
       } else {
+        // ローカル状態をリセットしてから次の問題に進む
         setHasAnswered(false)
         setSelectedAnswer(null)
+        // onNextが呼ばれることで、useQuizPhraseのhandleNextが実行され、showTranslationがfalseになる
         onNext()
       }
     }, 1000)
@@ -62,7 +70,6 @@ export default function QuizPractice({
   }
 
   const isLastQuestion = session.currentIndex >= session.totalCount - 1
-
 
   return (
     <>
@@ -104,26 +111,22 @@ export default function QuizPractice({
         </div>
         {/* 学習言語のフレーズ - タップで表示 */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
-          {showTranslation ? (
-            <div 
-              className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium cursor-pointer transition-colors ${
-                isPlaying ? 'opacity-70' : 'hover:text-gray-800'
-              }`}
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
-              }}
-              onClick={handlePlayAudio}
-              title="Click to play audio"
-            >
-              {currentPhrase.original}
-            </div>
-          ) : (
-            <div className="w-full">
-              {/* 翻訳が表示されていない時は空のスペース */}
-            </div>
-          )}
+          <div 
+            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium cursor-pointer transition-all duration-500 ease-out ${
+              showTranslation 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-2'
+            } ${isPlaying ? 'opacity-70' : 'hover:text-gray-800'}`}
+            style={{ 
+              wordWrap: 'break-word',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word'
+            }}
+            onClick={showTranslation ? handlePlayAudio : undefined}
+            title={showTranslation ? "Click to play audio" : undefined}
+          >
+            {currentPhrase.original}
+          </div>
         </div>
       </div>
 
