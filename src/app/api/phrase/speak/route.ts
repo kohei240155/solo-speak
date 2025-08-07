@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
-    const order = searchParams.get('order') || 'new_to_old'
     const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
     const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
 
@@ -31,7 +30,6 @@ export async function GET(request: NextRequest) {
 
     // モード設定をクエリパラメータから取得
     const config = {
-      order,
       excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
       excludeTodayPracticed
     }
@@ -131,7 +129,7 @@ export async function GET(request: NextRequest) {
     // ソート処理
     const sortedPhrases = [...phrases]
 
-    // 常に音読回数の少ない順を優先
+    // 常に音読回数の少ない順を優先、音読回数が同じ場合は古い順
     sortedPhrases.sort((a, b) => {
       const practiceA = a.totalSpeakCount || 0
       const practiceB = b.totalSpeakCount || 0
@@ -141,15 +139,10 @@ export async function GET(request: NextRequest) {
         return practiceA - practiceB // 少ない順
       }
       
-      // 音読回数が同じ場合は日付順でソート
+      // 音読回数が同じ場合は古い順でソート
       const dateA = new Date(a.createdAt).getTime()
       const dateB = new Date(b.createdAt).getTime()
-      
-      if (config.order === 'new_to_old') {
-        return dateB - dateA // 新しい順
-      } else {
-        return dateA - dateB // 古い順
-      }
+      return dateA - dateB // 古い順（old-to-new）
     })
 
     // 最初のフレーズを返す

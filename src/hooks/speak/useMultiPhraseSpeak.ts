@@ -33,7 +33,6 @@ export function useMultiPhraseSpeak({
       // URLパラメータから最新の設定を取得してAPIリクエストに使用
       const params = new URLSearchParams(window.location.search)
       const currentConfig: SpeakConfig = {
-        order: (params.get('order') as 'new-to-old' | 'old-to-new') || speakMode.config.order,
         language: params.get('language') || speakMode.config.language,
         excludeIfSpeakCountGTE: params.get('excludeIfSpeakCountGTE') ? 
           parseInt(params.get('excludeIfSpeakCountGTE')!, 10) : 
@@ -42,14 +41,6 @@ export function useMultiPhraseSpeak({
           params.get('excludeTodayPracticed') === 'true' : 
           speakMode.config.excludeTodayPracticed
       }
-      
-      // デバッグ用ログ - Next時の設定確認
-      console.log('useMultiPhraseSpeak - handleNextWithConfig currentConfig from URL:', {
-        excludeTodayPracticed: currentConfig.excludeTodayPracticed,
-        excludeIfSpeakCountGTE: currentConfig.excludeIfSpeakCountGTE,
-        order: currentConfig.order,
-        language: currentConfig.language
-      })
       
       setIsNextLoading(true)
       try {

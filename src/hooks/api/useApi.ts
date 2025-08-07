@@ -68,7 +68,6 @@ export async function resetDailySpeakCount() {
  */
 export async function getSpeakPhrase(params: {
   language?: string
-  order?: string
   excludeIfSpeakCountGTE?: string
   excludeTodayPracticed?: string
 }): Promise<SpeakPhraseApiResponse> {

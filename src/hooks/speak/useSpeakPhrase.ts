@@ -18,14 +18,12 @@ export const useSpeakPhrase = () => {
   // ページ読み込み時にURLパラメータから設定を復元
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const order = params.get('order') as 'new-to-old' | 'old-to-new' | null
     const language = params.get('language')
     const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
     const excludeTodayPracticed = params.get('excludeTodayPracticed')
     
-    if (order && language) {
+    if (language) {
       const restoredConfig: SpeakConfig = {
-        order,
         language,
         excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
         excludeTodayPracticed: excludeTodayPracticed === 'true'
@@ -62,7 +60,6 @@ export const useSpeakPhrase = () => {
       // URLパラメータに設定を保存
       const params = new URLSearchParams(window.location.search)
       
-      params.set('order', config.order)
       params.set('language', config.language)
       
       if (config.excludeIfSpeakCountGTE !== undefined) {
@@ -86,7 +83,6 @@ export const useSpeakPhrase = () => {
     try {
       const params = new URLSearchParams({
         language: configToUse.language,
-        order: configToUse.order.replaceAll('-', '_'), // new-to-old → new_to_old
         excludeTodayPracticed: (configToUse.excludeTodayPracticed ?? true).toString()
       })
 

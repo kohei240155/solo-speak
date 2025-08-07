@@ -32,7 +32,6 @@ export async function updatePhraseCount(
 export async function getSpeakPhrase(
   languageCode: string,
   options?: {
-    order?: 'new_to_old' | 'old_to_new'
     excludeIfSpeakCountGTE?: number
     excludeTodayPracticed?: boolean
   }
@@ -40,7 +39,6 @@ export async function getSpeakPhrase(
   try {
     const params = new URLSearchParams({ language: languageCode })
     
-    if (options?.order) params.append('order', options.order)
     if (options?.excludeIfSpeakCountGTE !== undefined) {
       params.append('excludeIfSpeakCountGTE', options.excludeIfSpeakCountGTE.toString())
     }

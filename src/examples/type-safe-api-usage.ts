@@ -20,7 +20,6 @@ export async function handlePhraseCount(phraseId: string, count: number) {
 // 使用例2: Speakフレーズ取得
 export async function handleGetSpeakPhrase(languageCode: string) {
   const result = await getSpeakPhrase(languageCode, {
-    order: 'new_to_old',
     excludeIfSpeakCountGTE: 5,
     excludeTodayPracticed: false
   })

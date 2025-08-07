@@ -20,7 +20,6 @@ export type { SpeakConfig } from '@/types/speak'
 
 export default function SpeakModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: SpeakModeModalProps) {
   const { t } = useTranslation('common')
-  const [order, setOrder] = useState<'new-to-old' | 'old-to-new'>('new-to-old')
   const [excludeThreshold, setExcludeThreshold] = useState<string>('50') // 初期値を50回以上に設定
   const [excludeTodayPracticed, setExcludeTodayPracticed] = useState<boolean>(true) // 今日練習済みのフレーズを除外するかどうか（デフォルトはtrue）
   const [isLoading, setIsLoading] = useState(false)
@@ -60,15 +59,13 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       // モード設定でAPI呼び出し
       const params = {
         language: selectedLanguage,
-        order: order.replaceAll('-', '_'), // new-to-old → new_to_old
         excludeIfSpeakCountGTE: excludeThreshold || undefined, // 未選択の場合はundefined
         excludeTodayPracticed: excludeTodayPracticed.toString() // 常に文字列として送信
       }
 
       console.log('SpeakModeModal - Modal state before API call:', {
         excludeTodayPracticed: excludeTodayPracticed,
-        excludeThreshold: excludeThreshold,
-        order: order
+        excludeThreshold: excludeThreshold
       })
       console.log('SpeakModeModal - API params:', params)
 
@@ -77,7 +74,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       if (data.success && data.phrase) {
         // 設定オブジェクトを作成して渡す
         const config: SpeakConfig = {
-          order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined, // 未選択の場合はundefined
           excludeTodayPracticed: excludeTodayPracticed // 今日練習済みを除外するかどうか
@@ -94,7 +90,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         onClose()
         // onStartにall doneフラグを付けて呼び出し
         const allDoneConfig = { 
-          order: order as 'new-to-old' | 'old-to-new',
           language: selectedLanguage,
           excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
           excludeTodayPracticed: excludeTodayPracticed, // 今日練習済みを除外するかどうか
@@ -124,17 +119,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       onClick: () => setShowExplanationModal(true)
     },
     configItems: [
-      {
-        id: 'order',
-        label: t('speak.modal.startFrom'),
-        type: 'select',
-        value: order,
-        options: [
-          { value: 'new-to-old', label: t('speak.modal.options.newest') },
-          { value: 'old-to-new', label: t('speak.modal.options.oldest') }
-        ],
-        onChange: (value: string | boolean) => setOrder(value as 'new-to-old' | 'old-to-new')
-      },
       {
         id: 'excludeThreshold',
         label: t('speak.modal.targetPhrases'),
