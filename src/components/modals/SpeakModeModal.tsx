@@ -3,7 +3,7 @@ import ModeModal, { ModeModalConfig } from './ModeModal'
 import SpeakModeExplanationModal from './SpeakModeExplanationModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { getSpeakPhrase, resetSessionSpoken } from '@/hooks/api/useApi'
+import { getSpeakPhrase, resetSessionSpoken, resetDailySpeakCount } from '@/hooks/api/useApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { AiOutlineQuestionCircle } from 'react-icons/ai'
@@ -37,7 +37,18 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
           // エラーが発生してもモーダルの表示は継続する
         }
       }
+      
+      const resetDailyCount = async () => {
+        try {
+          await resetDailySpeakCount()
+        } catch (error) {
+          console.error('SpeakModeModal - Failed to reset daily speak count:', error)
+          // エラーが発生してもモーダルの表示は継続する
+        }
+      }
+      
       resetSession()
+      resetDailyCount()
     }
   }, [isOpen])
 

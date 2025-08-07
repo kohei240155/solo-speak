@@ -62,6 +62,18 @@ export async function resetSessionSpoken() {
 }
 
 /**
+ * ユーザーの全フレーズのdailySpeakCountをリセットする関数（UTC基準での日付変更時のみ）
+ */
+export async function resetDailySpeakCount() {
+  try {
+    return await api.post('/api/user/reset-daily-speak-count')
+  } catch (error) {
+    console.error('Failed to reset daily speak count:', error)
+    throw error
+  }
+}
+
+/**
  * Speak用のフレーズを取得する関数
  */
 export async function getSpeakPhrase(params: {

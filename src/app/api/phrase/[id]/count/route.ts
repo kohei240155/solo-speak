@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { isDayChanged } from '@/utils/date-helpers'
 
 export async function POST(
   request: NextRequest,
@@ -43,12 +42,8 @@ export async function POST(
     }
 
     const currentDate = new Date()
-    const isDayChangedFlag = isDayChanged(existingPhrase.lastSpeakDate, currentDate)
 
-    // 日付が変わった場合は dailySpeakCount をリセット
-    const dailyCountUpdate = isDayChangedFlag 
-      ? countIncrement  // 新しい日なのでカウントをリセットして追加
-      : { increment: countIncrement }  // 同じ日なので追加
+    // dailySpeakCount を単純に増加（リセットは集中化されたAPIで実行済み）
 
     // トランザクションで音読回数の更新とspeak_logsの記録を同時に実行
     const updatedPhrase = await prisma.$transaction(async (prisma) => {
@@ -59,7 +54,9 @@ export async function POST(
           totalSpeakCount: {
             increment: countIncrement
           },
-          dailySpeakCount: dailyCountUpdate,
+          dailySpeakCount: {
+            increment: countIncrement
+          },
           lastSpeakDate: currentDate,
           sessionSpoken: true // セッション中にSpeak練習済みとマーク（Count時に自動設定）
         },

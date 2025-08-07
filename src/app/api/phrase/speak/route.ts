@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { isDayChanged } from '@/utils/date-helpers'
 
 export async function GET(request: NextRequest) {
   try {
@@ -146,11 +145,6 @@ export async function GET(request: NextRequest) {
 
     // 最初のフレーズを返す
     const firstPhrase = sortedPhrases[0]
-    const currentDate = new Date()
-
-    // 日付が変わった場合はdailySpeakCountを0として扱う（UTC基準）
-    const isDayChangedFlag = isDayChanged(firstPhrase.lastSpeakDate, currentDate)
-    const dailySpeakCount = isDayChangedFlag ? 0 : (firstPhrase.dailySpeakCount || 0)
 
     return NextResponse.json({
       success: true,
@@ -160,7 +154,7 @@ export async function GET(request: NextRequest) {
         translation: firstPhrase.translation,
         explanation: firstPhrase.explanation,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
-        dailySpeakCount: dailySpeakCount,
+        dailySpeakCount: firstPhrase.dailySpeakCount || 0,
         languageCode: firstPhrase.language.code
       }
     })

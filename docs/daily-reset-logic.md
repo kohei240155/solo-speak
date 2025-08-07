@@ -82,74 +82,107 @@ if (newUTCDate !== currentUTCDate) {
 
 ### リセット実行API
 
-#### `GET /api/phrase/speak`
-**実行タイミング**: Speak練習開始時、次のフレーズ取得時
-
-#### `GET /api/phrase/[id]/speak`
-**実行タイミング**: 特定フレーズでのSpeak練習開始時
+#### `POST /api/user/reset-daily-speak-count` ⭐ **NEW**
+**実行タイミング**: Speak Modeモーダルを開いた瞬間（自動実行）
 
 **リセット判定ロジック**:
 ```typescript
-// src/utils/date-helpers.ts の isDayChanged 関数を使用
-const isDayChangedFlag = isDayChanged(phrase.lastSpeakDate, currentDate)
+// UTC基準での日付比較
+const now = new Date()
+const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 
-// isDayChanged関数の内部処理（UTC基準）
-const lastDateUTC = new Date(Date.UTC(
-  lastSpeakDate.getUTCFullYear(),
-  lastSpeakDate.getUTCMonth(),
-  lastSpeakDate.getUTCDate()
+// ユーザーのlastSpeakingDateをUTC基準の日付に変換
+const lastSpeakingDateUTC = new Date(user.lastSpeakingDate)
+const lastSpeakingDayUTC = new Date(Date.UTC(
+  lastSpeakingDateUTC.getUTCFullYear(), 
+  lastSpeakingDateUTC.getUTCMonth(), 
+  lastSpeakingDateUTC.getUTCDate()
 ))
 
-const currentDateUTC = new Date(Date.UTC(
-  currentDate.getUTCFullYear(),
-  currentDate.getUTCMonth(),
-  currentDate.getUTCDate()
-))
-
-return lastDateUTC.getTime() !== currentDateUTC.getTime()
+// 日付比較でリセット判定
+if (lastSpeakingDayUTC.getTime() < todayUTC.getTime()) {
+  // 日付が変わった場合のリセット処理
+}
 ```
+
+**リセット条件**:
+1. `lastSpeakingDate`が存在しない（初回）
+2. 最後のスピーキング日がUTC基準で今日より前
 
 **リセット動作**:
 ```typescript
-// APIレスポンスでの値調整
-const dailySpeakCount = isDayChangedFlag ? 0 : (phrase.dailySpeakCount || 0)
+// ユーザーに紐づく全てのフレーズのdailySpeakCountを0にリセット
+await prisma.phrase.updateMany({
+  where: { userId: userId, deletedAt: null },
+  data: { dailySpeakCount: 0 }
+})
+
+// ユーザーのlastSpeakingDateを更新
+await prisma.user.update({
+  where: { id: userId },
+  data: { lastSpeakingDate: new Date() }
+})
 ```
 
-**注意**: データベースの`dailySpeakCount`は実際には更新されず、APIレスポンス時に動的に0として返される
+#### `GET /api/phrase/speak`
+**実行タイミング**: Speak練習開始時、次のフレーズ取得時
+**機能**: フィルタリング条件に基づいてフレーズを取得
+
+#### `GET /api/phrase/[id]/speak`
+**実行タイミング**: 特定フレーズでのSpeak練習開始時
+**機能**: 指定されたフレーズIDのSpeak練習データを取得
+
+**注意**: これらのAPIは単純にデータを取得するだけで、日付リセット処理は行いません。リセット処理は`POST /api/user/reset-daily-speak-count`APIで一元化されています。
 
 ### 実際のデータベース更新タイミング
 
 #### `POST /api/phrase/[id]/count`
 **実行タイミング**: Speak練習でCountボタンが押された時（ペンディングカウント送信時）
 
-**リセット処理**:
+**処理内容**:
 ```typescript
-const isDayChangedFlag = isDayChanged(existingPhrase.lastSpeakDate, currentDate)
-
-// 日付が変わった場合はdailySpeakCountをリセット
-const dailyCountUpdate = isDayChangedFlag 
-  ? countIncrement  // 新しい日なのでカウントをリセットして追加
-  : { increment: countIncrement }  // 同じ日なので追加
-
-// データベース更新
+// 単純にカウントを追加（日付チェックは不要、既にモーダル開封時にリセット済み）
 UPDATE phrases SET 
-  dailySpeakCount = (新しい値またはインクリメント),
+  dailySpeakCount = dailySpeakCount + countIncrement,
   totalSpeakCount = totalSpeakCount + countIncrement,
   lastSpeakDate = NOW()
 WHERE id = phraseId
 ```
 
-### 自動検出機能
-**フロントエンド**: 
-- `useSpeakPhrase.ts`: 複数フレーズモード用
-- `useSinglePhraseSpeak.ts`: 単一フレーズモード用
+**注意**: 日付変更時のリセット処理は`POST /api/user/reset-daily-speak-count`で既に完了しているため、このAPIでは単純にカウントを追加するだけです。
 
+### Speak Modeモーダルでの統合リセット
+
+**実行タイミング**: ユーザーがSpeake Modeモーダルを開いた瞬間
+
+**実行される処理**:
+1. `resetSessionSpoken()` - セッション練習状態をリセット
+2. `resetDailySpeakCount()` - 日次音読カウントをリセット（UTC基準での日付判定）
+
+**動作フロー**:
 ```typescript
-// UTC日付が変わったら自動的にデータ再取得
-if (newUTCDate !== currentUTCDate) {
-  fetchSpeakPhrase(config) // または refetchPhrase()
-}
+// SpeakModeModal.tsx
+useEffect(() => {
+  if (isOpen) {
+    const resetSession = async () => {
+      await resetSessionSpoken()  // 既存のセッションリセット
+    }
+    
+    const resetDailyCount = async () => {
+      await resetDailySpeakCount()  // 新しい日次カウントリセット
+    }
+    
+    resetSession()
+    resetDailyCount()
+  }
+}, [isOpen])
 ```
+
+このにより、Speak Modeモーダルを開くだけで：
+- **セッション練習状態**（`sessionSpoken`）がリセットされ
+- **日次音読カウント**（`dailySpeakCount`）も日付変更時に自動的にリセットされる
+
+ユーザーは何も考えずにSpeak Modeモーダルを開けば、適切なリセット処理が自動実行されます。
 
 ---
 
@@ -169,25 +202,30 @@ if (newUTCDate !== currentUTCDate) {
 
 ### SpeakのTodayカウントリセットの場合
 
-1. **ユーザーがSpeak練習を開始**
-2. `GET /api/phrase/speak` または `GET /api/phrase/[id]/speak` が実行される
-3. `lastSpeakDate` と現在のUTC日付を比較
+1. **ユーザーがSpeak Modeモーダルを開く**
+2. `POST /api/user/reset-daily-speak-count` が自動実行される
+3. `lastSpeakingDate` と現在のUTC日付を比較
 4. 日付が変わっていれば：
-   - APIレスポンスで `dailySpeakCount = 0` として返す
-   - （データベースは後でCount時に更新）
-5. **ユーザーがCountボタンを押す**
-6. `POST /api/phrase/[id]/count` が実行される
-7. 再度日付チェックして、必要に応じて `dailySpeakCount` をリセット
-8. データベースを更新
+   - ユーザーに紐づく全フレーズの `dailySpeakCount = 0` にリセット
+   - ユーザーの `lastSpeakingDate` を現在時刻に更新
+5. **ユーザーがSpeak練習を開始**
+6. `GET /api/phrase/speak` または `GET /api/phrase/[id]/speak` が実行される（データ取得のみ）
+7. **ユーザーがCountボタンを押す**
+8. `POST /api/phrase/[id]/count` が実行される
+9. データベースを更新（日付チェックは不要、既にリセット済み）
 
 ---
 
 ## 注意点
 
-1. **リセットはAPI実行時のみ**: 自動的に深夜0時にリセットされるわけではなく、ユーザーがアプリを使用してAPIが呼ばれた時に判定・実行される
+1. **リセットはSpeak Modeモーダル開封時**: 新しいAPIにより、Speak Modeモーダルを開いた瞬間に日次リセットが判定・実行される
 
 2. **タイムゾーン統一**: すべてUTC基準で統一されているため、世界中のユーザーが同じ時刻（UTC午前0時）でリセットされる
 
-3. **フロントエンド自動検出**: 1分ごとの日付変更チェックにより、ユーザーがアプリを開いたままでも自動的にリセットが反映される
+3. **Speak Modeモーダルでの統合リセット**: モーダルを開くだけで、セッション状態と日次カウントの両方が適切にリセットされる
 
-4. **SWRキャッシュ**: データの整合性を保つため、SWRによるキャッシュ管理と自動再検証を使用
+4. **フロントエンド自動検出**: 1分ごとの日付変更チェックにより、ユーザーがアプリを開いたままでも自動的にリセットが反映される
+
+5. **SWRキャッシュ**: データの整合性を保つため、SWRによるキャッシュ管理と自動再検証を使用
+
+6. **一元化されたリセット処理**: 複数のAPIで個別に日付チェックを行うのではなく、`POST /api/user/reset-daily-speak-count`で一元管理
