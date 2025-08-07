@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { UpdatePhraseCountResponseData } from '@/types/phrase-api'
-import { ApiErrorResponse } from '@/types/api'
+import { PhraseCountResponse, ApiErrorResponse } from '@/types/api-responses'
 
 export async function POST(
   request: NextRequest,
@@ -97,7 +96,7 @@ export async function POST(
       return phrase
     })
 
-    const responseData: UpdatePhraseCountResponseData = {
+    const responseData: PhraseCountResponse = {
       success: true,
       phrase: {
         id: updatedPhrase.id,
