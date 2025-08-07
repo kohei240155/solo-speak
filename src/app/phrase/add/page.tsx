@@ -27,7 +27,6 @@ export default function PhraseAddPage() {
     isLoading,
     error,
     remainingGenerations,
-    hasActiveSubscription,
     languages,
     situations,
     isInitializing,
@@ -123,7 +122,6 @@ export default function PhraseAddPage() {
           ) : (
             <PhraseAdd
               remainingGenerations={remainingGenerations}
-              hasActiveSubscription={hasActiveSubscription}
               desiredPhrase={desiredPhrase}
               phraseValidationError={phraseValidationError}
               isLoading={isLoading}
