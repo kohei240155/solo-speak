@@ -40,10 +40,9 @@ export const getPromptTemplate = (learningLanguage: string, nativeLanguage: stri
   // 学習言語に対応するプロンプト取得関数を取得
   const promptGetter = learningLanguagePromptGetters[learningLanguage as keyof typeof learningLanguagePromptGetters]
   
-  if (promptGetter) {
-    return promptGetter(nativeLanguageName, input, situation)
+  if (!promptGetter) {
+    throw new Error(`Unsupported learning language: ${learningLanguage}. Supported languages: ${Object.keys(learningLanguagePromptGetters).join(', ')}`)
   }
   
-  // デフォルトは英語プロンプトを使用
-  return getEnglishPrompt(nativeLanguageName, input, situation)
+  return promptGetter(nativeLanguageName, input, situation)
 }
