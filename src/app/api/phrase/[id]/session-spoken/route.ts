@@ -23,16 +23,27 @@ export async function POST(
       )
     }
 
-    // session_spokenをtrueに更新（userIdも条件に含めることで権限チェックも兼ねる）
-    await prisma.phrase.update({
-      where: {
-        id: phraseId,
-        userId: authResult.user.id,
-        deletedAt: null
-      },
-      data: {
-        sessionSpoken: true
-      }
+    // session_spokenをtrueに更新とlast_speaking_dateを同時に更新
+    await prisma.$transaction(async (prisma) => {
+      // session_spokenをtrueに更新（userIdも条件に含めることで権限チェックも兼ねる）
+      await prisma.phrase.update({
+        where: {
+          id: phraseId,
+          userId: authResult.user.id,
+          deletedAt: null
+        },
+        data: {
+          sessionSpoken: true
+        }
+      })
+
+      // ユーザーのlast_speaking_dateを更新（実際にSpeak練習を行った時刻を記録）
+      await prisma.user.update({
+        where: { id: authResult.user.id },
+        data: {
+          lastSpeakingDate: new Date()
+        }
+      })
     })
 
     return NextResponse.json({

@@ -164,9 +164,9 @@ export const useSpeakPhrase = () => {
         return false // カウント送信失敗時は次のフレーズを取得しない
       }
     } else {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${currentPhrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
@@ -189,9 +189,9 @@ export const useSpeakPhrase = () => {
         toast.error(t('phrase.messages.countError'))
       }
     } else {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${currentPhrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${currentPhrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken on finish:', error)
         // エラーが発生してもFinish処理は続行

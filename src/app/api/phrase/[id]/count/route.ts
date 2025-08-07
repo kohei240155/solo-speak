@@ -22,9 +22,9 @@ export async function POST(
       )
     }
 
-    // リクエストボディから増加するカウント数を取得（デフォルトは1）
+    // リクエストボディから増加するカウント数を取得（0以上の値を許可）
     const body = await request.json().catch(() => ({}))
-    const countIncrement = Math.max(1, parseInt(body.count) || 1) // 最低1、最大値制限は必要に応じて追加
+    const countIncrement = Math.max(0, parseInt(body.count) || 0) // 0以上、デフォルトは0
 
     // フレーズが存在するかチェック（認証されたユーザーのフレーズのみ）
     const existingPhrase = await prisma.phrase.findUnique({
@@ -47,30 +47,48 @@ export async function POST(
 
     // トランザクションで音読回数の更新とspeak_logsの記録を同時に実行
     const updatedPhrase = await prisma.$transaction(async (prisma) => {
-      // 音読回数を更新（指定された数だけ増加）
+      // 更新データを準備
+      const updateData: {
+        lastSpeakDate: Date
+        sessionSpoken: boolean
+        totalSpeakCount?: { increment: number }
+        dailySpeakCount?: { increment: number }
+      } = {
+        lastSpeakDate: currentDate,
+        sessionSpoken: true // セッション中にSpeak練習済みとマーク
+      }
+
+      // カウントが0より大きい場合のみカウントを増加
+      if (countIncrement > 0) {
+        updateData.totalSpeakCount = { increment: countIncrement }
+        updateData.dailySpeakCount = { increment: countIncrement }
+      }
+
+      // 音読回数を更新
       const phrase = await prisma.phrase.update({
         where: { id: phraseId },
-        data: {
-          totalSpeakCount: {
-            increment: countIncrement
-          },
-          dailySpeakCount: {
-            increment: countIncrement
-          },
-          lastSpeakDate: currentDate,
-          sessionSpoken: true // セッション中にSpeak練習済みとマーク（Count時に自動設定）
-        },
+        data: updateData,
         include: {
           language: true
         }
       })
 
-      // speak_logsテーブルに記録を追加
-      await prisma.speakLog.create({
+      // speak_logsテーブルに記録を追加（countが0より大きい場合のみ）
+      if (countIncrement > 0) {
+        await prisma.speakLog.create({
+          data: {
+            phraseId: phraseId,
+            date: currentDate,
+            count: countIncrement
+          }
+        })
+      }
+
+      // ユーザーのlast_speaking_dateを更新（実際にSpeak練習を行った時刻を記録）
+      await prisma.user.update({
+        where: { id: authResult.user.id },
         data: {
-          phraseId: phraseId,
-          date: currentDate,
-          count: countIncrement
+          lastSpeakingDate: currentDate
         }
       })
 

@@ -97,31 +97,45 @@ export async function PATCH(request: NextRequest) {
     }
 
     // フレーズを更新
-    const updatedPhrase = await prisma.phrase.update({
-      where: { id: phraseId },
-      data: updateData,
-      include: {
-        language: {
-          select: {
-            id: true,
-            name: true,
-            code: true
-          }
-        },
-        phraseLevel: true
-      }
-    })
-
-    // クイズ結果の場合はQuizResultテーブルにも記録
-    if (action === 'quiz_correct' || action === 'quiz_incorrect') {
-      await prisma.quizResult.create({
-        data: {
-          phraseId: phraseId,
-          date: new Date(),
-          correct: action === 'quiz_correct'
+    const updatedPhrase = await prisma.$transaction(async (prisma) => {
+      const phrase = await prisma.phrase.update({
+        where: { id: phraseId },
+        data: updateData,
+        include: {
+          language: {
+            select: {
+              id: true,
+              name: true,
+              code: true
+            }
+          },
+          phraseLevel: true
         }
       })
-    }
+
+      // practice（Speak練習）の場合はユーザーのlast_speaking_dateも更新
+      if (action === 'practice') {
+        await prisma.user.update({
+          where: { id: authResult.user.id },
+          data: {
+            lastSpeakingDate: new Date()
+          }
+        })
+      }
+
+      // クイズ結果の場合はQuizResultテーブルにも記録
+      if (action === 'quiz_correct' || action === 'quiz_incorrect') {
+        await prisma.quizResult.create({
+          data: {
+            phraseId: phraseId,
+            date: new Date(),
+            correct: action === 'quiz_correct'
+          }
+        })
+      }
+
+      return phrase
+    })
 
     // フロントエンドの期待する形式に変換
     const transformedPhrase = {

@@ -150,9 +150,9 @@ export default function SpeakPage() {
         return // エラーの場合は次のフレーズ取得を中止
       }
     } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
@@ -189,9 +189,9 @@ export default function SpeakPage() {
         // Finishの場合はエラーがあってもページ遷移を実行
       }
     } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定
+      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/session-spoken`)
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
       } catch (error) {
         console.error('Error setting session spoken:', error)
         // session_spoken設定エラーはページ遷移を阻害しない
