@@ -12,12 +12,19 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const language = searchParams.get('language')
-    const mode = searchParams.get('mode') || 'normal'
+    const mode = searchParams.get('mode')
     const count = searchParams.get('count')
 
     if (!language) {
       return NextResponse.json(
         { error: 'Language parameter is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!mode || (mode !== 'normal' && mode !== 'random')) {
+      return NextResponse.json(
+        { error: 'Mode parameter is required and must be either "normal" or "random"' },
         { status: 400 }
       )
     }
@@ -31,7 +38,7 @@ export async function GET(request: NextRequest) {
       prisma.language.findUnique({
         where: { 
           code: language,
-          deletedAt: null // 削除されていない言語のみ
+          deletedAt: null
         }
       }),
       
@@ -39,11 +46,11 @@ export async function GET(request: NextRequest) {
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
         where: {
-          userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
+          userId: authResult.user.id,
           language: {
             code: language
           },
-          deletedAt: null // 削除されていないフレーズのみ
+          deletedAt: null
         },
         include: {
           language: true
