@@ -26,7 +26,7 @@ function PhraseSpeakPage() {
   const { loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, fetchSavedPhrases } = usePhraseList()
+  const { savedPhrases, refreshPhrases } = usePhraseList()
   
   const {
     currentPhrase,
@@ -116,10 +116,10 @@ function PhraseSpeakPage() {
 
   // ページ読み込み時にフレーズを取得
   useEffect(() => {
-    if (learningLanguage && !isSinglePhraseMode && fetchSavedPhrases) {
-      fetchSavedPhrases(1, false)
+    if (learningLanguage && !isSinglePhraseMode && refreshPhrases) {
+      refreshPhrases()
     }
-  }, [learningLanguage, isSinglePhraseMode, fetchSavedPhrases])
+  }, [learningLanguage, isSinglePhraseMode, refreshPhrases])
 
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {

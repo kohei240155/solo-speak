@@ -30,7 +30,8 @@ export default function PhraseListPage() {
     
     // Handlers
     handleLearningLanguageChange,
-    fetchSavedPhrases,
+    loadMorePhrases,
+    refreshPhrases,
   } = usePhraseList()
 
   // Modal functionality
@@ -69,7 +70,7 @@ export default function PhraseListPage() {
           return
         }
         
-        fetchSavedPhrases(phrasePage + 1, true)
+        loadMorePhrases()
       }, 100)
     }
 
@@ -80,7 +81,7 @@ export default function PhraseListPage() {
       }
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [hasMorePhrases, isLoadingPhrases, phrasePage, fetchSavedPhrases])
+  }, [hasMorePhrases, isLoadingPhrases, phrasePage, loadMorePhrases])
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
@@ -129,7 +130,7 @@ export default function PhraseListPage() {
           }}
           onRefreshPhrases={() => {
             // リストを最初のページから再取得
-            fetchSavedPhrases(1, false)
+            refreshPhrases()
           }}
         />
       </div>
