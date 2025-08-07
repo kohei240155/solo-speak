@@ -43,7 +43,7 @@ export async function POST(
 
     const currentDate = new Date()
 
-    // dailySpeakCount を単純に増加（リセットは集中化されたAPIで実行済み）
+    // dailySpeakCount を単純に増加
 
     // トランザクションで音読回数の更新とspeak_logsの記録を同時に実行
     const updatedPhrase = await prisma.$transaction(async (prisma) => {
