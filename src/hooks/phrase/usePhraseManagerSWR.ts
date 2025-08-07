@@ -7,6 +7,7 @@ import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/u
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { SWR_CACHE_HELPERS } from '@/utils/swr-keys'
 
 // 型定義
 interface GenerationsData {
@@ -35,15 +36,15 @@ export const usePhraseManagerSWR = () => {
   const { languages } = useLanguages()
   const { userSettings } = useUserSettings()
   
-  // 残り生成回数をSWRで取得
+  // 残り生成回数をSWRで取得（最適化されたキャッシュ設定）
   const { data: generationsData, mutate: mutateGenerations } = useSWR(
     user ? '/api/phrase/remaining' : null,
     fetcher,
     {
-      dedupingInterval: 30 * 1000, // 30秒間キャッシュ（日付変更検出を早くするため）
+      dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
       revalidateOnFocus: true,
       revalidateOnReconnect: true,
-      refreshInterval: 5 * 60 * 1000, // 5分ごとに自動更新（日付変更を検出）
+      refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
       shouldRetryOnError: true,
     }
   ) as { data: GenerationsData | undefined, mutate: () => void }
@@ -119,7 +120,7 @@ export const usePhraseManagerSWR = () => {
     }
   }, [mutateGenerations])
 
-  // 日付変更の検出（UTC基準）
+  // 日付変更の検出（UTC基準） - 効率的な検出間隔
   useEffect(() => {
     let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
     
@@ -131,8 +132,8 @@ export const usePhraseManagerSWR = () => {
       }
     }
     
-    // 1分ごとに日付変更をチェック
-    const interval = setInterval(checkDateChange, 60 * 1000)
+    // 5分ごとに日付変更をチェック（1分間隔は過剰）
+    const interval = setInterval(checkDateChange, 5 * 60 * 1000)
     
     return () => clearInterval(interval)
   }, [mutateGenerations])
@@ -297,8 +298,8 @@ export const usePhraseManagerSWR = () => {
         setVariationValidationErrors({})
       })
 
-      // フレーズリストのキャッシュを無効化して最新データを取得
-      mutate((key) => typeof key === 'string' && key.includes('/api/phrase'))
+      // 特定の言語のフレーズリストキャッシュのみを無効化（より効率的）
+      mutate(SWR_CACHE_HELPERS.invalidatePhrasesByLanguage(learningLanguage))
 
       toast.success(t('phrase.messages.saveSuccess'))
     } catch (error) {
