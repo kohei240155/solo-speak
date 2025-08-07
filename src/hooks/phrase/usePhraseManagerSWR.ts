@@ -11,7 +11,6 @@ import { useTranslation } from '@/hooks/ui/useTranslation'
 // 型定義
 interface GenerationsData {
   remainingGenerations: number
-  hasActiveSubscription?: boolean
 }
 
 interface SituationsData {
@@ -38,7 +37,7 @@ export const usePhraseManagerSWR = () => {
   
   // 残り生成回数をSWRで取得
   const { data: generationsData, mutate: mutateGenerations } = useSWR(
-    user ? '/api/user/phrase-generations' : null,
+    user ? '/api/phrase/remaining' : null,
     fetcher,
     {
       dedupingInterval: 30 * 1000, // 30秒間キャッシュ（日付変更検出を早くするため）
@@ -202,15 +201,9 @@ export const usePhraseManagerSWR = () => {
     if (!validatePhrase(desiredPhrase)) {
       return
     }
-    // 残り回数チェック（サブスクリプション関連のメッセージのみ無効化）
+    // 残り回数チェック
     if (remainingGenerations <= 0) {
-      // SUBSCRIPTION_DISABLED: サブスクリプション関連のメッセージを無効化
-      // const hasActiveSubscription = generationsData?.hasActiveSubscription || false
-      // if (!hasActiveSubscription) {
-      //   setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
-      // } else {
-        setError('本日の生成回数を超過しました。明日再度お試しください。')
-      // }
+      setError('本日の生成回数を超過しました。明日再度お試しください。')
       return
     }
 
@@ -236,12 +229,7 @@ export const usePhraseManagerSWR = () => {
     } catch (error) {
       console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
-        const hasActiveSubscription = generationsData?.hasActiveSubscription || false
-        if (!hasActiveSubscription) {
-          setError('フレーズ生成機能を利用するにはBasicプランへの登録が必要です。Settingsページから登録してください。')
-        } else {
-          setError('本日の生成回数を超過しました。明日再度お試しください。')
-        }
+        setError('本日の生成回数を超過しました。明日再度お試しください。')
         mutateGenerations()
       } else {
         setError('フレーズの生成中にエラーが発生しました')
@@ -249,8 +237,6 @@ export const usePhraseManagerSWR = () => {
     } finally {
       setIsLoading(false)
     }
-    // SUBSCRIPTION_DISABLED: generationsData?.hasActiveSubscriptionの依存関係は削除済み
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
 
   // バリエーション編集ハンドラー
@@ -385,7 +371,6 @@ export const usePhraseManagerSWR = () => {
     isLoading,
     error,
     remainingGenerations,
-    hasActiveSubscription: generationsData?.hasActiveSubscription || false,
     languages: languages || [],
     situations,
     isInitializing,

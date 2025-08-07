@@ -50,8 +50,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        remainingPhraseGenerations: true,
-        lastPhraseGenerationDate: true
+        remainingPhraseGenerations: true
       }
     })
 
@@ -62,41 +61,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 日付リセットロジック
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    let remainingGenerations = user.remainingPhraseGenerations
-
-    if (!user.lastPhraseGenerationDate) {
-      // 初回の場合は5回に設定
-      remainingGenerations = 5
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          remainingPhraseGenerations: 5,
-          lastPhraseGenerationDate: new Date()
-        }
-      })
-    } else {
-      const lastGenerationDay = new Date(user.lastPhraseGenerationDate)
-      lastGenerationDay.setHours(0, 0, 0, 0)
-      
-      // 最後の生成日が今日より前の場合のみリセット
-      if (lastGenerationDay.getTime() < today.getTime()) {
-        remainingGenerations = 5
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            remainingPhraseGenerations: 5,
-            lastPhraseGenerationDate: new Date()
-          }
-        })
-      }
-    }
-
     // 残り回数が0の場合はエラーを返す
-    if (remainingGenerations <= 0) {
+    if (user.remainingPhraseGenerations <= 0) {
       return NextResponse.json(
         { error: getTranslation(locale, 'phrase.messages.dailyLimitExceeded') },
         { status: 403 }
@@ -171,7 +137,7 @@ export async function POST(request: NextRequest) {
       await prisma.user.update({
         where: { id: userId },
         data: {
-          remainingPhraseGenerations: remainingGenerations - 1,
+          remainingPhraseGenerations: user.remainingPhraseGenerations - 1,
           lastPhraseGenerationDate: new Date()
         }
       })
