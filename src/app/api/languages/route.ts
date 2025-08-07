@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createLanguageFallbackResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { LanguagesResponseData } from '@/types/language-api'
-import { ensureBasicLanguagesExist } from '@/utils/seed-languages'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,9 +10,6 @@ export async function GET(request: NextRequest) {
     if ('error' in authResult) {
       return authResult.error
     }
-
-    // 基本言語データが存在することを確認
-    await ensureBasicLanguagesExist()
 
     const languages: LanguagesResponseData = await prisma.language.findMany({
       where: {
