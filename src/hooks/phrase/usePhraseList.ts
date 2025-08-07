@@ -21,12 +21,12 @@ export const usePhraseList = () => {
     refetch 
   } = useInfinitePhrases(learningLanguage)
 
-  // ページ表示時に最新データを取得
-  useEffect(() => {
-    if (learningLanguage && !isLoading) {
-      refetch() // キャッシュを無視して最新データを取得
-    }
-  }, [learningLanguage, refetch, isLoading])
+  // 言語変更時は自動的に新しいキーで再フェッチされるため、手動refetchは不要
+  // useEffect(() => {
+  //   if (learningLanguage && !isLoading) {
+  //     refetch() // SWRが自動的にキー変更を検出して再フェッチするため不要
+  //   }
+  // }, [learningLanguage, refetch, isLoading])
 
   // ユーザー設定から言語情報を初期化
   useEffect(() => {
@@ -44,16 +44,15 @@ export const usePhraseList = () => {
     setUserSettingsInitialized(true) // 手動変更後は初期化フラグをセット
   }
 
-  // フレーズを取得する関数（無限スクロール用）
-  const fetchSavedPhrases = useCallback(async (page: number, append: boolean) => {
-    if (append) {
-      // 次のページを読み込み
-      setSize(page)
-    } else {
-      // 最初から再読み込み
-      setSize(1)
-      refetch()
-    }
+  // 無限スクロール用の関数（SWRのネイティブ機能を使用）
+  const loadMorePhrases = useCallback(() => {
+    setSize(size => size + 1)
+  }, [setSize])
+
+  // 最初からリロード（SWRの機能を活用）
+  const reloadPhrases = useCallback(() => {
+    setSize(1)
+    refetch()
   }, [setSize, refetch])
 
   // 手動リフレッシュ関数
@@ -75,7 +74,8 @@ export const usePhraseList = () => {
     
     // Handlers
     handleLearningLanguageChange,
-    fetchSavedPhrases,
+    loadMorePhrases,
+    reloadPhrases,
     refreshPhrases,
   }
 }

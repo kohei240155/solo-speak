@@ -4,6 +4,7 @@ import { api } from '@/utils/api'
 import { 
   PhraseCountResponse, 
   SpeakPhraseResponse, 
+  SpeakPhraseCountResponse,
   ApiErrorResponse,
   ApiResult 
 } from '@/types/api-responses'
@@ -19,6 +20,46 @@ export async function updatePhraseCount(
     const response = await api.post(`/api/phrase/${phraseId}/count`, { count })
     return (response as { data: PhraseCountResponse }).data
   } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error && error.response) {
+      return ((error.response as { data: ApiErrorResponse }).data)
+    }
+    return { error: 'Network error' } as ApiErrorResponse
+  }
+}
+
+/**
+ * Speak用フレーズの数を取得（型安全）
+ */
+export async function getSpeakPhraseCount(
+  languageCode: string,
+  options?: {
+    excludeIfSpeakCountGTE?: number
+    excludeTodayPracticed?: boolean
+  }
+): Promise<ApiResult<SpeakPhraseCountResponse>> {
+  try {
+    const params = new URLSearchParams({ language: languageCode })
+    
+    if (options?.excludeIfSpeakCountGTE !== undefined) {
+      params.append('excludeIfSpeakCountGTE', options.excludeIfSpeakCountGTE.toString())
+    }
+    if (options?.excludeTodayPracticed) {
+      params.append('excludeTodayPracticed', 'true')
+    }
+
+    const response = await api.get(`/api/phrase/speak/count?${params.toString()}`)
+    // レスポンスが直接SpeakPhraseCountResponseの形式の場合
+    if (response && typeof response === 'object' && 'success' in response) {
+      return response as SpeakPhraseCountResponse
+    }
+    // レスポンスがdata プロパティにラップされている場合
+    if (response && typeof response === 'object' && 'data' in response) {
+      return (response as { data: SpeakPhraseCountResponse }).data
+    }
+    // 予期しない形式の場合
+    return { error: 'Invalid response format' } as ApiErrorResponse
+  } catch (error: unknown) {
+    console.error('Error in getSpeakPhraseCount:', error)
     if (error && typeof error === 'object' && 'response' in error && error.response) {
       return ((error.response as { data: ApiErrorResponse }).data)
     }

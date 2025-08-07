@@ -20,7 +20,7 @@ import { Toaster } from 'react-hot-toast'
 export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, isLoadingPhrases, fetchSavedPhrases } = usePhraseList()
+  const { savedPhrases, isLoadingPhrases, refreshPhrases } = usePhraseList()
   const router = useRouter()
 
   // クイズ完了状態
@@ -55,9 +55,9 @@ export default function PhraseQuizPage() {
   // ページ読み込み時にフレーズを取得
   useEffect(() => {
     if (learningLanguage) {
-      fetchSavedPhrases(1, false)
+      refreshPhrases()
     }
-  }, [learningLanguage, fetchSavedPhrases])
+  }, [learningLanguage, refreshPhrases])
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {

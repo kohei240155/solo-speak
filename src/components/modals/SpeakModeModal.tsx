@@ -3,7 +3,8 @@ import ModeModal, { ModeModalConfig } from './ModeModal'
 import SpeakModeExplanationModal from './SpeakModeExplanationModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { getSpeakPhrase, resetSessionSpoken, resetDailySpeakCount } from '@/hooks/api/useApi'
+import { resetSessionSpoken, resetDailySpeakCount } from '@/hooks/api/useApi'
+import { getSpeakPhraseCount } from '@/utils/api-client'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { AiOutlineQuestionCircle } from 'react-icons/ai'
@@ -69,43 +70,50 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       })
       console.log('SpeakModeModal - API params:', params)
 
-      const data = await getSpeakPhrase(params)
+      // まず新しいAPIでフレーズ数をチェック
+      const countResult = await getSpeakPhraseCount(selectedLanguage, {
+        excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
+        excludeTodayPracticed: excludeTodayPracticed
+      })
 
-      if (data.success && data.phrase) {
-        // 設定オブジェクトを作成して渡す
-        const config: SpeakConfig = {
-          language: selectedLanguage,
-          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined, // 未選択の場合はundefined
-          excludeTodayPracticed: excludeTodayPracticed // 今日練習済みを除外するかどうか
-        }
-        
-        console.log('SpeakModeModal - Final config to pass:', config)
-        
-        // onStartの呼び出し前にモーダルを閉じる
-        onClose()
-        onStart(config)
-      } else if (data.success && data.allDone) {
-        // All Done状態の場合（成功レスポンスでallDoneフラグがある）
-        // モーダルを閉じてAll Done画面を表示させる（トーストは表示しない）
-        onClose()
-        // onStartにall doneフラグを付けて呼び出し
-        const allDoneConfig = { 
-          language: selectedLanguage,
-          excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
-          excludeTodayPracticed: excludeTodayPracticed, // 今日練習済みを除外するかどうか
-          allDone: true 
-        } as SpeakConfig & { allDone: boolean }
-        
-        console.log('SpeakModeModal - AllDone config to pass:', allDoneConfig)
-        onStart(allDoneConfig)
-      } else {
-        // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = data.message || 'フレーズが見つかりませんでした'
+      console.log('SpeakModeModal - countResult:', countResult)
+
+      // countResultがundefinedまたはnullの場合のチェック
+      if (!countResult) {
+        const errorMessage = 'フレーズ数の取得に失敗しました（レスポンスが空です）'
         toast.error(errorMessage)
+        return
       }
+
+      if ('error' in countResult) {
+        // エラーの場合
+        const errorMessage = countResult.error || 'フレーズ数の取得に失敗しました'
+        toast.error(errorMessage)
+        return
+      }
+
+      if (countResult.count === 0) {
+        // フレーズが0件の場合はトーストを表示してモーダルを開いたままにする
+        const errorMessage = 'このモードでは練習できるフレーズがありません'
+        toast.error(errorMessage)
+        return
+      }
+
+      // フレーズが1件以上ある場合は、設定オブジェクトを作成してSpeak画面に遷移
+      const config: SpeakConfig = {
+        language: selectedLanguage,
+        excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
+        excludeTodayPracticed: excludeTodayPracticed
+      }
+      
+      console.log('SpeakModeModal - Final config to pass:', config)
+      
+      // onStartの呼び出し前にモーダルを閉じる
+      onClose()
+      onStart(config)
     } catch (error) {
-      console.error('SpeakModeModal - Error fetching phrase:', error)
-      // エラーは既にAPIクライアント内でハンドリングされているため、ここでは追加でトーストを表示しない
+      console.error('SpeakModeModal - Error checking phrase count:', error)
+      toast.error('フレーズ数の確認中にエラーが発生しました')
     } finally {
       setIsLoading(false)
     }
