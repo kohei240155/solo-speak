@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ChatGPT APIに送信するプロンプトを構築
-    const { prompt } = buildPrompt(nativeLanguage, learningLanguage, desiredPhrase, selectedContext)
+    const prompt = getPromptTemplate(learningLanguage, nativeLanguage, desiredPhrase, selectedContext || undefined)
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -160,24 +160,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// ChatGPT API関連関数
-
-function buildPrompt(nativeLanguage: string, learningLanguage: string, desiredPhrase: string, selectedContext?: string | null): { prompt: string } {
-  // 括弧内のシチュエーションを抽出
-  const situationMatch = desiredPhrase.match(/\(([^)]+)\)/);
-  const bracketSituation = situationMatch ? situationMatch[1] : undefined;
-  
-  // selectedContextを優先し、なければ括弧内のシチュエーションを使用
-  // nullの場合はundefinedとして扱う
-  const situation = selectedContext || bracketSituation;
-  
-  // シチュエーション部分を除いたフレーズを取得
-  const cleanPhrase = desiredPhrase.replace(/\([^)]*\)/g, '').trim();
-  
-  // 新しいプロンプトシステムを使用
-  const prompt = getPromptTemplate(learningLanguage, nativeLanguage, cleanPhrase, situation);
-  
-  return { prompt };
 }
