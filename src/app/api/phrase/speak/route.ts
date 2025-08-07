@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageExists, phrases, allPhrases] = await Promise.all([
+    const [languageExists, phrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { 
@@ -69,29 +69,6 @@ export async function GET(request: NextRequest) {
         include: {
           language: true
         }
-      }),
-
-      // All Done状態の判定用：セッション管理を除いた全フレーズを取得
-      prisma.phrase.findMany({
-        where: {
-          userId: authResult.user.id,
-          language: {
-            code: language
-          },
-          deletedAt: null,
-          ...(config.excludeTodayPracticed && {
-            dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
-          }),
-          ...(config.excludeIfSpeakCountGTE !== undefined && {
-            totalSpeakCount: {
-              lt: config.excludeIfSpeakCountGTE
-            }
-          })
-        },
-        select: {
-          id: true,
-          sessionSpoken: true
-        }
       })
     ])
 
@@ -104,26 +81,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (phrases.length === 0) {
-      // すべてのフレーズがセッション完了済みかチェック
-      const allSessionCompleted = allPhrases.length > 0 && allPhrases.every(p => p.sessionSpoken)
-      
-      if (allSessionCompleted) {
-        // All Done状態の場合は成功レスポンスとして返す（トーストエラーを防ぐため）
-        const responseData: SpeakPhraseResponse = {
-          success: true,
-          allDone: true,
-          message: 'All available phrases have been practiced in this session'
-        }
-        return NextResponse.json(responseData)
-      } else {
-        // フレーズがない場合はエラーとして返す
-        const responseData: SpeakPhraseResponse = {
-          success: false,
-          message: 'No phrases available for practice in this session',
-          allDone: false
-        }
-        return NextResponse.json(responseData)
+      // フレーズがない場合はエラーとして返す
+      const responseData: SpeakPhraseResponse = {
+        success: false,
+        message: 'No phrases available for practice in this session'
       }
+      return NextResponse.json(responseData)
     }
 
     // ソート処理
