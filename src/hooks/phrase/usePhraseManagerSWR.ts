@@ -41,8 +41,10 @@ export const usePhraseManagerSWR = () => {
     user ? '/api/user/phrase-generations' : null,
     fetcher,
     {
-      dedupingInterval: 1 * 60 * 1000, // 1分間キャッシュ
+      dedupingInterval: 30 * 1000, // 30秒間キャッシュ（日付変更検出を早くするため）
       revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      refreshInterval: 5 * 60 * 1000, // 5分ごとに自動更新（日付変更を検出）
       shouldRetryOnError: true,
     }
   ) as { data: GenerationsData | undefined, mutate: () => void }
@@ -116,6 +118,24 @@ export const usePhraseManagerSWR = () => {
     return () => {
       window.removeEventListener('subscriptionCanceled', handleSubscriptionCanceled)
     }
+  }, [mutateGenerations])
+
+  // 日付変更の検出（UTC基準）
+  useEffect(() => {
+    let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
+    
+    const checkDateChange = () => {
+      const newUTCDate = new Date().toISOString().split('T')[0]
+      if (newUTCDate !== currentUTCDate) {
+        currentUTCDate = newUTCDate
+        mutateGenerations() // 日付が変わったら生成回数データを再取得
+      }
+    }
+    
+    // 1分ごとに日付変更をチェック
+    const interval = setInterval(checkDateChange, 60 * 1000)
+    
+    return () => clearInterval(interval)
   }, [mutateGenerations])
 
   // データ取得状態の計算

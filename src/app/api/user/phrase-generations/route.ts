@@ -51,9 +51,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // 日付リセットロジック
-    const today = new Date()
-    today.setHours(0, 0, 0, 0) // 今日の開始時刻に設定
+    // 日付リセットロジック（UTC基準）
+    const now = new Date()
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 
     // lastPhraseGenerationDateが存在しない、または今日より前の場合のみリセット
     if (!lastGenerationDate) {
@@ -69,11 +69,15 @@ export async function GET(request: NextRequest) {
         }
       })
     } else {
-      const lastGenerationDay = new Date(lastGenerationDate)
-      lastGenerationDay.setHours(0, 0, 0, 0) // 最後の生成日の開始時刻に設定
+      const lastGenerationDateUTC = new Date(lastGenerationDate)
+      const lastGenerationDayUTC = new Date(Date.UTC(
+        lastGenerationDateUTC.getUTCFullYear(), 
+        lastGenerationDateUTC.getUTCMonth(), 
+        lastGenerationDateUTC.getUTCDate()
+      ))
       
-      // 最後の生成日が今日より前の場合のリセット処理
-      if (lastGenerationDay.getTime() < today.getTime()) {
+      // 最後の生成日が今日より前の場合のリセット処理（UTC基準）
+      if (lastGenerationDayUTC.getTime() < todayUTC.getTime()) {
         // サブスクリプションが有効な場合のみリセット、無効な場合は0のまま
         if (hasActiveSubscription) {
           remainingGenerations = 5
