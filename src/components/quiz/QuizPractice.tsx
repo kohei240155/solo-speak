@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
+import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
 interface QuizPracticeProps {
@@ -26,6 +27,11 @@ export default function QuizPractice({
   const [hasAnswered, setHasAnswered] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
 
+  // TTS機能の初期化
+  const { isPlaying, error: ttsError, playText } = useTextToSpeech({
+    languageCode: currentPhrase?.languageCode || 'en'
+  })
+
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
     setHasAnswered(true)
@@ -44,11 +50,29 @@ export default function QuizPractice({
     }, 1000)
   }
 
+  // 音声再生ハンドラー
+  const handlePlayAudio = async () => {
+    if (!currentPhrase?.original || isPlaying) return
+    
+    try {
+      await playText(currentPhrase.original)
+    } catch (error) {
+      console.error('Failed to play audio:', error)
+    }
+  }
+
   const isLastQuestion = session.currentIndex >= session.totalCount - 1
 
 
   return (
     <>
+      {/* TTS エラー表示 */}
+      {ttsError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-600 text-sm">{ttsError}</p>
+        </div>
+      )}
+      
       {/* プログレスバー */}
       <div className="w-full mb-2">
         <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
@@ -82,12 +106,16 @@ export default function QuizPractice({
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           {showTranslation ? (
             <div 
-              className="text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium"
+              className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium cursor-pointer transition-colors ${
+                isPlaying ? 'opacity-70' : 'hover:text-gray-800'
+              }`}
               style={{ 
                 wordWrap: 'break-word',
                 overflowWrap: 'anywhere',
                 wordBreak: 'break-word'
               }}
+              onClick={handlePlayAudio}
+              title="Click to play audio"
             >
               {currentPhrase.original}
             </div>
