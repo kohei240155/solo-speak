@@ -42,6 +42,13 @@ export interface SpeakPhraseResponse extends BaseApiResponse {
   allDone?: boolean
 }
 
+// Speak用フレーズカウントレスポンス型
+export interface SpeakPhraseCountResponse extends BaseApiResponse {
+  success: boolean
+  count: number
+  message?: string
+}
+
 // フレーズ詳細取得レスポンス型
 export interface PhraseDetailResponse {
   id: string
