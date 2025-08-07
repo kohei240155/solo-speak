@@ -6,6 +6,10 @@ interface RemainingGenerationsResponse {
   remainingGenerations: number
 }
 
+/** * ユーザーの残りのフレーズ生成回数を取得
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns RemainingGenerationsResponse - 残りのフレーズ生成回数
+ */
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック

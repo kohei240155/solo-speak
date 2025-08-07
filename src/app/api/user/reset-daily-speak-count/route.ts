@@ -3,9 +3,9 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { ApiErrorResponse, UserDailyResetResponse } from '@/types/api-responses'
 
-/**
- * ユーザーの日次スピーキング練習開始時にdailySpeakCountをリセット
- * UTC基準で日付が変わった場合のみリセットを実行
+/** * ユーザーの1日ごとの音読練習回数をリセットするAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns UserDailyResetResponse - リセット結果とメッセージ
  */
 export async function POST(request: NextRequest) {
   try {

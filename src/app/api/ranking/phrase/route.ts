@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 
+/** ランキングAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns ランキングデータ
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

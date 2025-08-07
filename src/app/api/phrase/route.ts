@@ -20,6 +20,10 @@ const createPhraseSchema = z.object({
   context: z.string().nullable().optional(),
 })
 
+/** * フレーズの作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns CreatePhraseResponseData - 作成されたフレーズデータ
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // 認証チェック

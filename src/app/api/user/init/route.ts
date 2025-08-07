@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { checkUserExists, initializeUser } from '@/utils/database-helpers'
 
-// 初回ログイン時のユーザー初期化
+/** * ユーザー初期化APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { message: string, user?: User } - 初期化結果とユーザーデータ
+ */
 export async function POST(request: NextRequest) {
   try {
     const authResult = await authenticateRequest(request)

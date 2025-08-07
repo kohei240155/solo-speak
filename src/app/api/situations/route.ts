@@ -6,7 +6,10 @@ import { ApiErrorResponse } from '@/types/api-responses'
 
 const prisma = new PrismaClient()
 
-// GET: ユーザーのシチュエーション一覧を取得
+/** シチュエーションの一覧取得と新規作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns シチュエーションの一覧または新規作成されたシチュエーションデータ
+ */
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
@@ -52,7 +55,10 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: 新しいシチュエーションを作成
+ /** シチュエーションの新規作成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns CreateSituationResponseData - 作成されたシチュエーションデータ
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック

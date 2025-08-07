@@ -3,6 +3,11 @@ import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
 
+/** * フレーズの音読練習用APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns SpeakPhraseResponse - 音読練習用のフレーズデータ
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

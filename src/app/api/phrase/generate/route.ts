@@ -30,11 +30,15 @@ interface GeneratePhraseResponse {
   variations: PhraseVariation[]
 }
 
+/** フレーズ生成APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns GeneratePhraseResponse - 生成されたフレーズのバリエーション
+ */
 export async function POST(request: NextRequest) {
   try {
     // リクエストから言語を取得
     const locale = getLocaleFromRequest(request)
-    
+
     // 認証チェック
     const authResult = await authenticateRequest(request)
     if ('error' in authResult) {

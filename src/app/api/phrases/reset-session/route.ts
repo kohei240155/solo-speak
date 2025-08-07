@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 
+/** * セッションの音読状態をリセットするAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns ResetSessionResponse - リセット結果
+ */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック

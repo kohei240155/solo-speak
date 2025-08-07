@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const questionCount = count ? parseInt(count, 10) : 10
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
-    const [languageExists, phrases] = await Promise.all([      
+    const [languageExists, phrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
         where: { 
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           deletedAt: null
         }
       }),
-      
+
       // データベースからフレーズを取得（削除されていないもののみ）
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
@@ -80,13 +80,13 @@ export async function GET(request: NextRequest) {
     if (mode === 'random') {
       // ランダムモード：Fisher-Yates シャッフルを使用して確実にランダム化
       const shuffledPhrases = [...phrases]
-      
+
       // Fisher-Yates シャッフルアルゴリズム
       for (let i = shuffledPhrases.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledPhrases[i], shuffledPhrases[j]] = [shuffledPhrases[j], shuffledPhrases[i]]
       }
-      
+
       // 重複なしで必要な数だけ選択
       selectedPhrases = shuffledPhrases.slice(0, actualQuestionCount)
     } else {
@@ -97,17 +97,17 @@ export async function GET(request: NextRequest) {
         // 正解数で比較（少ない順）
         const correctA = a.correctQuizCount || 0
         const correctB = b.correctQuizCount || 0
-        
+
         if (correctA !== correctB) {
           return correctA - correctB // 正解数が少ない順
         }
-        
+
         // 正解数が同じ場合は登録日時で比較（古い順）
         const dateA = new Date(a.createdAt).getTime()
         const dateB = new Date(b.createdAt).getTime()
         return dateA - dateB // 古い順
       })
-      
+
       selectedPhrases = sortedPhrases.slice(0, actualQuestionCount)
     }
 

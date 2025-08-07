@@ -4,6 +4,10 @@ import { authenticateRequest } from '@/utils/api-helpers'
 import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking-api'
 import { ApiErrorResponse } from '@/types/api-responses'
 
+/** ランキングの音読練習用APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns SpeakRankingResponseData - 音読練習用のランキングデータ
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

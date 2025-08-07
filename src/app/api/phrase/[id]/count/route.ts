@@ -3,6 +3,11 @@ import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { PhraseCountResponse, ApiErrorResponse } from '@/types/api-responses'
 
+/** * フレーズの音読回数を更新するAPIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns PhraseCountResponse - 更新されたフレーズの音読回数
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

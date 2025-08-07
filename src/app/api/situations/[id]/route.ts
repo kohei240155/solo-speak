@@ -4,6 +4,11 @@ import { authenticateRequest } from '@/utils/api-helpers'
 
 const prisma = new PrismaClient()
 
+/** シチュエーションの更新APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（シチュエーションID）
+ * @returns 更新されたシチュエーションデータ
+ */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

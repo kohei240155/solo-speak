@@ -8,6 +8,11 @@ import {
 } from '@/types/phrase-api'
 import { ApiErrorResponse } from '@/types/api-responses'
 
+/** * フレーズの更新APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns UpdatePhraseResponseData - 更新されたフレーズデータ
+ */
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -91,6 +96,11 @@ export async function PUT(
   }
 }
 
+/** * フレーズの削除APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @param params - URLパラメータ（フレーズID）
+ * @returns DeletePhraseResponseData - 削除成功メッセージ
+ */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

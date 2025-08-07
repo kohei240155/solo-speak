@@ -3,7 +3,10 @@ import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { uploadUserIcon, deleteUserIcon } from '@/utils/storage'
 import { prisma } from '@/utils/prisma'
 
-// ユーザーアイコンのアップロード
+/** * ユーザーアイコンのアップロードと削除APIエンドポイント
+ * @param request - Next.jsのリクエストオブジェクト
+ * @returns { iconUrl: string, message: string } - アップロードされたアイコンのURLとメッセージ
+ */
 export async function POST(request: NextRequest) {
   try {
     const authResult = await authenticateRequest(request)
