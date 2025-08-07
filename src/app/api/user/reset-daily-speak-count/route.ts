@@ -65,14 +65,6 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // ユーザーのlastSpeakingDateを更新
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          lastSpeakingDate: new Date()
-        }
-      })
-
       resetCount = updateResult.count
     }
 

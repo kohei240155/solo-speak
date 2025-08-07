@@ -113,16 +113,6 @@ export async function PATCH(request: NextRequest) {
         }
       })
 
-      // practice（Speak練習）の場合はユーザーのlast_speaking_dateも更新
-      if (action === 'practice') {
-        await prisma.user.update({
-          where: { id: authResult.user.id },
-          data: {
-            lastSpeakingDate: new Date()
-          }
-        })
-      }
-
       // クイズ結果の場合はQuizResultテーブルにも記録
       if (action === 'quiz_correct' || action === 'quiz_incorrect') {
         await prisma.quizResult.create({
