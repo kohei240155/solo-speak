@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { UpdatePhraseCountResponseData } from '@/types/phrase-api'
 
 export async function POST(
   request: NextRequest,
@@ -104,7 +105,7 @@ export async function POST(
         totalSpeakCount: updatedPhrase.totalSpeakCount,
         dailySpeakCount: updatedPhrase.dailySpeakCount
       }
-    })
+    } satisfies UpdatePhraseCountResponseData)
 
   } catch (error) {
     console.error('Error updating phrase count:', error)

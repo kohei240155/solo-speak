@@ -82,6 +82,18 @@ export interface DeletePhraseResponseData {
   message: string
 }
 
+// フレーズ音読カウント更新レスポンスの型
+export interface UpdatePhraseCountResponseData {
+  success: true
+  phrase: {
+    id: string
+    original: string
+    translation: string
+    totalSpeakCount: number
+    dailySpeakCount: number
+  }
+}
+
 // ページネーション情報の型
 export interface PaginationData {
   total: number
