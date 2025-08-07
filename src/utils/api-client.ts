@@ -4,7 +4,6 @@ import { api } from '@/utils/api'
 import { 
   PhraseCountResponse, 
   SpeakPhraseResponse, 
-  PhraseDetailResponse,
   ApiErrorResponse,
   ApiResult 
 } from '@/types/api-responses'
@@ -51,21 +50,6 @@ export async function getSpeakPhrase(
 
     const response = await api.get(`/api/phrase/speak?${params.toString()}`)
     return (response as { data: SpeakPhraseResponse }).data
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'response' in error && error.response) {
-      return ((error.response as { data: ApiErrorResponse }).data)
-    }
-    return { error: 'Network error' } as ApiErrorResponse
-  }
-}
-
-/**
- * フレーズ詳細を取得（型安全）
- */
-export async function getPhraseDetail(phraseId: string): Promise<ApiResult<PhraseDetailResponse>> {
-  try {
-    const response = await api.get(`/api/phrase/${phraseId}`)
-    return (response as { data: PhraseDetailResponse }).data
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'response' in error && error.response) {
       return ((error.response as { data: ApiErrorResponse }).data)
