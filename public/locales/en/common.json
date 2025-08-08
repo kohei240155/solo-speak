@@ -39,6 +39,19 @@
       "noContentGenerated": "No content generated"
     }
   },
+  "phraseGeneration": {
+    "help": {
+      "title": "About Phrase Generation",
+      "resetTime": {
+        "title": "Reset Time",
+        "description": "Daily reset at UTC 0:00 (local times)：\n• Japan： 9:00 AM\n• US East Coast： 8:00/7:00 PM\n• US West Coast・Vancouver： 5:00/4:00 PM\n※ DST/Standard Time"
+      },
+      "dailyLimit": {
+        "title": "Daily Usage Limit",
+        "description": "You can use the phrase generation feature up to 5 times per day. Let's steadily build up 5 phrases every day."
+      }
+    }
+  },
   "speak": {
     "modal": {
       "language": "Language",

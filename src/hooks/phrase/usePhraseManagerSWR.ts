@@ -298,8 +298,21 @@ export const usePhraseManagerSWR = () => {
         setVariationValidationErrors({})
       })
 
-      // 特定の言語のフレーズリストキャッシュのみを無効化（より効率的）
-      mutate(SWR_CACHE_HELPERS.invalidatePhrasesByLanguage(learningLanguage))
+      // 特定の言語のフレーズリストキャッシュを無効化し、即座に再取得
+      const mutatePromise = mutate(
+        SWR_CACHE_HELPERS.invalidatePhrasesByLanguage(learningLanguage),
+        undefined, // データを未定義にして強制的に再取得
+        { 
+          revalidate: true, // 即座に再検証を実行
+          optimisticData: undefined, // 楽観的更新は無効にして確実にサーバーからデータを取得
+          rollbackOnError: false
+        }
+      )
+
+      // 非同期で再取得を待つ（ただしUIをブロックしない）
+      mutatePromise.catch(error => {
+        console.warn('Cache revalidation warning:', error)
+      })
 
       toast.success(t('phrase.messages.saveSuccess'))
     } catch (error) {
