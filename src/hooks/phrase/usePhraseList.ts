@@ -21,6 +21,36 @@ export const usePhraseList = () => {
     refetch 
   } = useInfinitePhrases(learningLanguage)
 
+  // コンポーネントマウント時の積極的なデータ更新
+  useEffect(() => {
+    if (learningLanguage && !isLoading) {
+      // ページ表示時に即座にデータを再取得（キャッシュを無視）
+      const timer = setTimeout(() => {
+        refetch()
+      }, 100) // 100ms後に実行（初期化処理が完了してから）
+
+      return () => clearTimeout(timer)
+    }
+  }, [learningLanguage, isLoading, refetch]) // 依存配列を正しく設定
+
+  // ページの可視性が変更された時（タブ切り替えなど）に再取得
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && learningLanguage) {
+        // ページが再び表示された時に再取得
+        setTimeout(() => {
+          refetch()
+        }, 200) // 少し遅延させて確実に実行
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [learningLanguage, refetch])
+
   // 言語変更時は自動的に新しいキーで再フェッチされるため、手動refetchは不要
   // useEffect(() => {
   //   if (learningLanguage && !isLoading) {

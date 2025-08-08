@@ -81,7 +81,17 @@ export function useLanguages() {
 export function useDashboardData(language?: string) {
   const url = language ? `/api/dashboard?language=${language}` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.REALTIME)
+  // ダッシュボード用の最適化されたキャッシュ設定
+  const DASHBOARD_CONFIG = {
+    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
+    revalidateOnFocus: true,
+    revalidateOnMount: true, // マウント時に常に再検証
+    refreshInterval: 30 * 1000, // 30秒間隔で自動更新（リアルタイム性向上）
+    shouldRetryOnError: true,
+    errorRetryInterval: 10000,
+  }
+  
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, DASHBOARD_CONFIG)
 
   return {
     dashboardData: data as {
@@ -105,7 +115,16 @@ export function useDashboardData(language?: string) {
 export function usePhrases(language?: string, page = 1) {
   const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.SHORT_CACHE)
+  // フレーズリスト用の最適化されたキャッシュ設定
+  const PHRASE_LIST_CONFIG = {
+    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
+    revalidateOnFocus: true,
+    revalidateOnMount: true, // マウント時に常に再検証
+    shouldRetryOnError: true,
+    errorRetryInterval: 10000,
+  }
+  
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher, PHRASE_LIST_CONFIG)
 
   const typedData = data as {
     phrases?: Array<{
@@ -218,15 +237,20 @@ export function useInfinitePhrases(language?: string) {
     return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
   }
 
+  // 無限スクロール用の最適化されたキャッシュ設定
+  const INFINITE_PHRASE_CONFIG = {
+    dedupingInterval: 5 * 1000, // 5秒に短縮
+    revalidateOnMount: true, // マウント時に再検証
+    revalidateOnFocus: true, // フォーカス時に再検証
+    refreshInterval: 0, // 自動更新は無効
+    shouldRetryOnError: true,
+    errorRetryInterval: 10000,
+  }
+
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
     fetcher,
-    {
-      ...SWR_CONFIGS.SHORT_CACHE,
-      revalidateOnMount: true, // マウント時に再検証
-      revalidateOnFocus: true, // フォーカス時に再検証
-      refreshInterval: 0, // 自動更新は無効
-    }
+    INFINITE_PHRASE_CONFIG
   )
 
   type PageData = {
