@@ -55,13 +55,10 @@
   "speak": {
     "modal": {
       "language": "言語",
-      "startFrom": "練習順序",
       "targetPhrases": "出題対象",
       "optionsTitle": "オプション",
       "excludeTodayPracticedLabel": "今日既に練習したフレーズを除外する",
       "options": {
-        "newest": "新しい順",
-        "oldest": "古い順",
         "noLimit": "制限なし",
         "under50": "50回以下",
         "under60": "60回以下",
@@ -114,7 +111,6 @@
       "subtitle": "\\ 独り言トレーニング /",
       "title": "スピーキングアプリの\n決定版",
       "cta": {
-        "mobile": "Let's Start!",
         "desktop": "今すぐはじめる →"
       },
       "features": {
