@@ -92,14 +92,14 @@ export async function GET(request: NextRequest) {
     // ソート処理
     const sortedPhrases = [...phrases]
 
-    // 常に音読回数の少ない順を優先、音読回数が同じ場合は古い順
+    // 常に音読回数の多い順を優先、音読回数が同じ場合は古い順
     sortedPhrases.sort((a, b) => {
       const practiceA = a.totalSpeakCount || 0
       const practiceB = b.totalSpeakCount || 0
       
       // 音読回数が異なる場合は音読回数で優先
       if (practiceA !== practiceB) {
-        return practiceA - practiceB // 少ない順
+        return practiceB - practiceA // 多い順
       }
       
       // 音読回数が同じ場合は古い順でソート
