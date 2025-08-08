@@ -23,14 +23,14 @@ export default function CommercialTransactionPage() {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">所在地</h2>
             <p className="text-gray-600">
               [住所]<br />
-              ※お問い合わせは、お問い合わせフォームにて承っております。
+              ※お問い合わせは、<a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>にて承っております。
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">連絡先</h2>
             <p className="text-gray-600">
-              メール：お問い合わせフォームよりご連絡ください<br />
+              メール：<a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>よりご連絡ください<br />
               ※お電話でのお問い合わせは承っておりません。
             </p>
           </section>
