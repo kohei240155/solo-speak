@@ -85,7 +85,11 @@ export default function PhraseListPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner withHeaderOffset />
+    return (
+      <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
+        <LoadingSpinner message='Loading...' />
+      </div>
+    )
   }
 
   return (
