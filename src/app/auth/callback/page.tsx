@@ -62,9 +62,8 @@ export default function AuthCallback() {
   }, [router])
 
   return (
-    <LoadingSpinner 
-      fullScreen 
-      message="Authenticating..." 
-    />
+    <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
+      <LoadingSpinner message="Authenticating..." />
+    </div>
   )
 }
