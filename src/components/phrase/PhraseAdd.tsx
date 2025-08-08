@@ -2,10 +2,11 @@ import { PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
 import dynamic from 'next/dynamic'
 import { BsPlusSquare } from 'react-icons/bs'
-import { AiOutlineClose } from 'react-icons/ai'
+import { AiOutlineClose, AiOutlineQuestionCircle } from 'react-icons/ai'
 import { useState } from 'react'
 import AddContextModal from '@/components/modals/AddContextModal'
 import BaseModal from '@/components/common/BaseModal'
+import PhraseGenerationHelpModal from '@/components/modals/PhraseGenerationHelpModal'
 import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
 import ScrollableContainer from '@/components/common/ScrollableContainer'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -65,6 +66,7 @@ export default function PhraseAdd({
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
@@ -119,9 +121,18 @@ export default function PhraseAdd({
     <>
       {/* Add Phrase見出しとLeft情報 */}
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          Add Phrase
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            Add Phrase
+          </h2>
+          <button
+            onClick={() => setShowHelpModal(true)}
+            className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            title="フレーズ生成について"
+          >
+            <AiOutlineQuestionCircle size={20} />
+          </button>
+        </div>
         <div className="text-sm text-gray-600">
           Left: {remainingGenerations} / 5
         </div>
@@ -371,6 +382,12 @@ export default function PhraseAdd({
           </button>
         </div>
       </BaseModal>
+
+      {/* フレーズ生成ヘルプモーダル */}
+      <PhraseGenerationHelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+      />
     </>
   )
 }
