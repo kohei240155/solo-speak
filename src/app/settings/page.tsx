@@ -66,7 +66,11 @@ export default function UserSettingsPage() {
   } = useUserSettings(setValue)
 
   if (authLoading || dataLoading) {
-    return <LoadingSpinner withHeaderOffset message="Loading..." />
+    return (
+      <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
+        <LoadingSpinner message="Loading..." />
+      </div>
+    )
   }
 
   return (
