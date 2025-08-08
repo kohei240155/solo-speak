@@ -80,7 +80,9 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="/contact"
+                    href="https://forms.gle/M9qBSGfiJCVWqmjE8"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     {t('footer.links.contact')}

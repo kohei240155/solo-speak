@@ -78,7 +78,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">7. 個人情報の開示・訂正・削除</h2>
             <p className="text-gray-600 mb-4">
               ご本人から個人情報の開示・訂正・削除等のご請求があった場合、ご本人であることを確認の上、合理的な期間内に対応いたします。
-              お問い合わせフォームよりご連絡ください。
+              <a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>よりご連絡ください。
             </p>
           </section>
 
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">9. お問い合わせ</h2>
             <p className="text-gray-600 mb-4">
-              個人情報の取扱いに関するお問い合わせは、お問い合わせフォームよりご連絡ください。
+              個人情報の取扱いに関するお問い合わせは、<a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>よりご連絡ください。
             </p>
           </section>
         </div>
