@@ -84,7 +84,7 @@ export default function PhraseAddPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner withHeaderOffset />
+    return <LoadingSpinner message="Loading..."  />
   }
 
   return (
