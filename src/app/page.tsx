@@ -15,7 +15,7 @@ import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 // シンプルなスクロールアニメーション
 const useScrollAnimation = () => {
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section']))
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'how-to-speak-section', 'features-section']))
 
   useEffect(() => {
     const handleScroll = () => {
@@ -377,7 +377,96 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 機能紹介セクション - 白背景 */}
+      {/* こうすれば話せるようになる！セクション - 白背景 */}
+      <section 
+        id="how-to-speak-section"
+        data-scroll-animation
+        className={`py-16 bg-white relative transition-all duration-1000 ease-out delay-100 ${
+          visibleSections.has('how-to-speak-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="container mx-auto px-4 sm:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+              最短で話せるようになる方法
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="max-w-4xl mx-auto space-y-8 px-2 sm:px-4">
+            {/* ステップ 1 */}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+                    言えなかったフレーズをメモする
+                  </h3>
+                  <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-2">
+                    日常生活で「これ何て言えばいいんだろう？」と感じたフレーズをメモして翻訳します。
+                  </p>
+                  <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                    積み上げたフレーズが増えるほど、表現の幅が広がります。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ステップ 2 */}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+                    声に出して繰り返す
+                  </h3>
+                  <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-2">
+                    メモしたフレーズを何度も音読し、スラスラ言えるようになるまで練習します。
+                  </p>
+                  <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                    話せるようになるには、声に出して練習することが重要です。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ステップ 3 */}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
+              <div className="flex items-start gap-4">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0"
+                  style={{ backgroundColor: '#616161' }}
+                >
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+                    実際に使ってみる
+                  </h3>
+                  <p className="text-gray-700 text-base md:text-lg leading-relaxed mb-2">
+                    覚えたフレーズを、実際の場面で使ってみます。
+                  </p>
+                  <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                    最初は上手く言えないけど、何度も使うことでフレーズが定着してきます。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* でも、やってみると、、、セクション - 白背景 */}
       <section 
         id="features-section"
         data-scroll-animation
@@ -388,25 +477,25 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-              {t('home.features.title')}
+              実際に試して気づいたこと
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
           
-                    <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
+          <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
             {/* お悩み 1 */}
             <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  style={{ backgroundColor: '#dc2626' }}
                 >
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </div>
                 <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
-                  {t('home.features.speechRecognition.title')}
+                  AIで翻訳できても、メモにいちいち書き写すのが面倒
                 </p>
               </div>
             </div>
@@ -416,14 +505,14 @@ export default function Home() {
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  style={{ backgroundColor: '#dc2626' }}
                 >
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </div>
                 <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
-                  {t('home.features.quiz.title')}
+                  声に出して練習しても、どのフレーズを何回練習したか分からない
                 </p>
               </div>
             </div>
@@ -433,14 +522,14 @@ export default function Home() {
               <div className="flex items-start gap-4">
                 <div 
                   className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  style={{ backgroundColor: '#dc2626' }}
                 >
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </div>
                 <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
-                  {t('home.features.progress.title')}
+                  実際に使う場面はあるけど、「もっと練習したい…」と思うことが多い
                 </p>
               </div>
             </div>
