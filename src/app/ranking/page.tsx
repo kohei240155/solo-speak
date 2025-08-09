@@ -37,7 +37,7 @@ export default function RankingPage() {
 
   // 認証のローディング中のみ全画面ローディング
   if (authLoading) {
-    return <LoadingSpinner withHeaderOffset message="Loading..." />
+    return <LoadingSpinner message="Loading..." className='pt-24'/>
   }
 
   return (

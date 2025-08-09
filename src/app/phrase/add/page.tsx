@@ -12,6 +12,7 @@ import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import PhraseAdd from '@/components/phrase/PhraseAdd'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import QuizModeModal from '@/components/modals/QuizModeModal'
+import AddToHomeScreenModal from '@/components/modals/AddToHomeScreenModal'
 
 export default function PhraseAddPage() {
   const { t } = useTranslation('common')
@@ -36,6 +37,7 @@ export default function PhraseAddPage() {
     phraseValidationError,
     selectedContext,
     availablePhraseCount,
+    showAddToHomeScreenModal,
     
     // Handlers
     handleEditVariation,
@@ -45,7 +47,8 @@ export default function PhraseAddPage() {
     checkUnsavedChanges,
     handleContextChange,
     addSituation,
-    deleteSituation
+    deleteSituation,
+    closeAddToHomeScreenModal
   } = usePhraseManagerSWR()
 
   // Modal functionality
@@ -81,7 +84,7 @@ export default function PhraseAddPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner withHeaderOffset />
+    return <LoadingSpinner message="Loading..."  />
   }
 
   return (
@@ -161,6 +164,12 @@ export default function PhraseAddPage() {
         languages={languages}
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={availablePhraseCount}
+      />
+
+      {/* ホーム画面追加モーダル */}
+      <AddToHomeScreenModal
+        isOpen={showAddToHomeScreenModal}
+        onClose={closeAddToHomeScreenModal}
       />
 
     </div>

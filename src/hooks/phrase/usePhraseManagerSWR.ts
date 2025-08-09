@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation } from '@/types/phrase'
+import { CreatePhraseResponseData } from '@/types/phrase-api'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
@@ -79,7 +80,8 @@ export const usePhraseManagerSWR = () => {
   const [phraseValidationError, setPhraseValidationError] = useState('')
   const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
   
-  // ユーザー設定の初期化が完了したかを追跡
+  // ホーム画面追加モーダル用state
+  const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // ユーザー設定からの初期化
@@ -286,7 +288,7 @@ export const usePhraseManagerSWR = () => {
         requestBody.context = selectedContext
       }
 
-      await api.post('/api/phrase', requestBody)
+      const response = await api.post<CreatePhraseResponseData>('/api/phrase', requestBody)
 
       flushSync(() => {
         setGeneratedVariations([])
@@ -315,6 +317,11 @@ export const usePhraseManagerSWR = () => {
       })
 
       toast.success(t('phrase.messages.saveSuccess'))
+
+      // フレーズ数が3になったときにホーム画面追加モーダルを表示
+      if (response.totalPhraseCount === 3) {
+        setShowAddToHomeScreenModal(true)
+      }
     } catch (error) {
       console.error('Error saving phrase:', error)
       toast.error(t('phrase.messages.saveError'))
@@ -376,6 +383,11 @@ export const usePhraseManagerSWR = () => {
     return generatedVariations.length > 0
   }, [generatedVariations])
 
+  // ホーム画面追加モーダルを閉じるハンドラー
+  const closeAddToHomeScreenModal = useCallback(() => {
+    setShowAddToHomeScreenModal(false)
+  }, [])
+
   return {
     // State
     nativeLanguage,
@@ -395,6 +407,7 @@ export const usePhraseManagerSWR = () => {
     variationValidationErrors,
     selectedContext,
     availablePhraseCount: availablePhraseCount || 0,
+    showAddToHomeScreenModal,
     
     // Handlers
     handlePhraseChange,
@@ -406,6 +419,7 @@ export const usePhraseManagerSWR = () => {
     handleContextChange,
     addSituation,
     deleteSituation,
-    checkUnsavedChanges
+    checkUnsavedChanges,
+    closeAddToHomeScreenModal
   }
 }

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { SavedPhrase, PhraseVariation } from '@/types/phrase'
 import { SituationResponse } from '@/types/situation'
+import { CreatePhraseResponseData } from '@/types/phrase-api'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import toast from 'react-hot-toast'
 import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
@@ -35,6 +36,9 @@ export const usePhraseManager = () => {
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
   const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
+  
+  // ホーム画面追加モーダル用state
+  const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
   
   // ユーザー設定の初期化が完了したかを追跡
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
@@ -260,7 +264,7 @@ export const usePhraseManager = () => {
         throw new Error('学習言語が見つかりません')
       }
 
-      await api.post('/api/phrase', {
+      const response = await api.post<CreatePhraseResponseData>('/api/phrase', {
         userId: user.id,
         languageId: learningLang.id,
         original: finalText,      // 学習言語のフレーズ
@@ -270,7 +274,7 @@ export const usePhraseManager = () => {
       })
 
       // 成功時の処理 - 即座に初期状態に戻す
-      toast.success('Phrase registered successfully!')
+      toast.success(t('phrase.messages.saveSuccess'))
       
       // 即座に全ての状態を初期化（flushSyncで同期的に実行）
       flushSync(() => {
@@ -282,6 +286,11 @@ export const usePhraseManager = () => {
         setDesiredPhrase('')    // フレーズを空に
         setSelectedContext(null) // コンテキスト選択をリセット
       })
+
+      // フレーズ数が3になったときにホーム画面追加モーダルを表示
+      if (response.totalPhraseCount === 3) {
+        setShowAddToHomeScreenModal(true)
+      }
       
       // 保存されたフレーズリストを再取得
       fetchSavedPhrases(1, false)
@@ -345,6 +354,11 @@ export const usePhraseManager = () => {
     return true
   }, [generatedVariations.length, t])
 
+  // ホーム画面追加モーダルを閉じるハンドラー
+  const closeAddToHomeScreenModal = useCallback(() => {
+    setShowAddToHomeScreenModal(false)
+  }, [])
+
   useEffect(() => {
     // ユーザーの初期データを並列取得
     if (user) {
@@ -393,6 +407,7 @@ export const usePhraseManager = () => {
     phraseValidationError,
     variationValidationErrors,
     selectedContext,
+    showAddToHomeScreenModal,
     
     // Handlers
     handleEditVariation,
@@ -405,6 +420,7 @@ export const usePhraseManager = () => {
     handleLearningLanguageChange,
     handleContextChange,
     addSituation,
-    deleteSituation
+    deleteSituation,
+    closeAddToHomeScreenModal
   }
 }

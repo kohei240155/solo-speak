@@ -40,6 +40,7 @@ export interface CreatePhraseResponseData {
   remainingGenerations: number
   dailyLimit: number
   nextResetTime: string
+  totalPhraseCount: number
 }
 
 // フレーズリスト取得のクエリパラメータ型
