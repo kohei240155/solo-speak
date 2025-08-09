@@ -108,14 +108,14 @@
   },
   "home": {
     "hero": {
-      "subtitle": "\\ 独り言トレーニング /",
-      "title": "スピーキングアプリの\n決定版",
+      "subtitle": "\\ 独り言トレーニング対応 /",
+      "title": "自分だけの\nフレーズ集を作ろう！",
       "cta": {
         "desktop": "今すぐはじめる →"
       },
       "features": {
         "aiGeneration": "AIが自然なフレーズを生成",
-        "practiceSupport": "徹底的な音読学習をサポート",
+        "practiceSupport": "独り言による音読学習をサポート",
         "quizFunction": "クイズ機能を使って瞬発力をUP"
       }
     },

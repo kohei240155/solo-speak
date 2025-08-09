@@ -48,7 +48,7 @@ export default function UserSettingsPage() {
     resolver: zodResolver(userSetupSchema),
     defaultValues: {
       username: '',
-      iconUrl: '',
+      iconUrl: '/images/user-icon/user-icon.png',
       nativeLanguageId: '',
       defaultLearningLanguageId: '',
       email: ''

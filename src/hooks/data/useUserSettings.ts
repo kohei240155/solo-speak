@@ -28,7 +28,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       
       // フォームに既存データを設定
       setValue('username', userData.username || '')
-      setValue('iconUrl', userData.iconUrl || '')
+      setValue('iconUrl', userData.iconUrl || '/images/user-icon/user-icon.png')
       setValue('nativeLanguageId', userData.nativeLanguageId || '')
       setValue('defaultLearningLanguageId', userData.defaultLearningLanguageId || '')
       setValue('email', userData.email || '')
@@ -55,7 +55,8 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
                                googleAvatarUrl.includes('google.com'))) {
           setValue('iconUrl', googleAvatarUrl)
         } else {
-          setValue('iconUrl', '')
+          // Googleアバターがない場合はデフォルト画像を設定
+          setValue('iconUrl', '/images/user-icon/user-icon.png')
         }
         
         // Googleアカウントの情報を初期値として設定
