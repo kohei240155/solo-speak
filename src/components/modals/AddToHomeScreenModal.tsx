@@ -1,5 +1,6 @@
 import BaseModal from '../common/BaseModal'
 import { AiOutlineCaretRight, AiFillApple, AiFillAndroid } from 'react-icons/ai'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface AddToHomeScreenModalProps {
   isOpen: boolean
@@ -10,6 +11,7 @@ export default function AddToHomeScreenModal({
   isOpen,
   onClose
 }: AddToHomeScreenModalProps) {
+  const { t } = useTranslation('common')
   
   return (
     <BaseModal 
@@ -24,26 +26,26 @@ export default function AddToHomeScreenModal({
             className="px-1 relative text-gray-800 inline-block"
             style={{ 
               background: 'linear-gradient(180deg, transparent 50%, #fde047 50%)',
-              animation: 'slideInFromLeft 0.8s ease-out'
+              animation: 'slideInFromBottom 0.8s ease-out'
             }}
           >
-            ホーム画面からすぐ開けます！
+            {t('addToHomeScreen.title')}
           </span>
         </h2>
         <p className="text-gray-600 text-base leading-relaxed">
-          スマートフォンならアプリ感覚で利用できます！
+          {t('addToHomeScreen.description')}
         </p>
       </div>
       
       {/* アニメーション定義 */}
       <style jsx>{`
-        @keyframes slideInFromLeft {
+        @keyframes slideInFromBottom {
           0% {
-            transform: translateX(-100%);
+            transform: translateY(30px);
             opacity: 0;
           }
           100% {
-            transform: translateX(0);
+            transform: translateY(0);
             opacity: 1;
           }
         }
@@ -60,20 +62,20 @@ export default function AddToHomeScreenModal({
             </div>
             <div className="ml-5 pr-4 space-y-2">
               <p className="text-gray-700 leading-relaxed">
-                <strong>1.</strong> Safariでこのページを開く
+                <strong>1.</strong> {t('addToHomeScreen.safari.step1')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>2.</strong> 画面下部の「共有」ボタンをタップ
+                <strong>2.</strong> {t('addToHomeScreen.safari.step2')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>3.</strong> 「ホーム画面に追加」をタップ
+                <strong>3.</strong> {t('addToHomeScreen.safari.step3')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>4.</strong> アプリ名を確認して「追加」をタップ
+                <strong>4.</strong> {t('addToHomeScreen.safari.step4')}
               </p>
             </div>
           </div>
-          
+
           {/* Android Chrome の説明 */}
           <div>
             <div className="flex items-center mb-3">
@@ -83,22 +85,21 @@ export default function AddToHomeScreenModal({
             </div>
             <div className="ml-5 pr-4 space-y-2">
               <p className="text-gray-700 leading-relaxed">
-                <strong>1.</strong> Chromeでこのページを開く
+                <strong>1.</strong> {t('addToHomeScreen.android.step1')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>2.</strong> 画面右上のメニュー（三点リーダー）をタップ
+                <strong>2.</strong> {t('addToHomeScreen.android.step2')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>3.</strong> 「ホーム画面に追加」または「アプリをインストール」をタップ
+                <strong>3.</strong> {t('addToHomeScreen.android.step3')}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                <strong>4.</strong> アプリ名を確認して「追加」をタップ
+                <strong>4.</strong> {t('addToHomeScreen.android.step4')}
               </p>
             </div>
           </div>
         </div>
       </div>
-      
       <div className="flex justify-end">
         <button
           onClick={onClose}

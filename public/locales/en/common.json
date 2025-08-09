@@ -224,6 +224,22 @@
     "sessionInvalid": "Authentication has expired. Please reload the page.",
     "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
   },
+  "addToHomeScreen": {
+    "title": "Easy access from your home screen!",
+    "description": "Add to your home screen for quick app-like access.",
+    "safari": {
+      "step1": "Open this page in Safari",
+      "step2": "Tap the share button at the bottom",
+      "step3": "Tap 'Add to Home Screen'",
+      "step4": "Confirm the app name and tap 'Add'"
+    },
+    "android": {
+      "step1": "Open this page in Chrome",
+      "step2": "Tap the menu button (three dots) at the top right",
+      "step3": "Tap 'Add to Home Screen' or 'Install App'",
+      "step4": "Confirm the app name and tap 'Add'"
+    }
+  },
   "footer": {
     "description": "Supporting your speaking practice journey.",
     "sections": {
