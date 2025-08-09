@@ -477,7 +477,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-              実際に試して気づいたこと
+              実際にためしてみると、<br />こんな課題がありました。
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-800 mx-auto rounded-full"></div>
           </div>
@@ -512,7 +512,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
-                  声に出して練習しても、どのフレーズを何回練習したか分からない
+                  声に出して練習しても、フレーズごとの習得度がわかりづらい
                 </p>
               </div>
             </div>
