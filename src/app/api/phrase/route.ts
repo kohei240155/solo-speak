@@ -146,6 +146,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     })
 
+    // ユーザーの総フレーズ数を取得
+    const totalPhraseCount = await prisma.phrase.count({
+      where: {
+        userId,
+        deletedAt: null
+      }
+    })
+
     // 翌日のリセット時間を計算（レスポンス用）
     const currentTime = new Date()
     const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate())
@@ -172,7 +180,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       phrase: transformedPhrase,
       remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
       dailyLimit: 5,
-      nextResetTime: tomorrowStart.toISOString()
+      nextResetTime: tomorrowStart.toISOString(),
+      totalPhraseCount
     }
 
     return NextResponse.json(responseData, { status: 201 })
