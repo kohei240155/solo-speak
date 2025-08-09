@@ -101,13 +101,13 @@ class ApiClient {
               showLoginModalRef()
             } else {
               // フォールバック: ログインモーダルが利用できない場合はトーストを表示
-              toast.error('認証情報が期限切れです。ページを再読み込みしてください。', {
+              toast.error('Authentication has expired. Please reload the page.', {
                 duration: 8000,
                 id: 'auth-error',
               })
             }
           }
-          throw new ApiError('認証情報なし', 401)
+          throw new ApiError('Authentication required', 401)
         }
 
         requestHeaders['Authorization'] = `Bearer ${session.access_token}`
@@ -145,13 +145,13 @@ class ApiClient {
               showLoginModalRef()
             } else {
               // フォールバック: ログインモーダルが利用できない場合はトーストを表示
-              toast.error('認証が失効しました。ページを再読み込みしてください。', {
+              toast.error('Authentication has expired. Please reload the page.', {
                 duration: 8000,
                 id: 'auth-expired'
               })
             }
           } else if (response.status === 503 && showErrorToast) {
-            toast.error('認証サービスが一時的に利用できません。しばらく待ってから再試行してください。', {
+            toast.error('Authentication service is temporarily unavailable. Please try again later.', {
               duration: 8000,
               id: 'service-unavailable'
             })
@@ -178,7 +178,7 @@ class ApiClient {
         }
 
         if (error instanceof Error && error.name === 'AbortError') {
-          const message = 'リクエストがタイムアウトしました'
+          const message = 'Request timed out'
           if (showErrorToast) {
             toast.error(message)
           }
@@ -187,11 +187,11 @@ class ApiClient {
 
         // ネットワークエラーやその他の接続エラー
         if (error instanceof Error) {
-          let message = 'ネットワークエラーが発生しました'
+          let message = 'Network error occurred'
           
           // Fetch failed エラーの場合
           if (error.message.includes('fetch failed') || error.message.includes('Failed to fetch')) {
-            message = 'サーバーに接続できません。インターネット接続を確認してから再試行してください。'
+            message = 'Cannot connect to server. Please check your internet connection and try again.'
           }
           
           if (showErrorToast) {
@@ -211,15 +211,15 @@ class ApiClient {
         throw error
       }
 
-      let message = 'ネットワークエラーが発生しました'
+      let message = 'Network error occurred'
       if (error instanceof Error) {
         message = error.message
         
         // 特定のエラーパターンに対応
         if (error.message.includes('ENOTFOUND') || error.message.includes('fetch failed')) {
-          message = 'サーバーに接続できません。インターネット接続を確認してください。'
+          message = 'Cannot connect to server. Please check your internet connection.'
         } else if (error.message.includes('Auth session missing')) {
-          message = '認証セッションが無効です。ページを再読み込みしてください。'
+          message = 'Authentication session is invalid. Please reload the page.'
         }
       }
       
