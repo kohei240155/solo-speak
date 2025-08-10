@@ -143,7 +143,11 @@
         "demo": {
           "input": "How long have you been living in Japan?",
           "button": "AI Suggest",
-          "output": "日本にはどのぐらい住んでいるの？"
+          "outputs": [
+            "日本にはどのぐらい住んでいるの？",
+            "日本に住んで何年になりますか？",
+            "日本にいらしてどのくらいになりますか？"
+          ]
         }
       },
       "feature2": {

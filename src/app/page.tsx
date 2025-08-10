@@ -579,17 +579,30 @@ export default function Home() {
                       </div>
                     )}
                     
-                    {/* 結果表示 */}
+                    {/* 結果表示 - 3つの翻訳 */}
                     <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
-                      <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">{t('home.solutions.feature1.demo.output')}</span>
-                          <div className="flex items-center space-x-2">
-                            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                          </div>
-                        </div>
+                      <div className="space-y-3">
+                        {(() => {
+                          // 個別のキーで各翻訳を取得
+                          const output1 = t('home.solutions.feature1.demo.outputs.0')
+                          const output2 = t('home.solutions.feature1.demo.outputs.1') 
+                          const output3 = t('home.solutions.feature1.demo.outputs.2')
+                          
+                          const outputs = [output1, output2, output3]
+                          
+                          return outputs.map((output: string, index: number) => (
+                            <div key={index} className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                              <div className="flex items-center justify-between">
+                                <span className="text-gray-900 font-semibold text-lg">{output}</span>
+                                <div className="flex items-center space-x-2">
+                                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        })()}
                       </div>
                     </div>
                   </div>

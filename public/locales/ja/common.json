@@ -139,11 +139,15 @@
       "feature1": {
         "number": "01",
         "title": "「言えなかったフレーズ」\nだから実践的",
-        "description": "言えなかったフレーズを、AIが自然な表現で翻訳します。自分の言えなかった表現が詰まったフレーズ集だからこそ、すぐに効果を実感できます。生成された3つの表現の中から、気に入った表現を選ぶことができます。",
+        "description": "言えなかったフレーズを、AIが自然な表現で翻訳します。自分の言えなかった表現が詰まったフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの表現の中から、気に入った表現を選ぶことができます。",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
           "button": "AI Suggest",
-          "output": "How long have you been living in Japan?"
+          "outputs": [
+            "How long have you been living in Japan?",
+            "How long have you lived in Japan?",
+            "How long is it since you moved to Japan?"
+          ]
         }
       },
       "feature2": {
