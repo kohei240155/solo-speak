@@ -109,7 +109,9 @@ export default function BaseModal({
       left: 0,
       right: 0,
       bottom: 0,
-      overflow: 'hidden'
+      overflow: 'hidden',
+      opacity: isOpen ? 1 : 0,
+      transition: 'opacity 400ms ease-out'
     },
     content: {
       position: 'relative' as const,
@@ -138,11 +140,15 @@ export default function BaseModal({
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
       <div 
-        className="relative bg-white rounded-lg w-[90vw] sm:w-auto" 
+        className={`relative bg-white rounded-lg w-[90vw] sm:w-auto transition-all duration-500 ease-out transform ${
+          isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'
+        }`}
         style={{ 
           maxWidth: `min(90vw, ${width})`,
           width: `min(90vw, ${width})`,
-          overflowX: 'hidden'
+          overflowX: 'hidden',
+          transform: isOpen ? 'translateY(0px) scale(1)' : 'translateY(20px) scale(0.98)',
+          transitionDelay: '100ms'
         }}
       >
         {/* 閉じるボタン */}
