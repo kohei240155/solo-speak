@@ -24,13 +24,15 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
     const language = params.get('language')
     const mode = params.get('mode') as 'normal' | 'random' | null
     const count = params.get('count')
+    const speakCountFilter = params.get('speakCountFilter')
     
     // URLパラメータに設定がある場合、自動的にクイズモードを開始
     if (language && mode && (mode === 'normal' || mode === 'random')) {
       const config: QuizConfig = {
         language,
         mode,
-        questionCount: count ? parseInt(count, 10) : 10
+        questionCount: count ? parseInt(count, 10) : 10,
+        speakCountFilter: speakCountFilter ? parseInt(speakCountFilter, 10) : null
       }
       
       setQuizMode({ active: true, config, session: null })
@@ -44,6 +46,13 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
     params.set('language', config.language)
     params.set('mode', config.mode)
     params.set('count', (config.questionCount || 10).toString())
+    
+    // 音読回数フィルターがある場合は追加
+    if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+      params.set('speakCountFilter', config.speakCountFilter.toString())
+    } else {
+      params.delete('speakCountFilter')
+    }
     
     // URLを更新（ページリロードは発生しない）
     const newUrl = `${window.location.pathname}?${params.toString()}`

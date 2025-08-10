@@ -3,6 +3,7 @@ export interface QuizConfig {
   mode: 'normal' | 'random'
   language: string
   questionCount?: number
+  speakCountFilter?: number | null // 音読回数フィルター（null = 指定なし）
 }
 
 // クイズ用フレーズの型定義
@@ -12,6 +13,7 @@ export interface QuizPhrase {
   translation: string
   languageCode: string
   correctQuizCount: number
+  totalSpeakCount: number
 }
 
 // クイズセッションの型定義

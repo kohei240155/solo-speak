@@ -21,6 +21,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   const { t } = useTranslation('common')
   const [mode, setMode] = useState<'normal' | 'random'>('normal')
   const [questionCount, setQuestionCount] = useState<number>(10)
+  const [speakCountFilter, setSpeakCountFilter] = useState<number | null>(50) // デフォルトは50回以上
   const [isLoading, setIsLoading] = useState(false)
 
   // フレーズ数が変わった時に問題数を調整
@@ -33,6 +34,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   useEffect(() => {
     if (isOpen) {
       setQuestionCount(10)
+      setSpeakCountFilter(50) // 音読回数フィルターも初期化
     }
   }, [isOpen])
 
@@ -47,6 +49,19 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     }))
   }
 
+  // 音読回数フィルターのオプションを生成
+  const generateSpeakCountFilterOptions = () => {
+    return [
+      { value: '', label: t('quiz.modal.speakCountOptions.noLimit') },
+      { value: '50', label: t('quiz.modal.speakCountOptions.over50') },
+      { value: '60', label: t('quiz.modal.speakCountOptions.over60') },
+      { value: '70', label: t('quiz.modal.speakCountOptions.over70') },
+      { value: '80', label: t('quiz.modal.speakCountOptions.over80') },
+      { value: '90', label: t('quiz.modal.speakCountOptions.over90') },
+      { value: '100', label: t('quiz.modal.speakCountOptions.over100') }
+    ]
+  }
+
   const handleStart = async (selectedLanguage: string) => {
     if (isLoading) return
     
@@ -57,7 +72,8 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       const config: QuizConfig = {
         mode: mode,
         language: selectedLanguage,
-        questionCount: questionCount
+        questionCount: questionCount,
+        speakCountFilter: speakCountFilter
       }
       
       // Quiz APIを呼び出してフレーズの有無を確認
@@ -66,6 +82,11 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         mode: config.mode,
         count: (config.questionCount || 10).toString()
       })
+
+      // 音読回数フィルターがある場合は追加
+      if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+        params.append('speakCountFilter', config.speakCountFilter.toString())
+      }
 
       const data = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${params.toString()}`)
       
@@ -107,6 +128,17 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         value: questionCount.toString(),
         options: generateQuestionCountOptions(),
         onChange: (value: string | boolean) => setQuestionCount(parseInt(value as string, 10))
+      },
+      {
+        id: 'speakCountFilter',
+        label: t('quiz.modal.speakCountFilter'),
+        type: 'select',
+        value: speakCountFilter?.toString() || '',
+        options: generateSpeakCountFilterOptions(),
+        onChange: (value: string | boolean) => {
+          const stringValue = value as string
+          setSpeakCountFilter(stringValue === '' ? null : parseInt(stringValue, 10))
+        }
       }
     ],
     onStart: handleStart,

@@ -94,9 +94,19 @@
     "modal": {
       "mode": "モード",
       "quizLength": "問題数",
+      "speakCountFilter": "音読回数",
       "options": {
         "normal": "通常",
         "random": "ランダム"
+      },
+      "speakCountOptions": {
+        "noLimit": "指定なし",
+        "over50": "50回以上",
+        "over60": "60回以上",
+        "over70": "70回以上",
+        "over80": "80回以上",
+        "over90": "90回以上",
+        "over100": "100回以上"
       },
       "questions": "問"
     },

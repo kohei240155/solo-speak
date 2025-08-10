@@ -26,13 +26,18 @@ export default function AddToHomeScreenModal({
             className="px-1 relative text-gray-800 inline-block"
             style={{ 
               background: 'linear-gradient(180deg, transparent 50%, #fde047 50%)',
-              animation: 'slideInFromBottom 0.8s ease-out'
+              animation: 'slideInFromBottom 1.2s ease-out 0.3s both'
             }}
           >
             {t('addToHomeScreen.title')}
           </span>
         </h2>
-        <p className="text-gray-600 text-base leading-relaxed">
+        <p 
+          className="text-gray-600 text-base leading-relaxed"
+          style={{
+            animation: 'fadeInSlideUp 0.8s ease-out 0.6s both'
+          }}
+        >
           {t('addToHomeScreen.description')}
         </p>
       </div>
@@ -49,10 +54,35 @@ export default function AddToHomeScreenModal({
             opacity: 1;
           }
         }
+        @keyframes fadeInSlideUp {
+          0% {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        @keyframes fadeInStagger {
+          0% {
+            transform: translateY(15px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
       `}</style>
       
       <div className="mb-6">
-        <div className="space-y-6">
+        <div 
+          className="space-y-6"
+          style={{
+            animation: 'fadeInStagger 0.8s ease-out 0.9s both'
+          }}
+        >
           {/* Safari (iOS) の説明 */}
           <div>
             <div className="flex items-center mb-3">
@@ -100,10 +130,15 @@ export default function AddToHomeScreenModal({
           </div>
         </div>
       </div>
-      <div className="flex justify-end">
+      <div 
+        className="flex justify-end"
+        style={{
+          animation: 'fadeInSlideUp 0.6s ease-out 1.2s both'
+        }}
+      >
         <button
           onClick={onClose}
-          className="bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          className="bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
           style={{ 
             borderColor: '#616161',
             color: '#616161'
