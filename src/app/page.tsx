@@ -15,11 +15,11 @@ import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 // シンプルなスクロールアニメーション
 const useScrollAnimation = () => {
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section']))
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section']))
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
+      const sections = ['features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
       
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId)
@@ -395,51 +395,69 @@ export default function Home() {
           
                     <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
             {/* お悩み 1 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '400ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '600ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '700ms' }}>
                   {t('home.features.speechRecognition.title')}
                 </p>
               </div>
             </div>
 
             {/* お悩み 2 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '600ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '800ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '900ms' }}>
                   {t('home.features.quiz.title')}
                 </p>
               </div>
             </div>
 
             {/* お悩み 3 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '800ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '1000ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '1100ms' }}>
                   {t('home.features.progress.title')}
                 </p>
               </div>
