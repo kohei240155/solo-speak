@@ -709,7 +709,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {countCooldown > 0 ? t('home.solutions.feature2.demo.buttons.wait') : t('home.solutions.feature2.demo.buttons.count')}
+                              {countCooldown > 0 ? 'Wait...' : 'Count'}
                             </span>
                           </button>
                           <div className="w-px h-[120px] md:h-[152px] bg-gray-300 mx-2"></div>
@@ -728,7 +728,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               isPlaying ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {isPlaying ? t('home.solutions.feature2.demo.buttons.playing') : t('home.solutions.feature2.demo.buttons.sound')}
+                              {isPlaying ? 'Playing...' : 'Sound'}
                             </span>
                           </button>
                         </div>

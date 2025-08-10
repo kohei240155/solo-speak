@@ -160,13 +160,7 @@
           "todayLabel": "Today:",
           "totalLabel": "Total:",
           "goalAchieved": "目標達成！",
-          "goalAchievedMessage": "10回の音読が完了しました",
-          "buttons": {
-            "count": "Count",
-            "sound": "Sound",
-            "wait": "Wait...",
-            "playing": "Playing..."
-          }
+          "goalAchievedMessage": "10回の音読が完了しました"
         }
       },
       "feature3": {

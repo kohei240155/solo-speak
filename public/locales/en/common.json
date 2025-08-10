@@ -160,13 +160,7 @@
           "todayLabel": "Today:",
           "totalLabel": "Total:",
           "goalAchieved": "Goal Achieved!",
-          "goalAchievedMessage": "10 readings completed",
-          "buttons": {
-            "count": "Count",
-            "sound": "Sound",
-            "wait": "Wait...",
-            "playing": "Playing..."
-          }
+          "goalAchievedMessage": "10 readings completed"
         }
       },
       "feature3": {
