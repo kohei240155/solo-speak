@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
+import { RiSpeakLine } from 'react-icons/ri'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
@@ -89,9 +90,11 @@ export default function QuizPractice({
           />
         </div>
       </div>
-      {/* 正解数表示 */}
+      {/* Total数と正解数表示 */}
       <div className="flex items-center justify-end mb-2 text-xs text-gray-500">
-        <IoCheckboxOutline className="w-4 h-4 mr-1" />
+        <RiSpeakLine className="w-4 h-4 mr-1" />
+        <span>Total: {currentPhrase.totalSpeakCount}</span>
+        <IoCheckboxOutline className="w-4 h-4 ml-4 mr-1" />
         <span>Correct: {currentPhrase.correctQuizCount}</span>
       </div>
       {/* フレーズ表示エリア */}

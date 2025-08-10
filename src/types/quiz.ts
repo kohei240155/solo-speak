@@ -12,6 +12,7 @@ export interface QuizPhrase {
   translation: string
   languageCode: string
   correctQuizCount: number
+  totalSpeakCount: number
 }
 
 // クイズセッションの型定義

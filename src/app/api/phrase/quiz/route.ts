@@ -117,7 +117,8 @@ export async function GET(request: NextRequest) {
       original: phrase.original,
       translation: phrase.translation,
       languageCode: phrase.language.code,
-      correctQuizCount: phrase.correctQuizCount || 0
+      correctQuizCount: phrase.correctQuizCount || 0,
+      totalSpeakCount: phrase.totalSpeakCount || 0
     }))
 
     return NextResponse.json({
