@@ -94,9 +94,19 @@
     "modal": {
       "mode": "Mode",
       "quizLength": "Quiz Length",
+      "speakCountFilter": "Speak Count",
       "options": {
         "normal": "Normal",
         "random": "Random"
+      },
+      "speakCountOptions": {
+        "noLimit": "No limit",
+        "over50": "50+ times",
+        "over60": "60+ times",
+        "over70": "70+ times",
+        "over80": "80+ times",
+        "over90": "90+ times",
+        "over100": "100+ times"
       },
       "questions": "questions"
     },

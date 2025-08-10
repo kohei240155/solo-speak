@@ -52,13 +52,13 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   // 音読回数フィルターのオプションを生成
   const generateSpeakCountFilterOptions = () => {
     return [
-      { value: '', label: '指定なし' },
-      { value: '50', label: '50回以上' },
-      { value: '60', label: '60回以上' },
-      { value: '70', label: '70回以上' },
-      { value: '80', label: '80回以上' },
-      { value: '90', label: '90回以上' },
-      { value: '100', label: '100回以上' }
+      { value: '', label: t('quiz.modal.speakCountOptions.noLimit') },
+      { value: '50', label: t('quiz.modal.speakCountOptions.over50') },
+      { value: '60', label: t('quiz.modal.speakCountOptions.over60') },
+      { value: '70', label: t('quiz.modal.speakCountOptions.over70') },
+      { value: '80', label: t('quiz.modal.speakCountOptions.over80') },
+      { value: '90', label: t('quiz.modal.speakCountOptions.over90') },
+      { value: '100', label: t('quiz.modal.speakCountOptions.over100') }
     ]
   }
 
@@ -131,7 +131,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       },
       {
         id: 'speakCountFilter',
-        label: '音読回数',
+        label: t('quiz.modal.speakCountFilter'),
         type: 'select',
         value: speakCountFilter?.toString() || '',
         options: generateSpeakCountFilterOptions(),
