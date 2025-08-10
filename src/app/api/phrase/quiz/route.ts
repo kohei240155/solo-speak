@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const language = searchParams.get('language')
     const mode = searchParams.get('mode')
     const count = searchParams.get('count')
+    const speakCountFilter = searchParams.get('speakCountFilter')
 
     if (!language) {
       return NextResponse.json(
@@ -31,6 +32,9 @@ export async function GET(request: NextRequest) {
 
     // URLパラメータから問題数を取得（デフォルトは10）
     const questionCount = count ? parseInt(count, 10) : 10
+
+    // 音読回数フィルターを取得
+    const speakCountMinimum = speakCountFilter ? parseInt(speakCountFilter, 10) : null
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases] = await Promise.all([
@@ -50,7 +54,13 @@ export async function GET(request: NextRequest) {
           language: {
             code: language
           },
-          deletedAt: null
+          deletedAt: null,
+          // 音読回数フィルターを適用
+          ...(speakCountMinimum !== null && {
+            totalSpeakCount: {
+              gte: speakCountMinimum
+            }
+          })
         },
         include: {
           language: true
