@@ -69,9 +69,6 @@ export default function UserSettingsForm({
           onImageChange={(imageUrl) => {
             setValue('iconUrl', imageUrl)
           }}
-          onImageRemove={() => {
-            setValue('iconUrl', '')
-          }}
           disabled={isDisabled}
         />
         {errors.iconUrl && (

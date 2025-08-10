@@ -93,6 +93,9 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
     // Googleから取得した情報
     const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
     const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
+    
+    // アイコンURLの設定（Googleのアバターがない場合はデフォルト画像を使用）
+    const iconUrl = googleAvatarUrl || '/images/user-icon/user-icon.png'
 
     // 表示言語設定に基づいてデフォルトの母語を設定
     // まず利用可能な言語を取得
@@ -114,7 +117,7 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
         id: user.id,
         email: user.email || '',
         username: googleDisplayName || null, // Googleの表示名を初期値として設定
-        iconUrl: googleAvatarUrl,
+        iconUrl: iconUrl, // 修正: 設定したiconUrlを使用
         nativeLanguageId: defaultNativeLanguageId, // 表示言語設定に基づいて初期値を設定
         defaultLearningLanguageId: null, // 初期状態では空（後で設定）
       },
@@ -160,12 +163,15 @@ export async function createUserSettings(
   userData: UserSettingsCreateRequest
 ): Promise<UserSettingsResponse> {
   try {
+    // iconUrlが空の場合はデフォルト画像を設定
+    const iconUrl = userData.iconUrl || '/images/user-icon/user-icon.png'
+    
     const result = await prisma.user.create({
       data: {
         id: user.id,
         email: user.email || userData.email || '',
         username: userData.username,
-        iconUrl: userData.iconUrl,
+        iconUrl: iconUrl,
         nativeLanguageId: userData.nativeLanguageId,
         defaultLearningLanguageId: userData.defaultLearningLanguageId,
       },

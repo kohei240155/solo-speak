@@ -7,7 +7,7 @@ import 'react-image-crop/dist/ReactCrop.css'
 interface ImageUploadProps {
   currentImage?: string
   onImageChange: (imageUrl: string) => void
-  onImageRemove: () => void
+  onImageRemove?: () => void // オプショナルに変更
   disabled?: boolean
 }
 
@@ -16,7 +16,7 @@ export interface ImageUploadRef {
 }
 
 const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
-  ({ currentImage, onImageChange, onImageRemove, disabled = false }, ref) => {
+  ({ currentImage, onImageChange, disabled = false }, ref) => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [selectedFile, setSelectedFile] = useState<File | null>(null) // 元のファイルオブジェクトを保持
     const [crop, setCrop] = useState<Crop>()
@@ -183,8 +183,9 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     setSelectedImage(null)
     setCroppedImageBlob(null)
     
-    // フォームの値を空文字列に設定（Save時に削除処理が実行される）
-    onImageRemove()
+    // デフォルト画像を設定
+    const defaultImagePath = '/images/user-icon/user-icon.png'
+    onImageChange(defaultImagePath)
   }
 
   return (
@@ -257,7 +258,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
               Select
             </span>
           </label>
-          {currentImage && currentImage.trim() !== '' && (
+          {currentImage && currentImage.trim() !== '' && !currentImage.includes('/images/user-icon/user-icon.png') && (
             <button
               type="button"
               onClick={handleRemoveImage}

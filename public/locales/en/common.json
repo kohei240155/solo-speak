@@ -109,7 +109,7 @@
   "home": {
     "hero": {
       "subtitle": "\\ Solo Practice Training /",
-      "title": "The Ultimate\nSpeaking App",
+      "title": "Create Your Own\nPhrase Collection!",
       "cta": {
         "desktop": "Get Started →"
       },
@@ -143,7 +143,11 @@
         "demo": {
           "input": "How long have you been living in Japan?",
           "button": "AI Suggest",
-          "output": "日本にはどのぐらい住んでいるの？"
+          "outputs": [
+            "日本にはどのぐらい住んでいるの？",
+            "日本に住んで何年になりますか？",
+            "日本にいらしてどのくらいになりますか？"
+          ]
         }
       },
       "feature2": {
@@ -156,13 +160,7 @@
           "todayLabel": "Today:",
           "totalLabel": "Total:",
           "goalAchieved": "Goal Achieved!",
-          "goalAchievedMessage": "10 readings completed",
-          "buttons": {
-            "count": "Count",
-            "sound": "Sound",
-            "wait": "Wait...",
-            "playing": "Playing..."
-          }
+          "goalAchievedMessage": "10 readings completed"
         }
       },
       "feature3": {

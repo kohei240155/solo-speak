@@ -57,6 +57,9 @@ export function useUserSettingsSubmit(
           } catch {
             finalData.iconUrl = googleAvatarUrl
           }
+        } else {
+          // Googleアバターがない場合はデフォルト画像を設定
+          finalData.iconUrl = '/images/user-icon/user-icon.png'
         }
       }
 
@@ -109,7 +112,7 @@ export function useUserSettingsSubmit(
         }
       }
 
-      // アイコンが削除された場合（空文字列に設定された場合）の処理
+            // アイコンが削除された場合（空文字列に設定された場合）の処理
       if (finalData.iconUrl === '' && existingIconUrl && existingIconUrl.trim() !== '') {
         
         // Supabase StorageのURLかどうかをチェック
@@ -127,8 +130,8 @@ export function useUserSettingsSubmit(
           }
         }
         
-        // アイコンを空に設定（デフォルトのシルエットアイコンが表示される）
-        finalData.iconUrl = ''
+        // デフォルト画像を設定
+        finalData.iconUrl = '/images/user-icon/user-icon.png'
       }
 
       // 2つ目のAPI: ユーザー設定を保存

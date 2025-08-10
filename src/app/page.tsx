@@ -15,11 +15,11 @@ import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 // シンプルなスクロールアニメーション
 const useScrollAnimation = () => {
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section', 'features-section']))
+  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section']))
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
+      const sections = ['features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
       
       sections.forEach(sectionId => {
         const element = document.getElementById(sectionId)
@@ -395,51 +395,69 @@ export default function Home() {
           
                     <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
             {/* お悩み 1 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '400ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '600ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '700ms' }}>
                   {t('home.features.speechRecognition.title')}
                 </p>
               </div>
             </div>
 
             {/* お悩み 2 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '600ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '800ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '900ms' }}>
                   {t('home.features.quiz.title')}
                 </p>
               </div>
             </div>
 
             {/* お悩み 3 */}
-            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+              visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`} style={{ transitionDelay: '800ms' }}>
               <div className="flex items-start gap-4">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0"
-                  style={{ backgroundColor: '#616161' }}
+                  className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-700 ease-out ${
+                    visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+                  }`}
+                  style={{ backgroundColor: '#616161', transitionDelay: '1000ms' }}
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-gray-800 font-medium leading-relaxed">
+                <p className={`text-lg md:text-xl text-gray-800 font-medium leading-relaxed transition-all duration-700 ease-out ${
+                  visibleSections.has('features-section') ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+                }`} style={{ transitionDelay: '1100ms' }}>
                   {t('home.features.progress.title')}
                 </p>
               </div>
@@ -561,17 +579,32 @@ export default function Home() {
                       </div>
                     )}
                     
-                    {/* 結果表示 */}
+                    {/* 結果表示 - 3つの翻訳 */}
                     <div className={`relative transition-all duration-500 ${showTranslation ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
-                      <div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-900 font-semibold text-lg">{t('home.solutions.feature1.demo.output')}</span>
-                          <div className="flex items-center space-x-2">
-                            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                          </div>
-                        </div>
+                      <div className="space-y-3">
+                        {(() => {
+                          // 個別のキーで各翻訳を取得
+                          const output1 = t('home.solutions.feature1.demo.outputs.0')
+                          const output2 = t('home.solutions.feature1.demo.outputs.1') 
+                          const output3 = t('home.solutions.feature1.demo.outputs.2')
+                          
+                          const outputs = [output1, output2, output3]
+                          
+                          return outputs.map((output: string, index: number) => (
+                            <div key={index} className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                              <div className="flex items-center justify-between">
+                                <span className="text-gray-900 font-semibold text-lg">{output}</span>
+                                <div className="flex items-center space-x-2">
+                                  {index === 0 && (
+                                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -676,7 +709,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               countCooldown > 0 ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {countCooldown > 0 ? t('home.solutions.feature2.demo.buttons.wait') : t('home.solutions.feature2.demo.buttons.count')}
+                              {countCooldown > 0 ? 'Wait...' : 'Count'}
                             </span>
                           </button>
                           <div className="w-px h-[120px] md:h-[152px] bg-gray-300 mx-2"></div>
@@ -695,7 +728,7 @@ export default function Home() {
                             <span className={`font-medium text-sm md:text-base ${
                               isPlaying ? 'text-gray-400' : 'text-gray-900'
                             }`}>
-                              {isPlaying ? t('home.solutions.feature2.demo.buttons.playing') : t('home.solutions.feature2.demo.buttons.sound')}
+                              {isPlaying ? 'Playing...' : 'Sound'}
                             </span>
                           </button>
                         </div>

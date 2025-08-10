@@ -108,27 +108,27 @@
   },
   "home": {
     "hero": {
-      "subtitle": "\\ 独り言トレーニング /",
-      "title": "スピーキングアプリの\n決定版",
+      "subtitle": "\\ 独り言トレーニング対応 /",
+      "title": "自分だけの\nフレーズ集を作ろう！",
       "cta": {
         "desktop": "今すぐはじめる →"
       },
       "features": {
         "aiGeneration": "AIが自然なフレーズを生成",
-        "practiceSupport": "徹底的な音読学習をサポート",
+        "practiceSupport": "独り言による学習をサポート",
         "quizFunction": "クイズ機能を使って瞬発力をUP"
       }
     },
     "features": {
       "title": "こんなお悩みありませんか？",
       "speechRecognition": {
-        "title": "AIを使ってスピーキング練習したいけど、どう活用すればいいか分からない"
+        "title": "フレーズ集を買ってみたけど、使わないフレーズばかりで挫折してしまった"
       },
       "quiz": {
-        "title": "単語や文法は覚えたのに、話すとなると何も出てこない"
+        "title": "言えなかったフレーズ、AIで生成しても復習せずに放置してしまった"
       },
       "progress": {
-        "title": "言えなかったフレーズ、復習しなきゃと思いつつ放置してしまう"
+        "title": "フレーズを丸暗記しただけで、実際の会話で使うことができなかった"
       }
     },
     "solutions": {
@@ -138,17 +138,21 @@
       },
       "feature1": {
         "number": "01",
-        "title": "「言えなかったフレーズ」をAIが即生成",
-        "description": "言えなかったフレーズを、AIが自然な表現で翻訳します。実際に言えなかったフレーズがベースになるので、より実践的な学習が可能です。",
+        "title": "「言えなかったフレーズ」\nだから実践的",
+        "description": "言えなかったフレーズを、AIが自然な表現で翻訳。自分専用のフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
           "button": "AI Suggest",
-          "output": "How long have you been living in Japan?"
+          "outputs": [
+            "How long have you been living in Japan?",
+            "How long have you lived in Japan?",
+            "How long is it since you moved to Japan?"
+          ]
         }
       },
       "feature2": {
         "number": "02",
-        "title": "音読回数カウント機能で\n\"話せるまで\"徹底サポート",
+        "title": "音読回数カウント機能で\n\"覚えるまで\"徹底サポート",
         "description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
         "demo": {
           "input": "How long have you been living in Japan?",
@@ -156,13 +160,7 @@
           "todayLabel": "Today:",
           "totalLabel": "Total:",
           "goalAchieved": "目標達成！",
-          "goalAchievedMessage": "10回の音読が完了しました",
-          "buttons": {
-            "count": "Count",
-            "sound": "Sound",
-            "wait": "Wait...",
-            "playing": "Playing..."
-          }
+          "goalAchievedMessage": "10回の音読が完了しました"
         }
       },
       "feature3": {
