@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { GoAlert } from 'react-icons/go'
 import { useAuth } from '@/contexts/AuthContext'
 import BaseModal from '../common/BaseModal'
 
@@ -87,8 +88,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           />
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Solo Speakはあなたのスピーキング学習を<br />
-          サポートします。毎日繰り返し取り組みましょう。
+          <span className="hidden lg:inline">Solo Speakは</span>あなたのスピーキング学習をサポートします。<br /><span className="text-blue-600">※Safari/Chromeを開いてログインしてください</span>
         </p>
       </div>
 
