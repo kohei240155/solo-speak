@@ -395,7 +395,7 @@ export default function Home() {
           
                     <div className="max-w-5xl mx-auto space-y-6 px-2 sm:px-4">
             {/* お悩み 1 */}
-            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
               visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`} style={{ transitionDelay: '400ms' }}>
               <div className="flex items-start gap-4">
@@ -418,7 +418,7 @@ export default function Home() {
             </div>
 
             {/* お悩み 2 */}
-            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
               visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`} style={{ transitionDelay: '600ms' }}>
               <div className="flex items-start gap-4">
@@ -441,7 +441,7 @@ export default function Home() {
             </div>
 
             {/* お悩み 3 */}
-            <div className={`bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
+            <div className={`bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 transition-all duration-1000 ease-out transform overflow-hidden ${
               visibleSections.has('features-section') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`} style={{ transitionDelay: '800ms' }}>
               <div className="flex items-start gap-4">
