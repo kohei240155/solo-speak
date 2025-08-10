@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { GoAlert } from 'react-icons/go'
 import { useAuth } from '@/contexts/AuthContext'
 import BaseModal from '../common/BaseModal'
 
