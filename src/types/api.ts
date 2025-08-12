@@ -11,6 +11,9 @@ export interface ApiErrorResponse {
   details?: unknown
 }
 
+// API呼び出し結果のユニオン型
+export type ApiResult<T> = T | ApiErrorResponse
+
 // 成功レスポンス型のジェネリック
 export interface ApiSuccessResponse<T = unknown> extends BaseApiResponse {
   success: true

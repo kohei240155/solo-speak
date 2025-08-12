@@ -6,7 +6,7 @@ import {
   SpeakPhraseResponse, 
   SpeakPhraseCountResponse
 } from '@/types/phrase'
-import { ApiErrorResponse, ApiResult } from '@/types/api-responses'
+import { ApiErrorResponse, ApiResult } from '@/types/api'
 
 /**
  * フレーズのカウントを更新（型安全）

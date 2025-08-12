@@ -6,7 +6,7 @@ import {
   UpdatePhraseResponseData, 
   DeletePhraseResponseData 
 } from '@/types/phrase'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { ApiErrorResponse } from '@/types/api'
 
 /** * フレーズの更新APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト

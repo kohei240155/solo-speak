@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { ApiErrorResponse } from '@/types/api'
 import { UserDailyResetResponse } from '@/types/user'
 
 /** * ユーザーの1日ごとの音読練習回数をリセットするAPIエンドポイント

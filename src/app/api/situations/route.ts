@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { CreateSituationRequest, SituationsListResponse } from '@/types/situation'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { ApiErrorResponse } from '@/types/api'
 
 const prisma = new PrismaClient()
 

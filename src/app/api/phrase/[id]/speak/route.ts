@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { SpeakPhraseResponse, ApiErrorResponse } from '@/types/api-responses'
+import { SpeakPhraseResponse } from '@/types/phrase'
+import { ApiErrorResponse } from '@/types/api'
 
 /** * フレーズの音読練習用APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
