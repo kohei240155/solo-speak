@@ -28,11 +28,20 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
     
     // URLパラメータに設定がある場合、自動的にクイズモードを開始
     if (language && mode && (mode === 'normal' || mode === 'random')) {
+      // speakCountFilterの安全な解析
+      let parsedSpeakCountFilter: number | null = null
+      if (speakCountFilter && speakCountFilter !== 'null') {
+        const parsed = parseInt(speakCountFilter, 10)
+        if (!isNaN(parsed)) {
+          parsedSpeakCountFilter = parsed
+        }
+      }
+
       const config: QuizConfig = {
         language,
         mode,
         questionCount: count ? parseInt(count, 10) : 10,
-        speakCountFilter: speakCountFilter ? parseInt(speakCountFilter, 10) : null
+        speakCountFilter: parsedSpeakCountFilter
       }
       
       setQuizMode({ active: true, config, session: null })

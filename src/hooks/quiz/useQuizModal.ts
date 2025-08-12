@@ -26,9 +26,13 @@ export function useQuizModal(): UseQuizModalReturn {
     const queryParams = new URLSearchParams({
       language: config.language,
       mode: config.mode,
-      count: (config.questionCount || 10).toString(),
-      speakCountFilter: config.speakCountFilter?.toString() || 'null'
+      count: (config.questionCount || 10).toString()
     })
+    
+    // 音読回数フィルターがある場合のみ追加
+    if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+      queryParams.append('speakCountFilter', config.speakCountFilter.toString())
+    }
     
     router.push(`/phrase/quiz?${queryParams.toString()}`)
   }, [router])

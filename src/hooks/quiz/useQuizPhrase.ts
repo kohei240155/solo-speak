@@ -36,6 +36,11 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         count: (config.questionCount || 10).toString()
       })
 
+      // 音読回数フィルターがある場合のみ追加
+      if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+        params.append('speakCountFilter', config.speakCountFilter.toString())
+      }
+
       const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], message?: string, totalCount?: number, availablePhraseCount?: number }>(`/api/phrase/quiz?${params.toString()}`)
 
       if (data.success && data.phrases && data.phrases.length > 0) {
