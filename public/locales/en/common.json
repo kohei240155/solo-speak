@@ -22,7 +22,10 @@
     },
     "validation": {
       "maxLength100": "Please enter within 100 characters (Current: {{count}} characters)",
-      "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)"
+      "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)",
+      "required": "Please enter a phrase",
+      "phraseMaxLength": "Phrase must be within 100 characters",
+      "variationMaxLength": "Phrase must be within 200 characters"
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",
@@ -36,6 +39,7 @@
       "nextPhraseError": "Failed to get next phrase",
       "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
       "generationFailed": "Failed to generate phrases",
+      "generationError": "Error occurred during phrase generation",
       "noContentGenerated": "No content generated"
     }
   },

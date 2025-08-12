@@ -88,17 +88,17 @@ export const usePhraseManagerSWR = () => {
     setPhraseValidationError('')
     
     if (!phrase.trim()) {
-      setPhraseValidationError('フレーズを入力してください')
+      setPhraseValidationError(t('phrase.validation.required'))
       return false
     }
     
     if (phrase.length > 100) {
-      setPhraseValidationError('フレーズは100文字以内で入力してください')
+      setPhraseValidationError(t('phrase.validation.phraseMaxLength'))
       return false
     }
     
     return true
-  }, [])
+  }, [t])
 
   const validateVariation = useCallback((text: string, index: number) => {
     setVariationValidationErrors(prev => ({
@@ -109,7 +109,7 @@ export const usePhraseManagerSWR = () => {
     if (!text.trim()) {
       setVariationValidationErrors(prev => ({
         ...prev,
-        [index]: 'フレーズを入力してください'
+        [index]: t('phrase.validation.required')
       }))
       return false
     }
@@ -117,13 +117,13 @@ export const usePhraseManagerSWR = () => {
     if (text.length > 200) {
       setVariationValidationErrors(prev => ({
         ...prev,
-        [index]: 'フレーズは200文字以内で入力してください'
+        [index]: t('phrase.validation.variationMaxLength')
       }))
       return false
     }
     
     return true
-  }, [])
+  }, [t])
 
   // フレーズ変更ハンドラー
   const handlePhraseChange = useCallback((value: string) => {
@@ -144,7 +144,7 @@ export const usePhraseManagerSWR = () => {
     }
     // 残り回数チェック
     if (remainingGenerations <= 0) {
-      setError('本日の生成回数を超過しました。明日再度お試しください。')
+      setError(t('phrase.messages.dailyLimitExceeded'))
       return
     }
 
@@ -165,20 +165,20 @@ export const usePhraseManagerSWR = () => {
         // 残り生成回数を更新
         mutateGenerations()
       } else {
-        setError(response.error || 'フレーズの生成に失敗しました')
+        setError(response.error || t('phrase.messages.generationFailed'))
       }
     } catch (error) {
       console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
-        setError('本日の生成回数を超過しました。明日再度お試しください。')
+        setError(t('phrase.messages.dailyLimitExceeded'))
         mutateGenerations()
       } else {
-        setError('フレーズの生成中にエラーが発生しました')
+        setError(t('phrase.messages.generationError'))
       }
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations, t])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
