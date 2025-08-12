@@ -4,29 +4,16 @@ import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation } from '@/types/phrase'
 import { CreatePhraseResponseData } from '@/types/phrase-api'
+import { RemainingGenerationsResponse, SituationsListResponse } from '@/types/api-responses'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import useSWR, { mutate } from 'swr'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { SWR_CACHE_HELPERS } from '@/utils/swr-keys'
 
-// 型定義
-interface GenerationsData {
-  remainingGenerations: number
-}
-
-interface SituationsData {
-  situations: Array<{
-    id: string
-    name: string
-    createdAt: string
-    updatedAt: string
-  }>
-}
-
 // SWR用のfetcher関数
-const generationsFetcher = (url: string) => api.get<GenerationsData>(url, { showErrorToast: false })
-const situationsFetcher = (url: string) => api.get<SituationsData>(url, { showErrorToast: false })
+const generationsFetcher = (url: string) => api.get<RemainingGenerationsResponse>(url, { showErrorToast: false })
+const situationsFetcher = (url: string) => api.get<SituationsListResponse>(url, { showErrorToast: false })
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
@@ -39,7 +26,7 @@ export const usePhraseManagerSWR = () => {
   // 残り生成回数をSWRで取得（最適化されたキャッシュ設定）
   // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
   const generationsKey = user ? ['/api/phrase/remaining', user.id] as const : null
-  const { data: generationsData, mutate: mutateGenerations } = useSWR<GenerationsData>(
+  const { data: generationsData, mutate: mutateGenerations } = useSWR<RemainingGenerationsResponse>(
     generationsKey,
     ([url]) => generationsFetcher(url),
     {
@@ -53,7 +40,7 @@ export const usePhraseManagerSWR = () => {
   
   // シチュエーションをSWRで取得
   const situationsKey = user ? ['/api/situations', user.id] as const : null
-  const { data: situationsData, mutate: mutateSituations } = useSWR<SituationsData>(
+  const { data: situationsData, mutate: mutateSituations } = useSWR<SituationsListResponse>(
     situationsKey,
     ([url]) => situationsFetcher(url),
     {

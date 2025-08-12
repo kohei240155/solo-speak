@@ -74,3 +74,18 @@ export interface UserDailyResetResponse {
   count: number
   lastSpeakingDate: Date | null
 }
+
+// 残りのフレーズ生成回数レスポンス型
+export interface RemainingGenerationsResponse {
+  remainingGenerations: number
+}
+
+// シチュエーション一覧レスポンス型
+export interface SituationsListResponse {
+  situations: Array<{
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+  }>
+}
