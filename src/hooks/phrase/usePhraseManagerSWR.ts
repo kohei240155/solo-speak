@@ -66,7 +66,7 @@ export const usePhraseManagerSWR = () => {
     }
   }, [user])
 
-  // サブスクリプションキャンセルイベントを監視
+  // TODO: サブスクリプションキャンセルイベントを監視
   useEffect(() => {
     const handleSubscriptionCanceled = () => {
       console.log('Subscription canceled event received, refreshing generation data...')
@@ -78,24 +78,6 @@ export const usePhraseManagerSWR = () => {
     return () => {
       window.removeEventListener('subscriptionCanceled', handleSubscriptionCanceled)
     }
-  }, [mutateGenerations])
-
-  // 日付変更の検出（UTC基準） - 効率的な検出間隔
-  useEffect(() => {
-    let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
-    
-    const checkDateChange = () => {
-      const newUTCDate = new Date().toISOString().split('T')[0]
-      if (newUTCDate !== currentUTCDate) {
-        currentUTCDate = newUTCDate
-        mutateGenerations() // 日付が変わったら生成回数データを再取得
-      }
-    }
-    
-    // 5分ごとに日付変更をチェック（1分間隔は過剰）
-    const interval = setInterval(checkDateChange, 5 * 60 * 1000)
-    
-    return () => clearInterval(interval)
   }, [mutateGenerations])
 
   // データ取得状態の計算
