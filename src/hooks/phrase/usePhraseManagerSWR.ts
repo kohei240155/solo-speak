@@ -25,9 +25,8 @@ interface SituationsData {
 }
 
 // SWR用のfetcher関数
-const fetcher = async (url: string) => {
-  return await api.get(url, { showErrorToast: false })
-}
+const generationsFetcher = (url: string) => api.get<GenerationsData>(url, { showErrorToast: false })
+const situationsFetcher = (url: string) => api.get<SituationsData>(url, { showErrorToast: false })
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
@@ -38,9 +37,11 @@ export const usePhraseManagerSWR = () => {
   const { userSettings } = useUserSettings()
   
   // 残り生成回数をSWRで取得（最適化されたキャッシュ設定）
-  const { data: generationsData, mutate: mutateGenerations } = useSWR(
-    user ? '/api/phrase/remaining' : null,
-    fetcher,
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const generationsKey = user ? ['/api/phrase/remaining', user.id] as const : null
+  const { data: generationsData, mutate: mutateGenerations } = useSWR<GenerationsData>(
+    generationsKey,
+    ([url]) => generationsFetcher(url),
     {
       dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
       revalidateOnFocus: true,
@@ -48,18 +49,19 @@ export const usePhraseManagerSWR = () => {
       refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
       shouldRetryOnError: true,
     }
-  ) as { data: GenerationsData | undefined, mutate: () => void }
+  )
   
   // シチュエーションをSWRで取得
-  const { data: situationsData, mutate: mutateSituations } = useSWR(
-    user ? '/api/situations' : null,
-    fetcher,
+  const situationsKey = user ? ['/api/situations', user.id] as const : null
+  const { data: situationsData, mutate: mutateSituations } = useSWR<SituationsData>(
+    situationsKey,
+    ([url]) => situationsFetcher(url),
     {
       dedupingInterval: 5 * 60 * 1000, // 5分間キャッシュ
       revalidateOnFocus: true,
       shouldRetryOnError: true,
     }
-  ) as { data: SituationsData | undefined, mutate: () => void }
+  )
 
   // ローカル状態
   const [nativeLanguage, setNativeLanguage] = useState('ja')
