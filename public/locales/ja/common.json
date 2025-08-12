@@ -24,8 +24,7 @@
       "maxLength100": "100文字以内で入力してください（現在: {{count}}文字）",
       "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）",
       "required": "フレーズを入力してください",
-      "phraseMaxLength": "フレーズは100文字以内で入力してください",
-      "variationMaxLength": "フレーズは200文字以内で入力してください"
+      "phraseMaxLength": "フレーズは100文字以内で入力してください"
     },
     "messages": {
       "updateSuccess": "フレーズが正常に更新されました！",

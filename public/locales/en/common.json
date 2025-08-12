@@ -24,8 +24,7 @@
       "maxLength100": "Please enter within 100 characters (Current: {{count}} characters)",
       "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)",
       "required": "Please enter a phrase",
-      "phraseMaxLength": "Phrase must be within 100 characters",
-      "variationMaxLength": "Phrase must be within 200 characters"
+      "phraseMaxLength": "Phrase must be within 100 characters"
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",

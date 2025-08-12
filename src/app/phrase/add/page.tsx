@@ -19,36 +19,38 @@ export default function PhraseAddPage() {
   const { loading: authLoading } = useAuthGuard()
   
   const {
-    // State
+    // State - ページレベルで使用
     nativeLanguage,
     learningLanguage,
     handleLearningLanguageChange,
+    languages,
+    isInitializing,
+    availablePhraseCount,
+    showAddToHomeScreenModal,
+    checkUnsavedChanges,
+    closeAddToHomeScreenModal,
+    
+    // State - PhraseAddコンポーネントで使用
     desiredPhrase,
     generatedVariations,
     isLoading,
     error,
     remainingGenerations,
-    languages,
     situations,
-    isInitializing,
     isSaving,
     savingVariationIndex,
     editingVariations,
     phraseValidationError,
     selectedContext,
-    availablePhraseCount,
-    showAddToHomeScreenModal,
     
-    // Handlers
+    // Handlers - PhraseAddコンポーネントで使用
     handleEditVariation,
     handlePhraseChange,
     handleGeneratePhrase,
     handleSelectVariation,
-    checkUnsavedChanges,
     handleContextChange,
     addSituation,
-    deleteSituation,
-    closeAddToHomeScreenModal
+    deleteSituation
   } = usePhraseManagerSWR()
 
   // Modal functionality

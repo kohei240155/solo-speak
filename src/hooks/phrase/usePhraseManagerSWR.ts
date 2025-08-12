@@ -34,7 +34,6 @@ export const usePhraseManagerSWR = () => {
   
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
-  const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
   
   // ホーム画面追加モーダル用state
   const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
@@ -98,30 +97,17 @@ export const usePhraseManagerSWR = () => {
     return true
   }, [t])
 
-  const validateVariation = useCallback((text: string, index: number) => {
-    setVariationValidationErrors(prev => ({
-      ...prev,
-      [index]: ''
-    }))
-    
+  const validateVariation = useCallback((text: string) => {
     if (!text.trim()) {
-      setVariationValidationErrors(prev => ({
-        ...prev,
-        [index]: t('phrase.validation.required')
-      }))
       return false
     }
     
     if (text.length > 200) {
-      setVariationValidationErrors(prev => ({
-        ...prev,
-        [index]: t('phrase.validation.variationMaxLength')
-      }))
       return false
     }
     
     return true
-  }, [t])
+  }, [])
 
   // フレーズ変更ハンドラー
   const handlePhraseChange = useCallback((value: string) => {
@@ -188,7 +174,7 @@ export const usePhraseManagerSWR = () => {
     
     // リアルタイムバリデーション
     if (newText.trim().length > 0) {
-      validateVariation(newText, index)
+      validateVariation(newText)
     }
   }, [validateVariation])
 
@@ -196,7 +182,7 @@ export const usePhraseManagerSWR = () => {
   const handleSelectVariation = useCallback(async (variation: PhraseVariation, index: number) => {
     const textToSave = editingVariations[index] || variation.original
     
-    if (!validateVariation(textToSave, index)) {
+    if (!validateVariation(textToSave)) {
       return
     }
 
@@ -221,7 +207,6 @@ export const usePhraseManagerSWR = () => {
         setSelectedContext(null)
         setError('')
         setPhraseValidationError('')
-        setVariationValidationErrors({})
       })
 
       toast.success(t('phrase.messages.saveSuccess'))
@@ -238,14 +223,6 @@ export const usePhraseManagerSWR = () => {
       setIsSaving(false)
     }
   }, [editingVariations, desiredPhrase, learningLanguage, languages, validateVariation, t])
-
-  // バリエーションリセットハンドラー
-  const handleResetVariations = useCallback(() => {
-    setGeneratedVariations([])
-    setEditingVariations({})
-    setError('')
-    setVariationValidationErrors({})
-  }, [])
 
   // 学習言語変更ハンドラー
   const handleLearningLanguageChange = useCallback((language: string) => {
@@ -312,7 +289,6 @@ export const usePhraseManagerSWR = () => {
     savingVariationIndex,
     editingVariations,
     phraseValidationError,
-    variationValidationErrors,
     selectedContext,
     availablePhraseCount: availablePhraseCount || 0,
     showAddToHomeScreenModal,
@@ -322,7 +298,6 @@ export const usePhraseManagerSWR = () => {
     handleGeneratePhrase,
     handleEditVariation,
     handleSelectVariation,
-    handleResetVariations,
     handleLearningLanguageChange,
     handleContextChange,
     addSituation,

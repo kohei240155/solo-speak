@@ -30,7 +30,7 @@ export default function RankingPage() {
 
   // エラーハンドリング
   useEffect(() => {
-    if (error && message) {
+    if (error && message && typeof message === 'string') {
       toast.error(message)
     }
   }, [error, message])
