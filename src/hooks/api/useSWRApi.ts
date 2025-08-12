@@ -5,24 +5,9 @@ import { RemainingGenerationsResponse } from '@/types/phrase'
 import { SituationsListResponse } from '@/types/situation'
 import { useAuth } from '@/contexts/AuthContext'
 
-// SWR用のfetcher関数
-const fetcher = async (url: string) => {
-  return await api.get(url)
-}
-
-// ユーザー設定用のカスタムfetcher（404エラーでトーストを表示しない）
-const userSettingsFetcher = async (url: string) => {
-  return await api.get(url, { showErrorToast: false })
-}
-
-// 残り生成回数用のfetcher（エラートーストを表示しない）
-const generationsFetcher = async (url: string) => {
-  return await api.get<RemainingGenerationsResponse>(url, { showErrorToast: false })
-}
-
-// シチュエーション用のfetcher（エラートーストを表示しない）
-const situationsFetcher = async (url: string) => {
-  return await api.get<SituationsListResponse>(url, { showErrorToast: false })
+// SWR用の統一fetcher関数
+const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean }): Promise<T> => {
+  return await api.get<T>(url, options || {})
 }
 
 // 共通のSWRオプション設定
@@ -59,7 +44,11 @@ const SWR_CONFIGS = {
 
 // ユーザー設定を取得するSWRフック
 export function useUserSettings() {
-  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', userSettingsFetcher, SWR_CONFIGS.MEDIUM_CACHE)
+  const { data, error, isLoading, mutate } = useSWR(
+    '/api/user/settings', 
+    (url) => fetcher(url, { showErrorToast: false }), 
+    SWR_CONFIGS.MEDIUM_CACHE
+  )
 
   return {
     userSettings: data as {
@@ -419,7 +408,7 @@ export function useRemainingGenerations() {
   
   const { data, error, isLoading, mutate } = useSWR<RemainingGenerationsResponse>(
     generationsKey,
-    ([url]) => generationsFetcher(url),
+    ([url]) => fetcher<RemainingGenerationsResponse>(url, { showErrorToast: false }),
     SWR_CONFIGS.MEDIUM_CACHE
   )
   
@@ -440,7 +429,7 @@ export function useSituations() {
   
   const { data, error, isLoading, mutate } = useSWR<SituationsListResponse>(
     situationsKey,
-    ([url]) => situationsFetcher(url),
+    ([url]) => fetcher<SituationsListResponse>(url, { showErrorToast: false }),
     SWR_CONFIGS.MEDIUM_CACHE
   )
   
