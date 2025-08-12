@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
-import { RemainingGenerationsResponse, PhrasesListResponseData, PhraseDetailResponse, SpeakPhraseResponse } from '@/types/phrase'
+import { RemainingGenerationsResponse, PhrasesListResponseData, PhraseDetailResponse, SpeakPhraseResponse, UpdatePhraseCountResponseData } from '@/types/phrase'
 import { SituationsListResponse } from '@/types/situation'
 import { UserSettingsResponse } from '@/types/userSettings'
 import { DashboardData } from '@/types/dashboard'
@@ -78,17 +78,7 @@ export function useLanguages() {
 export function useDashboardData(language?: string) {
   const url = language ? `/api/dashboard?language=${language}` : null
   
-  // ダッシュボード用の最適化されたキャッシュ設定
-  const DASHBOARD_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
-    revalidateOnFocus: true,
-    revalidateOnMount: true, // マウント時に常に再検証
-    refreshInterval: 30 * 1000, // 30秒間隔で自動更新（リアルタイム性向上）
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
-  }
-  
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<DashboardData>, DASHBOARD_CONFIG)
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<DashboardData>, SWR_CONFIGS.REALTIME)
 
   return {
     dashboardData: data,
@@ -102,16 +92,7 @@ export function useDashboardData(language?: string) {
 export function usePhrases(language?: string, page = 1) {
   const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
   
-  // フレーズリスト用の最適化されたキャッシュ設定
-  const PHRASE_LIST_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
-    revalidateOnFocus: true,
-    revalidateOnMount: true, // マウント時に常に再検証
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
-  }
-  
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhrasesListResponseData>, PHRASE_LIST_CONFIG)
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhrasesListResponseData>, SWR_CONFIGS.SHORT_CACHE)
 
   return {
     phrases: data?.phrases,
@@ -163,16 +144,7 @@ export function useSpeakPhrase(language?: string) {
 export function useSpeakPhraseById(phraseId?: string) {
   const url = phraseId ? `/api/phrase/${phraseId}/speak` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<{
-    success: boolean
-    phrase?: {
-      id: string
-      original: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }
-  }>, SWR_CONFIGS.REALTIME)
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<UpdatePhraseCountResponseData>, SWR_CONFIGS.REALTIME)
 
   return {
     data: data,
@@ -193,20 +165,10 @@ export function useInfinitePhrases(language?: string) {
     return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
   }
 
-  // 無限スクロール用の最適化されたキャッシュ設定
-  const INFINITE_PHRASE_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮
-    revalidateOnMount: true, // マウント時に再検証
-    revalidateOnFocus: true, // フォーカス時に再検証
-    refreshInterval: 0, // 自動更新は無効
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
-  }
-
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
     fetcher<PhrasesListResponseData>,
-    INFINITE_PHRASE_CONFIG
+    SWR_CONFIGS.SHORT_CACHE
   )
 
   // 全ページのフレーズを平坦化
