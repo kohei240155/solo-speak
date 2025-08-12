@@ -26,8 +26,10 @@ export function useQuizModal(): UseQuizModalReturn {
     const queryParams = new URLSearchParams({
       language: config.language,
       mode: config.mode,
-      count: (config.questionCount || 10).toString()
+      count: (config.questionCount || 10).toString(),
+      speakCountFilter: config.speakCountFilter?.toString() || 'null'
     })
+    
     router.push(`/phrase/quiz?${queryParams.toString()}`)
   }, [router])
 
