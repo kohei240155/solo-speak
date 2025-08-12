@@ -9,7 +9,7 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
+import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
 import { usePhraseList } from '@/hooks/phrase/usePhraseList'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
@@ -19,8 +19,15 @@ import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
-  const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, isLoadingPhrases, refreshPhrases } = usePhraseList()
+  
+  // SWRベースのフックを直接使用
+  const { userSettings } = useUserSettings()
+  const { languages } = useLanguages()
+  
+  // ユーザー設定から学習言語を取得
+  const learningLanguage = userSettings?.defaultLearningLanguage?.code || 'en'
+  
+  const { savedPhrases, isLoadingPhrases } = usePhraseList()
   const router = useRouter()
 
   // クイズ完了状態
@@ -52,13 +59,6 @@ export default function PhraseQuizPage() {
   } = useSpeakModal()
 
   const [showQuizModal, setShowQuizModal] = useState(false)
-
-  // ページ読み込み時にフレーズを取得
-  useEffect(() => {
-    if (learningLanguage) {
-      refreshPhrases()
-    }
-  }, [learningLanguage, refreshPhrases])
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function PhraseQuizPage() {
 
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                    {isQuizCompleted ? (
+          {isQuizCompleted ? (
             <AllDoneScreen 
               onFinish={handleFinish}
               onRetry={handleRetry}
@@ -189,7 +189,7 @@ export default function PhraseQuizPage() {
         isOpen={showSpeakModal}
         onClose={closeSpeakModal}
         onStart={handleSpeakStart}
-        languages={languages}
+        languages={languages || []}
         defaultLearningLanguage={learningLanguage}
       />
 
@@ -198,7 +198,7 @@ export default function PhraseQuizPage() {
         isOpen={showQuizModal}
         onClose={() => setShowQuizModal(false)}
         onStart={handleQuizStartWithModal}
-        languages={languages}
+        languages={languages || []}
         defaultLearningLanguage={learningLanguage}
         availablePhraseCount={savedPhrases.length}
       />

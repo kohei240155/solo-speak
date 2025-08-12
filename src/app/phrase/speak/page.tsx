@@ -11,7 +11,7 @@ import ExplanationModal from '@/components/phrase/ExplanationModal'
 import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
+import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
 import { usePhraseList } from '@/hooks/phrase/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/speak/useSpeakPhrase'
 import { useSpeakMode } from '@/hooks/speak/useSpeakMode'
@@ -25,7 +25,14 @@ import { Toaster } from 'react-hot-toast'
 function PhraseSpeakPage() {
   const { loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
-  const { learningLanguage, languages } = usePhraseSettings()
+  
+  // SWRベースのフックを直接使用
+  const { userSettings } = useUserSettings()
+  const { languages } = useLanguages()
+  
+  // ユーザー設定から学習言語を取得
+  const learningLanguage = userSettings?.defaultLearningLanguage?.code || 'en'
+  
   const { savedPhrases, refreshPhrases } = usePhraseList()
   
   const {
@@ -223,7 +230,7 @@ function PhraseSpeakPage() {
             isOpen={modalManager.showSpeakModal}
             onClose={modalManager.closeSpeakModal}
             onStart={modalManager.handleSpeakStartWithModal}
-            languages={languages}
+            languages={languages || []}
             defaultLearningLanguage={learningLanguage}
           />
 
@@ -232,7 +239,7 @@ function PhraseSpeakPage() {
             isOpen={modalManager.showQuizModal}
             onClose={modalManager.closeQuizModal}
             onStart={modalManager.handleQuizStartWithModal}
-            languages={languages}
+            languages={languages || []}
             defaultLearningLanguage={learningLanguage}
             availablePhraseCount={savedPhrases.length}
           />
