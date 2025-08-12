@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
-import { RemainingGenerationsResponse } from '@/types/api-responses'
+import { RemainingGenerationsResponse } from '@/types/phrase'
 
 /** * ユーザーの残りのフレーズ生成回数を取得
  * @param request - Next.jsのリクエストオブジェクト

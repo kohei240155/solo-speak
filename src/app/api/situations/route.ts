@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { CreateSituationRequest } from '@/types/situation'
-import { ApiErrorResponse, SituationsListResponse } from '@/types/api-responses'
+import { CreateSituationRequest, SituationsListResponse } from '@/types/situation'
+import { ApiErrorResponse } from '@/types/api-responses'
 
 const prisma = new PrismaClient()
 

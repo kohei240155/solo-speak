@@ -5,7 +5,7 @@ import {
   UpdatePhraseRequestBody, 
   UpdatePhraseResponseData, 
   DeletePhraseResponseData 
-} from '@/types/phrase-api'
+} from '@/types/phrase'
 import { ApiErrorResponse } from '@/types/api-responses'
 
 /** * フレーズの更新APIエンドポイント

@@ -6,7 +6,7 @@ import {
   CreatePhraseRequestBody,
   CreatePhraseResponseData, 
   PhrasesListResponseData 
-} from '@/types/phrase-api'
+} from '@/types/phrase'
 import { ApiErrorResponse } from '@/types/api-responses'
 import { prisma } from '@/utils/prisma'
 

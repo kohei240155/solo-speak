@@ -1,4 +1,4 @@
-// ランキングAPI用の型定義
+// ランキング関連の型定義
 
 export interface RankingQueryParams {
   language?: string
