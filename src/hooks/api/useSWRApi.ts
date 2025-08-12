@@ -1,8 +1,12 @@
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
-import { RemainingGenerationsResponse } from '@/types/phrase'
+import { RemainingGenerationsResponse, PhrasesListResponseData, PhraseDetailResponse, SpeakPhraseResponse } from '@/types/phrase'
 import { SituationsListResponse } from '@/types/situation'
+import { UserSettingsResponse } from '@/types/userSettings'
+import { DashboardData } from '@/types/dashboard'
+import { LanguageInfo } from '@/types/common'
+import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData } from '@/types/ranking'
 import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用の統一fetcher関数
@@ -46,18 +50,12 @@ const SWR_CONFIGS = {
 export function useUserSettings() {
   const { data, error, isLoading, mutate } = useSWR(
     '/api/user/settings', 
-    (url) => fetcher(url, { showErrorToast: false }), 
+    (url) => fetcher<UserSettingsResponse>(url, { showErrorToast: false }), 
     SWR_CONFIGS.MEDIUM_CACHE
   )
 
   return {
-    userSettings: data as {
-      username?: string
-      iconUrl?: string
-      nativeLanguage?: { id: string; name: string; code: string }
-      defaultLearningLanguage?: { id: string; name: string; code: string }
-      email?: string
-    } | undefined,
+    userSettings: data,
     isLoading,
     error,
     refetch: mutate
@@ -66,13 +64,10 @@ export function useUserSettings() {
 
 // 言語リストを取得するSWRフック
 export function useLanguages() {
-  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher, SWR_CONFIGS.LONG_CACHE)
-
-  // APIは直接言語配列を返すため、dataをそのまま使用
-  const languages = data as Array<{ id: string; name: string; code: string }> | undefined
+  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher<LanguageInfo[]>, SWR_CONFIGS.LONG_CACHE)
 
   return {
-    languages,
+    languages: data,
     isLoading,
     error,
     refetch: mutate
@@ -93,20 +88,10 @@ export function useDashboardData(language?: string) {
     errorRetryInterval: 10000,
   }
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, DASHBOARD_CONFIG)
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<DashboardData>, DASHBOARD_CONFIG)
 
   return {
-    dashboardData: data as {
-      phraseCreationStreak?: number
-      speakStreak?: number
-      speakCountToday?: number
-      speakCountTotal?: number
-      quizMastery?: Array<{
-        level: string
-        score: number
-        color: string
-      }>
-    } | undefined,
+    dashboardData: data,
     isLoading,
     error,
     refetch: mutate
@@ -126,23 +111,12 @@ export function usePhrases(language?: string, page = 1) {
     errorRetryInterval: 10000,
   }
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, PHRASE_LIST_CONFIG)
-
-  const typedData = data as {
-    phrases?: Array<{
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }>
-    pagination?: { hasMore: boolean; total: number }
-  } | undefined
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhrasesListResponseData>, PHRASE_LIST_CONFIG)
 
   return {
-    phrases: typedData?.phrases,
-    hasMore: typedData?.pagination?.hasMore,
-    totalCount: typedData?.pagination?.total,
+    phrases: data?.phrases,
+    hasMore: data?.pagination?.hasMore,
+    totalCount: data?.pagination?.total,
     isLoading,
     error,
     refetch: mutate
@@ -153,16 +127,10 @@ export function usePhrases(language?: string, page = 1) {
 export function usePhrase(phraseId?: string) {
   const url = phraseId ? `/api/phrase/${phraseId}` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.MEDIUM_CACHE)
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhraseDetailResponse>, SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
-    phrase: data as {
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount?: number
-      dailySpeakCount?: number
-    } | undefined,
+    phrase: data,
     isLoading,
     error,
     refetch: mutate
@@ -173,7 +141,7 @@ export function usePhrase(phraseId?: string) {
 export function useSpeakPhrase(language?: string) {
   const url = language ? `/api/phrase/speak?language=${language}` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<SpeakPhraseResponse>, {
     // キャッシュしない（毎回新しいランダムなフレーズを取得するため）
     dedupingInterval: 0,
     // フォーカス時の再検証を無効
@@ -182,21 +150,9 @@ export function useSpeakPhrase(language?: string) {
     revalidateOnReconnect: false,
   })
 
-  const typedData = data as {
-    success: boolean
-    phrase?: {
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }
-    message?: string
-  } | undefined
-
   return {
-    data: typedData,
-    phrase: typedData?.phrase,
+    data: data,
+    phrase: data?.phrase,
     isLoading,
     error,
     refetch: mutate
@@ -207,9 +163,7 @@ export function useSpeakPhrase(language?: string) {
 export function useSpeakPhraseById(phraseId?: string) {
   const url = phraseId ? `/api/phrase/${phraseId}/speak` : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.REALTIME)
-
-  const typedData = data as {
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<{
     success: boolean
     phrase?: {
       id: string
@@ -218,11 +172,11 @@ export function useSpeakPhraseById(phraseId?: string) {
       totalSpeakCount: number
       dailySpeakCount: number
     }
-  } | undefined
+  }>, SWR_CONFIGS.REALTIME)
 
   return {
-    data: typedData,
-    phrase: typedData?.phrase,
+    data: data,
+    phrase: data?.phrase,
     isLoading,
     error,
     refetch: mutate
@@ -251,34 +205,14 @@ export function useInfinitePhrases(language?: string) {
 
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
     language ? getKey : () => null,
-    fetcher,
+    fetcher<PhrasesListResponseData>,
     INFINITE_PHRASE_CONFIG
   )
 
-  type PageData = {
-    phrases?: Array<{
-      id: string
-      original: string
-      translation: string
-      explanation?: string
-      createdAt: string
-      practiceCount: number
-      correctAnswers: number
-      language: {
-        name: string
-        code: string
-      }
-    }>
-    pagination?: { hasMore: boolean; total: number }
-  }
-
   // 全ページのフレーズを平坦化
-  const phrases = data ? data.flatMap((page: unknown) => {
-    const typedPage = page as PageData
-    return typedPage.phrases || []
-  }) : []
-  const totalCount = (data?.[0] as PageData)?.pagination?.total || 0
-  const hasMore = (data?.[data.length - 1] as PageData)?.pagination?.hasMore || false
+  const phrases = data ? data.flatMap((page) => page.phrases || []) : []
+  const totalCount = data?.[0]?.pagination?.total || 0
+  const hasMore = data?.[data.length - 1]?.pagination?.hasMore || false
 
   return {
     phrases,
@@ -307,37 +241,7 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     }
   }
 
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.SHORT_CACHE)
-
-  // レスポンスの型定義
-  type RankingResponse = {
-    success: boolean
-    topUsers?: Array<{
-      userId: string
-      username: string
-      iconUrl: string | null
-      count: number
-      rank: number
-    }>
-    rankings?: Array<{
-      userId: string
-      username: string
-      iconUrl?: string
-      totalCorrect?: number
-      totalPhrases?: number
-      rank: number
-    }>
-    currentUser?: {
-      userId: string
-      username: string
-      iconUrl: string | null
-      count: number
-      rank: number
-    } | null
-    message?: string
-  }
-
-  const typedData = data as RankingResponse | undefined
+  const { data, error, isLoading, mutate } = useSWR(url, fetcher<SpeakRankingResponseData | QuizRankingResponseData | PhraseRankingResponseData>, SWR_CONFIGS.SHORT_CACHE)
 
   // データを統一形式に変換
   let transformedData: Array<{
@@ -348,23 +252,23 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     rank: number
   }> = []
 
-  if (typedData?.success) {
-    if (typedData.topUsers) {
-      // speak/quiz API形式
-      transformedData = typedData.topUsers.map(user => ({
+  if (data?.success) {
+    if ('topUsers' in data) {
+      // speak API形式
+      transformedData = data.topUsers.map(user => ({
         userId: user.userId,
         username: user.username,
         iconUrl: user.iconUrl,
         totalCount: user.count,
         rank: user.rank
       }))
-    } else if (typedData.rankings) {
+    } else if ('rankings' in data) {
       // phrase/quiz API形式
-      transformedData = typedData.rankings.map(user => ({
+      transformedData = data.rankings.map(user => ({
         userId: user.userId,
         username: user.username,
         iconUrl: user.iconUrl || null,
-        totalCount: user.totalCorrect || user.totalPhrases || 0,
+        totalCount: ('totalCorrect' in user) ? user.totalCorrect : ('totalPhrases' in user) ? user.totalPhrases : 0,
         rank: user.rank
       }))
     }
@@ -379,13 +283,21 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     rank: number
   } | null = null
 
-  if (typedData?.currentUser) {
+  if (data && 'currentUser' in data && data.currentUser) {
     currentUser = {
-      userId: typedData.currentUser.userId,
-      username: typedData.currentUser.username,
-      iconUrl: typedData.currentUser.iconUrl,
-      totalCount: typedData.currentUser.count,
-      rank: typedData.currentUser.rank
+      userId: data.currentUser.userId,
+      username: data.currentUser.username,
+      iconUrl: data.currentUser.iconUrl,
+      totalCount: data.currentUser.count,
+      rank: data.currentUser.rank
+    }
+  } else if (data && 'userRank' in data && data.userRank) {
+    currentUser = {
+      userId: data.userRank.userId,
+      username: data.userRank.username,
+      iconUrl: data.userRank.iconUrl || null,
+      totalCount: ('totalCorrect' in data.userRank) ? data.userRank.totalCorrect : ('totalPhrases' in data.userRank) ? data.userRank.totalPhrases : 0,
+      rank: data.userRank.rank
     }
   }
 
@@ -394,7 +306,7 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     currentUser,
     isLoading,
     error,
-    message: typedData?.message,
+    message: data && 'message' in data ? data.message : undefined,
     refetch: mutate
   }
 }
