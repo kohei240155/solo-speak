@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
-import { PhraseVariation, CreatePhraseResponseData } from '@/types/phrase'
+import { PhraseVariation, CreatePhraseResponseData, GeneratePhraseRequestBody, CreatePhraseRequestBody } from '@/types/phrase'
 import { useLanguages, useUserSettings, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
 import { mutate } from 'swr'
 import toast from 'react-hot-toast'
@@ -152,12 +152,14 @@ export const usePhraseManagerSWR = () => {
     setError('')
 
     try {
-      const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', {
+      const requestBody: GeneratePhraseRequestBody = {
         desiredPhrase,
         nativeLanguage,
         learningLanguage,
-        selectedContext
-      })
+        selectedContext: selectedContext || undefined
+      }
+
+      const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', requestBody)
 
       if (response.variations && response.variations.length > 0) {
         setGeneratedVariations(response.variations)
@@ -206,14 +208,7 @@ export const usePhraseManagerSWR = () => {
 
     try {
       // contextがnullの場合は送信しない
-      const requestBody: {
-        languageId: string
-        original: string
-        translation: string
-        explanation: string
-        level: string
-        context?: string
-      } = {
+      const requestBody: CreatePhraseRequestBody = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
         original: textToSave,
         translation: desiredPhrase,
