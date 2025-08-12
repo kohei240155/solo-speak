@@ -170,7 +170,6 @@ export const usePhraseManagerSWR = () => {
         setError(response.error || t('phrase.messages.generationFailed'))
       }
     } catch (error) {
-      console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
         setError(t('phrase.messages.dailyLimitExceeded'))
         mutateGenerations()
@@ -207,18 +206,12 @@ export const usePhraseManagerSWR = () => {
     setIsSaving(true)
 
     try {
-      // contextがnullの場合は送信しない
       const requestBody: CreatePhraseRequestBody = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
         original: textToSave,
         translation: desiredPhrase,
         explanation: variation.explanation || '',
         level: 'common'
-      }
-
-      // selectedContextが存在する場合のみcontextを追加
-      if (selectedContext) {
-        requestBody.context = selectedContext
       }
 
       const response = await api.post<CreatePhraseResponseData>('/api/phrase', requestBody)
@@ -262,7 +255,7 @@ export const usePhraseManagerSWR = () => {
       setSavingVariationIndex(null)
       setIsSaving(false)
     }
-  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation, t])
+  }, [editingVariations, desiredPhrase, learningLanguage, languages, validateVariation, t])
 
   // バリエーションリセットハンドラー
   const handleResetVariations = useCallback(() => {
