@@ -2,32 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
-import { PhraseVariation } from '@/types/phrase'
-import { CreatePhraseResponseData } from '@/types/phrase-api'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
-import useSWR, { mutate } from 'swr'
+import { PhraseVariation, CreatePhraseResponseData, GeneratePhraseRequestBody, CreatePhraseRequestBody } from '@/types/phrase'
+import { useLanguages, useUserSettings, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
-import { SWR_CACHE_HELPERS } from '@/utils/swr-keys'
-
-// 型定義
-interface GenerationsData {
-  remainingGenerations: number
-}
-
-interface SituationsData {
-  situations: Array<{
-    id: string
-    name: string
-    createdAt: string
-    updatedAt: string
-  }>
-}
-
-// SWR用のfetcher関数
-const fetcher = async (url: string) => {
-  return await api.get(url, { showErrorToast: false })
-}
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
@@ -36,30 +14,8 @@ export const usePhraseManagerSWR = () => {
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
   const { userSettings } = useUserSettings()
-  
-  // 残り生成回数をSWRで取得（最適化されたキャッシュ設定）
-  const { data: generationsData, mutate: mutateGenerations } = useSWR(
-    user ? '/api/phrase/remaining' : null,
-    fetcher,
-    {
-      dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
-      shouldRetryOnError: true,
-    }
-  ) as { data: GenerationsData | undefined, mutate: () => void }
-  
-  // シチュエーションをSWRで取得
-  const { data: situationsData, mutate: mutateSituations } = useSWR(
-    user ? '/api/situations' : null,
-    fetcher,
-    {
-      dedupingInterval: 5 * 60 * 1000, // 5分間キャッシュ
-      revalidateOnFocus: true,
-      shouldRetryOnError: true,
-    }
-  ) as { data: SituationsData | undefined, mutate: () => void }
+  const { remainingGenerations, generationsData, refetch: mutateGenerations } = useRemainingGenerations()
+  const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
   // ローカル状態
   const [nativeLanguage, setNativeLanguage] = useState('ja')
@@ -78,7 +34,6 @@ export const usePhraseManagerSWR = () => {
   
   // バリデーション用state
   const [phraseValidationError, setPhraseValidationError] = useState('')
-  const [variationValidationErrors, setVariationValidationErrors] = useState<{[key: number]: string}>({})
   
   // ホーム画面追加モーダル用state
   const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
@@ -108,7 +63,7 @@ export const usePhraseManagerSWR = () => {
     }
   }, [user])
 
-  // サブスクリプションキャンセルイベントを監視
+  // TODO: サブスクリプションキャンセルイベントを監視
   useEffect(() => {
     const handleSubscriptionCanceled = () => {
       console.log('Subscription canceled event received, refreshing generation data...')
@@ -122,65 +77,32 @@ export const usePhraseManagerSWR = () => {
     }
   }, [mutateGenerations])
 
-  // 日付変更の検出（UTC基準） - 効率的な検出間隔
-  useEffect(() => {
-    let currentUTCDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD形式
-    
-    const checkDateChange = () => {
-      const newUTCDate = new Date().toISOString().split('T')[0]
-      if (newUTCDate !== currentUTCDate) {
-        currentUTCDate = newUTCDate
-        mutateGenerations() // 日付が変わったら生成回数データを再取得
-      }
-    }
-    
-    // 5分ごとに日付変更をチェック（1分間隔は過剰）
-    const interval = setInterval(checkDateChange, 5 * 60 * 1000)
-    
-    return () => clearInterval(interval)
-  }, [mutateGenerations])
-
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
-  const remainingGenerations = generationsData?.remainingGenerations || 0
-  const situations = situationsData?.situations || []
 
   // バリデーション関数
   const validatePhrase = useCallback((phrase: string) => {
     setPhraseValidationError('')
     
     if (!phrase.trim()) {
-      setPhraseValidationError('フレーズを入力してください')
+      setPhraseValidationError(t('phrase.validation.required'))
       return false
     }
     
     if (phrase.length > 100) {
-      setPhraseValidationError('フレーズは100文字以内で入力してください')
+      setPhraseValidationError(t('phrase.validation.phraseMaxLength'))
       return false
     }
     
     return true
-  }, [])
+  }, [t])
 
-  const validateVariation = useCallback((text: string, index: number) => {
-    setVariationValidationErrors(prev => ({
-      ...prev,
-      [index]: ''
-    }))
-    
+  const validateVariation = useCallback((text: string) => {
     if (!text.trim()) {
-      setVariationValidationErrors(prev => ({
-        ...prev,
-        [index]: 'フレーズを入力してください'
-      }))
       return false
     }
     
     if (text.length > 200) {
-      setVariationValidationErrors(prev => ({
-        ...prev,
-        [index]: 'フレーズは200文字以内で入力してください'
-      }))
       return false
     }
     
@@ -206,7 +128,7 @@ export const usePhraseManagerSWR = () => {
     }
     // 残り回数チェック
     if (remainingGenerations <= 0) {
-      setError('本日の生成回数を超過しました。明日再度お試しください。')
+      setError(t('phrase.messages.dailyLimitExceeded'))
       return
     }
 
@@ -214,12 +136,14 @@ export const usePhraseManagerSWR = () => {
     setError('')
 
     try {
-      const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', {
+      const requestBody: GeneratePhraseRequestBody = {
         desiredPhrase,
         nativeLanguage,
         learningLanguage,
-        selectedContext
-      })
+        selectedContext: selectedContext || undefined
+      }
+
+      const response = await api.post<{ variations: PhraseVariation[], error?: string }>('/api/phrase/generate', requestBody)
 
       if (response.variations && response.variations.length > 0) {
         setGeneratedVariations(response.variations)
@@ -227,20 +151,19 @@ export const usePhraseManagerSWR = () => {
         // 残り生成回数を更新
         mutateGenerations()
       } else {
-        setError(response.error || 'フレーズの生成に失敗しました')
+        setError(response.error || t('phrase.messages.generationFailed'))
       }
     } catch (error) {
-      console.error('Error generating phrase:', error)
       if (error instanceof Error && error.message?.includes('remainingGenerations')) {
-        setError('本日の生成回数を超過しました。明日再度お試しください。')
+        setError(t('phrase.messages.dailyLimitExceeded'))
         mutateGenerations()
       } else {
-        setError('フレーズの生成中にエラーが発生しました')
+        setError(t('phrase.messages.generationError'))
       }
     } finally {
       setIsLoading(false)
     }
-  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations])
+  }, [desiredPhrase, nativeLanguage, learningLanguage, selectedContext, validatePhrase, mutateGenerations, remainingGenerations, t])
 
   // バリエーション編集ハンドラー
   const handleEditVariation = useCallback((index: number, newText: string) => {
@@ -251,7 +174,7 @@ export const usePhraseManagerSWR = () => {
     
     // リアルタイムバリデーション
     if (newText.trim().length > 0) {
-      validateVariation(newText, index)
+      validateVariation(newText)
     }
   }, [validateVariation])
 
@@ -259,7 +182,7 @@ export const usePhraseManagerSWR = () => {
   const handleSelectVariation = useCallback(async (variation: PhraseVariation, index: number) => {
     const textToSave = editingVariations[index] || variation.original
     
-    if (!validateVariation(textToSave, index)) {
+    if (!validateVariation(textToSave)) {
       return
     }
 
@@ -267,25 +190,12 @@ export const usePhraseManagerSWR = () => {
     setIsSaving(true)
 
     try {
-      // contextがnullの場合は送信しない
-      const requestBody: {
-        languageId: string
-        original: string
-        translation: string
-        explanation: string
-        level: string
-        context?: string
-      } = {
+      const requestBody: CreatePhraseRequestBody = {
         languageId: languages?.find(lang => lang.code === learningLanguage)?.id || '',
         original: textToSave,
         translation: desiredPhrase,
         explanation: variation.explanation || '',
         level: 'common'
-      }
-
-      // selectedContextが存在する場合のみcontextを追加
-      if (selectedContext) {
-        requestBody.context = selectedContext
       }
 
       const response = await api.post<CreatePhraseResponseData>('/api/phrase', requestBody)
@@ -297,23 +207,6 @@ export const usePhraseManagerSWR = () => {
         setSelectedContext(null)
         setError('')
         setPhraseValidationError('')
-        setVariationValidationErrors({})
-      })
-
-      // 特定の言語のフレーズリストキャッシュを無効化し、即座に再取得
-      const mutatePromise = mutate(
-        SWR_CACHE_HELPERS.invalidatePhrasesByLanguage(learningLanguage),
-        undefined, // データを未定義にして強制的に再取得
-        { 
-          revalidate: true, // 即座に再検証を実行
-          optimisticData: undefined, // 楽観的更新は無効にして確実にサーバーからデータを取得
-          rollbackOnError: false
-        }
-      )
-
-      // 非同期で再取得を待つ（ただしUIをブロックしない）
-      mutatePromise.catch(error => {
-        console.warn('Cache revalidation warning:', error)
       })
 
       toast.success(t('phrase.messages.saveSuccess'))
@@ -329,15 +222,7 @@ export const usePhraseManagerSWR = () => {
       setSavingVariationIndex(null)
       setIsSaving(false)
     }
-  }, [editingVariations, desiredPhrase, learningLanguage, languages, selectedContext, validateVariation, t])
-
-  // バリエーションリセットハンドラー
-  const handleResetVariations = useCallback(() => {
-    setGeneratedVariations([])
-    setEditingVariations({})
-    setError('')
-    setVariationValidationErrors({})
-  }, [])
+  }, [editingVariations, desiredPhrase, learningLanguage, languages, validateVariation, t])
 
   // 学習言語変更ハンドラー
   const handleLearningLanguageChange = useCallback((language: string) => {
@@ -404,7 +289,6 @@ export const usePhraseManagerSWR = () => {
     savingVariationIndex,
     editingVariations,
     phraseValidationError,
-    variationValidationErrors,
     selectedContext,
     availablePhraseCount: availablePhraseCount || 0,
     showAddToHomeScreenModal,
@@ -414,7 +298,6 @@ export const usePhraseManagerSWR = () => {
     handleGeneratePhrase,
     handleEditVariation,
     handleSelectVariation,
-    handleResetVariations,
     handleLearningLanguageChange,
     handleContextChange,
     addSituation,

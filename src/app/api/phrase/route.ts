@@ -6,8 +6,8 @@ import {
   CreatePhraseRequestBody,
   CreatePhraseResponseData, 
   PhrasesListResponseData 
-} from '@/types/phrase-api'
-import { ApiErrorResponse } from '@/types/api-responses'
+} from '@/types/phrase'
+import { ApiErrorResponse } from '@/types/api'
 import { prisma } from '@/utils/prisma'
 
 const createPhraseSchema = z.object({

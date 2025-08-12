@@ -4,10 +4,9 @@ import { api } from '@/utils/api'
 import { 
   PhraseCountResponse, 
   SpeakPhraseResponse, 
-  SpeakPhraseCountResponse,
-  ApiErrorResponse,
-  ApiResult 
-} from '@/types/api-responses'
+  SpeakPhraseCountResponse
+} from '@/types/phrase'
+import { ApiErrorResponse, ApiResult } from '@/types/api'
 
 /**
  * フレーズのカウントを更新（型安全）

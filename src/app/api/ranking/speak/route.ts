@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking-api'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking'
+import { ApiErrorResponse } from '@/types/api'
 
 /** ランキングの音読練習用APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト

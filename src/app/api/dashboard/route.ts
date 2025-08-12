@@ -7,7 +7,7 @@ import {
   QuizMasteryLevel,
   DashboardQueryParams
 } from '@/types/dashboard'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { ApiErrorResponse } from '@/types/api'
 
 const dashboardQuerySchema = z.object({
   language: z.string().min(1),

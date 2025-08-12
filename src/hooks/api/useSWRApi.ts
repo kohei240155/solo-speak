@@ -1,15 +1,17 @@
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
+import { RemainingGenerationsResponse, PhrasesListResponseData, PhraseDetailResponse, SpeakPhraseResponse, UpdatePhraseCountResponseData } from '@/types/phrase'
+import { SituationsListResponse } from '@/types/situation'
+import { UserSettingsResponse } from '@/types/userSettings'
+import { DashboardData } from '@/types/dashboard'
+import { LanguageInfo } from '@/types/common'
+import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData, UnifiedRankingUser } from '@/types/ranking'
+import { useAuth } from '@/contexts/AuthContext'
 
-// SWR用のfetcher関数
-const fetcher = async (url: string) => {
-  return await api.get(url)
-}
-
-// ユーザー設定用のカスタムfetcher（404エラーでトーストを表示しない）
-const userSettingsFetcher = async (url: string) => {
-  return await api.get(url, { showErrorToast: false })
+// SWR用の統一fetcher関数
+const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean }): Promise<T> => {
+  return await api.get<T>(url, options || {})
 }
 
 // 共通のSWRオプション設定
@@ -46,16 +48,19 @@ const SWR_CONFIGS = {
 
 // ユーザー設定を取得するSWRフック
 export function useUserSettings() {
-  const { data, error, isLoading, mutate } = useSWR('/api/user/settings', userSettingsFetcher, SWR_CONFIGS.MEDIUM_CACHE)
+  const { user } = useAuth()
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const settingsKey = user ? ['/api/user/settings', user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(
+    settingsKey, 
+    ([url]) => fetcher<UserSettingsResponse>(url, { showErrorToast: false }), 
+    SWR_CONFIGS.MEDIUM_CACHE
+  )
 
   return {
-    userSettings: data as {
-      username?: string
-      iconUrl?: string
-      nativeLanguage?: { id: string; name: string; code: string }
-      defaultLearningLanguage?: { id: string; name: string; code: string }
-      email?: string
-    } | undefined,
+    userSettings: data,
     isLoading,
     error,
     refetch: mutate
@@ -64,13 +69,10 @@ export function useUserSettings() {
 
 // 言語リストを取得するSWRフック
 export function useLanguages() {
-  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher, SWR_CONFIGS.LONG_CACHE)
-
-  // APIは直接言語配列を返すため、dataをそのまま使用
-  const languages = data as Array<{ id: string; name: string; code: string }> | undefined
+  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher<LanguageInfo[]>, SWR_CONFIGS.LONG_CACHE)
 
   return {
-    languages,
+    languages: data,
     isLoading,
     error,
     refetch: mutate
@@ -79,32 +81,15 @@ export function useLanguages() {
 
 // ダッシュボードデータを取得するSWRフック
 export function useDashboardData(language?: string) {
-  const url = language ? `/api/dashboard?language=${language}` : null
+  const { user } = useAuth()
   
-  // ダッシュボード用の最適化されたキャッシュ設定
-  const DASHBOARD_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
-    revalidateOnFocus: true,
-    revalidateOnMount: true, // マウント時に常に再検証
-    refreshInterval: 30 * 1000, // 30秒間隔で自動更新（リアルタイム性向上）
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
-  }
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const dashboardKey = user && language ? [`/api/dashboard?language=${language}`, user.id] as const : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, DASHBOARD_CONFIG)
+  const { data, error, isLoading, mutate } = useSWR(dashboardKey, ([url]) => fetcher<DashboardData>(url), SWR_CONFIGS.REALTIME)
 
   return {
-    dashboardData: data as {
-      phraseCreationStreak?: number
-      speakStreak?: number
-      speakCountToday?: number
-      speakCountTotal?: number
-      quizMastery?: Array<{
-        level: string
-        score: number
-        color: string
-      }>
-    } | undefined,
+    dashboardData: data,
     isLoading,
     error,
     refetch: mutate
@@ -113,34 +98,17 @@ export function useDashboardData(language?: string) {
 
 // フレーズリストを取得するSWRフック
 export function usePhrases(language?: string, page = 1) {
-  const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
+  const { user } = useAuth()
   
-  // フレーズリスト用の最適化されたキャッシュ設定
-  const PHRASE_LIST_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮（フレーズ追加後の即座な反映のため）
-    revalidateOnFocus: true,
-    revalidateOnMount: true, // マウント時に常に再検証
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
-  }
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const phrasesKey = user && language ? [`/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true`, user.id] as const : null
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, PHRASE_LIST_CONFIG)
-
-  const typedData = data as {
-    phrases?: Array<{
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }>
-    pagination?: { hasMore: boolean; total: number }
-  } | undefined
+  const { data, error, isLoading, mutate } = useSWR(phrasesKey, ([url]) => fetcher<PhrasesListResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
 
   return {
-    phrases: typedData?.phrases,
-    hasMore: typedData?.pagination?.hasMore,
-    totalCount: typedData?.pagination?.total,
+    phrases: data?.phrases,
+    hasMore: data?.pagination?.hasMore,
+    totalCount: data?.pagination?.total,
     isLoading,
     error,
     refetch: mutate
@@ -149,18 +117,15 @@ export function usePhrases(language?: string, page = 1) {
 
 // 特定のフレーズを取得するSWRフック
 export function usePhrase(phraseId?: string) {
-  const url = phraseId ? `/api/phrase/${phraseId}` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.MEDIUM_CACHE)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const phraseKey = user && phraseId ? [`/api/phrase/${phraseId}`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(phraseKey, ([url]) => fetcher<PhraseDetailResponse>(url), SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
-    phrase: data as {
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount?: number
-      dailySpeakCount?: number
-    } | undefined,
+    phrase: data,
     isLoading,
     error,
     refetch: mutate
@@ -169,9 +134,12 @@ export function usePhrase(phraseId?: string) {
 
 // Speakモード用のフレーズを取得するSWRフック
 export function useSpeakPhrase(language?: string) {
-  const url = language ? `/api/phrase/speak?language=${language}` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const speakKey = user && language ? [`/api/phrase/speak?language=${language}`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(speakKey, ([url]) => fetcher<SpeakPhraseResponse>(url), {
     // キャッシュしない（毎回新しいランダムなフレーズを取得するため）
     dedupingInterval: 0,
     // フォーカス時の再検証を無効
@@ -180,21 +148,9 @@ export function useSpeakPhrase(language?: string) {
     revalidateOnReconnect: false,
   })
 
-  const typedData = data as {
-    success: boolean
-    phrase?: {
-      id: string
-      text: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }
-    message?: string
-  } | undefined
-
   return {
-    data: typedData,
-    phrase: typedData?.phrase,
+    data: data,
+    phrase: data?.phrase,
     isLoading,
     error,
     refetch: mutate
@@ -203,24 +159,16 @@ export function useSpeakPhrase(language?: string) {
 
 // 特定のフレーズのSpeakデータを取得するSWRフック
 export function useSpeakPhraseById(phraseId?: string) {
-  const url = phraseId ? `/api/phrase/${phraseId}/speak` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.REALTIME)
-
-  const typedData = data as {
-    success: boolean
-    phrase?: {
-      id: string
-      original: string
-      translation: string
-      totalSpeakCount: number
-      dailySpeakCount: number
-    }
-  } | undefined
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const speakByIdKey = user && phraseId ? [`/api/phrase/${phraseId}/speak`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(speakByIdKey, ([url]) => fetcher<UpdatePhraseCountResponseData>(url), SWR_CONFIGS.REALTIME)
 
   return {
-    data: typedData,
-    phrase: typedData?.phrase,
+    data: data,
+    phrase: data?.phrase,
     isLoading,
     error,
     refetch: mutate
@@ -229,54 +177,26 @@ export function useSpeakPhraseById(phraseId?: string) {
 
 // 無限スクロール対応のフレーズリストを取得するSWRフック
 export function useInfinitePhrases(language?: string) {
+  const { user } = useAuth()
+  
   const getKey = (pageIndex: number, previousPageData: { pagination?: { hasMore: boolean } } | null) => {
     // 最後のページに到達した場合
     if (previousPageData && !previousPageData.pagination?.hasMore) return null
     
-    // 最初のページ、または次のページ
-    return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
-  }
-
-  // 無限スクロール用の最適化されたキャッシュ設定
-  const INFINITE_PHRASE_CONFIG = {
-    dedupingInterval: 5 * 1000, // 5秒に短縮
-    revalidateOnMount: true, // マウント時に再検証
-    revalidateOnFocus: true, // フォーカス時に再検証
-    refreshInterval: 0, // 自動更新は無効
-    shouldRetryOnError: true,
-    errorRetryInterval: 10000,
+    // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+    return user && language ? [`/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true`, user.id] as const : null
   }
 
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
-    language ? getKey : () => null,
-    fetcher,
-    INFINITE_PHRASE_CONFIG
+    user && language ? getKey : () => null,
+    ([url]) => fetcher<PhrasesListResponseData>(url),
+    SWR_CONFIGS.SHORT_CACHE
   )
 
-  type PageData = {
-    phrases?: Array<{
-      id: string
-      original: string
-      translation: string
-      explanation?: string
-      createdAt: string
-      practiceCount: number
-      correctAnswers: number
-      language: {
-        name: string
-        code: string
-      }
-    }>
-    pagination?: { hasMore: boolean; total: number }
-  }
-
   // 全ページのフレーズを平坦化
-  const phrases = data ? data.flatMap((page: unknown) => {
-    const typedPage = page as PageData
-    return typedPage.phrases || []
-  }) : []
-  const totalCount = (data?.[0] as PageData)?.pagination?.total || 0
-  const hasMore = (data?.[data.length - 1] as PageData)?.pagination?.hasMore || false
+  const phrases = data ? data.flatMap((page) => page.phrases || []) : []
+  const totalCount = data?.[0]?.pagination?.total || 0
+  const hasMore = data?.[data.length - 1]?.pagination?.hasMore || false
 
   return {
     phrases,
@@ -293,6 +213,8 @@ export function useInfinitePhrases(language?: string) {
 
 // ランキングデータを取得するSWRフック
 export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string, period?: 'daily' | 'weekly' | 'total') {
+  const { user } = useAuth()
+  
   // エンドポイントを構築
   let url: string | null = null
   if (type && language) {
@@ -305,85 +227,54 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     }
   }
 
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, SWR_CONFIGS.SHORT_CACHE)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const rankingKey = user && url ? [url, user.id] as const : null
 
-  // レスポンスの型定義
-  type RankingResponse = {
-    success: boolean
-    topUsers?: Array<{
-      userId: string
-      username: string
-      iconUrl: string | null
-      count: number
-      rank: number
-    }>
-    rankings?: Array<{
-      userId: string
-      username: string
-      iconUrl?: string
-      totalCorrect?: number
-      totalPhrases?: number
-      rank: number
-    }>
-    currentUser?: {
-      userId: string
-      username: string
-      iconUrl: string | null
-      count: number
-      rank: number
-    } | null
-    message?: string
-  }
-
-  const typedData = data as RankingResponse | undefined
+  const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<SpeakRankingResponseData | QuizRankingResponseData | PhraseRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
 
   // データを統一形式に変換
-  let transformedData: Array<{
-    userId: string
-    username: string
-    iconUrl: string | null
-    totalCount: number
-    rank: number
-  }> = []
+  let transformedData: UnifiedRankingUser[] = []
 
-  if (typedData?.success) {
-    if (typedData.topUsers) {
-      // speak/quiz API形式
-      transformedData = typedData.topUsers.map(user => ({
+  if (data?.success) {
+    if ('topUsers' in data) {
+      // speak API形式
+      transformedData = data.topUsers.map(user => ({
         userId: user.userId,
         username: user.username,
         iconUrl: user.iconUrl,
         totalCount: user.count,
         rank: user.rank
       }))
-    } else if (typedData.rankings) {
+    } else if ('rankings' in data) {
       // phrase/quiz API形式
-      transformedData = typedData.rankings.map(user => ({
+      transformedData = data.rankings.map(user => ({
         userId: user.userId,
         username: user.username,
         iconUrl: user.iconUrl || null,
-        totalCount: user.totalCorrect || user.totalPhrases || 0,
+        totalCount: ('totalCorrect' in user) ? user.totalCorrect : ('totalPhrases' in user) ? user.totalPhrases : 0,
         rank: user.rank
       }))
     }
   }
 
   // currentUserも統一形式に変換
-  let currentUser: {
-    userId: string
-    username: string
-    iconUrl: string | null
-    totalCount: number
-    rank: number
-  } | null = null
+  let currentUser: UnifiedRankingUser | null = null
 
-  if (typedData?.currentUser) {
+  if (data && 'currentUser' in data && data.currentUser) {
     currentUser = {
-      userId: typedData.currentUser.userId,
-      username: typedData.currentUser.username,
-      iconUrl: typedData.currentUser.iconUrl,
-      totalCount: typedData.currentUser.count,
-      rank: typedData.currentUser.rank
+      userId: data.currentUser.userId,
+      username: data.currentUser.username,
+      iconUrl: data.currentUser.iconUrl,
+      totalCount: data.currentUser.count,
+      rank: data.currentUser.rank
+    }
+  } else if (data && 'userRank' in data && data.userRank) {
+    currentUser = {
+      userId: data.userRank.userId,
+      username: data.userRank.username,
+      iconUrl: data.userRank.iconUrl || null,
+      totalCount: ('totalCorrect' in data.userRank) ? data.userRank.totalCorrect : ('totalPhrases' in data.userRank) ? data.userRank.totalPhrases : 0,
+      rank: data.userRank.rank
     }
   }
 
@@ -392,7 +283,50 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     currentUser,
     isLoading,
     error,
-    message: typedData?.message,
+    message: data && 'message' in data ? data.message : undefined,
+    refetch: mutate
+  }
+}
+
+// 残り生成回数を取得するSWRフック
+export function useRemainingGenerations() {
+  const { user } = useAuth()
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const generationsKey = user ? ['/api/phrase/remaining', user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR<RemainingGenerationsResponse>(
+    generationsKey,
+    ([url]) => fetcher<RemainingGenerationsResponse>(url, { showErrorToast: false }),
+    SWR_CONFIGS.MEDIUM_CACHE
+  )
+  
+  return {
+    remainingGenerations: data?.remainingGenerations || 0,
+    generationsData: data,
+    isLoading,
+    error,
+    refetch: mutate
+  }
+}
+
+// シチュエーションリストを取得するSWRフック
+export function useSituations() {
+  const { user } = useAuth()
+  
+  const situationsKey = user ? ['/api/situations', user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR<SituationsListResponse>(
+    situationsKey,
+    ([url]) => fetcher<SituationsListResponse>(url, { showErrorToast: false }),
+    SWR_CONFIGS.MEDIUM_CACHE
+  )
+  
+  return {
+    situations: data?.situations || [],
+    situationsData: data,
+    isLoading,
+    error,
     refetch: mutate
   }
 }

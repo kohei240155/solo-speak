@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { CreateSituationRequest } from '@/types/situation'
-import { ApiErrorResponse } from '@/types/api-responses'
+import { CreateSituationRequest, SituationsListResponse } from '@/types/situation'
+import { ApiErrorResponse } from '@/types/api'
 
 const prisma = new PrismaClient()
 
@@ -37,14 +37,16 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
+    const response: SituationsListResponse = {
       situations: situations.map(situation => ({
         id: situation.id,
         name: situation.name,
         createdAt: situation.createdAt.toISOString(),
         updatedAt: situation.updatedAt.toISOString()
       }))
-    })
+    }
+
+    return NextResponse.json(response)
 
   } catch (error) {
     console.error('Error fetching situations:', error)

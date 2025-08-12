@@ -5,8 +5,8 @@ import {
   UpdatePhraseRequestBody, 
   UpdatePhraseResponseData, 
   DeletePhraseResponseData 
-} from '@/types/phrase-api'
-import { ApiErrorResponse } from '@/types/api-responses'
+} from '@/types/phrase'
+import { ApiErrorResponse } from '@/types/api'
 
 /** * フレーズの更新APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト

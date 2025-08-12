@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { SpeakPhraseCountResponse, ApiErrorResponse } from '@/types/api-responses'
+import { SpeakPhraseCountResponse } from '@/types/phrase'
+import { ApiErrorResponse } from '@/types/api'
 
 /**
  * Speak用フレーズの数を取得するAPIエンドポイント

@@ -1,4 +1,4 @@
-// ランキングAPI用の型定義
+// ランキング関連の型定義
 
 export interface RankingQueryParams {
   language?: string
@@ -10,6 +10,15 @@ export interface RankingUser {
   username: string
   iconUrl: string | null
   count: number
+  rank: number
+}
+
+// フロントエンド用の統一されたランキングユーザー型
+export interface UnifiedRankingUser {
+  userId: string
+  username: string
+  iconUrl: string | null
+  totalCount: number
   rank: number
 }
 

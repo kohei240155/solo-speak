@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
-import { LanguagesResponseData } from '@/types/language-api'
+import { LanguagesResponseData } from '@/types/language'
 
 export async function GET(request: NextRequest) {
   try {

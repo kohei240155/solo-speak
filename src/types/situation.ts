@@ -17,3 +17,13 @@ export interface SituationResponse {
   createdAt: string
   updatedAt: string
 }
+
+// シチュエーション一覧レスポンス型
+export interface SituationsListResponse {
+  situations: Array<{
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+  }>
+}

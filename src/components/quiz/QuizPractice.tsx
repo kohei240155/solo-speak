@@ -3,6 +3,7 @@ import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { RiSpeakLine } from 'react-icons/ri'
+import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
@@ -112,21 +113,19 @@ export default function QuizPractice({
             {currentPhrase.translation}
           </div>
         </div>
-        {/* 学習言語のフレーズ - タップで表示 */}
+        {/* 学習言語のフレーズ - 表示のみ */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           <div 
-            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium cursor-pointer transition-all duration-500 ease-out ${
+            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
               showTranslation 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-2'
-            } ${isPlaying ? 'opacity-70' : 'hover:text-gray-800'}`}
+            }`}
             style={{ 
               wordWrap: 'break-word',
               overflowWrap: 'anywhere',
               wordBreak: 'break-word'
             }}
-            onClick={showTranslation ? handlePlayAudio : undefined}
-            title={showTranslation ? "Click to play audio" : undefined}
           >
             {currentPhrase.original}
           </div>
@@ -134,7 +133,7 @@ export default function QuizPractice({
       </div>
 
       {/* 中央のアイコン表示エリア */}
-      <div className="flex justify-center items-center mb-20 sm:mb-26">
+      <div className="flex justify-center items-center mb-12 sm:mb-16">
         <div 
           className="cursor-pointer rounded-full p-4 transition-colors"
           onClick={onShowTranslation}
@@ -145,9 +144,13 @@ export default function QuizPractice({
 
       {/* Got It / No Idea ボタン */}
       <div>
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-end">
           {/* No Idea ボタン */}
           <div className="flex flex-col items-center" style={{ width: '48%' }}>
+            {/* スペーサー（音声再生ボタンと同じ高さ） */}
+            <div className="mb-3">
+              <div className="w-12 h-12"></div>
+            </div>
             <AnimatedButton
               onClick={() => handleAnswer(false)}
               disabled={hasAnswered}
@@ -160,7 +163,20 @@ export default function QuizPractice({
           </div>
 
           {/* Got It ボタン */}
-          <div className="flex flex-col items-center" style={{ width: '48%' }}>
+          <div className="flex flex-col items-end" style={{ width: '48%' }}>
+            {/* 音声再生ボタン */}
+            <button
+              onClick={handlePlayAudio}
+              disabled={isPlaying || !currentPhrase?.original || !showTranslation}
+              className={`mb-3 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${
+                isPlaying || !currentPhrase?.original || !showTranslation ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
+              title="Play audio"
+            >
+              <HiMiniSpeakerWave className={`w-6 h-6 ${
+                isPlaying || !currentPhrase?.original || !showTranslation ? 'text-gray-400' : 'text-gray-600'
+              }`} />
+            </button>
             <AnimatedButton
               onClick={() => handleAnswer(true)}
               disabled={hasAnswered}

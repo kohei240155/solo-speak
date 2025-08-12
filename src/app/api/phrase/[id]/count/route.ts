@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
-import { PhraseCountResponse, ApiErrorResponse } from '@/types/api-responses'
+import { PhraseCountResponse } from '@/types/phrase'
+import { ApiErrorResponse } from '@/types/api'
 
 /** * フレーズの音読回数を更新するAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト

@@ -22,7 +22,9 @@
     },
     "validation": {
       "maxLength100": "100文字以内で入力してください（現在: {{count}}文字）",
-      "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）"
+      "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）",
+      "required": "フレーズを入力してください",
+      "phraseMaxLength": "フレーズは100文字以内で入力してください"
     },
     "messages": {
       "updateSuccess": "フレーズが正常に更新されました！",
@@ -36,6 +38,7 @@
       "nextPhraseError": "次のフレーズの取得に失敗しました",
       "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
       "generationFailed": "フレーズの生成に失敗しました",
+      "generationError": "フレーズの生成中にエラーが発生しました",
       "noContentGenerated": "コンテンツが生成されませんでした"
     }
   },
