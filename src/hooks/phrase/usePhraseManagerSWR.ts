@@ -2,17 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
-import { PhraseVariation, CreatePhraseResponseData, RemainingGenerationsResponse } from '@/types/phrase'
-import { SituationsListResponse } from '@/types/situation'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
-import useSWR, { mutate } from 'swr'
+import { PhraseVariation, CreatePhraseResponseData } from '@/types/phrase'
+import { useLanguages, useUserSettings, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
+import { mutate } from 'swr'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { SWR_CACHE_HELPERS } from '@/utils/swr-keys'
-
-// SWR用のfetcher関数
-const generationsFetcher = (url: string) => api.get<RemainingGenerationsResponse>(url, { showErrorToast: false })
-const situationsFetcher = (url: string) => api.get<SituationsListResponse>(url, { showErrorToast: false })
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
@@ -21,33 +16,8 @@ export const usePhraseManagerSWR = () => {
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
   const { userSettings } = useUserSettings()
-  
-  // 残り生成回数をSWRで取得（最適化されたキャッシュ設定）
-  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
-  const generationsKey = user ? ['/api/phrase/remaining', user.id] as const : null
-  const { data: generationsData, mutate: mutateGenerations } = useSWR<RemainingGenerationsResponse>(
-    generationsKey,
-    ([url]) => generationsFetcher(url),
-    {
-      dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
-      shouldRetryOnError: true,
-    }
-  )
-  
-  // シチュエーションをSWRで取得
-  const situationsKey = user ? ['/api/situations', user.id] as const : null
-  const { data: situationsData, mutate: mutateSituations } = useSWR<SituationsListResponse>(
-    situationsKey,
-    ([url]) => situationsFetcher(url),
-    {
-      dedupingInterval: 5 * 60 * 1000, // 5分間キャッシュ
-      revalidateOnFocus: true,
-      shouldRetryOnError: true,
-    }
-  )
+  const { remainingGenerations, generationsData, refetch: mutateGenerations } = useRemainingGenerations()
+  const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
   // ローカル状態
   const [nativeLanguage, setNativeLanguage] = useState('ja')
@@ -130,8 +100,6 @@ export const usePhraseManagerSWR = () => {
 
   // データ取得状態の計算
   const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
-  const remainingGenerations = generationsData?.remainingGenerations || 0
-  const situations = situationsData?.situations || []
 
   // バリデーション関数
   const validatePhrase = useCallback((phrase: string) => {

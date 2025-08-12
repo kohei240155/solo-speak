@@ -1,6 +1,9 @@
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
+import { RemainingGenerationsResponse } from '@/types/phrase'
+import { SituationsListResponse } from '@/types/situation'
+import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用のfetcher関数
 const fetcher = async (url: string) => {
@@ -10,6 +13,16 @@ const fetcher = async (url: string) => {
 // ユーザー設定用のカスタムfetcher（404エラーでトーストを表示しない）
 const userSettingsFetcher = async (url: string) => {
   return await api.get(url, { showErrorToast: false })
+}
+
+// 残り生成回数用のfetcher（エラートーストを表示しない）
+const generationsFetcher = async (url: string) => {
+  return await api.get<RemainingGenerationsResponse>(url, { showErrorToast: false })
+}
+
+// シチュエーション用のfetcher（エラートーストを表示しない）
+const situationsFetcher = async (url: string) => {
+  return await api.get<SituationsListResponse>(url, { showErrorToast: false })
 }
 
 // 共通のSWRオプション設定
@@ -393,6 +406,59 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     isLoading,
     error,
     message: typedData?.message,
+    refetch: mutate
+  }
+}
+
+// 残り生成回数を取得するSWRフック
+export function useRemainingGenerations() {
+  const { user } = useAuth()
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const generationsKey = user ? ['/api/phrase/remaining', user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR<RemainingGenerationsResponse>(
+    generationsKey,
+    ([url]) => generationsFetcher(url),
+    {
+      dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
+      shouldRetryOnError: true,
+    }
+  )
+  
+  return {
+    remainingGenerations: data?.remainingGenerations || 0,
+    generationsData: data,
+    isLoading,
+    error,
+    refetch: mutate
+  }
+}
+
+// シチュエーションリストを取得するSWRフック
+export function useSituations() {
+  const { user } = useAuth()
+  
+  const situationsKey = user ? ['/api/situations', user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR<SituationsListResponse>(
+    situationsKey,
+    ([url]) => situationsFetcher(url),
+    {
+      dedupingInterval: 5 * 60 * 1000, // 5分間キャッシュ
+      revalidateOnFocus: true,
+      shouldRetryOnError: true,
+    }
+  )
+  
+  return {
+    situations: data?.situations || [],
+    situationsData: data,
+    isLoading,
+    error,
     refetch: mutate
   }
 }
