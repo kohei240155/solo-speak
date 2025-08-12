@@ -48,9 +48,14 @@ const SWR_CONFIGS = {
 
 // ユーザー設定を取得するSWRフック
 export function useUserSettings() {
+  const { user } = useAuth()
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const settingsKey = user ? ['/api/user/settings', user.id] as const : null
+  
   const { data, error, isLoading, mutate } = useSWR(
-    '/api/user/settings', 
-    (url) => fetcher<UserSettingsResponse>(url, { showErrorToast: false }), 
+    settingsKey, 
+    ([url]) => fetcher<UserSettingsResponse>(url, { showErrorToast: false }), 
     SWR_CONFIGS.MEDIUM_CACHE
   )
 
@@ -76,9 +81,12 @@ export function useLanguages() {
 
 // ダッシュボードデータを取得するSWRフック
 export function useDashboardData(language?: string) {
-  const url = language ? `/api/dashboard?language=${language}` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<DashboardData>, SWR_CONFIGS.REALTIME)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const dashboardKey = user && language ? [`/api/dashboard?language=${language}`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(dashboardKey, ([url]) => fetcher<DashboardData>(url), SWR_CONFIGS.REALTIME)
 
   return {
     dashboardData: data,
@@ -90,9 +98,12 @@ export function useDashboardData(language?: string) {
 
 // フレーズリストを取得するSWRフック
 export function usePhrases(language?: string, page = 1) {
-  const url = language ? `/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhrasesListResponseData>, SWR_CONFIGS.SHORT_CACHE)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const phrasesKey = user && language ? [`/api/phrase?languageCode=${language}&page=${page}&limit=10&minimal=true`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(phrasesKey, ([url]) => fetcher<PhrasesListResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
 
   return {
     phrases: data?.phrases,
@@ -106,9 +117,12 @@ export function usePhrases(language?: string, page = 1) {
 
 // 特定のフレーズを取得するSWRフック
 export function usePhrase(phraseId?: string) {
-  const url = phraseId ? `/api/phrase/${phraseId}` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<PhraseDetailResponse>, SWR_CONFIGS.MEDIUM_CACHE)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const phraseKey = user && phraseId ? [`/api/phrase/${phraseId}`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(phraseKey, ([url]) => fetcher<PhraseDetailResponse>(url), SWR_CONFIGS.MEDIUM_CACHE)
 
   return {
     phrase: data,
@@ -120,9 +134,12 @@ export function usePhrase(phraseId?: string) {
 
 // Speakモード用のフレーズを取得するSWRフック
 export function useSpeakPhrase(language?: string) {
-  const url = language ? `/api/phrase/speak?language=${language}` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<SpeakPhraseResponse>, {
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const speakKey = user && language ? [`/api/phrase/speak?language=${language}`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(speakKey, ([url]) => fetcher<SpeakPhraseResponse>(url), {
     // キャッシュしない（毎回新しいランダムなフレーズを取得するため）
     dedupingInterval: 0,
     // フォーカス時の再検証を無効
@@ -142,9 +159,12 @@ export function useSpeakPhrase(language?: string) {
 
 // 特定のフレーズのSpeakデータを取得するSWRフック
 export function useSpeakPhraseById(phraseId?: string) {
-  const url = phraseId ? `/api/phrase/${phraseId}/speak` : null
+  const { user } = useAuth()
   
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<UpdatePhraseCountResponseData>, SWR_CONFIGS.REALTIME)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const speakByIdKey = user && phraseId ? [`/api/phrase/${phraseId}/speak`, user.id] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(speakByIdKey, ([url]) => fetcher<UpdatePhraseCountResponseData>(url), SWR_CONFIGS.REALTIME)
 
   return {
     data: data,
@@ -157,17 +177,19 @@ export function useSpeakPhraseById(phraseId?: string) {
 
 // 無限スクロール対応のフレーズリストを取得するSWRフック
 export function useInfinitePhrases(language?: string) {
+  const { user } = useAuth()
+  
   const getKey = (pageIndex: number, previousPageData: { pagination?: { hasMore: boolean } } | null) => {
     // 最後のページに到達した場合
     if (previousPageData && !previousPageData.pagination?.hasMore) return null
     
-    // 最初のページ、または次のページ
-    return language ? `/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true` : null
+    // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+    return user && language ? [`/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true`, user.id] as const : null
   }
 
   const { data, error, isLoading, isValidating, size, setSize, mutate } = useSWRInfinite(
-    language ? getKey : () => null,
-    fetcher<PhrasesListResponseData>,
+    user && language ? getKey : () => null,
+    ([url]) => fetcher<PhrasesListResponseData>(url),
     SWR_CONFIGS.SHORT_CACHE
   )
 
@@ -191,6 +213,8 @@ export function useInfinitePhrases(language?: string) {
 
 // ランキングデータを取得するSWRフック
 export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string, period?: 'daily' | 'weekly' | 'total') {
+  const { user } = useAuth()
+  
   // エンドポイントを構築
   let url: string | null = null
   if (type && language) {
@@ -203,7 +227,10 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
     }
   }
 
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher<SpeakRankingResponseData | QuizRankingResponseData | PhraseRankingResponseData>, SWR_CONFIGS.SHORT_CACHE)
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const rankingKey = user && url ? [url, user.id] as const : null
+
+  const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<SpeakRankingResponseData | QuizRankingResponseData | PhraseRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
 
   // データを統一形式に変換
   let transformedData: Array<{
