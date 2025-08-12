@@ -420,13 +420,7 @@ export function useRemainingGenerations() {
   const { data, error, isLoading, mutate } = useSWR<RemainingGenerationsResponse>(
     generationsKey,
     ([url]) => generationsFetcher(url),
-    {
-      dedupingInterval: 2 * 60 * 1000, // 2分間キャッシュ（適度なリアルタイム性）
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      refreshInterval: 10 * 60 * 1000, // 10分ごとに自動更新（5分→10分に緩和）
-      shouldRetryOnError: true,
-    }
+    SWR_CONFIGS.MEDIUM_CACHE
   )
   
   return {
@@ -447,11 +441,7 @@ export function useSituations() {
   const { data, error, isLoading, mutate } = useSWR<SituationsListResponse>(
     situationsKey,
     ([url]) => situationsFetcher(url),
-    {
-      dedupingInterval: 5 * 60 * 1000, // 5分間キャッシュ
-      revalidateOnFocus: true,
-      shouldRetryOnError: true,
-    }
+    SWR_CONFIGS.MEDIUM_CACHE
   )
   
   return {
