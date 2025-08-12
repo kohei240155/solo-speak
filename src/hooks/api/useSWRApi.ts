@@ -6,7 +6,7 @@ import { SituationsListResponse } from '@/types/situation'
 import { UserSettingsResponse } from '@/types/userSettings'
 import { DashboardData } from '@/types/dashboard'
 import { LanguageInfo } from '@/types/common'
-import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData } from '@/types/ranking'
+import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData, UnifiedRankingUser } from '@/types/ranking'
 import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用の統一fetcher関数
@@ -233,13 +233,7 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
   const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<SpeakRankingResponseData | QuizRankingResponseData | PhraseRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
 
   // データを統一形式に変換
-  let transformedData: Array<{
-    userId: string
-    username: string
-    iconUrl: string | null
-    totalCount: number
-    rank: number
-  }> = []
+  let transformedData: UnifiedRankingUser[] = []
 
   if (data?.success) {
     if ('topUsers' in data) {
@@ -264,13 +258,7 @@ export function useRanking(type?: 'phrase' | 'speak' | 'quiz', language?: string
   }
 
   // currentUserも統一形式に変換
-  let currentUser: {
-    userId: string
-    username: string
-    iconUrl: string | null
-    totalCount: number
-    rank: number
-  } | null = null
+  let currentUser: UnifiedRankingUser | null = null
 
   if (data && 'currentUser' in data && data.currentUser) {
     currentUser = {

@@ -13,6 +13,15 @@ export interface RankingUser {
   rank: number
 }
 
+// フロントエンド用の統一されたランキングユーザー型
+export interface UnifiedRankingUser {
+  userId: string
+  username: string
+  iconUrl: string | null
+  totalCount: number
+  rank: number
+}
+
 export interface SpeakRankingResponseData {
   success: true
   topUsers: RankingUser[]
