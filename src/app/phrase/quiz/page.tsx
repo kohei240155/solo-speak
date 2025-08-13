@@ -33,6 +33,7 @@ export default function PhraseQuizPage() {
     handleHideTranslation,
     handleAnswer,
     handleNext,
+    handleSpeakCount,
     resetQuiz
   } = useQuizPhrase()
 
@@ -173,6 +174,7 @@ export default function PhraseQuizPage() {
               onAnswer={handleAnswer}
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
+              onSpeakCount={handleSpeakCount}
             />
           ) : (
             // セッション読み込み中の表示

@@ -14,6 +14,7 @@ interface UseQuizPhraseReturn {
   handleHideTranslation: () => void
   handleAnswer: (isCorrect: boolean) => Promise<void>
   handleNext: () => void
+  handleSpeakCount: (phraseId: string, count: number) => Promise<void>
   resetQuiz: () => void
 }
 
@@ -35,6 +36,11 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         mode: config.mode,
         count: (config.questionCount || 10).toString()
       })
+
+      // 音読回数フィルターがある場合は追加
+      if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+        params.append('speakCountFilter', config.speakCountFilter.toString())
+      }
 
       const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], message?: string, totalCount?: number, availablePhraseCount?: number }>(`/api/phrase/quiz?${params.toString()}`)
 
@@ -99,6 +105,30 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     })
   }, [session])
 
+  const handleSpeakCount = useCallback(async (phraseId: string, count: number) => {
+    try {
+      // 指定された回数分音読回数を加算
+      await api.post(`/api/phrase/${phraseId}/count`, { count })
+      
+      // セッション内のフレーズの音読カウントを更新
+      setSession(prevSession => {
+        if (!prevSession) return prevSession
+        
+        return {
+          ...prevSession,
+          phrases: prevSession.phrases.map(phrase => 
+            phrase.id === phraseId 
+              ? { ...phrase, totalSpeakCount: phrase.totalSpeakCount + count }
+              : phrase
+          )
+        }
+      })
+      
+    } catch {
+      toast.error(t('speak.messages.countError'))
+    }
+  }, [t])
+
   const resetQuiz = useCallback(() => {
     setSession(null)
     setShowTranslation(false)
@@ -114,6 +144,7 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
     handleHideTranslation,
     handleAnswer,
     handleNext,
+    handleSpeakCount,
     resetQuiz
   }
 }
