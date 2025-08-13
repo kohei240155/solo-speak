@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { QuizConfig, QuizModeState, QuizPhrase } from '@/types/quiz'
 
 interface UseQuizModeParams {
@@ -18,42 +18,6 @@ export function useQuizMode({ createQuizSession, getQuizPhrases }: UseQuizModePa
     config: null,
     session: null
   })
-
-  // ページ読み込み時にURLパラメータから設定を復元
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const language = params.get('language')
-    const mode = params.get('mode') as 'normal' | 'random' | null
-    const count = params.get('count')
-    const speakCountFilter = params.get('speakCountFilter')
-    
-    // URLパラメータに設定がある場合、自動的にクイズモードを開始
-    if (language && mode && (mode === 'normal' || mode === 'random')) {
-      // speakCountFilterの安全な解析
-      let parsedSpeakCountFilter: number | null = null
-      if (speakCountFilter && speakCountFilter !== 'null') {
-        const parsed = parseInt(speakCountFilter, 10)
-        if (!isNaN(parsed)) {
-          parsedSpeakCountFilter = parsed
-        }
-      }
-
-      const config: QuizConfig = {
-        language,
-        mode,
-        questionCount: count ? parseInt(count, 10) : 10,
-        speakCountFilter: parsedSpeakCountFilter
-      }
-      
-      setQuizMode({ active: true, config, session: null })
-      
-      // キャッシュからフレーズを取得してセッション作成
-      const phrases = getQuizPhrases(config)
-      if (phrases && phrases.length > 0) {
-        createQuizSession(phrases)
-      }
-    }
-  }, [createQuizSession, getQuizPhrases])
 
   const handleQuizStart = useCallback(async (config: QuizConfig, phrases?: QuizPhrase[]): Promise<boolean> => {
     // URLパラメータに選択した設定を反映
