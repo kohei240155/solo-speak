@@ -12,8 +12,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
-import { useQuizMode } from '@/hooks/quiz/useQuizMode'
-import { QuizConfig } from '@/types/quiz'
+import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
@@ -37,9 +36,37 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
-    fetchQuizSession
+  // Quiz mode state
+  const [quizMode, setQuizMode] = useState<QuizModeState>({
+    active: false,
+    config: null,
+    session: null
   })
+
+  // Quiz開始処理
+  const handleQuizStart = async (config: QuizConfig): Promise<boolean> => {
+    const success = await fetchQuizSession(config)
+    
+    if (success) {
+      setQuizMode({
+        active: true,
+        config,
+        session: null
+      })
+      return true
+    }
+    
+    return false
+  }
+
+  // Quiz終了処理
+  const handleQuizFinish = () => {
+    setQuizMode({
+      active: false,
+      config: null,
+      session: null
+    })
+  }
 
   // Speak modal functionality
   const {
