@@ -9,7 +9,7 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useUserSettings, useLanguages, useQuizPhrases } from '@/hooks/api/useSWRApi'
+import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { useQuizMode } from '@/hooks/quiz/useQuizMode'
@@ -31,17 +31,6 @@ export default function PhraseQuizPage() {
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
 
-  // 現在の設定を管理するstate
-  const [currentQuizConfig, setCurrentQuizConfig] = useState<QuizConfig | null>(null)
-
-  // SWRを使用してクイズフレーズを取得（条件付き）
-  const { phrases: cachedPhrases } = useQuizPhrases(
-    currentQuizConfig?.language,
-    currentQuizConfig?.mode,
-    currentQuizConfig?.questionCount,
-    currentQuizConfig?.speakCountFilter
-  )
-
   // Quiz functionality
   const {
     session,
@@ -55,12 +44,11 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  // キャッシュからクイズフレーズを取得する関数
-  const getQuizPhrases = useCallback((config: QuizConfig) => {
-    // 設定を更新してSWRでデータを取得
-    setCurrentQuizConfig(config)
-    return cachedPhrases as QuizPhrase[] | undefined
-  }, [cachedPhrases])
+  // useQuizModeでは、getQuizPhrasesをダミー関数として渡す（実際は使用しない）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getQuizPhrases = useCallback((config: QuizConfig): QuizPhrase[] | undefined => {
+    return undefined // QuizModeModalから直接phrasesが渡されるため、この関数は実際には使用されない
+  }, [])
 
   const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
     createQuizSession,
@@ -84,16 +72,6 @@ export default function PhraseQuizPage() {
       return
     }
     
-    // URLパラメータがある場合は自動開始（モーダルは開かない）
-    const params = new URLSearchParams(window.location.search)
-    const language = params.get('language')
-    const mode = params.get('mode')
-    
-    if (language && mode && (mode === 'normal' || mode === 'random')) {
-      // URLパラメータから自動開始（useQuizModeで処理される）
-      return
-    }
-    
     // URLパラメータがない場合はモーダルを開く
     if (!showQuizModal) {
       setShowQuizModal(true)
@@ -103,6 +81,7 @@ export default function PhraseQuizPage() {
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig, phrases: unknown[]) => {
     try {
+      // QuizModeModalから直接渡されたphrasesを使用
       const success = await handleQuizStart(config, phrases as QuizPhrase[])
       if (success) {
         setShowQuizModal(false)
