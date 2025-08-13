@@ -330,3 +330,50 @@ export function useSituations() {
     refetch: mutate
   }
 }
+
+// クイズ用のフレーズを確認するSWRフック
+export function useQuizPhrases(
+  language?: string, 
+  mode?: 'normal' | 'random', 
+  count?: number, 
+  speakCountFilter?: number | null
+) {
+  const { user } = useAuth()
+  
+  // パラメータを構築
+  const params = new URLSearchParams()
+  if (language) params.append('language', language)
+  if (mode) params.append('mode', mode)
+  if (count !== undefined) params.append('count', count.toString())
+  if (speakCountFilter !== null && speakCountFilter !== undefined) {
+    params.append('speakCountFilter', speakCountFilter.toString())
+  }
+  
+  const queryString = params.toString()
+  const quizKey = user && language && mode && count !== undefined 
+    ? [`/api/phrase/quiz?${queryString}`, user.id] as const 
+    : null
+  
+  const { data, error, isLoading, mutate } = useSWR(
+    quizKey, 
+    ([url]) => fetcher<{ success: boolean, phrases?: unknown[], message?: string }>(url, { showErrorToast: false }),
+    {
+      // キャッシュしない（パラメータによって結果が変わるため）
+      dedupingInterval: 0,
+      // フォーカス時の再検証を無効
+      revalidateOnFocus: false,
+      // 自動再検証を無効
+      revalidateOnReconnect: false,
+    }
+  )
+  
+  return {
+    data: data,
+    phrases: data?.phrases,
+    success: data?.success || false,
+    message: data?.message,
+    isLoading,
+    error,
+    refetch: mutate
+  }
+}
