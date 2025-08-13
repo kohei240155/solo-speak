@@ -90,11 +90,15 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       const queryString = params.toString()
       const quizKey = [`/api/phrase/quiz?${queryString}`] as const
       
-      // SWRのmutateを使用してAPIを実行し、結果を取得
+      // SWRのmutateを使用してAPIを実行し、結果を取得（キャッシュを無視して強制再取得）
       const response = await mutate(quizKey, async () => {
         const { api } = await import('@/utils/api')
         const result = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${queryString}`)
         return result
+      }, { 
+        revalidate: false, // 再検証を無効化
+        populateCache: true, // キャッシュは更新する
+        optimisticData: undefined // 楽観的更新を無効化
       })
       
       if (response?.success && response.phrases && response.phrases.length > 0) {
