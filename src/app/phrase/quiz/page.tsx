@@ -60,38 +60,30 @@ export default function PhraseQuizPage() {
     }
   }, [learningLanguage, refreshPhrases])
 
-  // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
+  // フレーズ読み込み完了後、自動的にクイズを開始
   useEffect(() => {
-    // 前提条件をチェック
-    if (isLoadingPhrases || savedPhrases.length === 0 || quizMode.active || isQuizCompleted) {
-      return
+    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !isQuizCompleted && learningLanguage) {
+      // デフォルト設定でクイズを自動開始
+      const defaultConfig: QuizConfig = {
+        language: learningLanguage,
+        mode: 'normal',
+        questionCount: 10,
+        speakCountFilter: null
+      }
+      handleQuizStart(defaultConfig)
     }
-    
-    // URLパラメータがある場合は自動開始（モーダルは開かない）
-    const params = new URLSearchParams(window.location.search)
-    const language = params.get('language')
-    const mode = params.get('mode')
-    
-    if (language && mode && (mode === 'normal' || mode === 'random')) {
-      // URLパラメータから自動開始（useQuizModeで処理される）
-      return
-    }
-    
-    // URLパラメータがない場合はモーダルを開く
-    if (!showQuizModal) {
-      setShowQuizModal(true)
-    }
-  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal, isQuizCompleted])
+  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, isQuizCompleted, learningLanguage, handleQuizStart])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
-    try {
-      const success = await handleQuizStart(config)
-      if (success) {
-        setShowQuizModal(false)
-      }
-    } catch {
-      // Handle error silently
+    const success = await handleQuizStart(config)
+    setShowQuizModal(false)
+    
+    if (!success) {
+      // 失敗した場合は少し待ってからモーダルを再度開く
+      setTimeout(() => {
+        setShowQuizModal(true)
+      }, 100)
     }
   }
 
@@ -176,7 +168,7 @@ export default function PhraseQuizPage() {
                   <p className="text-sm text-gray-500">Add some phrases first to start practicing.</p>
                 </>
               ) : (
-                // フレーズが存在する場合は空の状態（モーダルが自動的に開く）
+                // フレーズが存在する場合は自動的にクイズが開始される
                 <div></div>
               )}
             </div>
