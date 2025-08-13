@@ -75,7 +75,10 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         speakCountFilter: speakCountFilter
       }
       
-      // Startボタン押下時にAPIを実行してフレーズを取得
+      // SWRのmutateを使用してAPIを実行
+      const { mutate } = await import('swr')
+      
+      // パラメータを構築
       const params = new URLSearchParams()
       params.append('language', language)
       params.append('mode', mode)
@@ -84,17 +87,23 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         params.append('speakCountFilter', speakCountFilter.toString())
       }
       
-      // APIを直接呼び出してフレーズをチェック
-      const { api } = await import('@/utils/api')
-      const response = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${params.toString()}`)
+      const queryString = params.toString()
+      const quizKey = [`/api/phrase/quiz?${queryString}`] as const
       
-      if (response.success && response.phrases && response.phrases.length > 0) {
+      // SWRのmutateを使用してAPIを実行し、結果を取得
+      const response = await mutate(quizKey, async () => {
+        const { api } = await import('@/utils/api')
+        const result = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${queryString}`)
+        return result
+      })
+      
+      if (response?.success && response.phrases && response.phrases.length > 0) {
         // フレーズが見つかった場合は、モーダルを閉じてクイズを開始
         onClose()
         await onStart(config, response.phrases)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = response.message || t('phrase.messages.notFound')
+        const errorMessage = response?.message || t('phrase.messages.notFound')
         toast.error(errorMessage)
       }
     } catch {
