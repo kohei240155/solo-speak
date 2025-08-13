@@ -135,7 +135,7 @@ export default function PhraseQuizPage() {
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
             />
-          ) : quizMode.active && !session ? (
+          ) : (
             // セッション読み込み中の表示
             <LoadingSpinner 
               size="md" 
@@ -143,9 +143,6 @@ export default function PhraseQuizPage() {
               className="text-center"
               minHeight="400px"
             />
-          ) : (
-            // クイズがアクティブでない場合は自動的にクイズが開始される
-            <div>あ</div>
           )}
         </div>
       </div>
