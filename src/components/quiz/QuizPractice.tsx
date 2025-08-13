@@ -4,6 +4,7 @@ import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { RiSpeakLine } from 'react-icons/ri'
 import { HiMiniSpeakerWave, HiPlus } from 'react-icons/hi2'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
@@ -211,9 +212,13 @@ export default function QuizPractice({
                 }`}
                 title="Add speak count"
               >
-                <HiPlus className={`w-6 h-6 ${
-                  !showTranslation || hasAnswered || countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
-                }`} />
+                {countCooldown > 0 ? (
+                  <AiOutlineLoading3Quarters className="w-6 h-6 text-gray-400 animate-spin" />
+                ) : (
+                  <HiPlus className={`w-6 h-6 ${
+                    !showTranslation || hasAnswered || countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
+                  }`} />
+                )}
               </button>
               
               {/* スピーカーボタン */}
