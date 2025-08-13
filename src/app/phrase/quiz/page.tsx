@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -50,10 +50,15 @@ export default function PhraseQuizPage() {
   } = useSpeakModal()
 
   const [showQuizModal, setShowQuizModal] = useState(false)
+  
+  // APIを1回だけコールするためのフラグ
+  const hasStartedQuizRef = useRef(false)
 
   // ページ読み込み時に自動的にクイズを開始
   useEffect(() => {
-    if (!quizMode.active && !isQuizCompleted && learningLanguage) {
+    if (!quizMode.active && !isQuizCompleted && learningLanguage && !hasStartedQuizRef.current) {
+      hasStartedQuizRef.current = true
+      
       // URLパラメータから設定を読み取り
       const params = new URLSearchParams(window.location.search)
       const language = params.get('language') || learningLanguage
@@ -70,7 +75,7 @@ export default function PhraseQuizPage() {
       handleQuizStart(config)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [quizMode.active, isQuizCompleted, learningLanguage])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
