@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -10,17 +10,14 @@ import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
-import { usePhraseList } from '@/hooks/phrase/usePhraseList'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
-import { useQuizMode } from '@/hooks/quiz/useQuizMode'
-import { QuizConfig } from '@/types/quiz'
+import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, isLoadingPhrases, refreshPhrases } = usePhraseList()
   const router = useRouter()
 
   // クイズ完了状態
@@ -39,9 +36,37 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
-    fetchQuizSession
+  // Quiz mode state
+  const [quizMode, setQuizMode] = useState<QuizModeState>({
+    active: false,
+    config: null,
+    session: null
   })
+
+  // Quiz開始処理
+  const handleQuizStart = async (config: QuizConfig): Promise<boolean> => {
+    const success = await fetchQuizSession(config)
+    
+    if (success) {
+      setQuizMode({
+        active: true,
+        config,
+        session: null
+      })
+      return true
+    }
+    
+    return false
+  }
+
+  // Quiz終了処理
+  const handleQuizFinish = () => {
+    setQuizMode({
+      active: false,
+      config: null,
+      session: null
+    })
+  }
 
   // Speak modal functionality
   const {
@@ -52,46 +77,43 @@ export default function PhraseQuizPage() {
   } = useSpeakModal()
 
   const [showQuizModal, setShowQuizModal] = useState(false)
+  
+  // APIを1回だけコールするためのフラグ
+  const hasStartedQuizRef = useRef(false)
 
-  // ページ読み込み時にフレーズを取得
+  // ページ読み込み時に自動的にクイズを開始
   useEffect(() => {
-    if (learningLanguage) {
-      refreshPhrases()
-    }
-  }, [learningLanguage, refreshPhrases])
+    if (!quizMode.active && !isQuizCompleted && learningLanguage && !hasStartedQuizRef.current) {
+      hasStartedQuizRef.current = true
+      
+      // URLパラメータから設定を読み取り
+      const params = new URLSearchParams(window.location.search)
+      const language = params.get('language') || learningLanguage
+      const mode = params.get('mode') as 'normal' | 'random' || 'normal'
+      const questionCount = params.get('count') ? parseInt(params.get('count')!, 10) : 10
+      const speakCountFilter = params.get('speakCountFilter') ? parseInt(params.get('speakCountFilter')!, 10) : null
 
-  // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
-  useEffect(() => {
-    // 前提条件をチェック
-    if (isLoadingPhrases || savedPhrases.length === 0 || quizMode.active || isQuizCompleted) {
-      return
+      const config: QuizConfig = {
+        language,
+        mode,
+        questionCount,
+        speakCountFilter
+      }
+      handleQuizStart(config)
     }
-    
-    // URLパラメータがある場合は自動開始（モーダルは開かない）
-    const params = new URLSearchParams(window.location.search)
-    const language = params.get('language')
-    const mode = params.get('mode')
-    
-    if (language && mode && (mode === 'normal' || mode === 'random')) {
-      // URLパラメータから自動開始（useQuizModeで処理される）
-      return
-    }
-    
-    // URLパラメータがない場合はモーダルを開く
-    if (!showQuizModal) {
-      setShowQuizModal(true)
-    }
-  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, showQuizModal, isQuizCompleted])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizMode.active, isQuizCompleted, learningLanguage])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
-    try {
-      const success = await handleQuizStart(config)
-      if (success) {
-        setShowQuizModal(false)
-      }
-    } catch {
-      // Handle error silently
+    const success = await handleQuizStart(config)
+    setShowQuizModal(false)
+    
+    if (!success) {
+      // 失敗した場合は少し待ってからモーダルを再度開く
+      setTimeout(() => {
+        setShowQuizModal(true)
+      }, 100)
     }
   }
 
@@ -152,7 +174,7 @@ export default function PhraseQuizPage() {
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
             />
-          ) : quizMode.active && !session ? (
+          ) : (
             // セッション読み込み中の表示
             <LoadingSpinner 
               size="md" 
@@ -160,26 +182,6 @@ export default function PhraseQuizPage() {
               className="text-center"
               minHeight="400px"
             />
-          ) : (
-            // クイズがアクティブでない場合は何も表示しない（モーダルで操作）
-            <div className="text-center py-8">
-              {isLoadingPhrases ? (
-                <LoadingSpinner 
-                  size="md" 
-                  message="Loading phrases..." 
-                  className="text-center"
-                  minHeight="400px"
-                />
-              ) : savedPhrases.length === 0 ? (
-                <>
-                  <p className="text-gray-600 mb-4">No phrases found for quiz.</p>
-                  <p className="text-sm text-gray-500">Add some phrases first to start practicing.</p>
-                </>
-              ) : (
-                // フレーズが存在する場合は空の状態（モーダルが自動的に開く）
-                <div></div>
-              )}
-            </div>
           )}
         </div>
       </div>
@@ -200,7 +202,7 @@ export default function PhraseQuizPage() {
         onStart={handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={savedPhrases.length}
+        availablePhraseCount={0}
       />
       
       <Toaster />
