@@ -10,7 +10,6 @@ import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
-import { usePhraseList } from '@/hooks/phrase/usePhraseList'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { useQuizMode } from '@/hooks/quiz/useQuizMode'
@@ -20,7 +19,6 @@ import { Toaster } from 'react-hot-toast'
 export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, isLoadingPhrases, refreshPhrases } = usePhraseList()
   const router = useRouter()
 
   // クイズ完了状態
@@ -53,16 +51,9 @@ export default function PhraseQuizPage() {
 
   const [showQuizModal, setShowQuizModal] = useState(false)
 
-  // ページ読み込み時にフレーズを取得
+  // ページ読み込み時に自動的にクイズを開始
   useEffect(() => {
-    if (learningLanguage) {
-      refreshPhrases()
-    }
-  }, [learningLanguage, refreshPhrases])
-
-  // フレーズ読み込み完了後、自動的にクイズを開始
-  useEffect(() => {
-    if (!isLoadingPhrases && savedPhrases.length > 0 && !quizMode.active && !isQuizCompleted && learningLanguage) {
+    if (!quizMode.active && !isQuizCompleted && learningLanguage) {
       // デフォルト設定でクイズを自動開始
       const defaultConfig: QuizConfig = {
         language: learningLanguage,
@@ -72,7 +63,7 @@ export default function PhraseQuizPage() {
       }
       handleQuizStart(defaultConfig)
     }
-  }, [isLoadingPhrases, savedPhrases.length, quizMode.active, isQuizCompleted, learningLanguage, handleQuizStart])
+  }, [quizMode.active, isQuizCompleted, learningLanguage, handleQuizStart])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
@@ -153,25 +144,8 @@ export default function PhraseQuizPage() {
               minHeight="400px"
             />
           ) : (
-            // クイズがアクティブでない場合は何も表示しない（モーダルで操作）
-            <div className="text-center py-8">
-              {isLoadingPhrases ? (
-                <LoadingSpinner 
-                  size="md" 
-                  message="Loading phrases..." 
-                  className="text-center"
-                  minHeight="400px"
-                />
-              ) : savedPhrases.length === 0 ? (
-                <>
-                  <p className="text-gray-600 mb-4">No phrases found for quiz.</p>
-                  <p className="text-sm text-gray-500">Add some phrases first to start practicing.</p>
-                </>
-              ) : (
-                // フレーズが存在する場合は自動的にクイズが開始される
-                <div></div>
-              )}
-            </div>
+            // クイズがアクティブでない場合は自動的にクイズが開始される
+            <div>あ</div>
           )}
         </div>
       </div>
@@ -192,7 +166,7 @@ export default function PhraseQuizPage() {
         onStart={handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={savedPhrases.length}
+        availablePhraseCount={0}
       />
       
       <Toaster />
