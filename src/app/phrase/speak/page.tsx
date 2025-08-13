@@ -174,6 +174,7 @@ function PhraseSpeakPage() {
                   isCountDisabled={singlePhraseSpeak.singlePhraseCountDisabled}
                   learningLanguage={learningLanguage}
                   onExplanation={handleExplanation}
+                  finishButtonText={singlePhraseSpeak.finishButtonText}
                 />
               ) : (
                 <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>

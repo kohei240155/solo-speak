@@ -30,6 +30,7 @@ interface SpeakPracticeProps {
   isCountDisabled?: boolean // Countボタンを無効にするかどうか
   learningLanguage?: string // 学習言語コード（TTS用）
   onExplanation?: () => void // Explanationボタンのコールバック
+  finishButtonText?: string // Finishボタンのテキストをカスタマイズ
 }
 
 export default function SpeakPractice({
@@ -45,7 +46,8 @@ export default function SpeakPractice({
   isFinishing = false,
   isCountDisabled = false,
   learningLanguage = 'en',
-  onExplanation
+  onExplanation,
+  finishButtonText = 'Finish'
 }: SpeakPracticeProps) {
   const [countCooldown, setCountCooldown] = useState(0)
   
@@ -192,7 +194,7 @@ export default function SpeakPractice({
                 loadingText="Finishing..."
                 className="px-6"
               >
-                Finish
+                {finishButtonText}
               </AnimatedButton>
             )}
           </div>
@@ -248,7 +250,7 @@ export default function SpeakPractice({
               loadingText="Finishing..."
               className="px-6"
             >
-              Finish
+              {finishButtonText}
             </AnimatedButton>
           </div>
         )}

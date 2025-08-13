@@ -149,12 +149,12 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     isFinishing,
     handleCount,
     handleFinish,
-    // returnUrlがある場合は「Back to Quiz」、なければ「Finish」
+    // returnUrlがある場合はQuizからの遷移として「Back to Quiz」、なければPhrase Listからの遷移として「Finish」
     finishButtonText: (() => {
       if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search)
         const returnUrl = urlParams.get('returnUrl')
-        return returnUrl && returnUrl.includes('/quiz') ? 'Back to Quiz' : 'Finish'
+        return returnUrl ? 'Back to Quiz' : 'Finish'
       }
       return 'Finish'
     })()
