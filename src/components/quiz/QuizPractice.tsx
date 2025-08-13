@@ -61,10 +61,9 @@ export default function QuizPractice({
     setHasAnswered(true)
     setSelectedAnswer(isCorrect)
     
-    // ペンディング中の音読回数がある場合は送信
+    // ペンディング中の音読回数がある場合は送信（リセットはしない）
     if (pendingSpeakCount > 0 && onSpeakCount) {
       onSpeakCount(currentPhrase.id, pendingSpeakCount)
-      setPendingSpeakCount(0)
     }
     
     onAnswer(isCorrect)
@@ -103,7 +102,7 @@ export default function QuizPractice({
       // ローカル状態をリセットしてから次の問題に進む
       setHasAnswered(false)
       setSelectedAnswer(null)
-      setPendingSpeakCount(0) // ペンディングカウントもリセット
+      setPendingSpeakCount(0) // 次の問題に移る時にペンディングカウントをリセット
       setCountCooldown(0) // クールダウンもリセット
       // onNextが呼ばれることで、useQuizPhraseのhandleNextが実行され、showTranslationがfalseになる
       onNext()

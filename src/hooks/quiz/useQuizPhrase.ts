@@ -110,19 +110,8 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
       // 指定された回数分音読回数を加算
       await api.post(`/api/phrase/${phraseId}/count`, { count })
       
-      // セッション内のフレーズの音読カウントを更新
-      setSession(prevSession => {
-        if (!prevSession) return prevSession
-        
-        return {
-          ...prevSession,
-          phrases: prevSession.phrases.map(phrase => 
-            phrase.id === phraseId 
-              ? { ...phrase, totalSpeakCount: phrase.totalSpeakCount + count }
-              : phrase
-          )
-        }
-      })
+      // セッション内のフレーズのカウント更新は行わない
+      // UI側で pendingSpeakCount として表示されるため、ここでの更新は不要
       
     } catch {
       toast.error(t('speak.messages.countError'))
