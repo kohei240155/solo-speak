@@ -1,17 +1,18 @@
 import { useState, useCallback, useEffect } from 'react'
-import { QuizConfig, QuizModeState } from '@/types/quiz'
+import { QuizConfig, QuizModeState, QuizPhrase } from '@/types/quiz'
 
 interface UseQuizModeParams {
-  fetchQuizSession: (config: QuizConfig) => Promise<boolean>
+  createQuizSession: (phrases: QuizPhrase[]) => void
+  getQuizPhrases: (config: QuizConfig) => QuizPhrase[] | undefined
 }
 
 interface UseQuizModeReturn {
   quizMode: QuizModeState
-  handleQuizStart: (config: QuizConfig) => Promise<boolean>
+  handleQuizStart: (config: QuizConfig, phrases?: QuizPhrase[]) => Promise<boolean>
   handleQuizFinish: () => void
 }
 
-export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizModeReturn {
+export function useQuizMode({ createQuizSession, getQuizPhrases }: UseQuizModeParams): UseQuizModeReturn {
   const [quizMode, setQuizMode] = useState<QuizModeState>({
     active: false,
     config: null,
@@ -45,11 +46,16 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
       }
       
       setQuizMode({ active: true, config, session: null })
-      fetchQuizSession(config)
+      
+      // キャッシュからフレーズを取得してセッション作成
+      const phrases = getQuizPhrases(config)
+      if (phrases && phrases.length > 0) {
+        createQuizSession(phrases)
+      }
     }
-  }, [fetchQuizSession])
+  }, [createQuizSession, getQuizPhrases])
 
-  const handleQuizStart = useCallback(async (config: QuizConfig): Promise<boolean> => {
+  const handleQuizStart = useCallback(async (config: QuizConfig, phrases?: QuizPhrase[]): Promise<boolean> => {
     // URLパラメータに選択した設定を反映
     const params = new URLSearchParams(window.location.search)
     params.set('language', config.language)
@@ -67,19 +73,23 @@ export function useQuizMode({ fetchQuizSession }: UseQuizModeParams): UseQuizMod
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.replaceState({}, '', newUrl)
     
-    const success = await fetchQuizSession(config)
+    // フレーズデータを取得（引数で渡されるか、キャッシュから取得）
+    const phrasesToUse = phrases || getQuizPhrases(config)
     
-    if (success) {
+    if (phrasesToUse && phrasesToUse.length > 0) {
       setQuizMode({
         active: true,
         config,
         session: null // セッションはuseQuizPhraseで管理
       })
+      
+      // クイズセッションを作成
+      createQuizSession(phrasesToUse)
       return true
     } else {
       return false
     }
-  }, [fetchQuizSession])
+  }, [createQuizSession, getQuizPhrases])
 
   const handleQuizFinish = useCallback(() => {
     setQuizMode({

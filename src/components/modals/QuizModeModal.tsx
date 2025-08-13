@@ -9,7 +9,7 @@ import { useTranslation } from '@/hooks/ui/useTranslation'
 interface QuizModeModalProps {
   isOpen: boolean
   onClose: () => void
-  onStart: (config: QuizConfig) => Promise<void>
+  onStart: (config: QuizConfig, phrases: unknown[]) => Promise<void>
   languages: Language[]
   defaultLearningLanguage: string
   availablePhraseCount: number
@@ -100,7 +100,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       if (success && phrases && phrases.length > 0) {
         // フレーズが見つかった場合は、モーダルを閉じてクイズを開始
         onClose()
-        await onStart(config)
+        await onStart(config, phrases)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
         const errorMessage = message || t('phrase.messages.notFound')

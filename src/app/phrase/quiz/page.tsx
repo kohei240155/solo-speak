@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -9,11 +9,11 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
+import { useUserSettings, useLanguages, useQuizPhrases } from '@/hooks/api/useSWRApi'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { useQuizMode } from '@/hooks/quiz/useQuizMode'
-import { QuizConfig } from '@/types/quiz'
+import { QuizConfig, QuizPhrase } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
 export default function PhraseQuizPage() {
@@ -31,12 +31,23 @@ export default function PhraseQuizPage() {
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
 
+  // 現在の設定を管理するstate
+  const [currentQuizConfig, setCurrentQuizConfig] = useState<QuizConfig | null>(null)
+
+  // SWRを使用してクイズフレーズを取得（条件付き）
+  const { phrases: cachedPhrases } = useQuizPhrases(
+    currentQuizConfig?.language,
+    currentQuizConfig?.mode,
+    currentQuizConfig?.questionCount,
+    currentQuizConfig?.speakCountFilter
+  )
+
   // Quiz functionality
   const {
     session,
     currentPhrase,
     showTranslation,
-    fetchQuizSession,
+    createQuizSession,
     handleShowTranslation,
     handleHideTranslation,
     handleAnswer,
@@ -44,8 +55,16 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
+  // キャッシュからクイズフレーズを取得する関数
+  const getQuizPhrases = useCallback((config: QuizConfig) => {
+    // 設定を更新してSWRでデータを取得
+    setCurrentQuizConfig(config)
+    return cachedPhrases as QuizPhrase[] | undefined
+  }, [cachedPhrases])
+
   const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
-    fetchQuizSession
+    createQuizSession,
+    getQuizPhrases
   })
 
   // Speak modal functionality
@@ -82,9 +101,9 @@ export default function PhraseQuizPage() {
   }, [quizMode.active, showQuizModal, isQuizCompleted])
 
   // Quiz開始処理（モーダルから呼ばれる）
-  const handleQuizStartWithModal = async (config: QuizConfig) => {
+  const handleQuizStartWithModal = async (config: QuizConfig, phrases: unknown[]) => {
     try {
-      const success = await handleQuizStart(config)
+      const success = await handleQuizStart(config, phrases as QuizPhrase[])
       if (success) {
         setShowQuizModal(false)
       }
