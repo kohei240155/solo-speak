@@ -16,6 +16,7 @@ interface QuizPracticeProps {
   onAnswer: (isCorrect: boolean) => void
   onNext: () => void
   onFinish: () => void
+  onSpeakPhrase?: (phraseId: string) => void
 }
 
 export default function QuizPractice({
@@ -26,7 +27,8 @@ export default function QuizPractice({
   onHideTranslation,
   onAnswer,
   onNext,
-  onFinish
+  onFinish,
+  onSpeakPhrase
 }: QuizPracticeProps) {
   const [hasAnswered, setHasAnswered] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
@@ -58,6 +60,13 @@ export default function QuizPractice({
         onNext()
       }
     }, 1000)
+  }
+
+  // Speak画面遷移ハンドラー
+  const handleSpeakPhrase = () => {
+    if (onSpeakPhrase && currentPhrase?.id) {
+      onSpeakPhrase(currentPhrase.id)
+    }
   }
 
   // 音声再生ハンドラー
@@ -116,7 +125,7 @@ export default function QuizPractice({
         {/* 学習言語のフレーズ - 表示のみ */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           <div 
-            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
+            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out cursor-pointer hover:text-blue-600 ${
               showTranslation 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-2'
@@ -126,6 +135,8 @@ export default function QuizPractice({
               overflowWrap: 'anywhere',
               wordBreak: 'break-word'
             }}
+            onClick={showTranslation ? handleSpeakPhrase : undefined}
+            title={showTranslation ? 'Click to practice this phrase' : undefined}
           >
             {currentPhrase.original}
           </div>

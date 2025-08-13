@@ -135,6 +135,12 @@ export default function PhraseQuizPage() {
     setShowQuizModal(true)
   }
 
+  // Speak画面遷移処理
+  const handleSpeakPhrase = (phraseId: string) => {
+    const currentUrl = window.location.href
+    router.push(`/phrase/speak?phraseId=${phraseId}&returnUrl=${encodeURIComponent(currentUrl)}`)
+  }
+
   // 認証ローディング中は何も表示しない
   if (authLoading) {
     return <LoadingSpinner withHeaderOffset />
@@ -173,6 +179,7 @@ export default function PhraseQuizPage() {
               onAnswer={handleAnswer}
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
+              onSpeakPhrase={handleSpeakPhrase}
             />
           ) : (
             // セッション読み込み中の表示

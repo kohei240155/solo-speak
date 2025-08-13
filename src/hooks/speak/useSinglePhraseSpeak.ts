@@ -100,7 +100,16 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
           toast.error(t('phrase.messages.countError'))
         }
       }
-      router.push('/phrase/list')
+      
+      // returnUrlがある場合はそちらに遷移、なければphrase/listに遷移
+      const urlParams = new URLSearchParams(window.location.search)
+      const returnUrl = urlParams.get('returnUrl')
+      
+      if (returnUrl) {
+        router.push(decodeURIComponent(returnUrl))
+      } else {
+        router.push('/phrase/list')
+      }
     } catch (error) {
       console.error('Error finishing single phrase practice:', error)
       toast.error(t('speak.messages.endError'))
@@ -139,6 +148,15 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
     singlePhraseCountDisabled,
     isFinishing,
     handleCount,
-    handleFinish
+    handleFinish,
+    // returnUrlがある場合は「Back to Quiz」、なければ「Finish」
+    finishButtonText: (() => {
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const returnUrl = urlParams.get('returnUrl')
+        return returnUrl && returnUrl.includes('/quiz') ? 'Back to Quiz' : 'Finish'
+      }
+      return 'Finish'
+    })()
   }
 }
