@@ -54,14 +54,20 @@ export default function PhraseQuizPage() {
   // ページ読み込み時に自動的にクイズを開始
   useEffect(() => {
     if (!quizMode.active && !isQuizCompleted && learningLanguage) {
-      // デフォルト設定でクイズを自動開始
-      const defaultConfig: QuizConfig = {
-        language: learningLanguage,
-        mode: 'normal',
-        questionCount: 10,
-        speakCountFilter: null
+      // URLパラメータから設定を読み取り
+      const params = new URLSearchParams(window.location.search)
+      const language = params.get('language') || learningLanguage
+      const mode = params.get('mode') as 'normal' | 'random' || 'normal'
+      const questionCount = params.get('count') ? parseInt(params.get('count')!, 10) : 10
+      const speakCountFilter = params.get('speakCountFilter') ? parseInt(params.get('speakCountFilter')!, 10) : null
+
+      const config: QuizConfig = {
+        language,
+        mode,
+        questionCount,
+        speakCountFilter
       }
-      handleQuizStart(defaultConfig)
+      handleQuizStart(config)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
