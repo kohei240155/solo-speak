@@ -63,7 +63,8 @@ export default function PhraseQuizPage() {
       }
       handleQuizStart(defaultConfig)
     }
-  }, [quizMode.active, isQuizCompleted, learningLanguage, handleQuizStart])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
