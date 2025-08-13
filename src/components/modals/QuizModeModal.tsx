@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
 import { Language } from '@/types/phrase'
 import { QuizConfig } from '@/types/quiz'
-import { useQuizPhrases } from '@/hooks/api/useSWRApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
@@ -23,15 +22,6 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   const [questionCount, setQuestionCount] = useState<number>(10)
   const [speakCountFilter, setSpeakCountFilter] = useState<number | null>(50) // デフォルトは50回以上
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(defaultLearningLanguage)
-
-  // SWRを使用してクイズフレーズの有無を確認
-  const { success, phrases, message, isLoading: isCheckingQuiz, refetch } = useQuizPhrases(
-    selectedLanguage,
-    mode,
-    questionCount,
-    speakCountFilter
-  )
 
   // フレーズ数が変わった時に問題数を調整
   useEffect(() => {
@@ -44,16 +34,8 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     if (isOpen) {
       setQuestionCount(10)
       setSpeakCountFilter(50) // 音読回数フィルターも初期化
-      setSelectedLanguage(defaultLearningLanguage) // 言語も初期化
     }
   }, [isOpen, defaultLearningLanguage])
-
-  // パラメータが変更された時にSWRデータを再取得
-  useEffect(() => {
-    if (selectedLanguage && mode && questionCount !== undefined) {
-      refetch()
-    }
-  }, [selectedLanguage, mode, questionCount, speakCountFilter, refetch])
 
   // 問題数選択のオプションを生成
   const generateQuestionCountOptions = () => {
@@ -83,7 +65,6 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     if (isLoading) return
     
     setIsLoading(true)
-    setSelectedLanguage(language) // 選択された言語を更新
     
     try {
       // 設定オブジェクトを作成
@@ -94,16 +75,26 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         speakCountFilter: speakCountFilter
       }
       
-      // SWRから最新のデータを取得（言語が変更された場合は再フェッチ）
-      await refetch()
+      // Startボタン押下時にAPIを実行してフレーズを取得
+      const params = new URLSearchParams()
+      params.append('language', language)
+      params.append('mode', mode)
+      params.append('count', questionCount.toString())
+      if (speakCountFilter !== null && speakCountFilter !== undefined) {
+        params.append('speakCountFilter', speakCountFilter.toString())
+      }
       
-      if (success && phrases && phrases.length > 0) {
+      // APIを直接呼び出してフレーズをチェック
+      const { api } = await import('@/utils/api')
+      const response = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${params.toString()}`)
+      
+      if (response.success && response.phrases && response.phrases.length > 0) {
         // フレーズが見つかった場合は、モーダルを閉じてクイズを開始
         onClose()
-        await onStart(config, phrases)
+        await onStart(config, response.phrases)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = message || t('phrase.messages.notFound')
+        const errorMessage = response.message || t('phrase.messages.notFound')
         toast.error(errorMessage)
       }
     } catch {
@@ -159,7 +150,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       config={modalConfig}
       languages={languages}
       defaultLearningLanguage={defaultLearningLanguage}
-      isLoading={isLoading || isCheckingQuiz}
+      isLoading={isLoading}
     />
   )
 }
