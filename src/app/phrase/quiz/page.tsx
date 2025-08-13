@@ -9,7 +9,7 @@ import QuizModeModal from '@/components/modals/QuizModeModal'
 import QuizPractice from '@/components/quiz/QuizPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useUserSettings, useLanguages } from '@/hooks/api/useSWRApi'
+import { useUserSettings, useLanguages, useQuizPhrases } from '@/hooks/api/useSWRApi'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { useQuizMode } from '@/hooks/quiz/useQuizMode'
@@ -30,6 +30,20 @@ export default function PhraseQuizPage() {
 
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
+  
+  // クイズが一度でも開始されたかを追跡
+  const [hasQuizStarted, setHasQuizStarted] = useState(false)
+  
+  // クイズ設定状態を追跡（キャッシュからフレーズを取得するため）
+  const [quizConfig, setQuizConfig] = useState<QuizConfig | null>(null)
+
+  // キャッシュからクイズフレーズを取得（最新データは取得しない）
+  const { phrases: cachedPhrases } = useQuizPhrases(
+    quizConfig?.language,
+    quizConfig?.mode,
+    quizConfig?.questionCount,
+    quizConfig?.speakCountFilter
+  )
 
   // Quiz functionality
   const {
@@ -44,11 +58,12 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  // useQuizModeでは、getQuizPhrasesをダミー関数として渡す（実際は使用しない）
+  // useQuizModeでは、キャッシュからフレーズを取得する関数を渡す
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getQuizPhrases = useCallback((config: QuizConfig): QuizPhrase[] | undefined => {
-    return undefined // QuizModeModalから直接phrasesが渡されるため、この関数は実際には使用されない
-  }, [])
+  const getQuizPhrases = useCallback((_config: QuizConfig): QuizPhrase[] | undefined => {
+    // キャッシュから取得したフレーズを返す（最新データは取得しない）
+    return cachedPhrases as QuizPhrase[] || undefined
+  }, [cachedPhrases])
 
   const { quizMode, handleQuizStart, handleQuizFinish } = useQuizMode({
     createQuizSession,
@@ -67,8 +82,8 @@ export default function PhraseQuizPage() {
 
   // フレーズが読み込まれた後、クイズがアクティブでない場合の処理
   useEffect(() => {
-    // 前提条件をチェック
-    if (quizMode.active || isQuizCompleted) {
+    // 前提条件をチェック：クイズがアクティブ、完了済み、または一度でも開始されている場合は何もしない
+    if (quizMode.active || isQuizCompleted || hasQuizStarted) {
       return
     }
     
@@ -76,11 +91,17 @@ export default function PhraseQuizPage() {
     if (!showQuizModal) {
       setShowQuizModal(true)
     }
-  }, [quizMode.active, showQuizModal, isQuizCompleted])
+  }, [quizMode.active, showQuizModal, isQuizCompleted, hasQuizStarted])
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig, phrases: unknown[]) => {
     try {
+      // クイズ設定を保存（キャッシュ取得用）
+      setQuizConfig(config)
+      
+      // クイズが開始されたことを記録
+      setHasQuizStarted(true)
+        
       // QuizModeModalから直接渡されたphrasesを使用
       const success = await handleQuizStart(config, phrases as QuizPhrase[])
       if (success) {
@@ -89,9 +110,7 @@ export default function PhraseQuizPage() {
     } catch {
       // Handle error silently
     }
-  }
-
-  // クイズ終了処理
+  }  // クイズ終了処理
   const handleQuizFinishComplete = () => {
     setIsQuizCompleted(true)
   }
@@ -104,6 +123,7 @@ export default function PhraseQuizPage() {
   // 完了画面からのRetry処理
   const handleRetry = () => {
     setIsQuizCompleted(false)
+    setHasQuizStarted(false) // リトライ時はクイズ開始フラグをリセット
     resetQuiz()
     handleQuizFinish()
     setShowQuizModal(true)
