@@ -230,16 +230,14 @@ function PhraseSpeakPage() {
           />
 
           {/* Quiz Mode モーダル */}
-          <QuizModeModal
-            isOpen={modalManager.showQuizModal}
-            onClose={modalManager.closeQuizModal}
-            onStart={modalManager.handleQuizStartWithModal}
-            languages={languages}
-            defaultLearningLanguage={learningLanguage}
-            availablePhraseCount={0}
-          />
-
-          {/* Explanation モーダル */}
+      {/* Quiz Mode モーダル */}
+      <QuizModeModal
+        isOpen={modalManager.showQuizModal}
+        onClose={modalManager.closeQuizModal}
+        onStart={modalManager.handleQuizStartWithModal}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />          {/* Explanation モーダル */}
           <ExplanationModal
             isOpen={showExplanation}
             phrase={getCurrentPhrase() as { explanation?: string } | null}

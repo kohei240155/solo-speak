@@ -12,12 +12,11 @@ interface QuizModeModalProps {
   onStart: (config: QuizConfig) => Promise<void>
   languages: Language[]
   defaultLearningLanguage: string
-  availablePhraseCount: number
 }
 
 export type { QuizConfig } from '@/types/quiz'
 
-export default function QuizModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage, availablePhraseCount }: QuizModeModalProps) {
+export default function QuizModeModal({ isOpen, onClose, onStart, languages, defaultLearningLanguage }: QuizModeModalProps) {
   const { t } = useTranslation('common')
   const [mode, setMode] = useState<'normal' | 'random'>('normal')
   const [questionCount, setQuestionCount] = useState<number>(10)
@@ -28,7 +27,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   useEffect(() => {
     // デフォルトは10、フレーズ数が10未満の場合でも10に設定
     setQuestionCount(10)
-  }, [availablePhraseCount])
+  }, [])
 
   // モーダルが開かれた時に問題数を10に初期化
   useEffect(() => {

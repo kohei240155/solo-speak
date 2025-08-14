@@ -218,7 +218,6 @@ export default function PhraseQuizPage() {
         onStart={handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={0}
       />
       
       <Toaster />

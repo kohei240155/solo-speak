@@ -26,7 +26,6 @@ export default function PhraseListPage() {
     hasMorePhrases,
     phrasePage,
     nativeLanguage,
-    totalPhrases,
     
     // Handlers
     handleLearningLanguageChange,
@@ -155,7 +154,6 @@ export default function PhraseListPage() {
         onStart={handleQuizStart}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={totalPhrases}
       />
       
       {/* Toaster for notifications */}
