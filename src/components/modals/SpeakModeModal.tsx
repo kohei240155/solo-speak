@@ -32,7 +32,25 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
     
     setIsLoading(true)
     try {
-      // まず新しいAPIでフレーズ数をチェック
+      // 1. セッション状態をリセット
+      try {
+        await resetSessionSpoken()
+      } catch (error) {
+        console.error('SpeakModeModal - Failed to reset session_spoken:', error)
+        toast.error('セッション状態のリセットに失敗しました')
+        return
+      }
+      
+      // 2. 日次カウントをリセット
+      try {
+        await resetDailySpeakCount()
+      } catch (error) {
+        console.error('SpeakModeModal - Failed to reset daily speak count:', error)
+        toast.error('日次カウントのリセットに失敗しました')
+        return
+      }
+
+      // 3. フレーズ数をチェック
       const countResult = await getSpeakPhraseCount(selectedLanguage, {
         excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
         excludeTodayPracticed: excludeTodayPracticed
@@ -56,26 +74,6 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         // フレーズが0件の場合はトーストを表示してモーダルを開いたままにする
         const errorMessage = 'このモードでは練習できるフレーズがありません'
         toast.error(errorMessage)
-        return
-      }
-
-      // フレーズが1件以上ある場合は、リセットAPIを実行してからSpeak画面に遷移
-      
-      // 1. セッション状態をリセット
-      try {
-        await resetSessionSpoken()
-      } catch (error) {
-        console.error('SpeakModeModal - Failed to reset session_spoken:', error)
-        toast.error('セッション状態のリセットに失敗しました')
-        return
-      }
-      
-      // 2. 日次カウントをリセット
-      try {
-        await resetDailySpeakCount()
-      } catch (error) {
-        console.error('SpeakModeModal - Failed to reset daily speak count:', error)
-        toast.error('日次カウントのリセットに失敗しました')
         return
       }
 
