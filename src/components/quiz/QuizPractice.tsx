@@ -152,7 +152,7 @@ export default function QuizPractice({
         {/* 学習言語のフレーズ - 表示のみ */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           <div 
-            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
+            className={`text-base sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
               showTranslation 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-2'
