@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -25,6 +25,7 @@ import { Toaster } from 'react-hot-toast'
 function PhraseSpeakPage() {
   const { loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { learningLanguage, languages } = usePhraseSettings()
   const { savedPhrases, refreshPhrases } = usePhraseList()
   
@@ -120,6 +121,18 @@ function PhraseSpeakPage() {
       refreshPhrases()
     }
   }, [learningLanguage, isSinglePhraseMode, refreshPhrases])
+
+  // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
+  useEffect(() => {
+    if (learningLanguage) {
+      const params = new URLSearchParams(window.location.search)
+      // URLパラメータがない場合（直接アクセス）はPhrase Listに遷移
+      if (!params.toString()) {
+        router.push('/phrase/list')
+        return
+      }
+    }
+  }, [learningLanguage, router])
 
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {

@@ -80,6 +80,13 @@ export default function PhraseQuizPage() {
       
       // URLパラメータから設定を読み取り
       const params = new URLSearchParams(window.location.search)
+      
+      // URLパラメータがない場合（直接アクセス）はPhrase Listに遷移
+      if (!params.toString()) {
+        router.push('/phrase/list')
+        return
+      }
+      
       const language = params.get('language') || learningLanguage
       const mode = params.get('mode') as 'normal' | 'random' || 'normal'
       const questionCount = params.get('count') ? parseInt(params.get('count')!, 10) : 10
