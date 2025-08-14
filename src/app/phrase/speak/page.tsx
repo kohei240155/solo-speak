@@ -27,7 +27,7 @@ function PhraseSpeakPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, refreshPhrases } = usePhraseList()
+  const { savedPhrases } = usePhraseList()
   
   const {
     currentPhrase,
@@ -114,13 +114,6 @@ function PhraseSpeakPage() {
     : pendingCount > 0
   
   usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
-
-  // ページ読み込み時にフレーズを取得
-  useEffect(() => {
-    if (learningLanguage && !isSinglePhraseMode && refreshPhrases) {
-      refreshPhrases()
-    }
-  }, [learningLanguage, isSinglePhraseMode, refreshPhrases])
 
   // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
   useEffect(() => {
