@@ -128,7 +128,7 @@ export default function QuizPractice({
         </div>
       </div>
       {/* Total数と正解数表示 */}
-      <div className="flex items-center justify-end mb-2 text-xs text-gray-500">
+      <div className="flex items-center justify-start mb-3 text-xs text-gray-500">
         <RiSpeakLine className="w-4 h-4 mr-1" />
         <span>Total: {currentPhrase.totalSpeakCount + pendingSpeakCount}</span>
         <IoCheckboxOutline className="w-4 h-4 ml-4 mr-1" />
@@ -139,7 +139,7 @@ export default function QuizPractice({
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-3">
           <div 
-            className="text-base sm:text-lg md:text-xl font-bold text-gray-900 break-words leading-relaxed"
+            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
             style={{ 
               wordWrap: 'break-word',
               overflowWrap: 'anywhere',
