@@ -41,7 +41,7 @@ export default function RankingPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen">
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-2 sm:px-4 md:px-6">
           <Toaster />
           

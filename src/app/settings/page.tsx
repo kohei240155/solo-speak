@@ -74,7 +74,7 @@ export default function UserSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen">
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Settings タイトル */}
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">

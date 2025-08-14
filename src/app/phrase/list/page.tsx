@@ -48,7 +48,7 @@ export default function PhraseListPage() {
     handleQuizStart
   } = useQuizModal()
 
-  // 無限スクロール機能（スロットリング付き）
+  // 無限スクロール機能（スロットリング付き・ちらつき防止改善）
   useEffect(() => {
     let timeoutId: NodeJS.Timeout
 
@@ -59,18 +59,19 @@ export default function PhraseListPage() {
       }
       
       timeoutId = setTimeout(() => {
-        // スクロール位置が下部に達していない場合は何もしない
-        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 100) {
+        // スクロール位置が下部に達していない場合は何もしない（閾値を300pxに増加してより早くローディング開始）
+        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 300) {
           return
         }
         
         // 追加読み込みの条件を満たしていない場合は何もしない
-        if (!hasMorePhrases || isLoadingPhrases) {
+        // isLoadingMoreの判定を追加してローディング中の重複リクエストを防ぐ
+        if (!hasMorePhrases || isLoadingPhrases || isLoadingMore) {
           return
         }
         
         loadMorePhrases()
-      }, 100)
+      }, 50)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -80,19 +81,19 @@ export default function PhraseListPage() {
       }
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [hasMorePhrases, isLoadingPhrases, phrasePage, loadMorePhrases])
+  }, [hasMorePhrases, isLoadingPhrases, isLoadingMore, phrasePage, loadMorePhrases])
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
     return (
-      <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
+      <div className="min-h-screen flex justify-center items-start pt-28">
         <LoadingSpinner message='Loading...' />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen">
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Phrase タイトルと言語選択を同じ行に配置 */}
         <div className="flex justify-between items-center mb-[18px]">
