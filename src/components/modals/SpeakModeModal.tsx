@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import ModeModal, { ModeModalConfig } from './ModeModal'
 import SpeakModeExplanationModal from './SpeakModeExplanationModal'
 import { Language } from '@/types/phrase'
 import { SpeakConfig } from '@/types/speak'
-import { resetSessionSpoken, resetDailySpeakCount } from '@/hooks/api/useApi'
 import { getSpeakPhraseCount } from '@/utils/api-client'
+import { resetSessionSpoken, resetDailySpeakCount } from '@/hooks/api/useApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { AiOutlineQuestionCircle } from 'react-icons/ai'
@@ -26,57 +26,17 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
   const [isLoading, setIsLoading] = useState(false)
   const [showExplanationModal, setShowExplanationModal] = useState(false)
 
-  // モーダルが開かれたときにsession_spokenをリセット
-  useEffect(() => {
-    if (isOpen) {
-      const resetSession = async () => {
-        try {
-          await resetSessionSpoken()
-        } catch (error) {
-          console.error('SpeakModeModal - Failed to reset session_spoken:', error)
-          // エラーが発生してもモーダルの表示は継続する
-        }
-      }
-      
-      const resetDailyCount = async () => {
-        try {
-          await resetDailySpeakCount()
-        } catch (error) {
-          console.error('SpeakModeModal - Failed to reset daily speak count:', error)
-          // エラーが発生してもモーダルの表示は継続する
-        }
-      }
-      
-      resetSession()
-      resetDailyCount()
-    }
-  }, [isOpen])
 
   const handleStart = async (selectedLanguage: string) => {
     if (isLoading) return
     
     setIsLoading(true)
     try {
-      // モード設定でAPI呼び出し
-      const params = {
-        language: selectedLanguage,
-        excludeIfSpeakCountGTE: excludeThreshold || undefined, // 未選択の場合はundefined
-        excludeTodayPracticed: excludeTodayPracticed.toString() // 常に文字列として送信
-      }
-
-      console.log('SpeakModeModal - Modal state before API call:', {
-        excludeTodayPracticed: excludeTodayPracticed,
-        excludeThreshold: excludeThreshold
-      })
-      console.log('SpeakModeModal - API params:', params)
-
       // まず新しいAPIでフレーズ数をチェック
       const countResult = await getSpeakPhraseCount(selectedLanguage, {
         excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
         excludeTodayPracticed: excludeTodayPracticed
       })
-
-      console.log('SpeakModeModal - countResult:', countResult)
 
       // countResultがundefinedまたはnullの場合のチェック
       if (!countResult) {
@@ -99,14 +59,32 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
         return
       }
 
-      // フレーズが1件以上ある場合は、設定オブジェクトを作成してSpeak画面に遷移
+      // フレーズが1件以上ある場合は、リセットAPIを実行してからSpeak画面に遷移
+      
+      // 1. セッション状態をリセット
+      try {
+        await resetSessionSpoken()
+      } catch (error) {
+        console.error('SpeakModeModal - Failed to reset session_spoken:', error)
+        toast.error('セッション状態のリセットに失敗しました')
+        return
+      }
+      
+      // 2. 日次カウントをリセット
+      try {
+        await resetDailySpeakCount()
+      } catch (error) {
+        console.error('SpeakModeModal - Failed to reset daily speak count:', error)
+        toast.error('日次カウントのリセットに失敗しました')
+        return
+      }
+
+      // 設定オブジェクトを作成してSpeak画面に遷移
       const config: SpeakConfig = {
         language: selectedLanguage,
         excludeIfSpeakCountGTE: excludeThreshold ? parseInt(excludeThreshold, 10) : undefined,
         excludeTodayPracticed: excludeTodayPracticed
       }
-      
-      console.log('SpeakModeModal - Final config to pass:', config)
       
       // onStartの呼び出し前にモーダルを閉じる
       onClose()
