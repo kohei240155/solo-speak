@@ -18,6 +18,15 @@ const getSupabaseHostname = () => {
 const supabaseHostname = getSupabaseHostname();
 
 const nextConfig: NextConfig = {
+  // デプロイ後の強制リロードのための設定
+  generateEtags: false, // ETagsを無効にしてキャッシュを回避
+  poweredByHeader: false, // セキュリティ向上
+  
+  // 環境変数でビルド時刻を追加
+  env: {
+    NEXT_PUBLIC_BUILD_TIME: Date.now().toString(),
+  },
+  
   // 開発環境でのChunkLoadError対策
   webpack: (config, { dev }) => {
     if (dev) {
@@ -36,6 +45,38 @@ const nextConfig: NextConfig = {
       };
     }
     return config;
+  },
+  
+  // HTTPヘッダーでキャッシュ制御を追加
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
   
   images: {
