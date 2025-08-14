@@ -143,12 +143,17 @@ export default function PhraseList({
           />
         ))}
         
-        {/* 無限スクロール用のローディング */}
-        {isLoadingMore && (
-          <div className="flex justify-center py-6">
-            <LoadingSpinner size="sm" message="Loading more..." className="" />
-          </div>
-        )}
+        {/* 無限スクロール用のローディング - ちらつき防止改善 */}
+        <div className={`transition-opacity duration-300 ${isLoadingMore ? 'opacity-100' : 'opacity-0'}`}>
+          {isLoadingMore && (
+            <div className="flex justify-center py-3">
+              <div className="flex items-center text-gray-500">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-2"></div>
+                <span className="text-sm">Loading more...</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 編集モーダル */}

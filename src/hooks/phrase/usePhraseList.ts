@@ -27,7 +27,7 @@ export const usePhraseList = () => {
       // ページ表示時に即座にデータを再取得（キャッシュを無視）
       const timer = setTimeout(() => {
         refetch()
-      }, 100) // 100ms後に実行（初期化処理が完了してから）
+      }, 50) // 50ms後に実行（高速化）
 
       return () => clearTimeout(timer)
     }
@@ -40,7 +40,7 @@ export const usePhraseList = () => {
         // ページが再び表示された時に再取得
         setTimeout(() => {
           refetch()
-        }, 200) // 少し遅延させて確実に実行
+        }, 100) // 遅延を短縮
       }
     }
 
@@ -74,10 +74,14 @@ export const usePhraseList = () => {
     setUserSettingsInitialized(true) // 手動変更後は初期化フラグをセット
   }
 
-  // 無限スクロール用の関数（SWRのネイティブ機能を使用）
+  // 無限スクロール用の関数（SWRのネイティブ機能を使用・デバウンス付き）
   const loadMorePhrases = useCallback(() => {
+    // 既にローディング中の場合は無視してリクエストの重複を防ぐ
+    if (isLoadingMore) {
+      return
+    }
     setSize(size => size + 1)
-  }, [setSize])
+  }, [setSize, isLoadingMore])
 
   // 最初からリロード（SWRの機能を活用）
   const reloadPhrases = useCallback(() => {
