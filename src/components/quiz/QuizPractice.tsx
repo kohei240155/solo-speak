@@ -201,7 +201,7 @@ export default function QuizPractice({
           {/* Got It ボタン */}
           <div className="flex flex-col items-end" style={{ width: '48%' }}>
             {/* プラスボタンとスピーカーボタン */}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-3 mb-4">
               {/* プラスボタン */}
               <button
                 onClick={handleSpeakCount}
