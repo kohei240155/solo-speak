@@ -12,8 +12,7 @@ import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
-import { useSpeakPhrase } from '@/hooks/speak/useSpeakPhrase'
-import { useSpeakMode } from '@/hooks/speak/useSpeakMode'
+import { useSpeakSession } from '@/hooks/speak/useSpeakSession'
 import { useSinglePhraseSpeak } from '@/hooks/speak/useSinglePhraseSpeak'
 import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
 import { useModalManager } from '@/hooks/ui/useModalManager'
@@ -28,27 +27,26 @@ function PhraseSpeakPage() {
   const { learningLanguage, languages } = usePhraseSettings()
   
   const {
+    sessionState,
     currentPhrase,
     isLoadingPhrase,
     todayCount,
     totalCount,
     pendingCount,
     isCountDisabled,
-    fetchSpeakPhrase,
-    sendPendingCount,
+    handleStart,
     handleCount,
     handleNext,
     handleFinish,
-    resetSavedConfig
-  } = useSpeakPhrase()
-
-  const { speakMode, handleSpeakStart } = useSpeakMode({
-    learningLanguage,
-    fetchSpeakPhrase,
-    currentPhraseId: currentPhrase?.id || null,
-    pendingCount,
+    resetSession,
     sendPendingCount
-  })
+    // fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
+  } = useSpeakSession(learningLanguage)
+
+  // 後方互換性のためのaliases
+  const speakMode = sessionState
+  const handleSpeakStart = handleStart
+  const resetSavedConfig = resetSession
 
   const [isSpeakCompleted, setIsSpeakCompleted] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
