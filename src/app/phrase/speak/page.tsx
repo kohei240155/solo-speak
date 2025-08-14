@@ -218,18 +218,17 @@ function PhraseSpeakPage() {
               )
             )
           }
-          </div>
+      </div>
 
-          {/* Speak Mode モーダル */}
-          <SpeakModeModal
-            isOpen={modalManager.showSpeakModal}
-            onClose={modalManager.closeSpeakModal}
-            onStart={modalManager.handleSpeakStartWithModal}
-            languages={languages}
-            defaultLearningLanguage={learningLanguage}
-          />
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={modalManager.showSpeakModal}
+        onClose={modalManager.closeSpeakModal}
+        onStart={modalManager.handleSpeakStartWithModal}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
 
-          {/* Quiz Mode モーダル */}
       {/* Quiz Mode モーダル */}
       <QuizModeModal
         isOpen={modalManager.showQuizModal}
@@ -237,10 +236,12 @@ function PhraseSpeakPage() {
         onStart={modalManager.handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-      />          {/* Explanation モーダル */}
-          <ExplanationModal
-            isOpen={showExplanation}
-            phrase={getCurrentPhrase() as { explanation?: string } | null}
+      />
+
+      {/* Explanation モーダル */}
+      <ExplanationModal
+        isOpen={showExplanation}
+        phrase={getCurrentPhrase() as { explanation?: string } | null}
             onClose={handleExplanationClose}
           />
       </div>
