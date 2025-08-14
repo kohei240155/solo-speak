@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { QuizAnswerResponse } from '@/types/quiz'
+import { getPhraseLevelScoreByCorrectAnswers } from '@/utils/phrase-level-utils'
 
 /** * クイズ回答APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -37,6 +38,32 @@ export async function POST(request: NextRequest) {
           ? { correctQuizCount: { increment: 1 } }
           : { incorrectQuizCount: { increment: 1 } }
       })
+
+      // 正解の場合、フレーズレベルを更新
+      if (isCorrect) {
+        const newCorrectCount = updatedPhrase.correctQuizCount
+        const expectedScore = getPhraseLevelScoreByCorrectAnswers(newCorrectCount)
+        
+        // 期待されるスコアに対応するフレーズレベルを取得
+        const expectedLevel = await tx.phraseLevel.findFirst({
+          where: { score: expectedScore }
+        })
+        
+        if (expectedLevel && updatedPhrase.phraseLevelId !== expectedLevel.id) {
+          // フレーズレベルを更新
+          await tx.phrase.update({
+            where: { id: phraseId },
+            data: { phraseLevelId: expectedLevel.id }
+          })
+          
+          // 更新されたフレーズを再取得
+          const finalPhrase = await tx.phrase.findUnique({
+            where: { id: phraseId }
+          })
+          
+          return finalPhrase || updatedPhrase
+        }
+      }
 
       // クイズ結果を記録
       await tx.quizResult.create({
