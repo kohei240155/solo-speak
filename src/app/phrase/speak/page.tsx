@@ -12,7 +12,6 @@ import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
-import { usePhraseList } from '@/hooks/phrase/usePhraseList'
 import { useSpeakPhrase } from '@/hooks/speak/useSpeakPhrase'
 import { useSpeakMode } from '@/hooks/speak/useSpeakMode'
 import { useSinglePhraseSpeak } from '@/hooks/speak/useSinglePhraseSpeak'
@@ -27,7 +26,6 @@ function PhraseSpeakPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases } = usePhraseList()
   
   const {
     currentPhrase,
@@ -238,7 +236,7 @@ function PhraseSpeakPage() {
             onStart={modalManager.handleQuizStartWithModal}
             languages={languages}
             defaultLearningLanguage={learningLanguage}
-            availablePhraseCount={savedPhrases.length}
+            availablePhraseCount={0}
           />
 
           {/* Explanation モーダル */}
