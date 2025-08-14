@@ -38,10 +38,21 @@ async function calculateConsecutiveSpeakingDays(userId: string, languageCode: st
 
   // 今日の日付を YYYY-MM-DD 形式で取得
   const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  
   let consecutiveDays = 0
+  let startFromYesterday = false
 
-  // 今日から過去に向かって連続日数をカウント
-  for (let i = 0; i < 365; i++) { // 最大365日まで遡る
+  // 今日フレーズを作成しているかチェック
+  if (uniqueDatesSet.has(todayStr)) {
+    consecutiveDays = 1
+  } else {
+    // 今日作成していない場合は前日を起点とする
+    startFromYesterday = true
+  }
+
+  // 連続日数をカウント
+  for (let i = startFromYesterday ? 1 : 1; i <= uniqueDatesSet.size; i++) { // フレーズ数分まで遡る
     const checkDate = new Date(today)
     checkDate.setDate(checkDate.getDate() - i)
     const checkDateStr = checkDate.toISOString().split('T')[0]
