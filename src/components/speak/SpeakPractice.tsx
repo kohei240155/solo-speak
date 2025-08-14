@@ -82,8 +82,8 @@ export default function SpeakPractice({
     
     try {
       await playText(phrase.original)
-    } catch (error) {
-      console.error('Failed to play sound:', error)
+    } catch {
+      // 音声再生失敗は無視
     }
   }
 

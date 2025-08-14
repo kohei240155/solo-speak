@@ -7,8 +7,7 @@ import {
   TranslationOptions, 
   getNestedTranslation 
 } from '@/utils/translation-common'
-
-const translationCache = new Map<string, TranslationData>()
+import { loadTranslation } from '@/utils/translation-loader'
 
 export const useTranslation = (namespace = 'common') => {
   const { locale, isLoadingLocale } = useLanguage()
@@ -19,43 +18,12 @@ export const useTranslation = (namespace = 'common') => {
     if (isLoadingLocale) return
 
     const loadTranslations = async () => {
-      const cacheKey = `${locale}-${namespace}`
-      
-      // キャッシュから取得
-      if (translationCache.has(cacheKey)) {
-        setTranslations(translationCache.get(cacheKey)!)
-        setIsLoading(false)
-        return
-      }
-
       try {
-        // 動的インポートで翻訳ファイルを読み込み
-        const response = await fetch(`/locales/${locale}/${namespace}.json`)
-        
-        if (!response.ok) {
-          throw new Error(`Failed to load translations: ${response.status}`)
-        }
-        
-        const data = await response.json()
-        
-        // キャッシュに保存
-        translationCache.set(cacheKey, data)
+        setIsLoading(true)
+        const data = await loadTranslation(locale, namespace)
         setTranslations(data)
-      } catch (error) {
-        console.error(`Failed to load translations for ${locale}/${namespace}:`, error)
-        
-        // フォールバック：日本語の翻訳を試行
-        if (locale !== 'ja') {
-          try {
-            const fallbackResponse = await fetch(`/locales/ja/${namespace}.json`)
-            if (fallbackResponse.ok) {
-              const fallbackData = await fallbackResponse.json()
-              setTranslations(fallbackData)
-            }
-          } catch (fallbackError) {
-            console.error('Failed to load fallback translations:', fallbackError)
-          }
-        }
+      } catch {
+        // エラーは無視（loadTranslation内でフォールバック処理済み）
       } finally {
         setIsLoading(false)
       }

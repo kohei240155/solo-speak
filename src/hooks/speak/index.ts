@@ -2,5 +2,4 @@
 export * from './useMultiPhraseSpeak'
 export * from './useSinglePhraseSpeak'
 export * from './useSpeakModal'
-export * from './useSpeakMode'
-export * from './useSpeakPhrase'
+export * from './useSpeakSession'

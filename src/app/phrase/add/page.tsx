@@ -25,7 +25,6 @@ export default function PhraseAddPage() {
     handleLearningLanguageChange,
     languages,
     isInitializing,
-    availablePhraseCount,
     showAddToHomeScreenModal,
     checkUnsavedChanges,
     closeAddToHomeScreenModal,
@@ -165,7 +164,6 @@ export default function PhraseAddPage() {
         onStart={handleQuizStart}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={availablePhraseCount}
       />
 
       {/* ホーム画面追加モーダル */}

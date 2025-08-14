@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
@@ -12,9 +12,7 @@ import SpeakPractice from '@/components/speak/SpeakPractice'
 import AllDoneScreen from '@/components/common/AllDoneScreen'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
-import { usePhraseList } from '@/hooks/phrase/usePhraseList'
-import { useSpeakPhrase } from '@/hooks/speak/useSpeakPhrase'
-import { useSpeakMode } from '@/hooks/speak/useSpeakMode'
+import { useSpeakSession } from '@/hooks/speak/useSpeakSession'
 import { useSinglePhraseSpeak } from '@/hooks/speak/useSinglePhraseSpeak'
 import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
 import { useModalManager } from '@/hooks/ui/useModalManager'
@@ -25,31 +23,30 @@ import { Toaster } from 'react-hot-toast'
 function PhraseSpeakPage() {
   const { loading: authLoading } = useAuthGuard()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { learningLanguage, languages } = usePhraseSettings()
-  const { savedPhrases, refreshPhrases } = usePhraseList()
   
   const {
+    sessionState,
     currentPhrase,
     isLoadingPhrase,
     todayCount,
     totalCount,
     pendingCount,
     isCountDisabled,
-    fetchSpeakPhrase,
-    sendPendingCount,
+    handleStart,
     handleCount,
     handleNext,
     handleFinish,
-    resetSavedConfig
-  } = useSpeakPhrase()
-
-  const { speakMode, handleSpeakStart } = useSpeakMode({
-    learningLanguage,
-    fetchSpeakPhrase,
-    currentPhraseId: currentPhrase?.id || null,
-    pendingCount,
+    resetSession,
     sendPendingCount
-  })
+    // fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
+  } = useSpeakSession(learningLanguage)
+
+  // 後方互換性のためのaliases
+  const speakMode = sessionState
+  const handleSpeakStart = handleStart
+  const resetSavedConfig = resetSession
 
   const [isSpeakCompleted, setIsSpeakCompleted] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
@@ -114,12 +111,17 @@ function PhraseSpeakPage() {
   
   usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
 
-  // ページ読み込み時にフレーズを取得
+  // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
   useEffect(() => {
-    if (learningLanguage && !isSinglePhraseMode && refreshPhrases) {
-      refreshPhrases()
+    if (learningLanguage) {
+      const params = new URLSearchParams(window.location.search)
+      // URLパラメータがない場合（直接アクセス）はPhrase Listに遷移
+      if (!params.toString()) {
+        router.push('/phrase/list')
+        return
+      }
     }
-  }, [learningLanguage, isSinglePhraseMode, refreshPhrases])
+  }, [learningLanguage, router])
 
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
@@ -186,61 +188,58 @@ function PhraseSpeakPage() {
               )
             ) : (
               // 通常の複数フレーズ練習モード
-              speakMode.active && speakMode.config ? (
-                // Finish処理中またはフレーズがある場合は練習画面を表示
-                (currentPhrase || multiPhraseSpeak.isFinishing) ? (
-                  <SpeakPractice
-                    phrase={currentPhrase}
-                    onCount={multiPhraseSpeak.handleCount}
-                    onNext={multiPhraseSpeak.handleNextWithConfig}
-                    onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
-                    todayCount={todayCount}
-                    totalCount={totalCount}
-                    isLoading={isLoadingPhrase}
-                    isNextLoading={multiPhraseSpeak.isNextLoading}
-                    isHideNext={false}
-                    isFinishing={multiPhraseSpeak.isFinishing}
-                    isCountDisabled={isCountDisabled}
-                    learningLanguage={learningLanguage}
-                    onExplanation={handleExplanation}
+              // Finish処理中またはフレーズがある場合は練習画面を表示
+              (currentPhrase || multiPhraseSpeak.isFinishing) ? (
+                <SpeakPractice
+                  phrase={currentPhrase}
+                  onCount={multiPhraseSpeak.handleCount}
+                  onNext={multiPhraseSpeak.handleNextWithConfig}
+                  onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
+                  todayCount={todayCount}
+                  totalCount={totalCount}
+                  isLoading={isLoadingPhrase}
+                  isNextLoading={multiPhraseSpeak.isNextLoading}
+                  isHideNext={false}
+                  isFinishing={multiPhraseSpeak.isFinishing}
+                  isCountDisabled={isCountDisabled}
+                  learningLanguage={learningLanguage}
+                  onExplanation={handleExplanation}
+                />
+              ) : (
+                <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
+                  <LoadingSpinner 
+                    size="md" 
+                    message="Loading..." 
+                    className="text-center"
                   />
-                ) : (
-                  <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
-                    <LoadingSpinner 
-                      size="md" 
-                      message="Loading..." 
-                      className="text-center"
-                    />
-                  </div>
-                )
-              ) : null
+                </div>
+              )
             )
           }
-          </div>
+      </div>
 
-          {/* Speak Mode モーダル */}
-          <SpeakModeModal
-            isOpen={modalManager.showSpeakModal}
-            onClose={modalManager.closeSpeakModal}
-            onStart={modalManager.handleSpeakStartWithModal}
-            languages={languages}
-            defaultLearningLanguage={learningLanguage}
-          />
+      {/* Speak Mode モーダル */}
+      <SpeakModeModal
+        isOpen={modalManager.showSpeakModal}
+        onClose={modalManager.closeSpeakModal}
+        onStart={modalManager.handleSpeakStartWithModal}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
 
-          {/* Quiz Mode モーダル */}
-          <QuizModeModal
-            isOpen={modalManager.showQuizModal}
-            onClose={modalManager.closeQuizModal}
-            onStart={modalManager.handleQuizStartWithModal}
-            languages={languages}
-            defaultLearningLanguage={learningLanguage}
-            availablePhraseCount={savedPhrases.length}
-          />
+      {/* Quiz Mode モーダル */}
+      <QuizModeModal
+        isOpen={modalManager.showQuizModal}
+        onClose={modalManager.closeQuizModal}
+        onStart={modalManager.handleQuizStartWithModal}
+        languages={languages}
+        defaultLearningLanguage={learningLanguage}
+      />
 
-          {/* Explanation モーダル */}
-          <ExplanationModal
-            isOpen={showExplanation}
-            phrase={getCurrentPhrase() as { explanation?: string } | null}
+      {/* Explanation モーダル */}
+      <ExplanationModal
+        isOpen={showExplanation}
+        phrase={getCurrentPhrase() as { explanation?: string } | null}
             onClose={handleExplanationClose}
           />
       </div>

@@ -1,5 +1,4 @@
 import { api } from '@/utils/api'
-import { SpeakPhraseApiResponse } from '@/types/api'
 
 /**
  * フレーズの練習カウントを更新する関数
@@ -8,7 +7,6 @@ export async function updatePhraseCount(phraseId: string) {
   try {
     return await api.post(`/api/phrase/${phraseId}/count`)
   } catch (error) {
-    console.error('Failed to update phrase count:', error)
     throw error
   }
 }
@@ -20,7 +18,6 @@ export async function deletePhrase(phraseId: string) {
   try {
     return await api.delete(`/api/phrase/${phraseId}`)
   } catch (error) {
-    console.error('Failed to delete phrase:', error)
     throw error
   }
 }
@@ -32,7 +29,6 @@ export async function updatePhrase(phraseId: string, updates: Record<string, unk
   try {
     return await api.put(`/api/phrase/${phraseId}`, updates)
   } catch (error) {
-    console.error('Failed to update phrase:', error)
     throw error
   }
 }
@@ -46,7 +42,6 @@ export async function resetSessionSpoken() {
   try {
     return await api.post('/api/phrases/reset-session')
   } catch (error) {
-    console.error('Failed to reset session spoken:', error)
     throw error
   }
 }
@@ -58,7 +53,6 @@ export async function resetDailySpeakCount() {
   try {
     return await api.post('/api/user/reset-daily-speak-count')
   } catch (error) {
-    console.error('Failed to reset daily speak count:', error)
     throw error
   }
 }
@@ -66,20 +60,15 @@ export async function resetDailySpeakCount() {
 /**
  * Speak用のフレーズを取得する関数
  */
-export async function getSpeakPhrase(params: {
-  language?: string
-  excludeIfSpeakCountGTE?: string
-  excludeTodayPracticed?: string
-}): Promise<SpeakPhraseApiResponse> {
+export async function getSpeakPhrase(options?: { languageCode?: string, order?: string, prioritizeLowPractice?: string }) {
   try {
-    // undefinedの値を除去してクエリストリングを作成
-    const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(([, value]) => value !== undefined)
-    )
-    const queryString = new URLSearchParams(filteredParams).toString()
-    return await api.get<SpeakPhraseApiResponse>(`/api/phrase/speak?${queryString}`)
+    const params = new URLSearchParams()
+    if (options?.languageCode) params.append('language', options.languageCode)
+    if (options?.order) params.append('order', options.order)
+    if (options?.prioritizeLowPractice) params.append('prioritizeLowPractice', options.prioritizeLowPractice)
+    
+    return await api.get(`/api/phrase/speak?${params.toString()}`)
   } catch (error) {
-    console.error('Failed to get speak phrase:', error)
     throw error
   }
 }
@@ -91,7 +80,6 @@ export async function getUserSettings() {
   try {
     return await api.get('/api/user/settings')
   } catch (error) {
-    console.error('Failed to get user settings:', error)
     throw error
   }
 }
@@ -103,7 +91,6 @@ export async function getLanguages() {
   try {
     return await api.get('/api/languages')
   } catch (error) {
-    console.error('Failed to get languages:', error)
     throw error
   }
 }

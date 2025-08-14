@@ -58,7 +58,6 @@ export async function getSpeakPhraseCount(
     // 予期しない形式の場合
     return { error: 'Invalid response format' } as ApiErrorResponse
   } catch (error: unknown) {
-    console.error('Error in getSpeakPhraseCount:', error)
     if (error && typeof error === 'object' && 'response' in error && error.response) {
       return ((error.response as { data: ApiErrorResponse }).data)
     }

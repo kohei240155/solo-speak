@@ -60,15 +60,6 @@ export default function PhraseQuizPage() {
     return false
   }
 
-  // Quiz終了処理
-  const handleQuizFinish = () => {
-    setQuizMode({
-      active: false,
-      config: null,
-      session: null
-    })
-  }
-
   // Speak modal functionality
   const {
     showSpeakModal,
@@ -89,6 +80,13 @@ export default function PhraseQuizPage() {
       
       // URLパラメータから設定を読み取り
       const params = new URLSearchParams(window.location.search)
+      
+      // URLパラメータがない場合（直接アクセス）はPhrase Listに遷移
+      if (!params.toString()) {
+        router.push('/phrase/list')
+        return
+      }
+      
       const language = params.get('language') || learningLanguage
       const mode = params.get('mode') as 'normal' | 'random' || 'normal'
       const questionCount = params.get('count') ? parseInt(params.get('count')!, 10) : 10
@@ -107,6 +105,15 @@ export default function PhraseQuizPage() {
 
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
+    // クイズを実際に開始する時に状態をリセット
+    setIsQuizCompleted(false)
+    resetQuiz()
+    setQuizMode({
+      active: false,
+      config: null,
+      session: null
+    })
+    
     const success = await handleQuizStart(config)
     setShowQuizModal(false)
     
@@ -130,10 +137,17 @@ export default function PhraseQuizPage() {
 
   // 完了画面からのRetry処理
   const handleRetry = () => {
-    setIsQuizCompleted(false)
-    resetQuiz()
-    handleQuizFinish()
+    // モーダルを開くだけで、All Done画面の状態は維持
     setShowQuizModal(true)
+  }
+
+  // クイズモーダルを閉じる処理
+  const handleQuizModalClose = () => {
+    setShowQuizModal(false)
+    // もしクイズが完了していて、かつクイズが非アクティブな場合は、All Done画面に戻る
+    if (isQuizCompleted && !quizMode.active) {
+      // All Done画面の状態を維持するため、何もしない
+    }
   }
 
   // 認証ローディング中は何も表示しない
@@ -200,11 +214,10 @@ export default function PhraseQuizPage() {
       {/* Quiz Mode モーダル */}
       <QuizModeModal
         isOpen={showQuizModal}
-        onClose={() => setShowQuizModal(false)}
+        onClose={handleQuizModalClose}
         onStart={handleQuizStartWithModal}
         languages={languages}
         defaultLearningLanguage={learningLanguage}
-        availablePhraseCount={0}
       />
       
       <Toaster />

@@ -33,8 +33,7 @@ export function getTranslation(locale: string = 'ja', key: string): string {
     }
 
     return translation
-  } catch (error) {
-    console.error('Translation error:', error)
+  } catch {
     return key // エラー時はキーをそのまま返す
   }
 }

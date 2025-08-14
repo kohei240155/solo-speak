@@ -72,7 +72,6 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         }
       } else {
         // その他のエラーの場合のみエラーメッセージを設定
-        console.error('Error fetching user settings:', error)
         setIsUserSetupComplete(false)
         setError('ユーザー設定の取得に失敗しました。')
       }
@@ -96,8 +95,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
       } else {
         setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
       }
-    } catch (error) {
-      console.error('fetchLanguages: Error fetching languages:', error)
+    } catch {
       setError('言語データの取得に失敗しました。ネットワーク接続を確認してください。')
     }
   }, [])
@@ -111,8 +109,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
         fetchLanguages()
       ]).then(() => {
         setDataLoading(false)
-      }).catch(error => {
-        console.error('Error loading initial data:', error)
+      }).catch(() => {
         setDataLoading(false)
       })
     }

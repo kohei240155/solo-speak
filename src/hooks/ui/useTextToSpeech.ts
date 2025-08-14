@@ -92,10 +92,9 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
           const handleLoadedData = async () => {
             try {
               await audio.play()
-            } catch (playError) {
+            } catch {
               setIsPlaying(false)
               setError('音声の再生に失敗しました')
-              console.error('Audio play error:', playError)
             }
             audio.removeEventListener('loadeddata', handleLoadedData)
           }
@@ -184,10 +183,9 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
         }
         
         await audio.play()
-      } catch (playError) {
+      } catch {
         setIsPlaying(false)
         setError('音声の再生に失敗しました')
-        console.error('Audio play error:', playError)
         // エラー時はキャッシュからも削除
         audioCache.current.delete(cacheKey)
         URL.revokeObjectURL(audioUrl)
@@ -196,7 +194,6 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
       setIsPlaying(false)
       const errorMessage = err instanceof Error ? err.message : '音声の生成に失敗しました'
       setError(errorMessage)
-      console.error('Text-to-Speech error:', err)
     }
   }, [options.languageCode, getCacheKey])
 

@@ -44,13 +44,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 環境変数から価格IDを取得（実際のStripeで作成した価格ID）
-    const priceId = process.env.STRIPE_BASIC_PLAN_PRICE_ID
-    console.log('Stripe Price ID:', priceId)
+    const priceId = process.env.STRIPE_PRICE_ID
     
-    if (!priceId || priceId.includes('example')) {
-      console.error('Invalid or placeholder Stripe price ID:', priceId)
+    if (!priceId || priceId === 'your_stripe_price_id_here') {
       return NextResponse.json(
-        { error: 'Stripe price ID not properly configured' },
+        { error: 'Stripe configuration not complete' },
         { status: 500 }
       )
     }
@@ -65,8 +63,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ checkoutUrl })
 
-  } catch (error) {
-    console.error('Error creating checkout session:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

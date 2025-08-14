@@ -66,10 +66,10 @@ export const usePhraseManagerSWR = () => {
   // TODO: サブスクリプションキャンセルイベントを監視
   useEffect(() => {
     const handleSubscriptionCanceled = () => {
-      console.log('Subscription canceled event received, refreshing generation data...')
+      // データをリフレッシュ
       mutateGenerations()
     }
-
+    
     window.addEventListener('subscriptionCanceled', handleSubscriptionCanceled)
     
     return () => {
@@ -215,8 +215,7 @@ export const usePhraseManagerSWR = () => {
       if (response.totalPhraseCount === 3) {
         setShowAddToHomeScreenModal(true)
       }
-    } catch (error) {
-      console.error('Error saving phrase:', error)
+    } catch {
       toast.error(t('phrase.messages.saveError'))
     } finally {
       setSavingVariationIndex(null)
@@ -242,10 +241,9 @@ export const usePhraseManagerSWR = () => {
       // SWRキャッシュを更新
       mutateSituations()
       toast.success(t('situation.addSuccess'))
-    } catch (error) {
-      console.error('Error adding situation:', error)
+    } catch (err) {
       toast.error(t('situation.addError'))
-      throw error
+      throw err
     }
   }, [mutateSituations, t])
 
@@ -256,10 +254,9 @@ export const usePhraseManagerSWR = () => {
       // SWRキャッシュを更新
       mutateSituations()
       toast.success(t('situation.deleteSuccess'))
-    } catch (error) {
-      console.error('Error deleting situation:', error)
+    } catch {
       toast.error(t('situation.deleteError'))
-      throw error
+      throw new Error('Failed to delete situation')
     }
   }, [mutateSituations, t])
 
