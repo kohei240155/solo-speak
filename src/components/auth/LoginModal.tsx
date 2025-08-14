@@ -87,7 +87,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           />
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
-          <span className="hidden lg:inline">Solo Speakは</span>あなたのスピーキング学習をサポートします。<br /><span className="text-blue-600">※Safari/Chromeを開いてログインしてください</span>
+          <span className="hidden lg:inline">Solo Speakは</span>あなたのスピーキング学習をサポートします。<br /><span className="text-blue-600 font-semibold">※Safari/Chromeでログインしてください</span>
         </p>
       </div>
 
