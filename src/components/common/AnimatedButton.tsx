@@ -79,7 +79,6 @@ export default function AnimatedButton({
     focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 
     transition-all duration-300 disabled:cursor-not-allowed relative
     ${variantStyles.base} ${variantStyles.hover} ${sizeStyles} ${className}
-    ${isLoading ? 'animate-pulse' : ''}
     ${disabled && !isLoading ? 'opacity-50' : ''}
   `.trim()
 
@@ -91,9 +90,6 @@ export default function AnimatedButton({
     } : {
       backgroundColor: variantStyles.backgroundColor,
     }),
-    ...(isLoading ? {
-      boxShadow: '0 0 15px rgba(97, 97, 97, 0.4)'
-    } : {})
   }
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {

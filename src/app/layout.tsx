@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from 'next/font/google';
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -9,6 +10,8 @@ import ViewportFix from "@/components/common/ViewportFix";
 import ServiceWorkerRegistration from "@/components/common/ServiceWorkerRegistration";
 import { SettingsRedirect } from "@/components/auth/SettingsRedirect";
 import AuthApiConnection from "@/components/auth/AuthApiConnection";
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: "Solo Speak",
@@ -53,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className="antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900 font-sans"
+        className={`${inter.className} antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900`}
       >
         <ViewportFix />
         <ServiceWorkerRegistration />

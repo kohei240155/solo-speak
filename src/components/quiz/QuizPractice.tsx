@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
 import { RiSpeakLine } from 'react-icons/ri'
-import { HiMiniSpeakerWave } from 'react-icons/hi2'
+import { HiMiniSpeakerWave, HiPlus } from 'react-icons/hi2'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import AnimatedButton from '../common/AnimatedButton'
 
@@ -16,6 +17,7 @@ interface QuizPracticeProps {
   onAnswer: (isCorrect: boolean) => void
   onNext: () => void
   onFinish: () => void
+  onSpeakCount?: (phraseId: string, count: number) => void
 }
 
 export default function QuizPractice({
@@ -26,15 +28,29 @@ export default function QuizPractice({
   onHideTranslation,
   onAnswer,
   onNext,
-  onFinish
+  onFinish,
+  onSpeakCount
 }: QuizPracticeProps) {
   const [hasAnswered, setHasAnswered] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
+  const [pendingSpeakCount, setPendingSpeakCount] = useState(0)
+  const [countCooldown, setCountCooldown] = useState(0)
 
   // TTS機能の初期化
   const { isPlaying, error: ttsError, playText } = useTextToSpeech({
     languageCode: currentPhrase?.languageCode || 'en'
   })
+
+  // カウントダウンの管理
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (countCooldown > 0) {
+      timer = setTimeout(() => {
+        setCountCooldown(countCooldown - 1)
+      }, 1000)
+    }
+    return () => clearTimeout(timer)
+  }, [countCooldown])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
@@ -44,19 +60,17 @@ export default function QuizPractice({
     
     setHasAnswered(true)
     setSelectedAnswer(isCorrect)
+    
+    // ペンディング中の音読回数がある場合は送信（リセットはしない）
+    if (pendingSpeakCount > 0 && onSpeakCount) {
+      onSpeakCount(currentPhrase.id, pendingSpeakCount)
+    }
+    
     onAnswer(isCorrect)
     
     // 1秒後に次の問題に進むか、最後の問題の場合は終了
     setTimeout(() => {
-      if (isLastQuestion) {
-        onFinish()
-      } else {
-        // ローカル状態をリセットしてから次の問題に進む
-        setHasAnswered(false)
-        setSelectedAnswer(null)
-        // onNextが呼ばれることで、useQuizPhraseのhandleNextが実行され、showTranslationがfalseになる
-        onNext()
-      }
+      handleNext()
     }, 1000)
   }
 
@@ -71,7 +85,29 @@ export default function QuizPractice({
     }
   }
 
+  // 音読回数加算ハンドラー
+  const handleSpeakCount = () => {
+    if (!showTranslation || countCooldown > 0) return // 翻訳が表示されていない場合やクールダウン中は加算しない
+    
+    setCountCooldown(1) // 1秒のクールダウンを設定
+    setPendingSpeakCount(prev => prev + 1)
+  }
+
   const isLastQuestion = session.currentIndex >= session.totalCount - 1
+
+  const handleNext = useCallback(() => {
+    if (isLastQuestion) {
+      onFinish()
+    } else {
+      // ローカル状態をリセットしてから次の問題に進む
+      setHasAnswered(false)
+      setSelectedAnswer(null)
+      setPendingSpeakCount(0) // 次の問題に移る時にペンディングカウントをリセット
+      setCountCooldown(0) // クールダウンもリセット
+      // onNextが呼ばれることで、useQuizPhraseのhandleNextが実行され、showTranslationがfalseになる
+      onNext()
+    }
+  }, [isLastQuestion, onFinish, onNext])
 
   return (
     <>
@@ -94,7 +130,7 @@ export default function QuizPractice({
       {/* Total数と正解数表示 */}
       <div className="flex items-center justify-end mb-2 text-xs text-gray-500">
         <RiSpeakLine className="w-4 h-4 mr-1" />
-        <span>Total: {currentPhrase.totalSpeakCount}</span>
+        <span>Total: {currentPhrase.totalSpeakCount + pendingSpeakCount}</span>
         <IoCheckboxOutline className="w-4 h-4 ml-4 mr-1" />
         <span>Correct: {currentPhrase.correctQuizCount}</span>
       </div>
@@ -116,7 +152,7 @@ export default function QuizPractice({
         {/* 学習言語のフレーズ - 表示のみ */}
         <div className="min-h-[2.5rem] sm:min-h-[3rem] md:min-h-[4rem] flex items-start">
           <div 
-            className={`text-base sm:text-base md:text-xl text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
+            className={`text-base sm:text-base md:text-lg text-gray-600 break-words w-full leading-relaxed font-medium transition-all duration-500 ease-out ${
               showTranslation 
                 ? 'opacity-100 translate-y-0' 
                 : 'opacity-0 translate-y-2'
@@ -164,19 +200,41 @@ export default function QuizPractice({
 
           {/* Got It ボタン */}
           <div className="flex flex-col items-end" style={{ width: '48%' }}>
-            {/* 音声再生ボタン */}
-            <button
-              onClick={handlePlayAudio}
-              disabled={isPlaying || !currentPhrase?.original || !showTranslation}
-              className={`mb-3 p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${
-                isPlaying || !currentPhrase?.original || !showTranslation ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-              }`}
-              title="Play audio"
-            >
-              <HiMiniSpeakerWave className={`w-6 h-6 ${
-                isPlaying || !currentPhrase?.original || !showTranslation ? 'text-gray-400' : 'text-gray-600'
-              }`} />
-            </button>
+            {/* プラスボタンとスピーカーボタン */}
+            <div className="flex items-center gap-3 mb-4">
+              {/* プラスボタン */}
+              <button
+                onClick={handleSpeakCount}
+                disabled={!showTranslation || hasAnswered || countCooldown > 0}
+                className={`p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${
+                  !showTranslation || hasAnswered || countCooldown > 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                }`}
+                title="Add speak count"
+              >
+                {countCooldown > 0 ? (
+                  <AiOutlineLoading3Quarters className="w-6 h-6 text-gray-400 animate-spin" />
+                ) : (
+                  <HiPlus className={`w-6 h-6 ${
+                    !showTranslation || hasAnswered || countCooldown > 0 ? 'text-gray-400' : 'text-gray-600'
+                  }`} />
+                )}
+              </button>
+              
+              {/* スピーカーボタン */}
+              <button
+                onClick={handlePlayAudio}
+                disabled={isPlaying || !currentPhrase?.original || !showTranslation}
+                className={`p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${
+                  isPlaying || !currentPhrase?.original || !showTranslation ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                }`}
+                title="Play audio"
+              >
+                <HiMiniSpeakerWave className={`w-6 h-6 ${
+                  isPlaying || !currentPhrase?.original || !showTranslation ? 'text-gray-400' : 'text-gray-600'
+                }`} />
+              </button>
+            </div>
+            
             <AnimatedButton
               onClick={() => handleAnswer(true)}
               disabled={hasAnswered}

@@ -73,7 +73,8 @@
     },
     "messages": {
       "dailyLimitReached": "You have reached the daily limit of 100 speaks. Please try again tomorrow!",
-      "endError": "Error occurred during end process"
+      "endError": "Error occurred during end process",
+      "countError": "Error occurred while updating speak count"
     },
     "explanation": {
       "title": "Speak Mode Guide",
