@@ -60,7 +60,7 @@ export default function PhraseListPage() {
       
       timeoutId = setTimeout(() => {
         // スクロール位置が下部に達していない場合は何もしない
-        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 100) {
+        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 400) {
           return
         }
         
