@@ -216,7 +216,7 @@ export default function SpeakPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">この機能を利用するにはログインが必要です</p>
           <button
@@ -232,7 +232,7 @@ export default function SpeakPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="min-h-screen">
         <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
           {/* Phrase タイトル（言語選択なし） */}
           <div className="flex justify-between items-center mb-[18px]">
@@ -258,7 +258,7 @@ export default function SpeakPage() {
 
   if (error || !phrase) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+      <div className="min-h-screen">
         <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
           {/* Phrase タイトル（言語選択なし） */}
           <div className="flex justify-between items-center mb-[18px]">
@@ -291,7 +291,7 @@ export default function SpeakPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen">
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Phrase タイトル（言語選択なし） */}
         <div className="flex justify-between items-center mb-[18px]">

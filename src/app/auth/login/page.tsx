@@ -12,7 +12,7 @@ export default function LoginPage() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <h2 className="text-lg font-semibold mb-2">リダイレクト中...</h2>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>

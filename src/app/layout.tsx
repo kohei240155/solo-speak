@@ -58,7 +58,8 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${inter.className} antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900`}
+        className={`${inter.className} antialiased min-h-screen flex flex-col text-gray-900`}
+        style={{ backgroundColor: '#F5F5F5' }}
       >
         <ViewportFix />
         <ServiceWorkerRegistration />

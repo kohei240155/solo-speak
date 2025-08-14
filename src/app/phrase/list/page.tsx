@@ -86,14 +86,14 @@ export default function PhraseListPage() {
   // 認証ローディング中は何も表示しない
   if (authLoading) {
     return (
-      <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
+      <div className="min-h-screen flex justify-center items-start pt-28">
         <LoadingSpinner message='Loading...' />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5F5' }}>
+    <div className="min-h-screen">
       <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
         {/* Phrase タイトルと言語選択を同じ行に配置 */}
         <div className="flex justify-between items-center mb-[18px]">
