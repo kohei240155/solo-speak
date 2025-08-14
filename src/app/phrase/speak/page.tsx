@@ -199,34 +199,32 @@ function PhraseSpeakPage() {
               )
             ) : (
               // 通常の複数フレーズ練習モード
-              speakMode.active && speakMode.config ? (
-                // Finish処理中またはフレーズがある場合は練習画面を表示
-                (currentPhrase || multiPhraseSpeak.isFinishing) ? (
-                  <SpeakPractice
-                    phrase={currentPhrase}
-                    onCount={multiPhraseSpeak.handleCount}
-                    onNext={multiPhraseSpeak.handleNextWithConfig}
-                    onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
-                    todayCount={todayCount}
-                    totalCount={totalCount}
-                    isLoading={isLoadingPhrase}
-                    isNextLoading={multiPhraseSpeak.isNextLoading}
-                    isHideNext={false}
-                    isFinishing={multiPhraseSpeak.isFinishing}
-                    isCountDisabled={isCountDisabled}
-                    learningLanguage={learningLanguage}
-                    onExplanation={handleExplanation}
+              // Finish処理中またはフレーズがある場合は練習画面を表示
+              (currentPhrase || multiPhraseSpeak.isFinishing) ? (
+                <SpeakPractice
+                  phrase={currentPhrase}
+                  onCount={multiPhraseSpeak.handleCount}
+                  onNext={multiPhraseSpeak.handleNextWithConfig}
+                  onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
+                  todayCount={todayCount}
+                  totalCount={totalCount}
+                  isLoading={isLoadingPhrase}
+                  isNextLoading={multiPhraseSpeak.isNextLoading}
+                  isHideNext={false}
+                  isFinishing={multiPhraseSpeak.isFinishing}
+                  isCountDisabled={isCountDisabled}
+                  learningLanguage={learningLanguage}
+                  onExplanation={handleExplanation}
+                />
+              ) : (
+                <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
+                  <LoadingSpinner 
+                    size="md" 
+                    message="Loading..." 
+                    className="text-center"
                   />
-                ) : (
-                  <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
-                    <LoadingSpinner 
-                      size="md" 
-                      message="Loading..." 
-                      className="text-center"
-                    />
-                  </div>
-                )
-              ) : null
+                </div>
+              )
             )
           }
           </div>
