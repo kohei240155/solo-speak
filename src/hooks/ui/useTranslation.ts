@@ -41,9 +41,7 @@ export const useTranslation = (namespace = 'common') => {
         // キャッシュに保存
         translationCache.set(cacheKey, data)
         setTranslations(data)
-      } catch (error) {
-        console.error(`Failed to load translations for ${locale}/${namespace}:`, error)
-        
+      } catch {
         // フォールバック：日本語の翻訳を試行
         if (locale !== 'ja') {
           try {
@@ -52,8 +50,8 @@ export const useTranslation = (namespace = 'common') => {
               const fallbackData = await fallbackResponse.json()
               setTranslations(fallbackData)
             }
-          } catch (fallbackError) {
-            console.error('Failed to load fallback translations:', fallbackError)
+          } catch {
+            // フォールバック失敗は無視
           }
         }
       } finally {

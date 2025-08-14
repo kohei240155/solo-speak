@@ -11,27 +11,11 @@ export interface TimezoneInfo {
 /**
  * ユーザーのタイムゾーンを取得
  */
-export const getUserTimezone = (): TimezoneInfo => {
+export function getUserTimezone(): string {
   try {
-    // 方法1: Intl.DateTimeFormat（最も正確）
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const offset = new Date().getTimezoneOffset()
-    
-    // タイムゾーンの妥当性をチェック
-    const isValid = isValidTimezone(timezone)
-    
-    return {
-      timezone: isValid ? timezone : 'UTC',
-      offset,
-      isValid
-    }
-  } catch (error) {
-    console.warn('Failed to get user timezone, falling back to UTC:', error)
-    return {
-      timezone: 'UTC',
-      offset: 0,
-      isValid: false
-    }
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
   }
 }
 
@@ -71,7 +55,7 @@ export const getTimezoneDisplayName = (timezone: string, locale: string = 'ja'):
  * ユーザーのローカル日付を取得（YYYY-MM-DD形式）
  */
 export const getUserLocalDate = (timezone?: string): string => {
-  const tz = timezone || getUserTimezone().timezone
+  const tz = timezone || getUserTimezone()
   
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: tz,
@@ -85,12 +69,5 @@ export const getUserLocalDate = (timezone?: string): string => {
  * デバッグ用：タイムゾーン情報を出力
  */
 export const logTimezoneInfo = (): void => {
-  const info = getUserTimezone()
-  console.log('Timezone Info:', {
-    ...info,
-    displayName: getTimezoneDisplayName(info.timezone),
-    currentLocalDate: getUserLocalDate(info.timezone),
-    utcTime: new Date().toISOString(),
-    localTime: new Date().toLocaleString(),
-  })
+  // デバッグ情報（本番環境では使用しない）
 }

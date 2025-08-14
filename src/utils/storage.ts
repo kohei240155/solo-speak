@@ -20,7 +20,7 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
     }
 
     // バケットの存在確認とアップロード前の準備
-    await ensureStorageBucket(supabaseClient)
+    await ensureStorageBucket()
 
     // ファイル名を生成（重複回避のためタイムスタンプを含む）
     const fileExt = file.name.split('.').pop()
@@ -107,248 +107,139 @@ export async function deleteUserIcon(iconUrl: string): Promise<void> {
     if (iconUrl.includes('googleusercontent.com') || 
         iconUrl.includes('googleapis.com') || 
         iconUrl.includes('google.com')) {
-      console.log('Skipping deletion of Google URL')
       return
     }
     
     // サーバーサイドクライアントを使用（より強い権限で削除操作）
     const serverSupabase = createServerSupabaseClient()
-    console.log('Using server-side Supabase client for deletion')
     
     // URLからファイルパスを抽出
     let url: URL
     try {
       url = new URL(iconUrl)
     } catch {
-      console.error('Invalid URL format:', iconUrl)
       throw new Error('無効なURL形式です')
     }
     
     const pathSegments = url.pathname.split('/')
-    console.log('URL path segments:', pathSegments)
     
     // Supabaseストレージの公開URLの構造: /storage/v1/object/public/images/user-icons/filename
     const imagesIndex = pathSegments.findIndex(segment => segment === 'images')
     if (imagesIndex === -1) {
-      console.error('Invalid storage URL structure - no "images" segment found:', iconUrl)
-      console.error('Path segments:', pathSegments)
       throw new Error('無効なストレージURL構造です')
     }
     
     // images以降のパスを取得
     const filePath = pathSegments.slice(imagesIndex + 1).join('/')
-    console.log('Extracted file path for deletion:', filePath)
 
     if (!filePath) {
-      console.error('Empty file path extracted from URL:', iconUrl)
       throw new Error('ファイルパスが空です')
     }
 
-    console.log('Attempting to delete from Supabase storage:', filePath)
-    
-    // まず、ファイルが存在するかを確認
-    console.log('Checking if file exists before deletion...')
-    try {
-      const { data: files, error: listError } = await serverSupabase.storage
-        .from('images')
-        .list(filePath.split('/').slice(0, -1).join('/') || '')
-      
-      if (listError) {
-        console.error('Error listing files for existence check:', listError)
-      } else {
-        const fileName = filePath.split('/').pop()
-        const fileExists = files?.some(file => file.name === fileName)
-        console.log('File existence check result:', {
-          fileName,
-          fileExists,
-          filesInDirectory: files?.map(f => f.name) || []
-        })
-      }
-    } catch (listError) {
-      console.error('Failed to check file existence:', listError)
-    }
-
     // ファイルの削除を実行
-    console.log('Executing storage delete operation...')
     const deleteResult = await serverSupabase.storage
       .from('images')
       .remove([filePath])
 
-    console.log('Storage delete operation completed:', {
-      error: deleteResult.error,
-      data: deleteResult.data
-    })
-
     if (deleteResult.error) {
-      console.error('Supabase storage delete error:', deleteResult.error)
-      console.error('Error details:', {
-        message: deleteResult.error.message,
-        name: deleteResult.error.name,
-        status: (deleteResult.error as unknown as { status?: number }).status,
-        statusCode: (deleteResult.error as unknown as { statusCode?: number }).statusCode
-      })
       throw new Error(`画像の削除に失敗しました: ${deleteResult.error.message}`)
     }
-    
-    // 削除後の確認
-    console.log('Verifying file deletion...')
-    try {
-      const { data: filesAfter, error: listAfterError } = await serverSupabase.storage
-        .from('images')
-        .list(filePath.split('/').slice(0, -1).join('/') || '')
-      
-      if (!listAfterError) {
-        const fileName = filePath.split('/').pop()
-        const fileStillExists = filesAfter?.some(file => file.name === fileName)
-        console.log('Post-deletion verification:', {
-          fileName,
-          fileStillExists,
-          filesInDirectory: filesAfter?.map(f => f.name) || []
-        })
-      }
-    } catch (verifyError) {
-      console.error('Failed to verify deletion:', verifyError)
-    }
-    
-    console.log('Successfully completed delete operation for:', filePath)
   } catch (error) {
-    console.error('Error in deleteUserIcon function:', error)
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      })
-    }
     throw error
   }
 }
 
 export async function createStorageBucket(): Promise<void> {
   try {
-    console.log('Checking if images bucket exists...')
+    const serverSupabase = createServerSupabaseClient()
     
-    // バケットが既に存在するかチェック
-    const { data: buckets, error: listError } = await supabase.storage.listBuckets()
+    // まず既存のバケットをリスト
+    const { data: buckets, error: listError } = await serverSupabase.storage.listBuckets()
     
     if (listError) {
-      console.error('Error listing buckets:', listError)
-      // バケットリストの取得に失敗した場合でも、作成を試みる
-    } else {
-      console.log('Available buckets:', buckets?.map(b => b.name) || [])
-      
-      const existingBucket = buckets?.find(bucket => bucket.name === 'images')
-      
-      if (existingBucket) {
-        console.log('Images bucket already exists')
-        return
-      }
+      return
+    }
+    
+    // imagesバケットが存在するかチェック
+    const imagesBucketExists = buckets?.some(bucket => bucket.name === 'images')
+    if (imagesBucketExists) {
+      return
     }
 
-    console.log('Creating images bucket...')
-    
-    // バケットを作成
-    const { error } = await supabase.storage.createBucket('images', {
+    // バケットが存在しない場合は作成
+    const { error } = await serverSupabase.storage.createBucket('images', {
       public: true,
-      fileSizeLimit: 5 * 1024 * 1024, // 5MB
-      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      fileSizeLimit: 5242880 // 5MB
     })
 
-    if (error) {
-      if (error.message.includes('already exists') || error.message.includes('The resource already exists')) {
-        console.log('Images bucket already exists (from creation attempt)')
-        return
-      }
-      console.error('Error creating storage bucket:', error)
+    if (error && error.message !== 'Bucket already exists') {
       throw error
     }
-
-    console.log('Images bucket created successfully')
-  } catch (error) {
-    console.error('Error in createStorageBucket:', error)
-    // バケット作成に失敗しても、アップロード時に再試行される可能性があるため、エラーを投げない
-    console.log('Bucket creation failed, but continuing...')
+  } catch {
+    // エラーをログに記録し、処理を続行
   }
 }
 
 // バケットの存在を確認し、なければ作成
-async function ensureStorageBucket(supabaseClient: typeof supabase): Promise<void> {
+/**
+ * Storage bucketの存在確認・作成
+ */
+export async function ensureStorageBucket(): Promise<boolean> {
   try {
-    console.log('Ensuring images bucket exists...')
-    
-    // バケットが既に存在するかチェック
-    const { data: buckets, error: listError } = await supabaseClient.storage.listBuckets()
-    
+    // 既存buckets一覧を取得
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets()
     if (listError) {
-      console.error('Error listing buckets:', listError)
-      throw listError
+      return false
     }
-
-    console.log('Available buckets:', buckets?.map(b => ({ name: b.name, public: b.public })))
     
+    // imagesバケットの存在確認
     const imagesBucket = buckets?.find(bucket => bucket.name === 'images')
-    
     if (imagesBucket) {
-      console.log('Images bucket exists:', {
-        name: imagesBucket.name,
-        public: imagesBucket.public,
-        createdAt: imagesBucket.created_at
-      })
-      
-      if (!imagesBucket.public) {
-        console.warn('WARNING: Images bucket is not public! This may cause access issues.')
-      }
-      return
+      return true
     }
 
-    console.log('Images bucket not found, creating...')
-    
-    // バケットを作成
-    const { error } = await supabaseClient.storage.createBucket('images', {
+    // バケットが存在しない場合は作成
+    const { error } = await supabase.storage.createBucket('images', {
       public: true,
-      fileSizeLimit: 5 * 1024 * 1024, // 5MB
-      allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+      allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
+      fileSizeLimit: 10 * 1024 * 1024, // 10MB
     })
 
     if (error) {
-      if (error.message.includes('already exists') || error.message.includes('The resource already exists')) {
-        console.log('Images bucket already exists (race condition)')
-        return
+      // Bucket already exists error は無視
+      if (error.message?.includes('already exists')) {
+        return true
       }
-      console.error('Error creating storage bucket:', error)
-      throw error
+      return false
     }
 
-    console.log('Images bucket created successfully')
-  } catch (error) {
-    console.error('Error in ensureStorageBucket:', error)
-    throw error
+    return true
+  } catch {
+    return false
   }
 }
 
 // Googleアバターをダウンロードしてアップロード
 export async function downloadAndUploadGoogleAvatar(googleAvatarUrl: string, userId: string): Promise<string> {
   try {
-    console.log('Downloading Google avatar:', googleAvatarUrl)
-    
     // Google画像をダウンロード
-    const response = await fetch(googleAvatarUrl)
+    const response = await fetch(googleAvatarUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Solo-Speak-Bot/1.0)',
+      }
+    })
+
     if (!response.ok) {
-      throw new Error(`Failed to download Google avatar: ${response.status}`)
+      throw new Error(`Failed to download image: ${response.status}`)
     }
-    
+
     const arrayBuffer = await response.arrayBuffer()
-    const blob = new Blob([arrayBuffer], { type: response.headers.get('content-type') || 'image/jpeg' })
-    
-    // BlobをFileに変換
-    const file = new File([blob], 'google_avatar.jpg', { type: blob.type })
-    
-    console.log('Downloaded Google avatar, uploading to Supabase Storage...')
-    
-    // Supabase Storageにアップロード（サーバーモードで）
+    const file = new File([arrayBuffer], `google-avatar-${userId}.jpg`, { type: 'image/jpeg' })
+
+    // Supabase Storageにアップロード
     return await uploadUserIcon(file, userId, true)
   } catch (error) {
-    console.error('Error downloading and uploading Google avatar:', error)
     throw error
   }
 }

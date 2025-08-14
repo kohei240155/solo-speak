@@ -101,8 +101,7 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
         }
       }
       router.push('/phrase/list')
-    } catch (error) {
-      console.error('Error finishing single phrase practice:', error)
+    } catch {
       toast.error(t('speak.messages.endError'))
     } finally {
       setIsFinishing(false)

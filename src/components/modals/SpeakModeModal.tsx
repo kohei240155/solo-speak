@@ -35,8 +35,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       // 1. セッション状態をリセット
       try {
         await resetSessionSpoken()
-      } catch (error) {
-        console.error('SpeakModeModal - Failed to reset session_spoken:', error)
+      } catch {
         toast.error('セッション状態のリセットに失敗しました')
         return
       }
@@ -44,8 +43,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       // 2. 日次カウントをリセット
       try {
         await resetDailySpeakCount()
-      } catch (error) {
-        console.error('SpeakModeModal - Failed to reset daily speak count:', error)
+      } catch {
         toast.error('日次カウントのリセットに失敗しました')
         return
       }
@@ -87,8 +85,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       // onStartの呼び出し前にモーダルを閉じる
       onClose()
       onStart(config)
-    } catch (error) {
-      console.error('SpeakModeModal - Error checking phrase count:', error)
+    } catch {
       toast.error('フレーズ数の確認中にエラーが発生しました')
     } finally {
       setIsLoading(false)

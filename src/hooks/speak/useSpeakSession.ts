@@ -81,8 +81,7 @@ export const useSpeakSession = (learningLanguage: string) => {
     try {
       await api.post(`/api/phrase/${phraseId}/count`, { count: countToSend })
       return true
-    } catch (error: unknown) {
-      console.error('Error sending count:', error)
+    } catch {
       toast.error(t('phrase.messages.countError'))
       return false
     }
@@ -119,8 +118,7 @@ export const useSpeakSession = (learningLanguage: string) => {
       } else {
         return 'allDone'
       }
-    } catch (error) {
-      console.error('Error fetching speak phrase:', error)
+    } catch {
       toast.error(t('phrase.messages.fetchError'))
       return false
     } finally {
@@ -143,10 +141,7 @@ export const useSpeakSession = (learningLanguage: string) => {
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden' && currentPhrase && pendingCount > 0) {
-        const success = await sendPendingCount(currentPhrase.id, pendingCount)
-        if (!success) {
-          console.warn('Failed to send pending count on visibility change')
-        }
+        await sendPendingCount(currentPhrase.id, pendingCount)
       }
     }
 
@@ -189,8 +184,6 @@ export const useSpeakSession = (learningLanguage: string) => {
   const handleStart = useCallback(async (config: SpeakConfig) => {
     setSessionState({ active: true, config })
     writeConfigToURL(config)
-    
-    console.log('useSpeakSession - handleStart using config:', config)
     
     const result = await fetchSpeakPhrase(config)
     if (result === 'allDone') {
@@ -244,8 +237,8 @@ export const useSpeakSession = (learningLanguage: string) => {
       // カウントが0でもsession_spokenをtrueに設定
       try {
         await api.post(`/api/phrase/${currentPhrase.id}/count`, { count: 0 })
-      } catch (error) {
-        console.error('Error setting session spoken:', error)
+      } catch {
+        // session_spoken設定エラーは次のフレーズ取得を阻害しない
       }
     }
 
@@ -267,8 +260,8 @@ export const useSpeakSession = (learningLanguage: string) => {
       // カウントが0でもsession_spokenをtrueに設定
       try {
         await api.post(`/api/phrase/${currentPhrase.id}/count`, { count: 0 })
-      } catch (error) {
-        console.error('Error setting session spoken on finish:', error)
+      } catch {
+        // エラーは無視
       }
     }
 
