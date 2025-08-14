@@ -128,7 +128,7 @@ export default function QuizPractice({
         </div>
       </div>
       {/* Total数と正解数表示 */}
-      <div className="flex items-center justify-start mb-2 text-xs text-gray-500">
+      <div className="flex items-center justify-end mb-2 text-xs text-gray-500">
         <RiSpeakLine className="w-4 h-4 mr-1" />
         <span>Total: {currentPhrase.totalSpeakCount + pendingSpeakCount}</span>
         <IoCheckboxOutline className="w-4 h-4 ml-4 mr-1" />
