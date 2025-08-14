@@ -27,8 +27,8 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
       return
     }
 
-    // 未保存の変更チェック（AddタブまたはSpeakタブから離脱する場合）
-    if ((activeTab === 'Add' || activeTab === 'Speak') && tab.key !== activeTab && checkUnsavedChanges) {
+    // 未保存の変更チェック（AddタブまたはSpeakタブまたはQuizタブから離脱する場合）
+    if ((activeTab === 'Add' || activeTab === 'Speak' || activeTab === 'Quiz') && tab.key !== activeTab && checkUnsavedChanges) {
       if (checkUnsavedChanges()) {
         const message = activeTab === 'Add' 
           ? t('confirm.unsavedPhrase')
