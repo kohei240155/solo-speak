@@ -12,6 +12,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
+import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
 import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
@@ -36,6 +37,31 @@ export default function PhraseQuizPage() {
     handleSpeakCount,
     resetQuiz
   } = useQuizPhrase()
+
+  // pendingSpeakCountの状態を管理（離脱警告用）
+  const [pendingSpeakCount, setPendingSpeakCount] = useState(0)
+
+  // ページ離脱警告（pendingSpeakCountが1以上の時）
+  usePageLeaveWarning({ 
+    hasPendingChanges: pendingSpeakCount > 0 
+  })
+
+  // Speak画面と同様のbeforeunload処理を追加
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (pendingSpeakCount > 0) {
+        event.preventDefault()
+        event.returnValue = 'Countが登録されていません。このページを離れますか？'
+        return event.returnValue
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [pendingSpeakCount])
 
   // Quiz mode state
   const [quizMode, setQuizMode] = useState<QuizModeState>({
@@ -107,6 +133,7 @@ export default function PhraseQuizPage() {
   const handleQuizStartWithModal = async (config: QuizConfig) => {
     // クイズを実際に開始する時に状態をリセット
     setIsQuizCompleted(false)
+    setPendingSpeakCount(0) // pendingSpeakCountもリセット
     resetQuiz()
     setQuizMode({
       active: false,
@@ -127,6 +154,7 @@ export default function PhraseQuizPage() {
 
   // クイズ終了処理
   const handleQuizFinishComplete = () => {
+    setPendingSpeakCount(0) // クイズ完了時にpendingSpeakCountをリセット
     setIsQuizCompleted(true)
   }
 
@@ -150,6 +178,11 @@ export default function PhraseQuizPage() {
     }
   }
 
+  // Quizタブからの離脱時の未保存変更チェック
+  const checkUnsavedChanges = () => {
+    return pendingSpeakCount > 0
+  }
+
   // 認証ローディング中は何も表示しない
   if (authLoading) {
     return <LoadingSpinner withHeaderOffset />
@@ -169,6 +202,7 @@ export default function PhraseQuizPage() {
           activeTab="Quiz" 
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={quizMode.active ? undefined : () => setShowQuizModal(true)}
+          checkUnsavedChanges={checkUnsavedChanges}
         />
 
         {/* コンテンツエリア */}
@@ -189,6 +223,7 @@ export default function PhraseQuizPage() {
               onNext={handleNext}
               onFinish={handleQuizFinishComplete}
               onSpeakCount={handleSpeakCount}
+              onPendingCountChange={setPendingSpeakCount}
             />
           ) : (
             // セッション読み込み中の表示

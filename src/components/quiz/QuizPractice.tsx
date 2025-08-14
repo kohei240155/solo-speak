@@ -18,6 +18,7 @@ interface QuizPracticeProps {
   onNext: () => void
   onFinish: () => void
   onSpeakCount?: (phraseId: string, count: number) => void
+  onPendingCountChange?: (count: number) => void // 新しく追加
 }
 
 export default function QuizPractice({
@@ -29,7 +30,8 @@ export default function QuizPractice({
   onAnswer,
   onNext,
   onFinish,
-  onSpeakCount
+  onSpeakCount,
+  onPendingCountChange
 }: QuizPracticeProps) {
   const [hasAnswered, setHasAnswered] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null)
@@ -51,6 +53,13 @@ export default function QuizPractice({
     }
     return () => clearTimeout(timer)
   }, [countCooldown])
+
+  // pendingSpeakCountの変更を親コンポーネントに通知
+  useEffect(() => {
+    if (onPendingCountChange) {
+      onPendingCountChange(pendingSpeakCount)
+    }
+  }, [pendingSpeakCount, onPendingCountChange])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (hasAnswered) return
