@@ -64,7 +64,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       totalPhraseCount,
       speakCountToday,
       speakCountTotal,
-      quizResults,
+      phrases,
       allPhraseLevels
     ] = await Promise.all([
       // 1. Total Phrase Count (総フレーズ数) - 言語ごとに計算
@@ -106,24 +106,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
       }),
 
-      // 4. Quiz Results - クイズ結果
-      prisma.quizResult.findMany({
+      // 4. フレーズデータ（レベル別フレーズ数計算用）
+      prisma.phrase.findMany({
         where: {
-          phrase: {
-            userId: user.id,
-            language: {
-              code: language,
-            },
+          userId: user.id,
+          language: {
+            code: language,
           },
-          correct: true,
           deletedAt: null,
         },
         include: {
-          phrase: {
-            include: {
-              phraseLevel: true,
-            },
-          },
+          phraseLevel: true,
         },
       }),
 
@@ -138,23 +131,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
     ])
 
-    // レベル別の正解数を集計
-    const levelCorrectCounts = new Map<string, number>()
+    // レベル別のフレーズ数を集計
+    const levelPhraseCounts = new Map<string, number>()
     
-    for (const result of quizResults) {
-      const levelName = result.phrase.phraseLevel.name
+    for (const phrase of phrases) {
+      const levelName = phrase.phraseLevel.name
       
-      if (levelCorrectCounts.has(levelName)) {
-        levelCorrectCounts.set(levelName, levelCorrectCounts.get(levelName)! + 1)
+      if (levelPhraseCounts.has(levelName)) {
+        levelPhraseCounts.set(levelName, levelPhraseCounts.get(levelName)! + 1)
       } else {
-        levelCorrectCounts.set(levelName, 1)
+        levelPhraseCounts.set(levelName, 1)
       }
     }
 
-    // クイズマスタリーデータを構築
+    // クイズマスタリーデータを構築（レベル別フレーズ数）
     const quizMastery: QuizMasteryLevel[] = allPhraseLevels.map((level) => ({
       level: level.name,
-      score: levelCorrectCounts.get(level.name) || 0,
+      score: levelPhraseCounts.get(level.name) || 0,
       color: level.color || '#6B7280', // デフォルトのグレー色
     }))
 

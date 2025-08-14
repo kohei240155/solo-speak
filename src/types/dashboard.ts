@@ -6,7 +6,7 @@ export interface DashboardQueryParams {
   language: string
 }
 
-// クイズマスタリーレベルの型
+// フレーズレベル分布の型
 export interface QuizMasteryLevel {
   level: string
   score: number
