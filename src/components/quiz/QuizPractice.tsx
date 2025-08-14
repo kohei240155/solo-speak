@@ -139,7 +139,7 @@ export default function QuizPractice({
         {/* 母国語の翻訳（メイン表示） */}
         <div className="mb-3">
           <div 
-            className="text-base sm:text-lg md:text-xl font-medium text-gray-900 break-words leading-relaxed"
+            className="text-base sm:text-lg md:text-xl font-bold text-gray-900 break-words leading-relaxed"
             style={{ 
               wordWrap: 'break-word',
               overflowWrap: 'anywhere',
