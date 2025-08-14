@@ -16,21 +16,21 @@ export const useSpeakPhrase = () => {
   const [savedConfig, setSavedConfig] = useState<SpeakConfig | null>(null)
 
   // ページ読み込み時にURLパラメータから設定を復元
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const language = params.get('language')
-    const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
-    const excludeTodayPracticed = params.get('excludeTodayPracticed')
+  // useEffect(() => {
+  //   const params = new URLSearchParams(window.location.search)
+  //   const language = params.get('language')
+  //   const excludeIfSpeakCountGTE = params.get('excludeIfSpeakCountGTE')
+  //   const excludeTodayPracticed = params.get('excludeTodayPracticed')
     
-    if (language) {
-      const restoredConfig: SpeakConfig = {
-        language,
-        excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
-        excludeTodayPracticed: excludeTodayPracticed === 'true'
-      }
-      setSavedConfig(restoredConfig)
-    }
-  }, [])
+  //   if (language) {
+  //     const restoredConfig: SpeakConfig = {
+  //       language,
+  //       excludeIfSpeakCountGTE: excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== '' ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
+  //       excludeTodayPracticed: excludeTodayPracticed === 'true'
+  //     }
+  //     setSavedConfig(restoredConfig)
+  //   }
+  // }, [])
 
   // 今日のカウントに基づいてCountボタンの状態を更新
   const updateCountButtonState = useCallback((actualTodayCount: number) => {
