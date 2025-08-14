@@ -8,6 +8,7 @@ import Header from "@/components/layout/Header";
 import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
 import ViewportFix from "@/components/common/ViewportFix";
 import ServiceWorkerRegistration from "@/components/common/ServiceWorkerRegistration";
+import AppVersionChecker from "@/components/common/AppVersionChecker";
 import { SettingsRedirect } from "@/components/auth/SettingsRedirect";
 import AuthApiConnection from "@/components/auth/AuthApiConnection";
 import TranslationPreloader from "@/components/common/TranslationPreloader";
@@ -61,6 +62,7 @@ export default function RootLayout({
       >
         <ViewportFix />
         <ServiceWorkerRegistration />
+        <AppVersionChecker />
         <LanguageProvider>
           <TranslationPreloader />
           <AuthProvider>
