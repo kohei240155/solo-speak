@@ -224,6 +224,9 @@
     "fetchError": "Failed to fetch subscription status",
     "checkoutError": "Failed to create checkout session"
   },
+  "ranking": {
+    "noData": "No data available to display"
+  },
   "situation": {
     "addSuccess": "Situation added successfully",
     "addError": "Error occurred while adding situation",

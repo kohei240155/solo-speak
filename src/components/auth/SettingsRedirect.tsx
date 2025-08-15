@@ -15,8 +15,7 @@ export const SettingsRedirect = () => {
 
     // ユーザーがいて、Settings画面への遷移フラグが立っている場合
     if (user && shouldRedirectToSettings) {
-      console.log('Initial user setup detected - redirecting to settings')
-      
+
       // 既にSettings画面にいる場合は遷移せずにフラグだけクリア
       if (pathname === '/settings') {
         clearSettingsRedirect()

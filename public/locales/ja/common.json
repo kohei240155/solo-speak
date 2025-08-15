@@ -224,6 +224,17 @@
     "fetchError": "サブスクリプション状態の取得に失敗しました",
     "checkoutError": "チェックアウトセッションの作成に失敗しました"
   },
+  "ranking": {
+    "noData": "表示対象のデータがありません"
+  },
+  "auth": {
+    "modal": {
+      "supportMessage": "あなたのスピーキング学習をサポートします。",
+      "browserNote": "※Safari/Chromeでログインしてください",
+      "popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
+      "authFailedError": "認証に失敗しました。再度お試しください。"
+    }
+  },
   "situation": {
     "addSuccess": "シチュエーションを追加しました",
     "addError": "シチュエーションの追加中にエラーが発生しました",

@@ -7,10 +7,12 @@ import Image from 'next/image'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useRankingData } from '@/hooks/data/useRankingData'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useEffect } from 'react'
 
 export default function RankingPage() {
   const { user, loading: authLoading } = useAuthGuard()
+  const { t } = useTranslation()
   
   // カスタムフックを使用してランキングデータを管理
   const {
@@ -135,7 +137,7 @@ export default function RankingPage() {
                 <LoadingSpinner message="Loading..." className="py-8" />
               ) : rankingData.length === 0 ? (
                 <div className="py-8 text-center text-gray-500">
-                  表示対象のデータがありません
+                  {t('ranking.noData')}
                 </div>
               ) : (
                 <div className="space-y-3">
