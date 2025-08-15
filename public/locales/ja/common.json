@@ -252,7 +252,11 @@
     "addSuccess": "シチュエーションを追加しました",
     "addError": "シチュエーションの追加中にエラーが発生しました",
     "deleteSuccess": "シチュエーションを削除しました",
-    "deleteError": "シチュエーションの削除中にエラーが発生しました"
+    "deleteError": "シチュエーションの削除中にエラーが発生しました",
+    "delete": {
+      "confirmMessage": "このシチュエーションを削除してもよろしいですか？",
+      "warningMessage": "この操作は取り消すことができません。"
+    }
   },
   "addToHomeScreen": {
     "title": "ホーム画面からすぐ開けます！",

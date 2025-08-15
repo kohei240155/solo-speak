@@ -252,7 +252,11 @@
     "addSuccess": "Situation added successfully",
     "addError": "Error occurred while adding situation",
     "deleteSuccess": "Situation deleted successfully",
-    "deleteError": "Error occurred while deleting situation"
+    "deleteError": "Error occurred while deleting situation",
+    "delete": {
+      "confirmMessage": "Are you sure you want to delete this situation?",
+      "warningMessage": "This action cannot be undone."
+    }
   },
   "addToHomeScreen": {
     "title": "Easy access from your home screen!",

@@ -128,7 +128,6 @@ export default function PhraseAdd({
           <button
             onClick={() => setShowHelpModal(true)}
             className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
-            title="フレーズ生成について"
           >
             <AiOutlineQuestionCircle size={20} />
           </button>
@@ -177,7 +176,6 @@ export default function PhraseAdd({
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
-              title="新しいシチュエーションを追加"
             >
               <BsPlusSquare size={16} />
             </button>
@@ -345,8 +343,8 @@ export default function PhraseAdd({
         {/* 確認メッセージ */}
         <div className="mb-6">
           <p className="text-gray-700">
-            このシチュエーションを削除してもよろしいですか？<br />
-            この操作は取り消すことができません。
+            {t('situation.delete.confirmMessage')}<br />
+            {t('situation.delete.warningMessage')}
           </p>
         </div>
 
