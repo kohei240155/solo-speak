@@ -204,8 +204,8 @@ export default function RankingPage() {
                 </div>
               )}
 
-              {/* 51位以降のユーザー表示 */}
-              {!isLoading && currentUser && currentUser.rank > 50 && (
+              {/* 11位以降のユーザー表示 */}
+              {!isLoading && currentUser && currentUser.rank > 10 && (
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <div className="mb-2">
                     <p className="text-sm text-gray-600 font-medium">Your Ranking</p>

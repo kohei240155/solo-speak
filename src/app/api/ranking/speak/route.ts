@@ -124,9 +124,9 @@ export async function GET(request: NextRequest) {
         return b.count - a.count
       })
 
-    // 上位50位まで
+    // 上位10位まで
     const rankedUsers = allRankedUsers
-      .slice(0, 50) // 上位50位まで制限
+      .slice(0, 10) // 上位10位まで制限
       .map((user, index) => ({
         rank: index + 1,
         userId: user.userId,
@@ -135,10 +135,10 @@ export async function GET(request: NextRequest) {
         count: user.count
       }))
 
-    // 現在のユーザーの順位を取得（50位圏外でも取得）
+    // 現在のユーザーの順位を取得（10位圏外でも取得）
     let currentUserRank = rankedUsers.find(u => u.userId === user.id) || null
     
-    // 50位圏外の場合、全データから該当ユーザーの順位を取得
+    // 10位圏外の場合、全データから該当ユーザーの順位を取得
     if (!currentUserRank) {
       const userIndex = allRankedUsers.findIndex(u => u.userId === user.id)
       if (userIndex !== -1) {
