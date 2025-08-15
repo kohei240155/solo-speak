@@ -51,7 +51,7 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
         {contextName.length > 50 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              50文字以内で入力してください（現在: {contextName.length}文字）
+              {t('phrase.validation.situationMaxLength')}
             </p>
           </div>
         )}

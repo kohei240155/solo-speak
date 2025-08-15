@@ -26,7 +26,8 @@
     },
     "validation": {
       "required": "フレーズを入力してください",
-      "phraseMaxLength": "フレーズは100文字以内で入力してください"
+      "phraseMaxLength": "フレーズは100文字以内で入力してください",
+      "situationMaxLength": "50文字以内で入力してください"
     },
     "messages": {
       "updateSuccess": "フレーズが正常に更新されました！",

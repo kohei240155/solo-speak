@@ -14,9 +14,6 @@ export default function DeploymentChecker() {
         const lastKnownBuildTime = localStorage.getItem('app_build_time');
         
         if (lastKnownBuildTime && currentBuildTime && lastKnownBuildTime !== currentBuildTime) {
-          console.log('[DeploymentChecker] New deployment detected');
-          console.log('[DeploymentChecker] Last known build:', lastKnownBuildTime);
-          console.log('[DeploymentChecker] Current build:', currentBuildTime);
           
           // 新しいデプロイが検出された場合、キャッシュをクリアしてリロード
           await clearAllCaches();
@@ -26,7 +23,6 @@ export default function DeploymentChecker() {
           
           // 少し遅延してからハードリロード
           setTimeout(() => {
-            console.log('[DeploymentChecker] Performing hard reload for new deployment');
             window.location.href = window.location.href;
           }, 500);
           
@@ -48,15 +44,11 @@ export default function DeploymentChecker() {
       if ('caches' in window) {
         try {
           const cacheNames = await caches.keys();
-          console.log('[DeploymentChecker] Clearing caches:', cacheNames);
-          
           const deletePromises = cacheNames.map(cacheName => {
-            console.log('[DeploymentChecker] Deleting cache:', cacheName);
             return caches.delete(cacheName);
           });
-          
+
           await Promise.all(deletePromises);
-          console.log('[DeploymentChecker] All caches cleared');
         } catch (error) {
           console.error('[DeploymentChecker] Failed to clear caches:', error);
         }
