@@ -21,8 +21,6 @@
       "situationInput": "Example: Ordering at a restaurant"
     },
     "validation": {
-      "maxLength100": "Please enter within 100 characters (Current: {{count}} characters)",
-      "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)",
       "required": "Please enter a phrase",
       "phraseMaxLength": "Phrase must be within 100 characters"
     },
@@ -38,8 +36,7 @@
       "nextPhraseError": "Failed to get next phrase",
       "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
       "generationFailed": "Failed to generate phrases",
-      "generationError": "Error occurred during phrase generation",
-      "noContentGenerated": "No content generated"
+      "generationError": "Error occurred during phrase generation"
     }
   },
   "phraseGeneration": {
@@ -158,12 +155,7 @@
         "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "button": "AI Suggest",
-          "outputs": [
-            "日本にはどのぐらい住んでいるの？",
-            "日本に住んで何年になりますか？",
-            "日本にいらしてどのくらいになりますか？"
-          ]
+          "button": "AI Suggest"
         }
       },
       "feature2": {
@@ -232,11 +224,6 @@
     "addError": "Error occurred while adding situation",
     "deleteSuccess": "Situation deleted successfully",
     "deleteError": "Error occurred while deleting situation"
-  },
-  "auth": {
-    "sessionExpired": "Authentication information has expired. Please reload the page.",
-    "sessionInvalid": "Authentication has expired. Please reload the page.",
-    "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
   },
   "addToHomeScreen": {
     "title": "Easy access from your home screen!",
