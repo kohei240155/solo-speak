@@ -171,7 +171,7 @@ export async function PUT(request: NextRequest) {
       const hasConflict = await checkUsernameConflict(username, authResult.user.id)
       if (hasConflict) {
         return NextResponse.json({ 
-          error: 'このユーザー名は既に使用されています。別のユーザー名を選択してください。' 
+          error: 'This username is already taken. Please choose another one.' 
         }, { status: 400 })
       }
     }
