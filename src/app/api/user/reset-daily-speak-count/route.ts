@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        lastSpeakingDate: true
+        lastDailySpeakCountResetDate: true
       }
     })
 
@@ -40,20 +40,20 @@ export async function POST(request: NextRequest) {
     let shouldReset = false
     let resetCount = 0
 
-    // lastSpeakingDateが存在しない、または今日より前の場合のみリセット
-    if (!user.lastSpeakingDate) {
+    // lastDailySpeakCountResetDateが存在しない、または今日より前の場合のみリセット
+    if (!user.lastDailySpeakCountResetDate) {
       // 初回の場合は必ずリセット
       shouldReset = true
     } else {
-      const lastSpeakingDateUTC = new Date(user.lastSpeakingDate)
-      const lastSpeakingDayUTC = new Date(Date.UTC(
-        lastSpeakingDateUTC.getUTCFullYear(), 
-        lastSpeakingDateUTC.getUTCMonth(), 
-        lastSpeakingDateUTC.getUTCDate()
+      const lastResetDateUTC = new Date(user.lastDailySpeakCountResetDate)
+      const lastResetDayUTC = new Date(Date.UTC(
+        lastResetDateUTC.getUTCFullYear(), 
+        lastResetDateUTC.getUTCMonth(), 
+        lastResetDateUTC.getUTCDate()
       ))
       
-      // 最後のスピーキング日が今日より前の場合のみリセット（UTC基準）
-      if (lastSpeakingDayUTC.getTime() < todayUTC.getTime()) {
+      // 最後のリセット日が今日より前の場合のみリセット（UTC基準）
+      if (lastResetDayUTC.getTime() < todayUTC.getTime()) {
         shouldReset = true
       }
     }
@@ -72,11 +72,11 @@ export async function POST(request: NextRequest) {
 
       resetCount = updateResult.count
 
-      // ユーザーのlastSpeakingDateを現在時刻に更新
+      // ユーザーのlastDailySpeakCountResetDateを現在時刻に更新
       await prisma.user.update({
         where: { id: userId },
         data: {
-          lastSpeakingDate: new Date()
+          lastDailySpeakCountResetDate: new Date()
         }
       })
     }
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         ? `Reset dailySpeakCount for ${resetCount} phrases` 
         : 'No reset needed - already practiced today',
       count: resetCount,
-      lastSpeakingDate: user.lastSpeakingDate
+      lastDailySpeakCountResetDate: user.lastDailySpeakCountResetDate
     }
 
     return NextResponse.json(responseData)

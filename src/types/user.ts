@@ -6,5 +6,5 @@ export interface UserDailyResetResponse {
   reset: boolean
   message: string
   count: number
-  lastSpeakingDate: Date | null
+  lastDailySpeakCountResetDate: Date | null
 }
