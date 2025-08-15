@@ -27,7 +27,8 @@
     "validation": {
       "required": "Please enter a phrase",
       "phraseMaxLength": "Phrase must be within 100 characters",
-      "situationMaxLength": "Please enter within 50 characters"
+      "situationMaxLength": "Please enter within 50 characters",
+      "variationMaxLength": "Please enter within 200 characters"
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",

@@ -1,6 +1,7 @@
 import { PhraseVariation } from '@/types/phrase'
 import { AiOutlineCaretRight } from 'react-icons/ai'
 import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface GeneratedVariationsProps {
   generatedVariations: PhraseVariation[]
@@ -23,6 +24,7 @@ export default function GeneratedVariations({
   onSelectVariation,
   error
 }: GeneratedVariationsProps) {
+  const { t } = useTranslation('common')
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation()
   
@@ -72,7 +74,7 @@ export default function GeneratedVariations({
           {(editingVariations[index] || variation.original).length > 200 && (
             <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
               <p className="text-sm text-gray-600">
-                200文字以内で入力してください（現在: {(editingVariations[index] || variation.original).length}文字）
+                {t('phrase.validation.variationMaxLength')}
               </p>
             </div>
           )}
