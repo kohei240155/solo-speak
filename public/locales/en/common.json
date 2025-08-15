@@ -43,6 +43,10 @@
       "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
       "generationFailed": "Failed to generate phrases",
       "generationError": "Error occurred during phrase generation"
+    },
+    "delete": {
+      "confirmMessage": "Are you sure you want to delete this phrase?",
+      "warningMessage": "This action cannot be undone."
     }
   },
   "phraseGeneration": {

@@ -43,6 +43,10 @@
       "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
       "generationFailed": "フレーズの生成に失敗しました",
       "generationError": "フレーズの生成中にエラーが発生しました"
+    },
+    "delete": {
+      "confirmMessage": "このフレーズを削除してもよろしいですか？",
+      "warningMessage": "この操作は取り消すことができません。"
     }
   },
   "phraseGeneration": {
