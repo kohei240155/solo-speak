@@ -129,7 +129,7 @@ export default function PhraseList({
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 pb-32">
         {savedPhrases.map((phrase, index) => (
           <PhraseItem
             key={`${phrase.id}-${index}`}
