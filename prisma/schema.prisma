@@ -68,6 +68,7 @@ model Phrase {
   totalSpeakCount    Int          @default(0) @map("total_speak_count")
   dailySpeakCount    Int          @default(0) @map("daily_speak_count")
   lastSpeakDate      DateTime?    @map("last_speak_date")
+  lastQuizDate       DateTime?    @map("last_quiz_date")
   sessionSpoken      Boolean      @default(false) @map("session_spoken")
   correctQuizCount   Int          @default(0) @map("correct_quiz_count")
   incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")

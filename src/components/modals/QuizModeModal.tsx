@@ -21,6 +21,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
   const [mode, setMode] = useState<'normal' | 'random'>('normal')
   const [questionCount, setQuestionCount] = useState<number>(10)
   const [speakCountFilter, setSpeakCountFilter] = useState<number | null>(50) // デフォルトは50回以上
+  const [excludeTodayQuizzed, setExcludeTodayQuizzed] = useState<boolean>(true) // 今日出題済みのフレーズを除外するかどうか（デフォルトはtrue）
   const [isLoading, setIsLoading] = useState(false)
 
   // フレーズ数が変わった時に問題数を調整
@@ -34,6 +35,7 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
     if (isOpen) {
       setQuestionCount(10)
       setSpeakCountFilter(50) // 音読回数フィルターも初期化
+      setExcludeTodayQuizzed(true) // 今日出題済み除外オプションも初期化
     }
   }, [isOpen])
 
@@ -72,7 +74,8 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         mode: mode,
         language: selectedLanguage,
         questionCount: questionCount,
-        speakCountFilter: speakCountFilter
+        speakCountFilter: speakCountFilter,
+        excludeTodayQuizzed: excludeTodayQuizzed
       }
       
       // Quiz APIを呼び出してフレーズの有無を確認
@@ -85,6 +88,11 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
       // 音読回数フィルターがある場合は追加
       if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
         params.append('speakCountFilter', config.speakCountFilter.toString())
+      }
+
+      // 今日出題済み除外オプションがある場合は追加
+      if (config.excludeTodayQuizzed) {
+        params.append('excludeTodayQuizzed', 'true')
       }
 
       const data = await api.get<{ success: boolean, phrases?: unknown[], message?: string }>(`/api/phrase/quiz?${params.toString()}`)
@@ -138,6 +146,14 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
           const stringValue = value as string
           setSpeakCountFilter(stringValue === '' ? null : parseInt(stringValue, 10))
         }
+      },
+      {
+        id: 'excludeTodayQuizzed',
+        label: t('quiz.modal.optionsTitle'),
+        type: 'checkbox',
+        value: excludeTodayQuizzed,
+        checkboxLabel: t('quiz.modal.excludeTodayQuizzedLabel'), // チェックボックスの右側に表示するラベル
+        onChange: (value: string | boolean) => setExcludeTodayQuizzed(value as boolean)
       }
     ],
     onStart: handleStart,
