@@ -92,7 +92,7 @@ export default function SpeakPage() {
               dailySpeakCount: data.phrase.dailySpeakCount || 0
             })
           } else {
-            setError(data.message || 'フレーズが見つかりませんでした')
+            setError(data.message || t('phrase.messages.notFound'))
           }
         } else {
           // phraseIdがない場合は従来通りのAPIを呼び出し
@@ -104,15 +104,15 @@ export default function SpeakPage() {
           if (data.success) {
             setPhrase(data.phrase!)
           } else {
-            setError(data.message || 'フレーズが見つかりませんでした')
+            setError(data.message || t('phrase.messages.notFound'))
           }
         }
       } catch (error) {
         console.error('Error fetching phrase:', error)
         if (phraseId) {
-          setError('フレーズが見つかりませんでした')
+          setError(t('phrase.messages.notFound'))
         } else {
-          setError('フレーズの取得に失敗しました')
+          setError(t('phrase.messages.fetchFailed'))
         }
       } finally {
         setLoading(false)
@@ -120,7 +120,7 @@ export default function SpeakPage() {
     }
 
     fetchPhrase()
-  }, [languageId, user])
+  }, [languageId, user, t])
 
   const handleCount = () => {
     if (!phrase) return
@@ -218,12 +218,12 @@ export default function SpeakPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">この機能を利用するにはログインが必要です</p>
+          <p className="text-gray-600 mb-4">{t('common.loginRequired')}</p>
           <button
             onClick={() => router.push('/')}
             className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
           >
-            ホームに戻る
+            {t('common.backToHome')}
           </button>
         </div>
       </div>
@@ -276,12 +276,12 @@ export default function SpeakPage() {
           {/* エラー表示エリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">{error || 'フレーズが見つかりませんでした'}</p>
+              <p className="text-gray-600 mb-4">{error || t('phrase.messages.notFound')}</p>
               <button
                 onClick={() => router.push('/phrase/list')}
                 className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
               >
-                戻る
+                Back
               </button>
             </div>
           </div>

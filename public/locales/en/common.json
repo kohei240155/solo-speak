@@ -14,6 +14,10 @@
     "unsavedPhrase": "Generated phrases have not been saved. Do you want to leave this page?",
     "unsavedCount": "Count has not been registered. Do you want to leave this page?"
   },
+  "common": {
+    "backToHome": "Back to Home",
+    "loginRequired": "You need to login to use this feature"
+  },
   "phrase": {
     "noPhrasesYet": "No phrases have been registered yet",
     "placeholders": {
@@ -30,6 +34,7 @@
       "saveSuccess": "Phrase saved successfully",
       "saveError": "Error occurred while saving phrase",
       "fetchError": "Error occurred while fetching phrase",
+      "fetchFailed": "Failed to fetch phrase",
       "countError": "Failed to send count",
       "notFound": "Phrase not found",
       "nextPhraseNotFound": "No next phrase found",
