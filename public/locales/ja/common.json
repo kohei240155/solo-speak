@@ -229,7 +229,8 @@
   },
   "auth": {
     "modal": {
-      "supportMessage": "あなたのスピーキング学習をサポートします。",
+      "supportMessage": "Solo Speakはあなたのスピーキング学習をサポートします。",
+      "supportMessageShort": "あなたのスピーキング学習をサポートします。",
       "browserNote": "※Safari/Chromeでログインしてください",
       "popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
       "authFailedError": "認証に失敗しました。再度お試しください。"

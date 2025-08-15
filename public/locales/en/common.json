@@ -227,6 +227,15 @@
   "ranking": {
     "noData": "No data available to display"
   },
+  "auth": {
+    "modal": {
+      "supportMessage": "Solo Speak is supporting your speaking practice journey.",
+      "supportMessageShort": "Supporting your speaking practice journey.",
+      "browserNote": "※Please login with Safari/Chrome",
+      "popupBlockedError": "The authentication screen is taking time to display. Please check if popups are not blocked.",
+      "authFailedError": "Authentication failed. Please try again."
+    }
+  },
   "situation": {
     "addSuccess": "Situation added successfully",
     "addError": "Error occurred while adding situation",
