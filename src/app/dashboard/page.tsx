@@ -82,7 +82,7 @@ export default function DashboardPage() {
           {/* ダッシュボードエラー */}
           {dashboardError && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-              <p className="text-red-800">エラー: {dashboardError}</p>
+              <p className="text-red-800">Error: {dashboardError}</p>
             </div>
           )}
 
@@ -165,7 +165,7 @@ export default function DashboardPage() {
               <div className="bg-white rounded-lg shadow-md p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Phrase Level Statistics</h2>
                 <div className="text-center py-4">
-                  <p className="text-gray-600">データがまだありません</p>
+                  <p className="text-gray-600">No data available</p>
                 </div>
               </div>
             </div>
