@@ -39,6 +39,15 @@ export function useModalManager({ handleSpeakStart, setIsSpeakCompleted }: UseMo
       mode: config.mode,
       count: (config.questionCount || 10).toString()
     })
+
+    // 音読回数フィルターがある場合は追加
+    if (config.speakCountFilter !== null && config.speakCountFilter !== undefined) {
+      queryParams.append('speakCountFilter', config.speakCountFilter.toString())
+    }
+
+    // 今日出題済み除外オプションを必ず追加（true/falseに関わらず）
+    queryParams.append('excludeTodayQuizzed', config.excludeTodayQuizzed ? 'true' : 'false')
+
     router.push(`/phrase/quiz?${queryParams.toString()}`)
   }
 
