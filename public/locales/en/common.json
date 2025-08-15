@@ -99,6 +99,8 @@
       "mode": "Mode",
       "quizLength": "Quiz Length",
       "speakCountFilter": "Speak Count",
+      "optionsTitle": "Options",
+      "excludeTodayQuizzedLabel": "Exclude phrases quizzed today",
       "options": {
         "normal": "Normal",
         "random": "Random"

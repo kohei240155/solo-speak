@@ -99,6 +99,8 @@
       "mode": "モード",
       "quizLength": "問題数",
       "speakCountFilter": "音読回数",
+      "optionsTitle": "オプション",
+      "excludeTodayQuizzedLabel": "今日既に出題したフレーズを除外する",
       "options": {
         "normal": "通常",
         "random": "ランダム"

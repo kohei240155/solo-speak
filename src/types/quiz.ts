@@ -4,6 +4,7 @@ export interface QuizConfig {
   language: string
   questionCount?: number
   speakCountFilter?: number | null // 音読回数フィルター（null = 指定なし）
+  excludeTodayQuizzed?: boolean // 今日既に出題したフレーズを除外するかどうか
 }
 
 // クイズ用フレーズの型定義

@@ -27,15 +27,18 @@ export async function POST(request: NextRequest) {
 
     // トランザクションで実行
     const result = await prisma.$transaction(async (tx) => {
-      // フレーズの正解数/不正解数を更新
+      // フレーズの正解数/不正解数とlast_quiz_dateを更新
       const updatedPhrase = await tx.phrase.update({
         where: {
           id: phraseId,
           userId: authResult.user.id // セキュリティチェック
         },
-        data: isCorrect
-          ? { correctQuizCount: { increment: 1 } }
-          : { incorrectQuizCount: { increment: 1 } }
+        data: {
+          ...(isCorrect
+            ? { correctQuizCount: { increment: 1 } }
+            : { incorrectQuizCount: { increment: 1 } }),
+          lastQuizDate: new Date() // クイズ実行日時を更新
+        }
       })
 
       // クイズ結果を記録
