@@ -71,6 +71,14 @@ export async function POST(request: NextRequest) {
       })
 
       resetCount = updateResult.count
+
+      // ユーザーのlastSpeakingDateを現在時刻に更新
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          lastSpeakingDate: new Date()
+        }
+      })
     }
 
     const responseData: UserDailyResetResponse = {

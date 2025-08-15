@@ -91,14 +91,6 @@ export async function POST(
         })
       }
 
-      // ユーザーのlast_speaking_dateを更新（実際にSpeak練習を行った時刻を記録）
-      await prisma.user.update({
-        where: { id: authResult.user.id },
-        data: {
-          lastSpeakingDate: currentDate
-        }
-      })
-
       return phrase
     })
 
