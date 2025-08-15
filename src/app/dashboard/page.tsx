@@ -104,7 +104,7 @@ export default function DashboardPage() {
 
               {/* Speak Count (Today) */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Today Speaking Count</h2>
                 <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountToday}
                 </div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
               {/* Speak Count (Total) */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Total Speaking Count</h2>
                 <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountTotal}
                 </div>
