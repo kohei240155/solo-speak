@@ -77,7 +77,13 @@
     "messages": {
       "dailyLimitReached": "1日100回のSpeak制限に到達しました。明日また挑戦してください！",
       "endError": "終了処理中にエラーが発生しました",
-      "countError": "音読回数の更新中にエラーが発生しました"
+      "countError": "音読回数の更新中にエラーが発生しました",
+      "sessionResetFailed": "セッション状態のリセットに失敗しました",
+      "dailyCountResetFailed": "日次カウントのリセットに失敗しました",
+      "phraseCountFetchFailedEmpty": "フレーズ数の取得に失敗しました（レスポンスが空です）",
+      "phraseCountFetchFailed": "フレーズ数の取得に失敗しました",
+      "noPracticeablePhrases": "このモードでは練習できるフレーズがありません",
+      "phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました"
     },
     "explanation": {
       "title": "Speak Mode ガイド",

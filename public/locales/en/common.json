@@ -77,7 +77,13 @@
     "messages": {
       "dailyLimitReached": "You have reached the daily limit of 100 speaks. Please try again tomorrow!",
       "endError": "Error occurred during end process",
-      "countError": "Error occurred while updating speak count"
+      "countError": "Error occurred while updating speak count",
+      "sessionResetFailed": "Failed to reset session state",
+      "dailyCountResetFailed": "Failed to reset daily count",
+      "phraseCountFetchFailedEmpty": "Failed to fetch phrase count (empty response)",
+      "phraseCountFetchFailed": "Failed to fetch phrase count",
+      "noPracticeablePhrases": "No phrases available to practice in this mode",
+      "phraseCountCheckError": "Error occurred while checking phrase count"
     },
     "explanation": {
       "title": "Speak Mode Guide",
