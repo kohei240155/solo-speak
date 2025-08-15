@@ -118,9 +118,9 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Quiz Mastery */}
+              {/* Phrase Level Statistics */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Phrase Level Statistics</h2>
                 <div className="space-y-4">
                   {dashboardData.quizMastery?.map((level: { level: string; score: number; color: string }) => (
                     <div key={level.level} className="flex items-center">
@@ -163,7 +163,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Phrase Level Statistics</h2>
                 <div className="text-center py-4">
                   <p className="text-gray-600">データがまだありません</p>
                 </div>

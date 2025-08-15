@@ -40,7 +40,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       totalPhraseCount,
       speakCountToday,
       speakCountTotal,
-      quizResults,
+      allPhrases,
       allPhraseLevels
     ] = await Promise.all([
       // 1. Total Phrase Count - 指定言語のフレーズ総数
@@ -90,24 +90,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
       }),
 
-      // 4. Quiz Results - クイズ結果
-      prisma.quizResult.findMany({
+      // 4. All Phrases by Level - レベル別フレーズ数を取得するために全フレーズを取得
+      prisma.phrase.findMany({
         where: {
-          phrase: {
-            userId: user.id,
-            language: {
-              code: language,
-            },
+          userId: user.id,
+          language: {
+            code: language,
           },
-          correct: true,
           deletedAt: null,
         },
         include: {
-          phrase: {
-            include: {
-              phraseLevel: true,
-            },
-          },
+          phraseLevel: true,
         },
       }),
 
@@ -118,11 +111,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }),
     ])
 
-    // Quiz Masteryデータの集計
+    // Quiz Masteryデータの集計 - レベル別フレーズ総数
     const quizMastery: QuizMasteryLevel[] = allPhraseLevels.map((level) => ({
       level: level.name,
-      score: quizResults.filter(
-        (result) => result.phrase.phraseLevel?.id === level.id
+      score: allPhrases.filter(
+        (phrase) => phrase.phraseLevel?.id === level.id
       ).length,
       color: level.color || '#gray-500',
     }))
