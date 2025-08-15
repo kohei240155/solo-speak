@@ -4,6 +4,7 @@ import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { BiCommentDetail } from 'react-icons/bi'
 import { useState, useEffect } from 'react'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import AnimatedButton from '../common/AnimatedButton'
 import LoadingSpinner from '../common/LoadingSpinner'
 
@@ -47,6 +48,7 @@ export default function SpeakPractice({
   learningLanguage = 'en',
   onExplanation
 }: SpeakPracticeProps) {
+  const { t } = useTranslation('common')
   const [countCooldown, setCountCooldown] = useState(0)
   
   // TTS機能の初期化
@@ -101,12 +103,12 @@ export default function SpeakPractice({
   if (!phrase) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600">フレーズが見つかりませんでした</p>
+        <p className="text-gray-600">{t('speak.messages.noPhraseFound')}</p>
         <button
           onClick={onFinish}
           className="mt-4 px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
         >
-          戻る
+          Back
         </button>
       </div>
     )

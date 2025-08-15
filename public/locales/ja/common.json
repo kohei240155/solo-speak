@@ -88,7 +88,8 @@
       "phraseCountFetchFailedEmpty": "フレーズ数の取得に失敗しました（レスポンスが空です）",
       "phraseCountFetchFailed": "フレーズ数の取得に失敗しました",
       "noPracticeablePhrases": "このモードでは練習できるフレーズがありません",
-      "phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました"
+      "phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました",
+      "noPhraseFound": "フレーズが見つかりませんでした"
     },
     "explanation": {
       "title": "Speak Mode ガイド",

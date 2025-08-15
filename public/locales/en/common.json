@@ -88,7 +88,8 @@
       "phraseCountFetchFailedEmpty": "Failed to fetch phrase count (empty response)",
       "phraseCountFetchFailed": "Failed to fetch phrase count",
       "noPracticeablePhrases": "No phrases available to practice in this mode",
-      "phraseCountCheckError": "Error occurred while checking phrase count"
+      "phraseCountCheckError": "Error occurred while checking phrase count",
+      "noPhraseFound": "No phrase found"
     },
     "explanation": {
       "title": "Speak Mode Guide",
