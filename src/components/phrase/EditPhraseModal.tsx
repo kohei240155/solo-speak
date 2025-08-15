@@ -119,7 +119,6 @@ export default function EditPhraseModal({
           onChange={(e) => setEditedTranslation(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder="例：この料理はなんですか？"
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             editedTranslation.length > 200
               ? 'border-gray-400' 
@@ -149,7 +148,6 @@ export default function EditPhraseModal({
           onChange={(e) => setEditedText(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder="Enter phrase"
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             editedText.length > 200
               ? 'border-gray-400' 

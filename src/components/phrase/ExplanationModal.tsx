@@ -14,8 +14,8 @@ export default function ExplanationModal({
   explanationText,
   onClose
 }: ExplanationModalProps) {
-  // 説明文の優先順位: explanationText > phrase.explanation > デフォルト
-  const displayText = explanationText || phrase?.explanation || 'Explanation情報がありません'
+  // 説明文の優先順位: explanationText > phrase.explanation
+  const displayText = explanationText || phrase?.explanation
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="Explanation">
