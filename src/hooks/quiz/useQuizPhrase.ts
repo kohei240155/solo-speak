@@ -42,6 +42,11 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         params.append('speakCountFilter', config.speakCountFilter.toString())
       }
 
+      // 今日出題済み除外オプションがある場合は追加
+      if (config.excludeTodayQuizzed) {
+        params.append('excludeTodayQuizzed', 'true')
+      }
+
       const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], message?: string, totalCount?: number, availablePhraseCount?: number }>(`/api/phrase/quiz?${params.toString()}`)
 
       if (data.success && data.phrases && data.phrases.length > 0) {

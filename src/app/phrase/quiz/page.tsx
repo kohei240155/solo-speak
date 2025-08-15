@@ -117,12 +117,14 @@ export default function PhraseQuizPage() {
       const mode = params.get('mode') as 'normal' | 'random' || 'normal'
       const questionCount = params.get('count') ? parseInt(params.get('count')!, 10) : 10
       const speakCountFilter = params.get('speakCountFilter') ? parseInt(params.get('speakCountFilter')!, 10) : null
+      const excludeTodayQuizzed = params.get('excludeTodayQuizzed') === 'true'
 
       const config: QuizConfig = {
         language,
         mode,
         questionCount,
-        speakCountFilter
+        speakCountFilter,
+        excludeTodayQuizzed
       }
       handleQuizStart(config)
     }
