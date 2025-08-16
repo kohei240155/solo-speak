@@ -8,12 +8,10 @@ export async function handlePhraseCount(phraseId: string, count: number) {
   
   if (isApiError(result)) {
     // エラーハンドリング - 型安全にerrorプロパティにアクセス可能
-    console.error('Count update failed:', result.error)
     return null
   }
   
   // 成功時 - 型安全にphraseプロパティにアクセス可能
-  console.log('Updated phrase:', result.phrase)
   return result.phrase
 }
 
@@ -26,16 +24,14 @@ export async function handleGetSpeakPhrase(languageCode: string) {
   
   if (isApiSuccess(result)) {
     if (result.allDone) {
-      console.log('All phrases completed!')
       return null
     }
     
     if (result.phrase) {
-      console.log('Got phrase:', result.phrase)
       return result.phrase
     }
   } else {
-    console.error('Failed to get phrase:', result.error)
+    // Failed to get phrase - silently handle error
   }
   
   return null
