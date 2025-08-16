@@ -41,10 +41,9 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Situation deleted successfully' })
 
-  } catch (error) {
-    console.error('Error deleting situation:', error)
+  } catch {
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { success: false, error: 'Failed to delete situation' },
       { status: 500 }
     )
   }

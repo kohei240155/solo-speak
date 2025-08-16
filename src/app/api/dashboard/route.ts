@@ -129,8 +129,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Dashboard API error:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

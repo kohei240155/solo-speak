@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       message: 'Icon uploaded successfully'
     })
   } catch (error) {
-    return createErrorResponse(error, 'POST /api/user/icon')
+    return createErrorResponse(error)
   }
 }
 
@@ -103,6 +103,6 @@ export async function DELETE(request: NextRequest) {
       message: 'Icon deleted successfully'
     })
   } catch (error) {
-    return createErrorResponse(error, 'DELETE /api/user/icon')
+    return createErrorResponse(error)
   }
 }

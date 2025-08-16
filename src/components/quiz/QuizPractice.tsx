@@ -89,8 +89,8 @@ export default function QuizPractice({
     
     try {
       await playText(currentPhrase.original)
-    } catch (error) {
-      console.error('Failed to play audio:', error)
+    } catch {
+      // 音声再生失敗時の処理
     }
   }
 

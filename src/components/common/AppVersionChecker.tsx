@@ -25,9 +25,9 @@ export default function AppVersionChecker() {
         }
         
         setCurrentVersion(buildTime);
-      } catch (error) {
-        console.error('Version check failed:', error);
-      }
+      } catch {
+          // バージョンチェックエラーは無視（静寂に失敗）
+        }
     };
 
     // ページの可視性が変わった時（フォーカスが戻った時）にチェック

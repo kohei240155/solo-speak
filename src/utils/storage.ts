@@ -36,13 +36,6 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
       })
 
     if (error) {
-      console.error('Supabase storage upload error:', error)
-      console.error('Error details:', {
-        message: error.message,
-        name: error.name,
-        cause: error.cause
-      })
-      
       // RLSエラーの場合はより詳細なエラーメッセージを提供
       if (error.message.includes('row-level security') || error.message.includes('policy')) {
         throw new Error(`画像のアップロード権限がありません。RLSポリシーを確認してください。\n詳細: ${error.message}`)
@@ -66,18 +59,17 @@ export async function uploadUserIcon(file: File, userId: string, serverMode: boo
           .createSignedUrl(filePath, 365 * 24 * 60 * 60) // 1年間有効
       
         if (signedUrlError) {
-          console.error('Error creating signed URL:', signedUrlError)
+          // Error creating signed URL
         } else {
           return signedUrlData.signedUrl
         }
       }
-    } catch (urlError) {
-      console.error('URL accessibility test failed:', urlError)
+    } catch {
+      // URL accessibility test failed
     }
 
     return publicUrlData.publicUrl
   } catch (error) {
-    console.error('Error uploading user icon:', error)
     throw error
   }
 }
@@ -91,7 +83,6 @@ export async function testStoragePermissions(): Promise<void> {
     await serverSupabase.storage.listBuckets()
     
   } catch (error) {
-    console.error('❌ Storage permissions test failed:', error)
     throw error
   }
 }

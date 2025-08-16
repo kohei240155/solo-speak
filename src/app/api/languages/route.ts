@@ -22,15 +22,13 @@ export async function GET(request: NextRequest) {
     
     if (languages.length === 0) {
       return createErrorResponse(
-        new Error('No languages found in database'), 
-        'GET /api/languages'
+        new Error('No languages found in database')
       )
     }
 
     return NextResponse.json(languages)
   } catch (error) {
     // データベースエラーの場合、共通のエラーレスポンスを返す
-    console.error('Error fetching languages:', error)
-    return createErrorResponse(error, 'GET /api/languages')
+    return createErrorResponse(error)
   }
 }

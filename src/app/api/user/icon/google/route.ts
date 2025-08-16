@@ -44,6 +44,6 @@ export async function POST(request: NextRequest) {
       message: 'Google avatar uploaded successfully'
     })
   } catch (error) {
-    return createErrorResponse(error, 'POST /api/user/icon/google')
+    return createErrorResponse(error)
   }
 }

@@ -36,11 +36,6 @@ export async function checkUserExists(userId: string): Promise<boolean> {
     const exists = !!user
     return exists
   } catch (error) {
-    console.error('checkUserExists - Error:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      userId
-    })
     throw error
   }
 }
@@ -141,13 +136,6 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
       defaultLearningLanguage: null
     }
   } catch (error) {
-    console.error('initializeUser - Error:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      userId: user.id,
-      displayLanguage
-    })
     throw error
   }
 }
@@ -186,8 +174,7 @@ export async function createUserSettings(
       if (result.nativeLanguage) {
         await createDefaultSituationsForUser(prisma, result.id, result.nativeLanguage.code)
       }
-    } catch (situationError) {
-      console.error('Failed to create default situations:', situationError)
+    } catch {
       // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
     }
 
@@ -209,16 +196,6 @@ export async function createUserSettings(
       } : null
     }
   } catch (error) {
-    console.error('createUserSettings - Error:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      userId: user.id,
-      userData: {
-        ...userData,
-        iconUrl: userData.iconUrl ? `${userData.iconUrl.substring(0, 50)}...` : userData.iconUrl
-      }
-    })
     throw error
   }
 }
@@ -268,8 +245,7 @@ export async function updateUserSettings(
     if (!hasSituations && result.nativeLanguage) {
       await createDefaultSituationsForUser(prisma, userId, result.nativeLanguage.code)
     }
-  } catch (situationError) {
-    console.error('Failed to create default situations during update:', situationError)
+  } catch {
     // シチュエーション作成に失敗してもユーザー更新自体は成功として扱う
   }
 

@@ -33,10 +33,9 @@ export async function POST(request: NextRequest) {
       count: updateResult.count
     })
 
-  } catch (error) {
-    console.error('Error resetting session_spoken:', error)
+  } catch {
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, error: 'Failed to reset session_spoken' },
       { status: 500 }
     )
   }

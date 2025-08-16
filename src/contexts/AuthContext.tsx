@@ -190,12 +190,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // 明示的にOAuth URLに遷移（ブラウザによってはこれが必要）
         window.location.href = data.url
       } else if (!error) {
-        console.warn('OAuth started but no URL was returned')
+        // OAuth started but no URL was returned
       }
       
       return { error }
     } catch (err) {
-      console.error('Error in signInWithGoogle:', err)
       const error = err instanceof Error ? err : new Error('認証処理でエラーが発生しました')
       return { error: error as AuthError }
     }
@@ -296,8 +295,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // Googleアバターがある場合は表示
           const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
           setUserIconUrl(googleAvatarUrl || null)
-        } catch (initError) {
-          console.error('Error initializing user:', initError)
+        } catch {
           setIsUserSetupComplete(false)
           setShouldRedirectToSettings(true)
           
@@ -307,7 +305,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } else {
         // その他のエラーの場合
-        console.error('Error fetching user settings:', error)
         setIsUserSetupComplete(false)
         
         // Googleアバターがある場合は保持
@@ -362,7 +359,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data: { session: newSession }, error } = await supabase.auth.refreshSession()
       
       if (error) {
-        console.error('Session refresh error:', error)
         // セッション更新に失敗した場合、現在のセッションを取得
         const { data: { session: currentSession } } = await supabase.auth.getSession()
         if (currentSession) {
@@ -376,8 +372,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(newSession)
         setUser(newSession.user)
       }
-    } catch (error) {
-      console.error('Failed to refresh session:', error)
+    } catch {
+      // Session refresh failed
     }
   }
 

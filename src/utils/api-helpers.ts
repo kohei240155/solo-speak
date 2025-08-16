@@ -27,12 +27,10 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
       try {
         authResponse = await serverSupabase.auth.getUser(token)
         break // 成功した場合はループを抜ける
-      } catch (authError) {
-        console.error(`authenticateRequest - Auth attempt ${retryCount + 1} failed:`, authError)
+      } catch {
         retryCount++
         
         if (retryCount >= maxRetries) {
-          console.error('authenticateRequest - Max retries exceeded')
           return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
         }
         
@@ -42,24 +40,17 @@ export async function authenticateRequest(request: NextRequest): Promise<{ user:
     }
 
     if (!authResponse) {
-      console.error('authenticateRequest - No auth response received')
       return { error: NextResponse.json({ error: 'Authentication service unavailable' }, { status: 503 }) }
     }
 
     const { data: { user }, error } = authResponse
 
     if (error || !user) {
-      console.error('authenticateRequest - Invalid token or user not found:', { error, userId: user?.id })
       return { error: NextResponse.json({ error: 'Invalid token' }, { status: 401 }) }
     }
     
     return { user }
-  } catch (error) {
-    console.error('authenticateRequest - Exception:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
-    })
+  } catch {
     return { error: NextResponse.json({ error: 'Internal server error' }, { status: 500 }) }
   }
 }
@@ -109,14 +100,7 @@ export function validateEmail(email: string): { isValid: boolean; error?: string
  * @param context エラーが発生したコンテキスト
  * @returns エラーレスポンス
  */
-export function createErrorResponse(error: unknown, context: string): NextResponse {
-  console.error(`Error in ${context}:`, error)
-  console.error('Error details:', {
-    message: error instanceof Error ? error.message : 'Unknown error',
-    stack: error instanceof Error ? error.stack : undefined,
-    name: error instanceof Error ? error.name : undefined
-  })
-  
+export function createErrorResponse(error: unknown): NextResponse {
   return NextResponse.json({ 
     error: 'Internal server error',
     details: error instanceof Error ? error.message : 'Unknown error'
@@ -153,8 +137,7 @@ export async function getClientAuthToken(): Promise<string | null> {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     return session?.access_token ? `Bearer ${session.access_token}` : null
-  } catch (error) {
-    console.error('Failed to get client auth token:', error)
+  } catch {
     return null
   }
 }

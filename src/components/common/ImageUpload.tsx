@@ -54,8 +54,7 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
           const blob = new Blob([array], { type: mime })
           const file = new File([blob], 'avatar.jpg', { type: mime })
           return file
-        } catch (error) {
-          console.error('ImageUpload: Failed to convert selected image to file:', error)
+        } catch {
           return null
         }
       }

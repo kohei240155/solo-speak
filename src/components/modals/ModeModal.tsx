@@ -77,8 +77,8 @@ export default function ModeModal({
     setInternalLoading(true)
     try {
       await config.onStart(selectedLanguage)
-    } catch (error) {
-      console.error('Error starting mode:', error)
+    } catch {
+      // モード開始時のエラー処理
     } finally {
       setInternalLoading(false)
     }

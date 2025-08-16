@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Expires', '0')
     return response
   } catch (error) {
-    return createErrorResponse(error, 'GET /api/user/settings')
+    return createErrorResponse(error)
   }
 }
 
@@ -99,8 +99,7 @@ export async function POST(request: NextRequest) {
           error: `Learning language with ID '${defaultLearningLanguageId}' not found. Please select a valid language.` 
         }, { status: 400 })
       }
-    } catch (error) {
-      console.error('Error validating language IDs:', error)
+    } catch {
       return NextResponse.json({ 
         error: 'Failed to validate language selection. Please try again.' 
       }, { status: 500 })
@@ -129,14 +128,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result, { status: existingUser ? 200 : 201 })
   } catch (error) {
-    console.error('POST /api/user/settings - Detailed error:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined,
-      timestamp: new Date().toISOString()
-    })
-    return createErrorResponse(error, 'POST /api/user/settings')
+    return createErrorResponse(error)
   }
 }
 
@@ -196,6 +188,6 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updatedUser)
   } catch (error) {
-    return createErrorResponse(error, 'PUT /api/user/settings')
+    return createErrorResponse(error)
   }
 }

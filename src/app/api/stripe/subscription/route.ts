@@ -60,10 +60,9 @@ export async function GET(request: NextRequest) {
       serverTimezone: 'UTC'
     })
 
-  } catch (error) {
-    console.error('Error fetching subscription status:', error)
+  } catch {
     return NextResponse.json(
-      { error: 'Failed to fetch subscription status' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
