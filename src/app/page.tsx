@@ -306,21 +306,21 @@ export default function Home() {
                 <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-lg">
                   <div className="space-y-4">
                     <div className="flex items-start text-left">
-                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                      <BsCheckSquareFill className="w-5 h-5 mr-4 flex-shrink-0 mt-1" style={{ color: '#616161' }} />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.aiGeneration')}
                       </span>
                     </div>
                     
                     <div className="flex items-start text-left">
-                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                      <BsCheckSquareFill className="w-5 h-5 mr-4 flex-shrink-0 mt-1" style={{ color: '#616161' }} />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.practiceSupport')}
                       </span>
                     </div>
                     
                     <div className="flex items-start text-left">
-                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                      <BsCheckSquareFill className="w-5 h-5 mr-4 flex-shrink-0 mt-1" style={{ color: '#616161' }} />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.quizFunction')}
                       </span>
