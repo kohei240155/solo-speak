@@ -35,8 +35,7 @@ export default function SubscriptionTab() {
       try {
         const response = await api.get<SubscriptionStatus>('/api/stripe/subscription')
         setSubscriptionStatus(response)
-      } catch (error) {
-        console.error('Error fetching subscription status:', error)
+      } catch {
         toast.error(t('subscription.fetchError'))
       } finally {
         setIsLoading(false)
@@ -73,8 +72,7 @@ export default function SubscriptionTab() {
       
       // Stripeチェックアウトページにリダイレクト
       window.location.href = response.checkoutUrl
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
+    } catch {
       toast.error(t('subscription.checkoutError'))
       setIsProcessing(false)
     }
@@ -109,8 +107,7 @@ export default function SubscriptionTab() {
       } else {
         throw new Error('Failed to cancel subscription')
       }
-    } catch (error) {
-      console.error('Error canceling subscription:', error)
+    } catch {
       toast.error(t('subscription.cancelError'))
     } finally {
       setIsProcessing(false)

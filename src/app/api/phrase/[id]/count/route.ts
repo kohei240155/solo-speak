@@ -107,8 +107,7 @@ export async function POST(
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error updating phrase count:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

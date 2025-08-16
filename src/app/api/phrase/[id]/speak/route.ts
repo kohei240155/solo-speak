@@ -56,8 +56,7 @@ export async function GET(
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error fetching specific phrase for speak:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

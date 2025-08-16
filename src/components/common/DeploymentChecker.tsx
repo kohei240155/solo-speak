@@ -34,8 +34,8 @@ export default function DeploymentChecker() {
           localStorage.setItem('app_build_time', currentBuildTime);
         }
         
-      } catch (error) {
-        console.error('[DeploymentChecker] Error checking for updates:', error);
+      } catch {
+        // デプロイメントチェック中のエラー処理
       }
     };
 
@@ -49,8 +49,8 @@ export default function DeploymentChecker() {
           });
 
           await Promise.all(deletePromises);
-        } catch (error) {
-          console.error('[DeploymentChecker] Failed to clear caches:', error);
+        } catch {
+          // キャッシュクリア失敗時の処理
         }
       }
     };
@@ -64,10 +64,8 @@ export default function DeploymentChecker() {
         const target = event.target as HTMLElement;
         if (target && (target.tagName === 'LINK' || target.tagName === 'SCRIPT')) {
           errorCount++;
-          console.warn('[DeploymentChecker] Resource load error detected:', target);
           
           if (errorCount >= maxErrors) {
-            console.error('[DeploymentChecker] Multiple resource errors detected, clearing caches and reloading');
             clearAllCaches().then(() => {
               setTimeout(() => {
                 window.location.href = window.location.href;

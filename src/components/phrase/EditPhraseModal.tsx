@@ -75,8 +75,7 @@ export default function EditPhraseModal({
       // 成功トースト表示
       toast.success(t('phrase.messages.updateSuccess'))
       
-    } catch (error) {
-      console.error('Error updating phrase:', error)
+    } catch {
       toast.error(t('phrase.messages.updateError'))
     } finally {
       setIsUpdating(false)

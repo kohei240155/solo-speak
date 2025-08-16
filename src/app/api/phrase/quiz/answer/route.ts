@@ -62,10 +62,9 @@ export async function POST(request: NextRequest) {
       }
     } satisfies QuizAnswerResponse)
 
-  } catch (error) {
-    console.error('Error updating quiz result:', error)
+  } catch {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Failed to update quiz result' },
       { status: 500 }
     )
   }

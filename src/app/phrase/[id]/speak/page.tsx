@@ -107,8 +107,7 @@ export default function SpeakPage() {
             setError(data.message || t('phrase.messages.notFound'))
           }
         }
-      } catch (error) {
-        console.error('Error fetching phrase:', error)
+      } catch {
         if (phraseId) {
           setError(t('phrase.messages.notFound'))
         } else {
@@ -152,8 +151,7 @@ export default function SpeakPage() {
       try {
         await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
-      } catch (error: unknown) {
-        console.error('Error sending pending count:', error)
+      } catch {
         toast.error(t('phrase.messages.countError'))
         return // エラーの場合は次のフレーズ取得を中止
       }
@@ -161,8 +159,7 @@ export default function SpeakPage() {
       // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
         await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
-      } catch (error) {
-        console.error('Error setting session spoken:', error)
+      } catch {
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
       }
     }
@@ -179,8 +176,7 @@ export default function SpeakPage() {
       } else {
         toast.error(t('phrase.messages.nextPhraseNotFound'))
       }
-    } catch (error) {
-      console.error('Error fetching next phrase:', error)
+    } catch {
       toast.error(t('phrase.messages.nextPhraseError'))
     }
   }
@@ -191,8 +187,7 @@ export default function SpeakPage() {
       try {
         await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
         setPendingCount(0) // 送信成功時はペンディングカウントをリセット
-      } catch (error: unknown) {
-        console.error('Error sending pending count:', error)
+      } catch {
         toast.error(t('phrase.messages.countError'))
         // Finishの場合はエラーがあってもページ遷移を実行
       }
@@ -200,8 +195,7 @@ export default function SpeakPage() {
       // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
         await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
-      } catch (error) {
-        console.error('Error setting session spoken:', error)
+      } catch {
         // session_spoken設定エラーはページ遷移を阻害しない
       }
     }

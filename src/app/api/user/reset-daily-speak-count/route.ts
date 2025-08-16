@@ -93,8 +93,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(responseData)
 
-  } catch (error) {
-    console.error('Error resetting daily speak count:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

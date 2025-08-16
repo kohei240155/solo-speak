@@ -145,11 +145,9 @@ export async function POST(request: NextRequest) {
           lastPhraseGenerationDate: new Date()
         }
       })
-    } catch (error) {
-      console.warn('Error updating phrase generation count:', error)
-    }
-
-    return NextResponse.json(result)
+      } catch {
+        // エラーがあっても生成は完了しているため、カウント更新エラーを警告レベルで扱う
+      }    return NextResponse.json(result)
 
   } catch (error) {
     if (error instanceof z.ZodError) {

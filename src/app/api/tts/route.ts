@@ -69,8 +69,7 @@ export async function POST(request: NextRequest) {
       audioData: audioBase64,
       mimeType: 'audio/mpeg',
     })
-  } catch (error) {
-    console.error('Text-to-Speech error:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

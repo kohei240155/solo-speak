@@ -32,7 +32,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       const { error } = await signInWithGoogle()
       
       if (error) {
-        console.error('Google Sign In error:', error)
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
           timeoutRef.current = null
@@ -43,8 +42,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         // 認証成功時（リダイレクトが開始される）の場合
         // OAuth リダイレクトが発生するため、タイムアウトはそのまま維持
       }
-    } catch (err) {
-      console.error('Exception in handleGoogleSignIn:', err)
+    } catch {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
         timeoutRef.current = null

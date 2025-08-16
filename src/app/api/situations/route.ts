@@ -48,8 +48,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
 
-  } catch (error) {
-    console.error('Error fetching situations:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }
@@ -119,8 +118,7 @@ export async function POST(request: NextRequest) {
       updatedAt: newSituation.updatedAt.toISOString()
     }, { status: 201 })
 
-  } catch (error) {
-    console.error('Error creating situation:', error)
+  } catch {
     const errorResponse: ApiErrorResponse = {
       error: 'Internal server error'
     }

@@ -33,8 +33,7 @@ export default function DashboardPage() {
         // 必須項目が未設定の場合は設定ページにリダイレクト
         router.push('/settings')
       }
-    } catch (error) {
-      console.error('Error checking user setup:', error)
+    } catch {
       // エラー時も設定画面にリダイレクトしない（データ表示をスキップ）
       setSetupCheckLoading(false)
     }

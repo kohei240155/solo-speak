@@ -58,8 +58,7 @@ export async function POST(request: NextRequest) {
       message: 'Subscription canceled immediately. AI phrase generation access has been revoked.' 
     })
 
-  } catch (error) {
-    console.error('Error canceling subscription:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Failed to cancel subscription' },
       { status: 500 }
