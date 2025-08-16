@@ -2,12 +2,10 @@ import Stripe from 'stripe'
 
 // Stripe秘密鍵の確認
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('STRIPE_SECRET_KEY is not set in environment variables')
   throw new Error('Stripe configuration is missing')
 }
 
 if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
-  console.error('Invalid STRIPE_SECRET_KEY format')
   throw new Error('Invalid Stripe secret key format')
 }
 
@@ -85,8 +83,7 @@ export async function getUserSubscriptionStatus(stripeCustomerId: string): Promi
       productId,
       subscriptionId: detailedSubscription.id,
     }
-  } catch (error) {
-    console.error('Error fetching subscription status:', error)
+  } catch {
     return { isActive: false }
   }
 }
@@ -105,7 +102,6 @@ export async function createStripeCustomer(email: string, userId: string): Promi
     
     return customer.id
   } catch (error) {
-    console.error('Error creating Stripe customer:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to create Stripe customer: ${error.message}`)
     }
@@ -140,7 +136,6 @@ export async function createCheckoutSession(
     
     return session.url || ''
   } catch (error) {
-    console.error('Error creating checkout session:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to create checkout session: ${error.message}`)
     }
@@ -156,7 +151,6 @@ export async function cancelSubscription(subscriptionId: string): Promise<void> 
     // 即座にキャンセルする（期間終了を待たない）
     await stripe.subscriptions.cancel(subscriptionId)
   } catch (error) {
-    console.error('Error canceling subscription:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to cancel subscription: ${error.message}`)
     }
@@ -179,7 +173,6 @@ export async function createCustomerPortalSession(
 
     return session.url
   } catch (error) {
-    console.error('Error creating customer portal session:', error)
     if (error instanceof Error) {
       throw new Error(`Failed to create customer portal session: ${error.message}`)
     }
