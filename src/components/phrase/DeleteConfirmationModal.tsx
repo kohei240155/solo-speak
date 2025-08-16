@@ -2,6 +2,7 @@ import { useState } from 'react'
 import BaseModal from '../common/BaseModal'
 import { api } from '@/utils/api'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import toast from 'react-hot-toast'
 
 interface DeleteConfirmationModalProps {
@@ -18,6 +19,7 @@ export default function DeleteConfirmationModal({
   onRefresh
 }: DeleteConfirmationModalProps) {
   const { session } = useAuth()
+  const { t } = useTranslation('common')
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleConfirmDelete = async () => {
@@ -55,8 +57,8 @@ export default function DeleteConfirmationModal({
       {/* 確認メッセージ */}
       <div className="mb-6">
         <p className="text-gray-700">
-          このフレーズを削除してもよろしいですか？<br />
-          この操作は取り消すことができません。
+          {t('phrase.delete.confirmMessage')}<br />
+          {t('phrase.delete.warningMessage')}
         </p>
       </div>
 

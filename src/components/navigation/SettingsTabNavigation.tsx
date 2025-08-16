@@ -4,7 +4,7 @@ interface TabNavigationProps {
   isUserSetupComplete: boolean
 }
 
-export default function TabNavigation({ 
+export default function SettingsTabNavigation({ 
   activeTab, 
   setActiveTab, 
   // SUBSCRIPTION_DISABLED: isUserSetupComplete パラメータを一時的に無効化（未使用）

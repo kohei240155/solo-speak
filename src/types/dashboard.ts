@@ -6,7 +6,7 @@ export interface DashboardQueryParams {
   language: string
 }
 
-// クイズマスタリーレベルの型
+// フレーズレベル統計の型
 export interface QuizMasteryLevel {
   level: string
   score: number
@@ -15,8 +15,7 @@ export interface QuizMasteryLevel {
 
 // ダッシュボードレスポンスデータの型
 export interface DashboardData {
-  phraseCreationStreak: number
-  speakStreak: number
+  totalPhraseCount: number
   speakCountToday: number
   speakCountTotal: number
   quizMastery: QuizMasteryLevel[]

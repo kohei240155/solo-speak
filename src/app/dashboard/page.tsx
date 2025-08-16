@@ -82,7 +82,7 @@ export default function DashboardPage() {
           {/* ダッシュボードエラー */}
           {dashboardError && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-              <p className="text-red-800">エラー: {dashboardError}</p>
+              <p className="text-red-800">Error: {dashboardError}</p>
             </div>
           )}
 
@@ -91,31 +91,20 @@ export default function DashboardPage() {
             <LoadingSpinner message="Loading data..." className="py-8" />
           ) : dashboardData ? (
             <div className="space-y-6">
-              {/* Phrase Creation Streak */}
+              {/* Total Phrase Count */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Phrase Creation Streak</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Total Phrases</h2>
                 <div className="flex items-baseline">
                   <div className="text-4xl font-bold text-gray-900 mr-3">
-                    {dashboardData.phraseCreationStreak}
+                    {dashboardData.totalPhraseCount}
                   </div>
-                  <div className="text-xl text-gray-600">days</div>
-                </div>
-              </div>
-
-              {/* Speak Streak */}
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
-                <div className="flex items-baseline">
-                  <div className="text-4xl font-bold text-gray-900 mr-3">
-                    {dashboardData.speakStreak}
-                  </div>
-                  <div className="text-xl text-gray-600">days</div>
+                  <div className="text-xl text-gray-600">phrases</div>
                 </div>
               </div>
 
               {/* Speak Count (Today) */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Today)</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Today Speak Count</h2>
                 <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountToday}
                 </div>
@@ -123,15 +112,15 @@ export default function DashboardPage() {
 
               {/* Speak Count (Total) */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Count (Total)</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Total Speak Count</h2>
                 <div className="text-4xl font-bold text-gray-900">
                   {dashboardData.speakCountTotal}
                 </div>
               </div>
 
-              {/* Quiz Mastery */}
+              {/* Phrase Level Statistics */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Phrase Level Statistics</h2>
                 <div className="space-y-4">
                   {dashboardData.quizMastery?.map((level: { level: string; score: number; color: string }) => (
                     <div key={level.level} className="flex items-center">
@@ -156,18 +145,10 @@ export default function DashboardPage() {
             <div className="space-y-6">
               {/* データがない場合のデフォルト表示 */}
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Phrase Creation Streak</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Total Phrases</h2>
                 <div className="flex items-baseline">
                   <div className="text-4xl font-bold text-gray-900 mr-3">0</div>
-                  <div className="text-xl text-gray-600">days</div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Speak Streak</h2>
-                <div className="flex items-baseline">
-                  <div className="text-4xl font-bold text-gray-900 mr-3">0</div>
-                  <div className="text-xl text-gray-600">days</div>
+                  <div className="text-xl text-gray-600">phrases</div>
                 </div>
               </div>
 
@@ -182,9 +163,9 @@ export default function DashboardPage() {
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Quiz Mastery</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Phrase Level Statistics</h2>
                 <div className="text-center py-4">
-                  <p className="text-gray-600">データがまだありません</p>
+                  <p className="text-gray-600">No data available</p>
                 </div>
               </div>
             </div>

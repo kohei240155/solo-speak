@@ -14,6 +14,10 @@
     "unsavedPhrase": "生成されたフレーズが保存されていません。このページを離れますか？",
     "unsavedCount": "Countが登録されていません。このページを離れますか？"
   },
+  "common": {
+    "backToHome": "ホームに戻る",
+    "loginRequired": "この機能を利用するにはログインが必要です"
+  },
   "phrase": {
     "noPhrasesYet": "まだフレーズが登録されていません",
     "placeholders": {
@@ -21,10 +25,10 @@
       "situationInput": "例：レストランの注文で"
     },
     "validation": {
-      "maxLength100": "100文字以内で入力してください（現在: {{count}}文字）",
-      "maxLength200": "200文字以内で入力してください（現在: {{count}}文字）",
       "required": "フレーズを入力してください",
-      "phraseMaxLength": "フレーズは100文字以内で入力してください"
+      "phraseMaxLength": "フレーズは100文字以内で入力してください",
+      "situationMaxLength": "50文字以内で入力してください",
+      "variationMaxLength": "200文字以内で入力してください"
     },
     "messages": {
       "updateSuccess": "フレーズが正常に更新されました！",
@@ -32,14 +36,18 @@
       "saveSuccess": "フレーズを保存しました",
       "saveError": "フレーズの保存中にエラーが発生しました",
       "fetchError": "フレーズの取得中にエラーが発生しました",
+      "fetchFailed": "フレーズの取得に失敗しました",
       "countError": "カウントの送信に失敗しました",
       "notFound": "フレーズが見つかりませんでした",
       "nextPhraseNotFound": "次のフレーズが見つかりませんでした",
       "nextPhraseError": "次のフレーズの取得に失敗しました",
       "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
       "generationFailed": "フレーズの生成に失敗しました",
-      "generationError": "フレーズの生成中にエラーが発生しました",
-      "noContentGenerated": "コンテンツが生成されませんでした"
+      "generationError": "フレーズの生成中にエラーが発生しました"
+    },
+    "delete": {
+      "confirmMessage": "このフレーズを削除してもよろしいですか？",
+      "warningMessage": "この操作は取り消すことができません。"
     }
   },
   "phraseGeneration": {
@@ -74,7 +82,14 @@
     "messages": {
       "dailyLimitReached": "1日100回のSpeak制限に到達しました。明日また挑戦してください！",
       "endError": "終了処理中にエラーが発生しました",
-      "countError": "音読回数の更新中にエラーが発生しました"
+      "countError": "音読回数の更新中にエラーが発生しました",
+      "sessionResetFailed": "セッション状態のリセットに失敗しました",
+      "dailyCountResetFailed": "日次カウントのリセットに失敗しました",
+      "phraseCountFetchFailedEmpty": "フレーズ数の取得に失敗しました（レスポンスが空です）",
+      "phraseCountFetchFailed": "フレーズ数の取得に失敗しました",
+      "noPracticeablePhrases": "このモードでは練習できるフレーズがありません",
+      "phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました",
+      "noPhraseFound": "フレーズが見つかりませんでした"
     },
     "explanation": {
       "title": "Speak Mode ガイド",
@@ -125,26 +140,26 @@
   "home": {
     "hero": {
       "subtitle": "\\ 独り言トレーニング対応 /",
-      "title": "自分だけの\nフレーズ集を作ろう！",
+      "title": "フレーズ暗記の\n決定版",
       "cta": {
         "desktop": "今すぐはじめる →"
       },
       "features": {
-        "aiGeneration": "AIが自然なフレーズを生成",
-        "practiceSupport": "独り言による学習をサポート",
-        "quizFunction": "クイズ機能を使って瞬発力をUP"
+        "aiGeneration": "AIが自然なフレーズを生成！",
+        "practiceSupport": "自分だけのフレーズ集を作れる！",
+        "quizFunction": "これで日常会話ができるようになる！"
       }
     },
     "features": {
       "title": "こんなお悩みありませんか？",
       "speechRecognition": {
-        "title": "フレーズ集を買ってみたけど、使わないフレーズばかりで挫折してしまった"
+        "title": "フレーズ集を使ってみたけど、使わないフレーズばかりで挫折してしまった"
       },
       "quiz": {
-        "title": "言えなかったフレーズ、AIで生成しても復習せずに放置してしまった"
+        "title": "知りたかったフレーズ、AIで生成しても復習せずに放置してしまった"
       },
       "progress": {
-        "title": "フレーズを丸暗記しただけで、実際の会話で使うことができなかった"
+        "title": "フレーズを丸暗記したつもりだったけど、実際の会話で使うことができなかった"
       }
     },
     "solutions": {
@@ -154,11 +169,10 @@
       },
       "feature1": {
         "number": "01",
-        "title": "「言えなかったフレーズ」\nだから実践的",
-        "description": "言えなかったフレーズを、AIが自然な表現で翻訳。自分専用のフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
+        "title": "「自分だけのフレーズ集」\nだから実用的",
+        "description": "知りたかったフレーズを、AIが自然な表現で翻訳。オリジナルのフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
-          "button": "AI Suggest",
           "outputs": [
             "How long have you been living in Japan?",
             "How long have you lived in Japan?",
@@ -182,7 +196,7 @@
       "feature3": {
         "number": "03",
         "title": "クイズ機能で「瞬発力」を\nチェック",
-        "description": "音読で記憶したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答することで、記憶→反復→実践のサイクルを完成させます。",
+        "description": "音読で暗記したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答できれば、実際の会話でもスラスラ話せます。",
         "demo": {
           "input": "How long have you been living in Japan?",
           "output": "日本にはどのぐらい住んでいるの？"
@@ -227,16 +241,27 @@
     "fetchError": "サブスクリプション状態の取得に失敗しました",
     "checkoutError": "チェックアウトセッションの作成に失敗しました"
   },
+  "ranking": {
+    "noData": "表示対象のデータがありません"
+  },
+  "auth": {
+    "modal": {
+      "supportMessage": "Solo Speakはあなたのスピーキング学習をサポートします。",
+      "supportMessageShort": "あなたのスピーキング学習をサポートします。",
+      "browserNote": "※Safari/Chromeでログインしてください",
+      "popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
+      "authFailedError": "認証に失敗しました。再度お試しください。"
+    }
+  },
   "situation": {
     "addSuccess": "シチュエーションを追加しました",
     "addError": "シチュエーションの追加中にエラーが発生しました",
     "deleteSuccess": "シチュエーションを削除しました",
-    "deleteError": "シチュエーションの削除中にエラーが発生しました"
-  },
-  "auth": {
-    "sessionExpired": "認証情報が期限切れです。ページを再読み込みしてください。",
-    "sessionInvalid": "認証が失効しました。ページを再読み込みしてください。",
-    "serviceUnavailable": "認証サービスが一時的に利用できません。しばらく待ってから再試行してください。"
+    "deleteError": "シチュエーションの削除中にエラーが発生しました",
+    "delete": {
+      "confirmMessage": "このシチュエーションを削除してもよろしいですか？",
+      "warningMessage": "この操作は取り消すことができません。"
+    }
   },
   "addToHomeScreen": {
     "title": "ホーム画面からすぐ開けます！",

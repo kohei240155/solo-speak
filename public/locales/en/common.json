@@ -14,6 +14,10 @@
     "unsavedPhrase": "Generated phrases have not been saved. Do you want to leave this page?",
     "unsavedCount": "Count has not been registered. Do you want to leave this page?"
   },
+  "common": {
+    "backToHome": "Back to Home",
+    "loginRequired": "You need to login to use this feature"
+  },
   "phrase": {
     "noPhrasesYet": "No phrases have been registered yet",
     "placeholders": {
@@ -21,10 +25,10 @@
       "situationInput": "Example: Ordering at a restaurant"
     },
     "validation": {
-      "maxLength100": "Please enter within 100 characters (Current: {{count}} characters)",
-      "maxLength200": "Please enter within 200 characters (Current: {{count}} characters)",
       "required": "Please enter a phrase",
-      "phraseMaxLength": "Phrase must be within 100 characters"
+      "phraseMaxLength": "Phrase must be within 100 characters",
+      "situationMaxLength": "Please enter within 50 characters",
+      "variationMaxLength": "Please enter within 200 characters"
     },
     "messages": {
       "updateSuccess": "Phrase updated successfully!",
@@ -32,14 +36,18 @@
       "saveSuccess": "Phrase saved successfully",
       "saveError": "Error occurred while saving phrase",
       "fetchError": "Error occurred while fetching phrase",
+      "fetchFailed": "Failed to fetch phrase",
       "countError": "Failed to send count",
       "notFound": "Phrase not found",
       "nextPhraseNotFound": "No next phrase found",
       "nextPhraseError": "Failed to get next phrase",
       "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
       "generationFailed": "Failed to generate phrases",
-      "generationError": "Error occurred during phrase generation",
-      "noContentGenerated": "No content generated"
+      "generationError": "Error occurred during phrase generation"
+    },
+    "delete": {
+      "confirmMessage": "Are you sure you want to delete this phrase?",
+      "warningMessage": "This action cannot be undone."
     }
   },
   "phraseGeneration": {
@@ -74,7 +82,14 @@
     "messages": {
       "dailyLimitReached": "You have reached the daily limit of 100 speaks. Please try again tomorrow!",
       "endError": "Error occurred during end process",
-      "countError": "Error occurred while updating speak count"
+      "countError": "Error occurred while updating speak count",
+      "sessionResetFailed": "Failed to reset session state",
+      "dailyCountResetFailed": "Failed to reset daily count",
+      "phraseCountFetchFailedEmpty": "Failed to fetch phrase count (empty response)",
+      "phraseCountFetchFailed": "Failed to fetch phrase count",
+      "noPracticeablePhrases": "No phrases available to practice in this mode",
+      "phraseCountCheckError": "Error occurred while checking phrase count",
+      "noPhraseFound": "No phrase found"
     },
     "explanation": {
       "title": "Speak Mode Guide",
@@ -158,7 +173,6 @@
         "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "button": "AI Suggest",
           "outputs": [
             "日本にはどのぐらい住んでいるの？",
             "日本に住んで何年になりますか？",
@@ -227,16 +241,27 @@
     "fetchError": "Failed to fetch subscription status",
     "checkoutError": "Failed to create checkout session"
   },
+  "ranking": {
+    "noData": "No data available to display"
+  },
+  "auth": {
+    "modal": {
+      "supportMessage": "Solo Speak is supporting your speaking practice journey.",
+      "supportMessageShort": "Supporting your speaking practice journey.",
+      "browserNote": "※Please login with Safari/Chrome",
+      "popupBlockedError": "The authentication screen is taking time to display. Please check if popups are not blocked.",
+      "authFailedError": "Authentication failed. Please try again."
+    }
+  },
   "situation": {
     "addSuccess": "Situation added successfully",
     "addError": "Error occurred while adding situation",
     "deleteSuccess": "Situation deleted successfully",
-    "deleteError": "Error occurred while deleting situation"
-  },
-  "auth": {
-    "sessionExpired": "Authentication information has expired. Please reload the page.",
-    "sessionInvalid": "Authentication has expired. Please reload the page.",
-    "serviceUnavailable": "Authentication service is temporarily unavailable. Please try again later."
+    "deleteError": "Error occurred while deleting situation",
+    "delete": {
+      "confirmMessage": "Are you sure you want to delete this situation?",
+      "warningMessage": "This action cannot be undone."
+    }
   },
   "addToHomeScreen": {
     "title": "Easy access from your home screen!",

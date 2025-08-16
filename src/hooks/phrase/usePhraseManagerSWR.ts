@@ -211,8 +211,8 @@ export const usePhraseManagerSWR = () => {
 
       toast.success(t('phrase.messages.saveSuccess'))
 
-      // フレーズ数が3になったときにホーム画面追加モーダルを表示
-      if (response.totalPhraseCount === 3) {
+      // フレーズ数が1になったときにホーム画面追加モーダルを表示
+      if (response.totalPhraseCount === 1) {
         setShowAddToHomeScreenModal(true)
       }
     } catch {

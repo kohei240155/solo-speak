@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { RiSpeakLine } from 'react-icons/ri'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { PiHandTapLight } from 'react-icons/pi'
+import { BsCheckSquareFill } from 'react-icons/bs'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 
 // シンプルなスクロールアニメーション
@@ -209,7 +210,7 @@ export default function Home() {
               </p>
               
               {/* メインタイトル */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight w-full max-w-2xl mb-4" style={{ lineHeight: '1.2' }}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 tracking-tight w-full max-w-2xl mb-4" style={{ lineHeight: '1.2' }}>
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -240,28 +241,22 @@ export default function Home() {
               <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg w-full max-w-2xl mx-2 mt-6">
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
-                    <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
+                    <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                    <span className="text-md md:text-xl text-gray-800 font-medium">
                       {t('home.hero.features.aiGeneration')}
                     </span>
                   </div>
                   
                   <div className="flex items-start text-left">
-                    <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
+                    <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                    <span className="text-md md:text-xl text-gray-800 font-medium">
                       {t('home.hero.features.practiceSupport')}
                     </span>
                   </div>
                   
                   <div className="flex items-start text-left">
-                    <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span className="text-lg md:text-xl text-gray-800 font-medium">
+                    <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
+                    <span className="text-md md:text-xl text-gray-800 font-medium">
                       {t('home.hero.features.quizFunction')}
                     </span>
                   </div>
@@ -291,12 +286,12 @@ export default function Home() {
               {/* 左側: テキストコンテンツ */}
               <div className="text-left max-w-4xl">
                 {/* サブタイトル */}
-                <p className="text-lg text-gray-600 font-medium mb-2">
+                <p className="text-2xl text-gray-600 font-medium">
                   {t('home.hero.subtitle')}
                 </p>
                 
                 {/* メインタイトル */}
-                <h1 className="text-6xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
+                <h1 className="text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight">
                   <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                     {t('home.hero.title').split('\n').map((line, index) => (
                       <span key={index}>
@@ -311,27 +306,21 @@ export default function Home() {
                 <div className="bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-lg">
                   <div className="space-y-4">
                     <div className="flex items-start text-left">
-                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                      </svg>
+                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.aiGeneration')}
                       </span>
                     </div>
                     
                     <div className="flex items-start text-left">
-                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                      </svg>
+                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.practiceSupport')}
                       </span>
                     </div>
                     
                     <div className="flex items-start text-left">
-                      <svg className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                      </svg>
+                      <BsCheckSquareFill className="w-5 h-5 text-gray-600 mr-4 flex-shrink-0 mt-1" />
                       <span className="text-xl text-gray-800 font-medium">
                         {t('home.hero.features.quizFunction')}
                       </span>
@@ -587,7 +576,7 @@ export default function Home() {
                           {isDemoActive && (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           )}
-                          {t('home.solutions.feature1.demo.button')}
+                          AI Suggest
                         </div>
                       </button>
                     </div>

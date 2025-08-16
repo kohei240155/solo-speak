@@ -36,7 +36,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       try {
         await resetSessionSpoken()
       } catch {
-        toast.error('セッション状態のリセットに失敗しました')
+        toast.error(t('speak.messages.sessionResetFailed'))
         return
       }
       
@@ -44,7 +44,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       try {
         await resetDailySpeakCount()
       } catch {
-        toast.error('日次カウントのリセットに失敗しました')
+        toast.error(t('speak.messages.dailyCountResetFailed'))
         return
       }
 
@@ -56,21 +56,21 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
 
       // countResultがundefinedまたはnullの場合のチェック
       if (!countResult) {
-        const errorMessage = 'フレーズ数の取得に失敗しました（レスポンスが空です）'
+        const errorMessage = t('speak.messages.phraseCountFetchFailedEmpty')
         toast.error(errorMessage)
         return
       }
 
       if ('error' in countResult) {
         // エラーの場合
-        const errorMessage = countResult.error || 'フレーズ数の取得に失敗しました'
+        const errorMessage = countResult.error || t('speak.messages.phraseCountFetchFailed')
         toast.error(errorMessage)
         return
       }
 
       if (countResult.count === 0) {
         // フレーズが0件の場合はトーストを表示してモーダルを開いたままにする
-        const errorMessage = 'このモードでは練習できるフレーズがありません'
+        const errorMessage = t('speak.messages.noPracticeablePhrases')
         toast.error(errorMessage)
         return
       }
@@ -86,7 +86,7 @@ export default function SpeakModeModal({ isOpen, onClose, onStart, languages, de
       onClose()
       onStart(config)
     } catch {
-      toast.error('フレーズ数の確認中にエラーが発生しました')
+      toast.error(t('speak.messages.phraseCountCheckError'))
     } finally {
       setIsLoading(false)
     }

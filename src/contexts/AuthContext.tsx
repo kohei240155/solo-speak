@@ -173,9 +173,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // 環境変数から適切なベースURLを取得
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
       const redirectUrl = `${baseUrl}/auth/callback`
-      
-      console.log('Starting Google OAuth with redirect URL:', redirectUrl)
-      
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -189,7 +187,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       // OAuth認証が正常に開始されたかログで確認
       if (data?.url) {
-        console.log('OAuth URL generated:', data.url)
         // 明示的にOAuth URLに遷移（ブラウザによってはこれが必要）
         window.location.href = data.url
       } else if (!error) {

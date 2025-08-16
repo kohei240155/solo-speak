@@ -10,8 +10,8 @@ import { useUserSettings } from '@/hooks/data/useUserSettings'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
 // SUBSCRIPTION_DISABLED: SubscriptionTab import を一時的に無効化
 // import SubscriptionTab from '@/components/settings/SubscriptionTab'
-// SETTINGS_TABS_DISABLED: TabNavigation import を一時的に無効化
-// import TabNavigation from '@/components/navigation/TabNavigation'
+// SETTINGS_TABS_DISABLED: SettingsTabNavigation import を一時的に無効化
+// import SettingsTabNavigation from '@/components/navigation/SettingsTabNavigation'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 // SUBSCRIPTION_DISABLED: useSearchParams import を一時的に無効化
 // import { useSearchParams } from 'next/navigation'
@@ -82,7 +82,7 @@ export default function UserSettingsPage() {
         </h1>
         
         {/* SETTINGS_TABS_DISABLED: タブメニューを一時的に非表示 */}
-        {/* <TabNavigation 
+        {/* <SettingsTabNavigation
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           isUserSetupComplete={isUserSetupComplete}

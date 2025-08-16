@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import BaseModal from '../common/BaseModal'
 
 interface LoginModalProps {
@@ -14,6 +15,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signInWithGoogle } = useAuth()
+  const { t } = useTranslation()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleGoogleSignIn = async () => {
@@ -23,7 +25,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     // 10秒後にタイムアウトでローディングを停止
     timeoutRef.current = setTimeout(() => {
       setLoading(false)
-      setError('認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。')
+      setError(t('auth.modal.popupBlockedError'))
     }, 10000)
 
     try {
@@ -35,7 +37,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           clearTimeout(timeoutRef.current)
           timeoutRef.current = null
         }
-        setError(error.message || '認証に失敗しました。再度お試しください。')
+        setError(error.message || t('auth.modal.authFailedError'))
         setLoading(false)
       } else {
         // 認証成功時（リダイレクトが開始される）の場合
@@ -47,7 +49,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         clearTimeout(timeoutRef.current)
         timeoutRef.current = null
       }
-      setError('認証に失敗しました。再度お試しください。')
+      setError(t('auth.modal.authFailedError'))
       setLoading(false)
     }
   }
@@ -87,7 +89,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           />
         </div>
         <p className="text-gray-600 text-sm leading-relaxed">
-          <span className="hidden lg:inline">Solo Speakは</span>あなたのスピーキング学習をサポートします。<br /><span className="text-blue-600 font-semibold">※Safari/Chromeでログインしてください</span>
+          <span className="hidden lg:inline">{t('auth.modal.supportMessage')}</span>
+          <span className="lg:hidden">{t('auth.modal.supportMessageShort')}</span>
+          <br />
+          <span className="text-blue-600 font-semibold">{t('auth.modal.browserNote')}</span>
         </p>
       </div>
 
