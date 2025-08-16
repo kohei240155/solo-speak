@@ -129,8 +129,8 @@ export default function Home() {
       } else {
         await playText("How long have you been living in Japan?")
       }
-    } catch (error) {
-      console.error('TTS playback failed:', error)
+    } catch {
+      // TTS playback failed
     }
   }
 

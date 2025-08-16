@@ -78,6 +78,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result)
 
   } catch (error) {
-    return createErrorResponse(error, 'GET /api/phrase/remaining')
+    return createErrorResponse(error)
   }
 }

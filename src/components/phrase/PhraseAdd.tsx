@@ -85,8 +85,8 @@ export default function PhraseAdd({
   const handleAddContext = async (contextName: string) => {
     try {
       await addSituation(contextName)
-    } catch (error) {
-      console.error('Error adding situation:', error)
+    } catch {
+      // エラーは addSituation 内で適切に処理される
     }
   }
 
@@ -107,8 +107,8 @@ export default function PhraseAdd({
       if (selectedContext && situations.find((s: SituationResponse) => s.id === deletingSituationId)?.name === selectedContext) {
         onContextChange?.(null)
       }
-    } catch (error) {
-      console.error('Error deleting situation:', error)
+    } catch {
+      // エラーは deleteSituation 内で適切に処理される
     } finally {
       setIsDeleting(false)
     }

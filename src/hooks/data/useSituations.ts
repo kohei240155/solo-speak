@@ -27,7 +27,6 @@ export function useSituations(): UseSituationsReturn {
       const data = await api.get<{ situations: SituationResponse[] }>('/api/situations')
       setSituations(data.situations)
     } catch (err) {
-      console.error('Failed to fetch situations:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch situations')
       setSituations([])
     } finally {
@@ -40,7 +39,6 @@ export function useSituations(): UseSituationsReturn {
       const newSituation = await api.post<SituationResponse>('/api/situations', { name })
       setSituations(prev => [newSituation, ...prev])
     } catch (err) {
-      console.error('Failed to add situation:', err)
       throw err
     }
   }, [])
@@ -50,7 +48,6 @@ export function useSituations(): UseSituationsReturn {
       await api.delete(`/api/situations/${id}`)
       setSituations(prev => prev.filter(situation => situation.id !== id))
     } catch (err) {
-      console.error('Failed to delete situation:', err)
       throw err
     }
   }, [])

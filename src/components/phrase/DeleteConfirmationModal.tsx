@@ -39,8 +39,7 @@ export default function DeleteConfirmationModal({
       // 成功トースト表示
       toast.success('Phrase deleted successfully!')
       
-    } catch (error) {
-      console.error('Error deleting phrase:', error)
+    } catch {
       toast.error('Failed to delete phrase')
     } finally {
       setIsDeleting(false)

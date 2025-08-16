@@ -82,10 +82,9 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
         if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
           try {
             await audio.play()
-          } catch (playError) {
+          } catch {
             setIsPlaying(false)
             setError('音声の再生に失敗しました')
-            console.error('Audio play error:', playError)
           }
         } else {
           // データがまだ準備できていない場合は、loadeddata イベントを待つ

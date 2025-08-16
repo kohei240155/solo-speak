@@ -7,12 +7,10 @@ export function createServerSupabaseClient() {
   const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl) {
-    console.error('環境変数 NEXT_PUBLIC_SUPABASE_URL が設定されていません')
     throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL')
   }
 
   if (!supabaseSecretKey) {
-    console.error('環境変数 SUPABASE_SECRET_KEY が設定されていません')
     throw new Error('Missing env.SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY for backward compatibility)')
   }
 

@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('POST /api/user/init - Error:', error)
-    return createErrorResponse(error, 'POST /api/user/init')
+    return createErrorResponse(error)
   }
 }

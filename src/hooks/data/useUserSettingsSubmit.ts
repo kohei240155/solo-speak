@@ -39,7 +39,6 @@ export function useUserSettingsSubmit(
           isFirstTimeSetup = true
         } else {
           // その他のエラーの場合はログに記録するがトーストは表示しない
-          console.warn('Failed to fetch current user settings:', error)
         }
       }
 
@@ -124,8 +123,7 @@ export function useUserSettingsSubmit(
         if (isSupabaseUrl) {
           try {
             await api.delete('/api/user/icon', { iconUrl: existingIconUrl })
-          } catch (deleteError) {
-            console.error('UserSettingsSubmit: Error deleting icon from storage:', deleteError)
+          } catch {
             // 削除に失敗してもユーザー設定の更新は続行
           }
         }
@@ -173,12 +171,6 @@ export function useUserSettingsSubmit(
         router.push('/phrase/add')
       }, 500)
     } catch (error) {
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : undefined
-      })
-      
       if (error instanceof ApiError) {
         // 初回ユーザーの404エラーではない場合のみエラーメッセージを表示
         if (error.status === 404 && error.message.includes('User not found')) {
