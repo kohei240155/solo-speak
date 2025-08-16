@@ -576,7 +576,7 @@ export default function Home() {
                           {isDemoActive && (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           )}
-                          {t('home.solutions.feature1.demo.button')}
+                          AI Suggest
                         </div>
                       </button>
                     </div>

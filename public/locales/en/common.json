@@ -173,7 +173,11 @@
         "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "button": "AI Suggest"
+          "outputs": [
+            "日本にはどのぐらい住んでいるの？",
+            "日本に住んで何年になりますか？",
+            "日本にいらしてどのくらいになりますか？"
+          ]
         }
       },
       "feature2": {

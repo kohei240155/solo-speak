@@ -173,7 +173,11 @@
         "description": "知りたかったフレーズを、AIが自然な表現で翻訳。オリジナルのフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
-          "button": "AI Suggest"
+          "outputs": [
+            "How long have you been living in Japan?",
+            "How long have you lived in Japan?",
+            "How long is it since you moved to Japan?"
+          ]
         }
       },
       "feature2": {
