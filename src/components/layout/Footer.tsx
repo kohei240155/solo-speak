@@ -64,14 +64,6 @@ export default function Footer() {
                     {t('footer.links.privacy')}
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="/commercial-transaction"
-                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
-                  >
-                    {t('footer.links.commercialTransaction')}
-                  </a>
-                </li>
               </ul>
             </div>
 

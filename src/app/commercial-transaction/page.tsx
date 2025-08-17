@@ -7,104 +7,49 @@ export default function CommercialTransactionPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-6">特定商取引法に基づく表記</h1>
         
         <div className="prose prose-lg max-w-none">
-          <p className="text-sm text-gray-500 mb-8">最終更新日：2025年7月22日</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-6 mb-8">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  現在準備中です
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>
+                    現在、Solo Speakは無料でご利用いただけるサービスとして提供されており、
+                    有料のサブスクリプション機能は実装されておりません。
+                  </p>
+                  <p className="mt-2">
+                    将来的に有料サービスを開始する際には、こちらに特定商取引法に基づく表記を掲載いたします。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">販売業者</h2>
-            <p className="text-gray-600">Solo Speak運営事務局</p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">運営責任者</h2>
-            <p className="text-gray-600">[運営責任者名]</p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">所在地</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">現在のサービス内容</h2>
             <p className="text-gray-600">
-              [住所]<br />
-              ※お問い合わせは、<a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>にて承っております。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">連絡先</h2>
-            <p className="text-gray-600">
-              メール：<a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>よりご連絡ください<br />
-              ※お電話でのお問い合わせは承っておりません。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">サービス内容</h2>
-            <p className="text-gray-600">
-              語学学習支援Webアプリケーション「Solo Speak」の提供
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">料金</h2>
-            <p className="text-gray-600">
-              基本機能：無料<br />
-              プレミアム機能：[料金が設定されている場合の詳細]<br />
-              ※現在、本サービスは無料でご利用いただけます。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">支払方法</h2>
-            <p className="text-gray-600">
-              ※現在、有料サービスは提供しておりません。<br />
-              今後有料サービスを提供する場合は、以下の支払方法を予定しております：
+              Solo Speakは現在、以下のサービスを無料で提供しております：
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4 mt-2">
-              <li>クレジットカード決済</li>
-              <li>その他の電子決済サービス</li>
+              <li>多言語フレーズ学習機能</li>
+              <li>クイズ機能</li>
+              <li>学習進捗管理</li>
+              <li>ランキング機能</li>
             </ul>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">支払時期</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">お問い合わせ</h2>
             <p className="text-gray-600">
-              ※現在、有料サービスは提供しておりません。<br />
-              今後有料サービスを提供する場合は、サービス申込み時に即時決済となります。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">サービス提供時期</h2>
-            <p className="text-gray-600">
-              お申し込み完了後、即座にサービスをご利用いただけます。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">返品・キャンセルについて</h2>
-            <p className="text-gray-600">
-              デジタルコンテンツの性質上、サービス開始後の返品・返金は承っておりません。<br />
-              ※現在、無料サービスのため該当しません。
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">動作環境</h2>
-            <p className="text-gray-600 mb-4">
-              以下の環境でご利用いただけます：
-            </p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-              <li>Windows 10以降のパソコン（Chrome、Firefox、Edge、Safari対応）</li>
-              <li>macOS（Chrome、Firefox、Safari対応）</li>
-              <li>iOS（Safari対応）</li>
-              <li>Android（Chrome対応）</li>
-              <li>インターネット接続環境必須</li>
-              <li>マイク機能（音声機能を使用する場合）</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">その他</h2>
-            <p className="text-gray-600">
-              サービスの詳細については、利用規約およびプライバシーポリシーをご確認ください。
+              サービスに関するご質問やお問い合わせは、
+              <a href="https://forms.gle/M9qBSGfiJCVWqmjE8" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">お問い合わせフォーム</a>
+              よりご連絡ください。
             </p>
           </section>
         </div>
