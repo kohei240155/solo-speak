@@ -4,6 +4,7 @@ import { api, ApiError } from '@/utils/api'
 import { ImageUploadRef } from '@/components/common/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'
+import { LanguageInfo } from '@/types/common'
 import { useRouter } from 'next/navigation'
 import { mutate } from 'swr'
 
@@ -185,7 +186,7 @@ export function useUserSettingsSubmit(
           // 言語情報を取得して言語コードを特定
           api.get('/api/languages')
             .then((response) => {
-              const languages = response as any[]
+              const languages = response as LanguageInfo[]
               const selectedLanguage = languages.find(lang => lang.id === data.nativeLanguageId)
               if (selectedLanguage?.code) {
                 window.dispatchEvent(new CustomEvent('nativeLanguageChanged', {
