@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useLanguages, useUserSettings, useRanking } from '@/hooks/api/useSWRApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useLanguages, useRanking } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
@@ -10,7 +11,7 @@ export const useRankingData = () => {
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
 
   // ランキングデータを取得
   // Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定

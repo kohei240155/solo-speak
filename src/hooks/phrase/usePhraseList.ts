@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useLanguages, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
 
 export const usePhraseList = () => {
@@ -8,7 +9,7 @@ export const usePhraseList = () => {
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
   
   // 無限スクロール対応のフレーズリスト取得
   const { 

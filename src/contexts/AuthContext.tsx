@@ -9,11 +9,14 @@ import { api, ApiError } from '@/utils/api'
 import { UserSettingsResponse } from '@/types/userSettings'
 import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
 import LoginModal from '@/components/auth/LoginModal'
+import { mutate } from 'swr'
 
 type AuthContextType = {
   user: User | null
   session: Session | null
   loading: boolean
+  userSettings: UserSettingsResponse | null
+  userSettingsLoading: boolean
   userIconUrl: string | null
   isUserSetupComplete: boolean
   shouldRedirectToSettings: boolean
@@ -44,6 +47,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userSettings, setUserSettings] = useState<UserSettingsResponse | null>(null)
+  const [userSettingsLoading, setUserSettingsLoading] = useState(false)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
@@ -217,13 +222,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user?.id || !session) {
       setIsUserSetupComplete(false)
       setUserIconUrl(null)
+      setUserSettings(null)
+      setUserSettingsLoading(false)
       return
     }
 
+    setUserSettingsLoading(true)
     try {
-      const userData = await api.get<UserSettingsResponse>('/api/user/settings', {
-        showErrorToast: false // 404エラー時のトーストを無効化
-      })
+      // SWRキャッシュを強制更新して最新データを取得
+      const userData = await mutate(
+        ['/api/user/settings', user.id],
+        api.get<UserSettingsResponse>('/api/user/settings', {
+          showErrorToast: false
+        })
+      )
+      
+      if (!userData) {
+        throw new Error('Failed to fetch user settings')
+      }
+      
+      // AuthContextの状態を更新
+      setUserSettings(userData)
       
       // ユーザー設定の完了判定：username、nativeLanguageId、defaultLearningLanguageIdが全て設定されている
       const hasRequiredSettings = !!(
@@ -265,7 +284,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }))
           }
         }
-      }      // DBのアイコンURLがある場合は使用
+      }
+      
+      // DBのアイコンURLがある場合は使用
       if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
       } else {
@@ -293,6 +314,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await api.post('/api/user/init', initData, { showErrorToast: false })
           
           // 初期化後の状態を設定
+          setUserSettings(null)
           setIsUserSetupComplete(false) // まだ設定が完了していない
           setShouldRedirectToSettings(true) // 設定画面にリダイレクト
           
@@ -300,6 +322,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
           setUserIconUrl(googleAvatarUrl || null)
         } catch {
+          setUserSettings(null)
           setIsUserSetupComplete(false)
           setShouldRedirectToSettings(true)
           
@@ -309,12 +332,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } else {
         // その他のエラーの場合
+        setUserSettings(null)
         setIsUserSetupComplete(false)
         
         // Googleアバターがある場合は保持
         const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
         setUserIconUrl(googleAvatarUrl || null)
       }
+    } finally {
+      setUserSettingsLoading(false)
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
@@ -336,6 +362,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
       if (user?.id && session && !loading) {
+        // SWRキャッシュも更新
+        mutate(['/api/user/settings', user.id])
         refreshUserSettings()
       }
     }
@@ -397,6 +425,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     session,
     loading,
+    userSettings,
+    userSettingsLoading,
     userIconUrl,
     isUserSetupComplete,
     shouldRedirectToSettings,

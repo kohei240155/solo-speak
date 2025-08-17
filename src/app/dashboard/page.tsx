@@ -3,18 +3,19 @@
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { useUserSettings, useDashboardData, useLanguages } from '@/hooks/api/useSWRApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useDashboardData, useLanguages } from '@/hooks/api/useSWRApi'
 import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuthGuard()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   const [selectedLanguage, setSelectedLanguage] = useState('')
 
   // SWRを使用してデータを取得
-  const { userSettings } = useUserSettings()
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
   const { languages } = useLanguages()
 

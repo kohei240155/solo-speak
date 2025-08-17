@@ -5,6 +5,7 @@ import { ImageUploadRef } from '@/components/common/ImageUpload'
 import toast from 'react-hot-toast'
 import { UserSetupFormData } from '@/types/userSettings'
 import { useRouter } from 'next/navigation'
+import { mutate } from 'swr'
 
 export function useUserSettingsSubmit(
   setError: (error: string) => void,
@@ -146,6 +147,11 @@ export function useUserSettingsSubmit(
 
       // 2つ目のAPI: ユーザー設定を保存
       await api.post('/api/user/settings', finalData)
+      
+      // SWRキャッシュを更新
+      if (user?.id) {
+        await mutate(['/api/user/settings', user.id])
+      }
       
       // Supabaseのユーザーメタデータも更新（空文字列の場合も含む）
       await updateUserMetadata({ icon_url: finalData.iconUrl || '' })

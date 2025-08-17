@@ -3,18 +3,17 @@ import { flushSync } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { PhraseVariation, CreatePhraseResponseData, GeneratePhraseRequestBody, CreatePhraseRequestBody } from '@/types/phrase'
-import { useLanguages, useUserSettings, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
+import { useLanguages, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
 
 export const usePhraseManagerSWR = () => {
-  const { user } = useAuth()
+  const { user, userSettings, userSettingsLoading } = useAuth() // AuthContextから直接ユーザー設定を取得
   const { t } = useTranslation()
   
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
   const { remainingGenerations, generationsData, refetch: mutateGenerations } = useRemainingGenerations()
   const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
@@ -79,7 +78,7 @@ export const usePhraseManagerSWR = () => {
   }, [mutateGenerations])
 
   // データ取得状態の計算
-  const isInitializing = !user || !languages || !userSettings || !generationsData || !situationsData
+  const isInitializing = !user || !languages || userSettingsLoading || !userSettings || !generationsData || !situationsData
 
   // バリデーション関数
   const validatePhrase = useCallback((phrase: string) => {

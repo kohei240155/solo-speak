@@ -3,7 +3,6 @@ import useSWRInfinite from 'swr/infinite'
 import { api } from '@/utils/api'
 import { RemainingGenerationsResponse, PhrasesListResponseData, PhraseDetailResponse, SpeakPhraseResponse, UpdatePhraseCountResponseData } from '@/types/phrase'
 import { SituationsListResponse } from '@/types/situation'
-import { UserSettingsResponse } from '@/types/userSettings'
 import { DashboardData } from '@/types/dashboard'
 import { LanguageInfo } from '@/types/common'
 import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData, UnifiedRankingUser } from '@/types/ranking'
@@ -18,15 +17,17 @@ const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: bo
 const SWR_CONFIGS = {
   // 短期キャッシュ（動的データ用）
   SHORT_CACHE: {
-    dedupingInterval: 1 * 60 * 1000, // 1分
-    revalidateOnFocus: true,
+    dedupingInterval: 3 * 60 * 1000, // 3分
+    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
+    revalidateOnReconnect: true,
     shouldRetryOnError: true,
     errorRetryInterval: 10000,
   },
   // 中期キャッシュ（ユーザーデータ用）
   MEDIUM_CACHE: {
-    dedupingInterval: 5 * 60 * 1000, // 5分
-    revalidateOnFocus: true,
+    dedupingInterval: 10 * 60 * 1000, // 10分
+    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
+    revalidateOnReconnect: true, // ネットワーク復旧時のみ更新
     shouldRetryOnError: true,
     errorRetryInterval: 10000,
   },
@@ -37,33 +38,25 @@ const SWR_CONFIGS = {
     revalidateOnReconnect: false,
     shouldRetryOnError: true,
   },
-  // リアルタイムデータ用（自動更新あり）
+  // リアルタイムデータ用（自動更新間隔を長く）
   REALTIME: {
-    dedupingInterval: 2 * 60 * 1000, // 2分
-    revalidateOnFocus: true,
-    refreshInterval: 30 * 1000, // 30秒間隔で自動更新
+    dedupingInterval: 5 * 60 * 1000, // 5分
+    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
+    revalidateOnReconnect: true,
+    refreshInterval: 2 * 60 * 1000, // 2分間隔で自動更新（30秒→2分）
     shouldRetryOnError: true,
   }
 } as const
 
-// ユーザー設定を取得するSWRフック
+// ユーザー設定を取得するSWRフック（軽量版 - AuthContextのデータを参照）
 export function useUserSettings() {
-  const { user } = useAuth()
+  const { userSettings, userSettingsLoading, refreshUserSettings } = useAuth()
   
-  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
-  const settingsKey = user ? ['/api/user/settings', user.id] as const : null
-  
-  const { data, error, isLoading, mutate } = useSWR(
-    settingsKey, 
-    ([url]) => fetcher<UserSettingsResponse>(url, { showErrorToast: false }), 
-    SWR_CONFIGS.MEDIUM_CACHE
-  )
-
   return {
-    userSettings: data,
-    isLoading,
-    error,
-    refetch: mutate
+    userSettings: userSettings,
+    isLoading: userSettingsLoading,
+    error: null, // AuthContextでエラーハンドリングされているため
+    refetch: refreshUserSettings
   }
 }
 

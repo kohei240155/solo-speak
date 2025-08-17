@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
 import SpeakModeModal from '@/components/modals/SpeakModeModal'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
+import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
@@ -12,7 +13,7 @@ import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useLanguages, useUserSettings } from '@/hooks/api/useSWRApi'
+import { useLanguages } from '@/hooks/api/useSWRApi'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface SpeakPhrase {
@@ -36,7 +37,7 @@ export default function SpeakPage() {
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
 
   // URLパラメータから取得
   const languageId = params.id as string

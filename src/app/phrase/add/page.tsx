@@ -95,7 +95,7 @@ export default function PhraseAddPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner message="Loading..."  />
+    return <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
   }
 
   return (
