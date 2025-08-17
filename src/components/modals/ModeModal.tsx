@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import BaseModal from '../common/BaseModal'
 import { Language } from '@/types/phrase'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -56,7 +57,7 @@ export default function ModeModal({
   // 初期言語の設定
   useEffect(() => {
     if (isOpen) {
-      const languageToSet = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : 'en')
+      const languageToSet = defaultLearningLanguage || (languages.length > 0 ? languages[0].code : DEFAULT_LANGUAGE)
       setSelectedLanguage(languageToSet)
       setInternalLoading(false)
     }

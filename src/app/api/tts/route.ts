@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 import { getGoogleTTSLanguageCode, getLanguageSpecificVoiceSettings } from '@/utils/tts-language-mapping'
 
@@ -22,7 +23,7 @@ const client = new TextToSpeechClient({
  */
 export async function POST(request: NextRequest) {
   try {
-    const { text, languageCode = 'en' } = await request.json()
+    const { text, languageCode = DEFAULT_LANGUAGE } = await request.json()
 
     if (!text) {
       return NextResponse.json(
@@ -34,8 +35,8 @@ export async function POST(request: NextRequest) {
     // 言語コードから適切なGoogle TTS言語コードを取得
     const googleLanguageCode = getGoogleTTSLanguageCode(languageCode)
     
-    // 言語固有の音声設定を取得
-    const voiceSettings = getLanguageSpecificVoiceSettings(languageCode)
+    // デフォルトの音声設定を取得
+    const voiceSettings = getLanguageSpecificVoiceSettings()
 
     // 音声合成のリクエスト設定
     const synthesisRequest = {

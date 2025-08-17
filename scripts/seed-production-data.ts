@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@/generated/prisma'
+import { LANGUAGE_CODES, LANGUAGE_NAMES } from '@/constants/languages'
 
 const prisma = new PrismaClient()
 
@@ -14,19 +15,19 @@ async function seedProductionData() {
     // Languages シードデータ
     console.log('📝 Languages データを投入中...')
     const languages = [
-      { name: 'English', code: 'en' },
-      { name: 'Chinese', code: 'zh' },
-      { name: 'Hindi', code: 'hi' },
-      { name: 'Spanish', code: 'es' },
-      { name: 'French', code: 'fr' },
-      { name: 'Portuguese', code: 'pt' },
-      { name: 'Japanese', code: 'ja' },
-      { name: 'German', code: 'de' },
-      { name: 'Korean', code: 'ko' },
-      { name: 'Italian', code: 'it' },
-      { name: 'Thai', code: 'th' },
-      { name: 'Dutch', code: 'nl' },
-      { name: 'Danish', code: 'da' }
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.ENGLISH], code: LANGUAGE_CODES.ENGLISH },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.CHINESE], code: LANGUAGE_CODES.CHINESE },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.HINDI], code: LANGUAGE_CODES.HINDI },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.SPANISH], code: LANGUAGE_CODES.SPANISH },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.FRENCH], code: LANGUAGE_CODES.FRENCH },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.PORTUGUESE], code: LANGUAGE_CODES.PORTUGUESE },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.JAPANESE], code: LANGUAGE_CODES.JAPANESE },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.GERMAN], code: LANGUAGE_CODES.GERMAN },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.KOREAN], code: LANGUAGE_CODES.KOREAN },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.ITALIAN], code: LANGUAGE_CODES.ITALIAN },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.THAI], code: LANGUAGE_CODES.THAI },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.DUTCH], code: LANGUAGE_CODES.DUTCH },
+      { name: LANGUAGE_NAMES[LANGUAGE_CODES.DANISH], code: LANGUAGE_CODES.DANISH }
     ]
     
     for (const lang of languages) {

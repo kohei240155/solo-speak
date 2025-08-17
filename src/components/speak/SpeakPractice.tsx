@@ -3,6 +3,7 @@ import { CiCirclePlus } from 'react-icons/ci'
 import { HiMiniSpeakerWave } from 'react-icons/hi2'
 import { BiCommentDetail } from 'react-icons/bi'
 import { useState, useEffect } from 'react'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import { useTextToSpeech } from '@/hooks/ui/useTextToSpeech'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import AnimatedButton from '../common/AnimatedButton'
@@ -45,7 +46,7 @@ export default function SpeakPractice({
   isHideNext = false,
   isFinishing = false,
   isCountDisabled = false,
-  learningLanguage = 'en',
+  learningLanguage = DEFAULT_LANGUAGE,
   onExplanation
 }: SpeakPracticeProps) {
   const { t } = useTranslation('common')

@@ -1,4 +1,5 @@
 // 翻訳関連の共通型定義とユーティリティ
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export interface TranslationData {
   [key: string]: string | TranslationData
@@ -52,9 +53,16 @@ export function getNestedTranslation(
  * @returns 言語コード
  */
 export function getLocaleFromAcceptLanguage(acceptLanguage: string): string {
-  // 簡単な言語判定（日本語が含まれていれば'ja'、そうでなければ'en'）
-  if (acceptLanguage.includes('ja')) {
-    return 'ja'
+  if (!acceptLanguage) {
+    return DEFAULT_LANGUAGE
   }
-  return 'en'
+
+  // 最初に出現するサポート言語を返す（シンプルな処理）
+  for (const supportedLang of SUPPORTED_LANGUAGES) {
+    if (acceptLanguage.includes(supportedLang)) {
+      return supportedLang
+    }
+  }
+
+  return DEFAULT_LANGUAGE
 }

@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
-import { useLanguages, useUserSettings, useRanking } from '@/hooks/api/useSWRApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useLanguages, useRanking } from '@/hooks/api/useSWRApi'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(DEFAULT_LANGUAGE)
   const [activeTab, setActiveTab] = useState('Total') // Phraseがデフォルトなので初期値はTotal
   const [activeRankingType, setActiveRankingType] = useState<'phrase' | 'speak' | 'quiz'>('phrase')
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
 
   // ランキングデータを取得
   // Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定

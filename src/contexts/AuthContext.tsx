@@ -1,18 +1,22 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
 import { UserSettingsResponse } from '@/types/userSettings'
 import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
+import { isUILanguage } from '@/constants/languages'
 import LoginModal from '@/components/auth/LoginModal'
+import { mutate } from 'swr'
 
 type AuthContextType = {
   user: User | null
   session: Session | null
   loading: boolean
+  userSettings: UserSettingsResponse | null
+  userSettingsLoading: boolean
   userIconUrl: string | null
   isUserSetupComplete: boolean
   shouldRedirectToSettings: boolean
@@ -43,6 +47,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userSettings, setUserSettings] = useState<UserSettingsResponse | null>(null)
+  const [userSettingsLoading, setUserSettingsLoading] = useState(false)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
@@ -216,13 +222,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user?.id || !session) {
       setIsUserSetupComplete(false)
       setUserIconUrl(null)
+      setUserSettings(null)
+      setUserSettingsLoading(false)
       return
     }
 
+    setUserSettingsLoading(true)
     try {
-      const userData = await api.get<UserSettingsResponse>('/api/user/settings', {
-        showErrorToast: false // 404エラー時のトーストを無効化
-      })
+      // SWRキャッシュを強制更新して最新データを取得
+      const userData = await mutate(
+        ['/api/user/settings', user.id],
+        api.get<UserSettingsResponse>('/api/user/settings', {
+          showErrorToast: false
+        })
+      )
+      
+      if (!userData) {
+        throw new Error('Failed to fetch user settings')
+      }
+      
+      // AuthContextの状態を更新
+      setUserSettings(userData)
       
       // ユーザー設定の完了判定：username、nativeLanguageId、defaultLearningLanguageIdが全て設定されている
       const hasRequiredSettings = !!(
@@ -240,28 +260,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setShouldRedirectToSettings(false)
         
-        // 既存ユーザーの場合：母国語設定に基づいて表示言語を自動調整
-        if (userData.nativeLanguage) {
-          const nativeLanguageCode = userData.nativeLanguage.code?.toLowerCase()
-          let targetDisplayLanguage = 'en' // デフォルトは英語
+        // ユーザーの母国語に基づいて表示言語を設定
+        if (userData.nativeLanguage?.code) {
+          const nativeLanguageCode = userData.nativeLanguage.code
+          // UI言語としてサポートされているかチェック
+          const targetLanguage = isUILanguage(nativeLanguageCode) 
+            ? nativeLanguageCode 
+            : 'en' // フォールバック
           
-          // 日本語が母国語の場合は日本語表示、それ以外は英語表示
-          if (nativeLanguageCode === 'ja' || nativeLanguageCode === 'jp' || userData.nativeLanguage.name?.toLowerCase().includes('japanese')) {
-            targetDisplayLanguage = 'ja'
-          }
-          
-          // 現在の表示言語と異なる場合は更新
           const currentDisplayLanguage = getStoredDisplayLanguage()
-          if (currentDisplayLanguage !== targetDisplayLanguage) {
-            setStoredDisplayLanguage(targetDisplayLanguage)
+          if (currentDisplayLanguage !== targetLanguage) {
+            setStoredDisplayLanguage(targetLanguage)
             
             // LanguageContextに変更を通知
             window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
-              detail: { locale: targetDisplayLanguage } 
+              detail: { locale: targetLanguage } 
             }))
           }
         }
-      }      // DBのアイコンURLがある場合は使用
+      }
+      
+      // DBのアイコンURLがある場合は使用
       if (userData.iconUrl && userData.iconUrl.trim() !== '') {
         setUserIconUrl(userData.iconUrl)
       } else {
@@ -274,43 +293,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     } catch (error) {
-      // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
-      if (error instanceof ApiError && error.status === 404) {
-        try {
-          // ローカルストレージから言語設定を取得
-          const storedDisplayLanguage = getStoredDisplayLanguage()
-          
-          // 初回ログイン時にユーザーを自動作成（言語設定を含む）
-          const initData: { displayLanguage?: string } = {}
-          if (storedDisplayLanguage) {
-            initData.displayLanguage = storedDisplayLanguage
+        // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
+        if (error instanceof ApiError && error.status === 404) {
+          try {
+            // 初回ログイン時にユーザーを自動作成
+            await api.post('/api/user/init', {}, { showErrorToast: false })
+            
+            // 初期化後の状態を設定
+            setUserSettings(null)
+            setIsUserSetupComplete(false) // まだ設定が完了していない
+            setShouldRedirectToSettings(true) // 設定画面にリダイレクト
+            
+            // 初回ユーザー作成時は設定完了まで表示言語を変更しない
+            // （設定完了後に母国語に基づいて設定される）
+            
+            // Googleアバターがある場合は表示
+            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+            setUserIconUrl(googleAvatarUrl || null)
+          } catch {
+            setUserSettings(null)
+            setIsUserSetupComplete(false)
+            setShouldRedirectToSettings(true)
+            
+            // Googleアバターがある場合は保持
+            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+            setUserIconUrl(googleAvatarUrl || null)
           }
-          
-          await api.post('/api/user/init', initData, { showErrorToast: false })
-          
-          // 初期化後の状態を設定
-          setIsUserSetupComplete(false) // まだ設定が完了していない
-          setShouldRedirectToSettings(true) // 設定画面にリダイレクト
-          
-          // Googleアバターがある場合は表示
-          const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-          setUserIconUrl(googleAvatarUrl || null)
-        } catch {
-          setIsUserSetupComplete(false)
-          setShouldRedirectToSettings(true)
-          
-          // Googleアバターがある場合は保持
-          const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-          setUserIconUrl(googleAvatarUrl || null)
-        }
-      } else {
+        } else {
         // その他のエラーの場合
+        setUserSettings(null)
         setIsUserSetupComplete(false)
         
         // Googleアバターがある場合は保持
         const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
         setUserIconUrl(googleAvatarUrl || null)
       }
+    } finally {
+      setUserSettingsLoading(false)
     }
   }, [user?.id, session, user?.user_metadata?.avatar_url, user?.user_metadata?.picture])
 
@@ -332,14 +351,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleUserSettingsUpdate = () => {
       if (user?.id && session && !loading) {
+        // SWRキャッシュも更新
+        mutate(['/api/user/settings', user.id])
         refreshUserSettings()
       }
     }
 
+    // 母国語変更時の表示言語更新を監視
+    const handleNativeLanguageChanged = (event: CustomEvent) => {
+      const { nativeLanguageCode } = event.detail
+      if (nativeLanguageCode && isUILanguage(nativeLanguageCode)) {
+        const currentDisplayLanguage = getStoredDisplayLanguage()
+        if (currentDisplayLanguage !== nativeLanguageCode) {
+          setStoredDisplayLanguage(nativeLanguageCode)
+          
+          // LanguageContextに変更を通知
+          window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
+            detail: { locale: nativeLanguageCode } 
+          }))
+        }
+      }
+    }
+
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    window.addEventListener('nativeLanguageChanged', handleNativeLanguageChanged as EventListener)
     
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+      window.removeEventListener('nativeLanguageChanged', handleNativeLanguageChanged as EventListener)
     }
   }, [user?.id, session, loading, refreshUserSettings])
 
@@ -393,6 +432,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     session,
     loading,
+    userSettings,
+    userSettingsLoading,
     userIconUrl,
     isUserSetupComplete,
     shouldRedirectToSettings,

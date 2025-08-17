@@ -9,7 +9,8 @@ interface DisplayLanguageSelectorProps {
 
 const LANGUAGE_NAMES = {
   ja: 'Japanese',
-  en: 'English', 
+  en: 'English',
+  ko: 'Korean'
 }
 
 export const DisplayLanguageSelector: React.FC<DisplayLanguageSelectorProps> = ({ 

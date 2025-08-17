@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
+import { useAuth } from '@/contexts/AuthContext'
+import { useLanguages, useInfinitePhrases } from '@/hooks/api/useSWRApi'
+import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
 
 export const usePhraseList = () => {
-  const [learningLanguage, setLearningLanguage] = useState('en')
+  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useUserSettings()
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
   
   // 無限スクロール対応のフレーズリスト取得
   const { 
@@ -103,7 +105,7 @@ export const usePhraseList = () => {
     isLoadingMore, // 追加ページ読み込み専用
     hasMorePhrases: hasMorePhrases || false,
     phrasePage,
-    nativeLanguage: userSettings?.nativeLanguage?.code || 'ja',
+    nativeLanguage: userSettings?.nativeLanguage?.code || LANGUAGE_CODES.JAPANESE,
     totalPhrases: totalPhrases || 0,
     
     // Handlers

@@ -1,4 +1,5 @@
 import { prisma } from '@/utils/prisma'
+import { UI_LANGUAGES } from '@/constants/languages'
 import { User } from '@supabase/supabase-js'
 import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
@@ -83,7 +84,7 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
  * @param displayLanguage 表示言語設定（ローカルストレージから取得）
  * @returns 作成されたユーザーデータ
  */
-export async function initializeUser(user: User, displayLanguage?: string): Promise<UserSettingsResponse> {
+export async function initializeUser(user: User): Promise<UserSettingsResponse> {
   try {
     // Googleから取得した情報
     const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
@@ -92,20 +93,14 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
     // アイコンURLの設定（Googleのアバターがない場合はデフォルト画像を使用）
     const iconUrl = googleAvatarUrl || '/images/user-icon/user-icon.png'
 
-    // 表示言語設定に基づいてデフォルトの母語を設定
-    // まず利用可能な言語を取得
+    // 初回ユーザー作成時は一律英語を母国語として設定
     const availableLanguages = await prisma.language.findMany({
-      where: { code: { in: ['ja', 'en'] } }
+      where: { code: { in: Array.from(UI_LANGUAGES) } }
     })
     
-    let defaultNativeLanguageId: string | null = null
-    if (displayLanguage === 'ja') {
-      const japaneseLanguage = availableLanguages.find(lang => lang.code === 'ja')
-      defaultNativeLanguageId = japaneseLanguage?.id || null
-    } else if (displayLanguage === 'en') {
-      const englishLanguage = availableLanguages.find(lang => lang.code === 'en')
-      defaultNativeLanguageId = englishLanguage?.id || null
-    }
+    // 英語を検索
+    const englishLanguage = availableLanguages.find((lang: { code: string }) => lang.code === 'en')
+    const defaultNativeLanguageId = englishLanguage?.id || null
 
     const result = await prisma.user.create({
       data: {
@@ -113,7 +108,7 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
         email: user.email || '',
         username: googleDisplayName || null, // Googleの表示名を初期値として設定
         iconUrl: iconUrl, // 修正: 設定したiconUrlを使用
-        nativeLanguageId: defaultNativeLanguageId, // 表示言語設定に基づいて初期値を設定
+        nativeLanguageId: defaultNativeLanguageId, // 初回ユーザーは一律英語
         defaultLearningLanguageId: null, // 初期状態では空（後で設定）
       },
     })

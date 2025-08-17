@@ -18,6 +18,16 @@ export default function PhraseAddPage() {
   const { t } = useTranslation('common')
   const { loading: authLoading } = useAuthGuard()
   
+  // 言語設定変更後のリロード処理
+  useEffect(() => {
+    const shouldReload = sessionStorage.getItem('reloadAfterLanguageChange')
+    if (shouldReload === 'true') {
+      sessionStorage.removeItem('reloadAfterLanguageChange')
+      // 即座にリロードして言語変更を反映
+      window.location.reload()
+    }
+  }, [])
+  
   const {
     // State - ページレベルで使用
     nativeLanguage,
@@ -85,7 +95,7 @@ export default function PhraseAddPage() {
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner message="Loading..."  />
+    return <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
   }
 
   return (

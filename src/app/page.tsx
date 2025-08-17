@@ -4,6 +4,7 @@ import { useRedirect } from '@/hooks/navigation/useRedirect'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { getDemoSample } from '@/constants/app-config'
 import Footer from '@/components/layout/Footer'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useState, useEffect, useCallback } from 'react'
@@ -75,9 +76,10 @@ export default function Home() {
     })
   }
   
-  // TTS機能の初期化 - 日本語のテキストを再生する場合は日本語の言語コードを使用
+  // TTS機能の初期化 - デモサンプルに基づいて言語を決定
+  const demoSample = getDemoSample(locale)
   const { isPlaying, playText } = useTextToSpeech({
-    languageCode: locale === 'en' ? 'ja' : 'en'
+    languageCode: demoSample.voiceLanguage
   })
 
   useEffect(() => {
@@ -123,12 +125,7 @@ export default function Home() {
 
   const handleSoundClick = async () => {
     try {
-      // 英語の言語設定の場合は日本語の音声を再生
-      if (locale === 'en') {
-        await playText("日本にはどのぐらい住んでいるの？")
-      } else {
-        await playText("How long have you been living in Japan?")
-      }
+      await playText(demoSample.text)
     } catch {
       // TTS playback failed
     }

@@ -1,4 +1,5 @@
-import { SavedPhrase, Language } from '@/types/phrase'
+import { SavedPhrase, PhraseData } from '@/types/phrase'
+import { LanguageInfo } from '@/types/common'
 import { SpeakConfig } from '@/types/speak'
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -10,30 +11,36 @@ import EditPhraseModal from './EditPhraseModal'
 import DeleteConfirmationModal from './DeleteConfirmationModal'
 import ExplanationModal from './ExplanationModal'
 
+import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
+
 interface PhraseListProps {
-  savedPhrases: SavedPhrase[]
-  isLoadingPhrases: boolean
-  isLoadingMore?: boolean
-  languages?: Language[]
+  isModalContext?: boolean
   nativeLanguage?: string
   learningLanguage?: string
-  onUpdatePhrase?: (phrase: SavedPhrase) => void
-  onRefreshPhrases?: () => void
+  onPhraseDeleted?: () => void
+  targetUserId?: string | null
+  savedPhrases?: PhraseData[]
+  isLoadingPhrases?: boolean
+  isLoadingMore?: boolean
+  languages?: LanguageInfo[]
   showSpeakModal?: boolean
-  onSpeakModalStateChange?: (isOpen: boolean) => void
+  onSpeakModalStateChange?: (state: boolean) => void
+  onRefreshPhrases?: () => void
+  onUpdatePhrase?: (phrase: PhraseData) => void
 }
 
-export default function PhraseList({ 
-  savedPhrases, 
-  isLoadingPhrases,
-  isLoadingMore = false,
-  languages = [],
-  nativeLanguage = 'ja',
-  learningLanguage = 'en',
+export default function PhraseList({
+  isModalContext = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+  nativeLanguage = LANGUAGE_CODES.JAPANESE,
+  learningLanguage = DEFAULT_LANGUAGE,
   onUpdatePhrase,
   onRefreshPhrases,
   showSpeakModal: externalShowSpeakModal = false,
-  onSpeakModalStateChange
+  onSpeakModalStateChange,
+  savedPhrases = [],
+  isLoadingPhrases = false,
+  isLoadingMore = false,
+  languages = []
 }: PhraseListProps) {
   const { t } = useTranslation('common')
   const router = useRouter()
