@@ -90,7 +90,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <span className="hidden lg:inline">{t('auth.modal.supportMessage')}</span>
           <span className="lg:hidden">{t('auth.modal.supportMessageShort')}</span>
           <br />
-          <span className="text-blue-600 font-semibold">{t('auth.modal.browserNote')}</span>
+          <span className="text-red-600 font-semibold">{t('auth.modal.browserNote')}</span>
         </p>
       </div>
 
