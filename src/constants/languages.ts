@@ -30,7 +30,7 @@ export const DEFAULT_LANGUAGE = LANGUAGE_CODES.ENGLISH
 export const FALLBACK_LANGUAGE = LANGUAGE_CODES.JAPANESE
 
 // UI表示言語（翻訳ファイルが存在する言語）
-export const UI_LANGUAGES = [LANGUAGE_CODES.ENGLISH, LANGUAGE_CODES.JAPANESE] as const
+export const UI_LANGUAGES = ['en', 'ja', 'ko'] as const
 
 // 言語コードの型定義
 export type LanguageCode = typeof LANGUAGE_CODES[keyof typeof LANGUAGE_CODES]
