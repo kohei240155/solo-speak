@@ -26,6 +26,9 @@ export const SUPPORTED_LANGUAGES = Object.values(LANGUAGE_CODES)
 // デフォルト言語
 export const DEFAULT_LANGUAGE = LANGUAGE_CODES.ENGLISH
 
+// フォールバック言語（翻訳が見つからない場合に使用）
+export const FALLBACK_LANGUAGE = LANGUAGE_CODES.JAPANESE
+
 // UI表示言語（翻訳ファイルが存在する言語）
 export const UI_LANGUAGES = [LANGUAGE_CODES.ENGLISH, LANGUAGE_CODES.JAPANESE] as const
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { UI_LANGUAGES, DEFAULT_LANGUAGE } from '@/constants/languages'
 
 interface LanguageContextType {
   locale: string
@@ -11,8 +12,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-const AVAILABLE_LOCALES = ['ja', 'en']
-const DEFAULT_LOCALE = 'ja'
+const AVAILABLE_LOCALES = Array.from(UI_LANGUAGES) as string[]
+const DEFAULT_LOCALE = DEFAULT_LANGUAGE
 const LOCALE_STORAGE_KEY = 'solo-speak-display-locale'
 
 // ローカルストレージから言語設定を取得する関数

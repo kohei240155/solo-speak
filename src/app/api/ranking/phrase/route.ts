@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 /** ランキングAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -9,7 +10,7 @@ import { authenticateRequest } from '@/utils/api-helpers'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const language = searchParams.get('language') || 'en'
+    const language = searchParams.get('language') || DEFAULT_LANGUAGE
 
     // 認証チェック
     const authResult = await authenticateRequest(request)

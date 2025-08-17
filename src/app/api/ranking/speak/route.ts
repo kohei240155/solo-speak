@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { RankingQueryParams, SpeakRankingResponseData } from '@/types/ranking'
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const queryParams: RankingQueryParams = {
-      language: searchParams.get('language') || 'en',
+      language: searchParams.get('language') || DEFAULT_LANGUAGE,
       period: (searchParams.get('period') as 'daily' | 'weekly' | 'monthly') || 'daily'
     }
     const { language, period } = queryParams

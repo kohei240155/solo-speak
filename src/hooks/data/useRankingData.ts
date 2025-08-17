@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useLanguages, useUserSettings, useRanking } from '@/hooks/api/useSWRApi'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(DEFAULT_LANGUAGE)
   const [activeTab, setActiveTab] = useState('Total') // Phraseがデフォルトなので初期値はTotal
   const [activeRankingType, setActiveRankingType] = useState<'phrase' | 'speak' | 'quiz'>('phrase')
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)

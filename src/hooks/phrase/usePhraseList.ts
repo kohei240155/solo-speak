@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useLanguages, useUserSettings, useInfinitePhrases } from '@/hooks/api/useSWRApi'
+import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
 
 export const usePhraseList = () => {
-  const [learningLanguage, setLearningLanguage] = useState('en')
+  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // SWRフックを使用してデータを取得
@@ -103,7 +104,7 @@ export const usePhraseList = () => {
     isLoadingMore, // 追加ページ読み込み専用
     hasMorePhrases: hasMorePhrases || false,
     phrasePage,
-    nativeLanguage: userSettings?.nativeLanguage?.code || 'ja',
+    nativeLanguage: userSettings?.nativeLanguage?.code || LANGUAGE_CODES.JAPANESE,
     totalPhrases: totalPhrases || 0,
     
     // Handlers

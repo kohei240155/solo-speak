@@ -1,6 +1,7 @@
 'use client'
 
 import { TranslationData } from './translation-common'
+import { FALLBACK_LANGUAGE } from '@/constants/languages'
 
 // グローバルなキャッシュとローディング状態
 const translationCache = new Map<string, TranslationData>()
@@ -39,9 +40,9 @@ export async function loadTranslation(locale: string, namespace: string = 'commo
       return data
     } catch {
       // フォールバック：日本語の翻訳を試行
-      if (locale !== 'ja') {
+      if (locale !== FALLBACK_LANGUAGE) {
         try {
-          const fallbackResponse = await fetch(`/locales/ja/${namespace}.json`)
+          const fallbackResponse = await fetch(`/locales/${FALLBACK_LANGUAGE}/${namespace}.json`)
           if (fallbackResponse.ok) {
             const fallbackData = await fallbackResponse.json()
             // フォールバック結果もキャッシュ

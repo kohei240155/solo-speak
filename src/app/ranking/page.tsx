@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useRankingData } from '@/hooks/data/useRankingData'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useEffect } from 'react'
+import { LANGUAGE_CODES } from '@/constants/languages'
 
 export default function RankingPage() {
   const { user, loading: authLoading } = useAuthGuard()
@@ -57,7 +58,7 @@ export default function RankingPage() {
               learningLanguage={selectedLanguage}
               onLanguageChange={handleLanguageChange}
               languages={languages || []}
-              nativeLanguage="ja"
+              nativeLanguage={LANGUAGE_CODES.JAPANESE}
             />
           </div>
           

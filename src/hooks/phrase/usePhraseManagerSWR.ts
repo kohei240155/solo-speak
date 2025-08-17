@@ -6,6 +6,7 @@ import { PhraseVariation, CreatePhraseResponseData, GeneratePhraseRequestBody, C
 import { useLanguages, useUserSettings, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
 
 export const usePhraseManagerSWR = () => {
   const { user } = useAuth()
@@ -18,8 +19,8 @@ export const usePhraseManagerSWR = () => {
   const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
   // ローカル状態
-  const [nativeLanguage, setNativeLanguage] = useState('ja')
-  const [learningLanguage, setLearningLanguage] = useState('en')
+  const [nativeLanguage, setNativeLanguage] = useState<string>(LANGUAGE_CODES.JAPANESE)
+  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
   const { totalCount: availablePhraseCount } = useInfinitePhrases(learningLanguage)
@@ -56,7 +57,7 @@ export const usePhraseManagerSWR = () => {
   useEffect(() => {
     if (!user) {
       setUserSettingsInitialized(false)
-      setLearningLanguage('en')
+      setLearningLanguage(DEFAULT_LANGUAGE)
       setDesiredPhrase('')
       setGeneratedVariations([])
       setSelectedContext(null)
