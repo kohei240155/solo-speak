@@ -2,6 +2,8 @@
 
 // SETTINGS_TABS_DISABLED: useState import を一時的に無効化
 // import { useState } from 'react'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +20,20 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
   const { loading: authLoading } = useAuthGuard()
+  const router = useRouter()
+  
+  // リロード後にPhrase Add画面に遷移する処理
+  useEffect(() => {
+    const shouldRedirect = sessionStorage.getItem('redirectToAddAfterReload')
+    if (shouldRedirect === 'true') {
+      sessionStorage.removeItem('redirectToAddAfterReload')
+      // 少し遅延してからPhrase Add画面に遷移
+      setTimeout(() => {
+        router.push('/phrase/add')
+      }, 1000)
+    }
+  }, [router])
+  
   // SUBSCRIPTION_DISABLED: URLパラメータによるタブ切り替えを一時的に無効化
   // const searchParams = useSearchParams()
   // const tabParam = searchParams.get('tab')

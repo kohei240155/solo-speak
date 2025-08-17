@@ -207,15 +207,22 @@ export function useUserSettingsSubmit(
         position: 'top-center',
       })
       
-      // 言語設定が変更された場合はPhrase Add画面でリロードするためのフラグを設定
+      // 言語設定が変更された場合は、Settings画面をリロードしてからPhrase Add画面に遷移
       if (languageChanged) {
-        sessionStorage.setItem('reloadAfterLanguageChange', 'true')
+        // 少し遅延してからリロード（ユーザーにtoastメッセージを見せるため）
+        setTimeout(() => {
+          // Settings画面のリロード
+          window.location.reload()
+          
+          // リロード後にPhrase Add画面に遷移するためのフラグを設定
+          sessionStorage.setItem('redirectToAddAfterReload', 'true')
+        }, 1500)
+      } else {
+        // 言語設定が変更されていない場合は、通常通りPhrase Add画面に遷移
+        setTimeout(() => {
+          router.push('/phrase/add')
+        }, 500)
       }
-      
-      // 常にPhrase Add画面に遷移
-      setTimeout(() => {
-        router.push('/phrase/add')
-      }, 500)
     } catch (error) {
       if (error instanceof ApiError) {
         // 初回ユーザーの404エラーではない場合のみエラーメッセージを表示
