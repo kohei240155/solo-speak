@@ -150,8 +150,8 @@ export default function PhraseList({
           />
         ))}
         
-        {/* 無限スクロール用のローディング - ちらつき防止改善 */}
-        <div className={`transition-opacity duration-300 ${isLoadingMore ? 'opacity-100' : 'opacity-0'}`}>
+        {/* 無限スクロール用のローディング - 高速表示 */}
+        <div className={`transition-opacity duration-75 ${isLoadingMore ? 'opacity-100' : 'opacity-0'}`}>
           {isLoadingMore && (
             <div className="flex justify-center py-3">
               <div className="flex items-center text-gray-500">

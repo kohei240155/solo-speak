@@ -213,7 +213,7 @@
       "q2": {
         "question": "When does the phrase generation count reset?",
         "answer": "It resets at 0:00 UTC (Coordinated Universal Time).",
-        "answerDetail": "In Japan Standard Time, it resets at 9:00 AM (winter time) or 8:00 AM (summer time)."
+        "answerDetail": "In Japan Standard Time, it resets at 9:00 AM (winter time) or 8:00 AM (summer time). In Vancouver time, it resets at 4:00 PM (winter time) or 5:00 PM (summer time)."
       },
       "q3": {
         "question": "Is Solo Speak free to use?",
