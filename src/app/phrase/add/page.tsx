@@ -23,10 +23,8 @@ export default function PhraseAddPage() {
     const shouldReload = sessionStorage.getItem('reloadAfterLanguageChange')
     if (shouldReload === 'true') {
       sessionStorage.removeItem('reloadAfterLanguageChange')
-      // 少し遅延してからリロードして、画面の読み込みを完了させる
-      setTimeout(() => {
-        window.location.reload()
-      }, 500)
+      // 即座にリロードして言語変更を反映
+      window.location.reload()
     }
   }, [])
   
