@@ -29,7 +29,7 @@ export const usePhraseList = () => {
       // ページ表示時に即座にデータを再取得（キャッシュを無視）
       const timer = setTimeout(() => {
         refetch()
-      }, 50) // 50ms後に実行（高速化）
+      }, 10) // 10ms後に実行（さらに高速化）
 
       return () => clearTimeout(timer)
     }
@@ -42,7 +42,7 @@ export const usePhraseList = () => {
         // ページが再び表示された時に再取得
         setTimeout(() => {
           refetch()
-        }, 100) // 遅延を短縮
+        }, 50) // 遅延を更に短縮
       }
     }
 

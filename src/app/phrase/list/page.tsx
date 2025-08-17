@@ -48,19 +48,19 @@ export default function PhraseListPage() {
     handleQuizStart
   } = useQuizModal()
 
-  // 無限スクロール機能（スロットリング付き・ちらつき防止改善）
+  // 無限スクロール機能（高速化・早期ローディング表示）
   useEffect(() => {
     let timeoutId: NodeJS.Timeout
 
     const handleScroll = () => {
-      // スロットリング: 100ms間隔でのみ実行
+      // スロットリング: 10ms間隔でより高速に実行
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
       
       timeoutId = setTimeout(() => {
-        // スクロール位置が下部に達していない場合は何もしない（閾値を300pxに増加してより早くローディング開始）
-        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 300) {
+        // スクロール位置が下部に達していない場合は何もしない（閾値を800pxに増加してより早くローディング開始）
+        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 800) {
           return
         }
         
@@ -71,7 +71,7 @@ export default function PhraseListPage() {
         }
         
         loadMorePhrases()
-      }, 50)
+      }, 10)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
