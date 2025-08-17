@@ -2,14 +2,22 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguages, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
+import { getStoredLearningLanguage, setStoredLearningLanguage } from '@/utils/languageStorage'
 
 export const usePhraseList = () => {
-  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
+  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
+  
+  // ユーザー設定とストレージ値に基づいて初期化
+  const [learningLanguage, setLearningLanguage] = useState<string>(() => {
+    // 最新の設定値を優先し、無ければストレージ値、最後にデフォルト値
+    return userSettings?.defaultLearningLanguage?.code || 
+           getStoredLearningLanguage() || 
+           DEFAULT_LANGUAGE
+  })
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
   // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
-  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
   
   // 無限スクロール対応のフレーズリスト取得
   const { 
@@ -65,6 +73,8 @@ export const usePhraseList = () => {
     if (userSettings && !userSettingsInitialized) {
       if (userSettings.defaultLearningLanguage?.code) {
         setLearningLanguage(userSettings.defaultLearningLanguage.code)
+        // ユーザー設定値をストレージにも保存（同期）
+        setStoredLearningLanguage(userSettings.defaultLearningLanguage.code)
       }
       setUserSettingsInitialized(true)
     }
@@ -73,10 +83,9 @@ export const usePhraseList = () => {
   // 手動での言語変更ハンドラー
   const handleLearningLanguageChange = (language: string) => {
     setLearningLanguage(language)
+    setStoredLearningLanguage(language) // ストレージに保存
     setUserSettingsInitialized(true) // 手動変更後は初期化フラグをセット
-  }
-
-  // 無限スクロール用の関数（SWRのネイティブ機能を使用・デバウンス付き）
+  }  // 無限スクロール用の関数（SWRのネイティブ機能を使用・デバウンス付き）
   const loadMorePhrases = useCallback(() => {
     // 既にローディング中の場合は無視してリクエストの重複を防ぐ
     if (isLoadingMore) {

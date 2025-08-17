@@ -7,6 +7,7 @@ import { useLanguages, useInfinitePhrases, useRemainingGenerations, useSituation
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
+import { getStoredLearningLanguage, setStoredLearningLanguage } from '@/utils/languageStorage'
 
 export const usePhraseManagerSWR = () => {
   const { user, userSettings, userSettingsLoading } = useAuth() // AuthContextから直接ユーザー設定を取得
@@ -17,9 +18,16 @@ export const usePhraseManagerSWR = () => {
   const { remainingGenerations, generationsData, refetch: mutateGenerations } = useRemainingGenerations()
   const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
-  // ローカル状態
-  const [nativeLanguage, setNativeLanguage] = useState<string>(LANGUAGE_CODES.JAPANESE)
-  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
+  // ローカル状態 - ユーザー設定とストレージ値に基づいて初期化
+  const [nativeLanguage, setNativeLanguage] = useState<string>(() => {
+    return userSettings?.nativeLanguage?.code || LANGUAGE_CODES.JAPANESE
+  })
+  const [learningLanguage, setLearningLanguage] = useState<string>(() => {
+    // 最新の設定値を優先し、無ければストレージ値、最後にデフォルト値
+    return userSettings?.defaultLearningLanguage?.code || 
+           getStoredLearningLanguage() || 
+           DEFAULT_LANGUAGE
+  })
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
   const { totalCount: availablePhraseCount } = useInfinitePhrases(learningLanguage)
@@ -39,7 +47,7 @@ export const usePhraseManagerSWR = () => {
   const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
-  // ユーザー設定からの初期化
+  // ユーザー設定からの初期化（一度だけ実行）
   useEffect(() => {
     if (userSettings && !userSettingsInitialized) {
       if (userSettings.nativeLanguage?.code) {
@@ -47,6 +55,8 @@ export const usePhraseManagerSWR = () => {
       }
       if (userSettings.defaultLearningLanguage?.code) {
         setLearningLanguage(userSettings.defaultLearningLanguage.code)
+        // ユーザー設定値をストレージにも保存（同期）
+        setStoredLearningLanguage(userSettings.defaultLearningLanguage.code)
       }
       setUserSettingsInitialized(true)
     }
@@ -226,6 +236,7 @@ export const usePhraseManagerSWR = () => {
   // 学習言語変更ハンドラー
   const handleLearningLanguageChange = useCallback((language: string) => {
     setLearningLanguage(language)
+    setStoredLearningLanguage(language) // ストレージに保存
     setUserSettingsInitialized(true)
   }, [])
 
