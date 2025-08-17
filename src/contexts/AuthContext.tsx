@@ -1,13 +1,13 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
-import { DEFAULT_LANGUAGE, isUILanguage, LANGUAGE_CODES } from '@/constants/languages'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
 import { UserSettingsResponse } from '@/types/userSettings'
 import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
+import { isUILanguage } from '@/constants/languages'
 import LoginModal from '@/components/auth/LoginModal'
 import { mutate } from 'swr'
 
@@ -260,27 +260,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setShouldRedirectToSettings(false)
         
-        // 既存ユーザーの場合：母国語設定に基づいて表示言語を自動調整
-        if (userData.nativeLanguage) {
-          const nativeLanguageCode = userData.nativeLanguage.code?.toLowerCase()
-          let targetDisplayLanguage: string = DEFAULT_LANGUAGE // デフォルト言語
+        // ユーザーの母国語に基づいて表示言語を設定
+        if (userData.nativeLanguage?.code) {
+          const nativeLanguageCode = userData.nativeLanguage.code
+          // UI言語としてサポートされているかチェック
+          const targetLanguage = isUILanguage(nativeLanguageCode) 
+            ? nativeLanguageCode 
+            : 'en' // フォールバック
           
-          // 母国語コードがUI言語として利用可能かチェック
-          if (nativeLanguageCode && isUILanguage(nativeLanguageCode)) {
-            targetDisplayLanguage = nativeLanguageCode
-          } else if (nativeLanguageCode === 'jp' || userData.nativeLanguage.name?.toLowerCase().includes('japanese')) {
-            // 特別なケース：jpコードや名前で日本語を判定
-            targetDisplayLanguage = LANGUAGE_CODES.JAPANESE
-          }
-          
-          // 現在の表示言語と異なる場合は更新
           const currentDisplayLanguage = getStoredDisplayLanguage()
-          if (currentDisplayLanguage !== targetDisplayLanguage) {
-            setStoredDisplayLanguage(targetDisplayLanguage)
+          if (currentDisplayLanguage !== targetLanguage) {
+            setStoredDisplayLanguage(targetLanguage)
             
             // LanguageContextに変更を通知
             window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
-              detail: { locale: targetDisplayLanguage } 
+              detail: { locale: targetLanguage } 
             }))
           }
         }
@@ -299,38 +293,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     } catch (error) {
-      // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
-      if (error instanceof ApiError && error.status === 404) {
-        try {
-          // ローカルストレージから言語設定を取得
-          const storedDisplayLanguage = getStoredDisplayLanguage()
-          
-          // 初回ログイン時にユーザーを自動作成（言語設定を含む）
-          const initData: { displayLanguage?: string } = {}
-          if (storedDisplayLanguage) {
-            initData.displayLanguage = storedDisplayLanguage
+        // 404エラー（ユーザーが存在しない）の場合は初回セットアップ
+        if (error instanceof ApiError && error.status === 404) {
+          try {
+            // 初回ログイン時にユーザーを自動作成
+            await api.post('/api/user/init', {}, { showErrorToast: false })
+            
+            // 初期化後の状態を設定
+            setUserSettings(null)
+            setIsUserSetupComplete(false) // まだ設定が完了していない
+            setShouldRedirectToSettings(true) // 設定画面にリダイレクト
+            
+            // 初回ユーザー作成時は設定完了まで表示言語を変更しない
+            // （設定完了後に母国語に基づいて設定される）
+            
+            // Googleアバターがある場合は表示
+            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+            setUserIconUrl(googleAvatarUrl || null)
+          } catch {
+            setUserSettings(null)
+            setIsUserSetupComplete(false)
+            setShouldRedirectToSettings(true)
+            
+            // Googleアバターがある場合は保持
+            const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+            setUserIconUrl(googleAvatarUrl || null)
           }
-          
-          await api.post('/api/user/init', initData, { showErrorToast: false })
-          
-          // 初期化後の状態を設定
-          setUserSettings(null)
-          setIsUserSetupComplete(false) // まだ設定が完了していない
-          setShouldRedirectToSettings(true) // 設定画面にリダイレクト
-          
-          // Googleアバターがある場合は表示
-          const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-          setUserIconUrl(googleAvatarUrl || null)
-        } catch {
-          setUserSettings(null)
-          setIsUserSetupComplete(false)
-          setShouldRedirectToSettings(true)
-          
-          // Googleアバターがある場合は保持
-          const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
-          setUserIconUrl(googleAvatarUrl || null)
-        }
-      } else {
+        } else {
         // その他のエラーの場合
         setUserSettings(null)
         setIsUserSetupComplete(false)
@@ -368,10 +357,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
+    // 母国語変更時の表示言語更新を監視
+    const handleNativeLanguageChanged = (event: CustomEvent) => {
+      const { nativeLanguageCode } = event.detail
+      if (nativeLanguageCode && isUILanguage(nativeLanguageCode)) {
+        const currentDisplayLanguage = getStoredDisplayLanguage()
+        if (currentDisplayLanguage !== nativeLanguageCode) {
+          setStoredDisplayLanguage(nativeLanguageCode)
+          
+          // LanguageContextに変更を通知
+          window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
+            detail: { locale: nativeLanguageCode } 
+          }))
+        }
+      }
+    }
+
     window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    window.addEventListener('nativeLanguageChanged', handleNativeLanguageChanged as EventListener)
     
     return () => {
       window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+      window.removeEventListener('nativeLanguageChanged', handleNativeLanguageChanged as EventListener)
     }
   }, [user?.id, session, loading, refreshUserSettings])
 

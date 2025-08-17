@@ -54,6 +54,10 @@ export function useUserSettingsSubmit(
         currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
         currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
       )
+      
+      // 母国語が変更されたかをチェック
+      const nativeLanguageChanged = !isFirstTimeSetup && 
+        currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId
 
       // 初回セットアップでGoogleアバターがある場合の自動設定
       if (isFirstTimeSetup && user && (!finalData.iconUrl || finalData.iconUrl.trim() === '')) {
@@ -175,6 +179,24 @@ export function useUserSettingsSubmit(
       // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
       setTimeout(() => {
         window.dispatchEvent(new Event('userSettingsUpdated'))
+        
+        // 母国語が変更された場合、または初回セットアップ時は表示言語変更イベントも発行
+        if (nativeLanguageChanged || isFirstTimeSetup) {
+          // 言語情報を取得して言語コードを特定
+          api.get('/api/languages')
+            .then((response) => {
+              const languages = response as any[]
+              const selectedLanguage = languages.find(lang => lang.id === data.nativeLanguageId)
+              if (selectedLanguage?.code) {
+                window.dispatchEvent(new CustomEvent('nativeLanguageChanged', {
+                  detail: { nativeLanguageCode: selectedLanguage.code }
+                }))
+              }
+            })
+            .catch(() => {
+              // エラーが発生した場合は何もしない
+            })
+        }
       }, 100)
       
       // 成功メッセージを表示

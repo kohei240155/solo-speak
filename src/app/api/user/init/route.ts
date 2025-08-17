@@ -15,15 +15,6 @@ export async function POST(request: NextRequest) {
 
     const { user } = authResult
 
-    // リクエストボディから言語設定を取得
-    let displayLanguage: string | undefined = undefined
-    try {
-      const body = await request.json()
-      displayLanguage = body.displayLanguage
-    } catch {
-      // リクエストボディがない場合は無視
-    }
-
     // ユーザーが既に存在するかチェック
     const userExists = await checkUserExists(user.id)
     
@@ -33,8 +24,8 @@ export async function POST(request: NextRequest) {
       }, { status: 200 })
     }
 
-    // 初期ユーザーデータを作成（言語設定を含む）
-    const newUser = await initializeUser(user, displayLanguage)
+    // 初期ユーザーデータを作成（一律英語で初期化）
+    const newUser = await initializeUser(user)
 
     return NextResponse.json({
       message: 'User initialized successfully',
