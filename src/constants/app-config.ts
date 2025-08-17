@@ -9,11 +9,11 @@ import { UI_LANGUAGES, LANGUAGE_CODES, LanguageCode } from './languages'
  * デモ用のサンプルテキストと言語のマッピング
  */
 export const DEMO_SAMPLES = {
-  [LANGUAGE_CODES.ENGLISH]: {
+  ['en']: {
     text: "How long have you been living in Japan?",
     voiceLanguage: LANGUAGE_CODES.ENGLISH
   },
-  [LANGUAGE_CODES.JAPANESE]: {
+  ['ja']: {
     text: "日本にはどのぐらい住んでいるの？",
     voiceLanguage: LANGUAGE_CODES.JAPANESE
   }
