@@ -1,24 +1,10 @@
+import { TTS_LANGUAGE_MAPPING, DEFAULT_LANGUAGE } from '@/constants/languages'
+
 /**
  * 言語コードからGoogle Cloud Text-to-Speech APIの言語コードにマッピング
  */
 export const getGoogleTTSLanguageCode = (languageCode: string): string => {
-  const languageMap: Record<string, string> = {
-    'en': 'en-US',
-    'zh': 'zh-CN',
-    'hi': 'hi-IN',
-    'es': 'es-ES',
-    'fr': 'fr-FR',
-    'pt': 'pt-PT',
-    'ja': 'ja-JP',
-    'de': 'de-DE',
-    'ko': 'ko-KR',
-    'it': 'it-IT',
-    'th': 'th-TH',
-    'nl': 'nl-NL',
-    'da': 'da-DK'
-  }
-  
-  return languageMap[languageCode] || 'en-US' // デフォルトは英語
+  return TTS_LANGUAGE_MAPPING[languageCode as keyof typeof TTS_LANGUAGE_MAPPING] || TTS_LANGUAGE_MAPPING[DEFAULT_LANGUAGE]
 }
 
 /**

@@ -1,6 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { DEFAULT_LANGUAGE, isUILanguage, LANGUAGE_CODES } from '@/constants/languages'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
@@ -243,11 +244,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // 既存ユーザーの場合：母国語設定に基づいて表示言語を自動調整
         if (userData.nativeLanguage) {
           const nativeLanguageCode = userData.nativeLanguage.code?.toLowerCase()
-          let targetDisplayLanguage = 'en' // デフォルトは英語
+          let targetDisplayLanguage: string = DEFAULT_LANGUAGE // デフォルト言語
           
-          // 日本語が母国語の場合は日本語表示、それ以外は英語表示
-          if (nativeLanguageCode === 'ja' || nativeLanguageCode === 'jp' || userData.nativeLanguage.name?.toLowerCase().includes('japanese')) {
-            targetDisplayLanguage = 'ja'
+          // 母国語コードがUI言語として利用可能かチェック
+          if (nativeLanguageCode && isUILanguage(nativeLanguageCode)) {
+            targetDisplayLanguage = nativeLanguageCode
+          } else if (nativeLanguageCode === 'jp' || userData.nativeLanguage.name?.toLowerCase().includes('japanese')) {
+            // 特別なケース：jpコードや名前で日本語を判定
+            targetDisplayLanguage = LANGUAGE_CODES.JAPANESE
           }
           
           // 現在の表示言語と異なる場合は更新

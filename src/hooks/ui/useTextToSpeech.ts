@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 interface UseTextToSpeechOptions {
   languageCode?: string
@@ -40,7 +41,7 @@ export function useTextToSpeech(options: UseTextToSpeechOptions = {}): UseTextTo
     setError(null)
 
     try {
-      const languageCode = options.languageCode || 'en'
+      const languageCode = options.languageCode || DEFAULT_LANGUAGE
       const cacheKey = getCacheKey(text, languageCode)
       
       // キャッシュから音声を取得

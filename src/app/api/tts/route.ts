@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 import { getGoogleTTSLanguageCode, getLanguageSpecificVoiceSettings } from '@/utils/tts-language-mapping'
 
@@ -22,7 +23,7 @@ const client = new TextToSpeechClient({
  */
 export async function POST(request: NextRequest) {
   try {
-    const { text, languageCode = 'en' } = await request.json()
+    const { text, languageCode = DEFAULT_LANGUAGE } = await request.json()
 
     if (!text) {
       return NextResponse.json(

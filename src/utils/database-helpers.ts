@@ -1,4 +1,5 @@
 import { prisma } from '@/utils/prisma'
+import { UI_LANGUAGES, DEFAULT_LANGUAGE } from '@/constants/languages'
 import { User } from '@supabase/supabase-js'
 import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
@@ -95,16 +96,21 @@ export async function initializeUser(user: User, displayLanguage?: string): Prom
     // 表示言語設定に基づいてデフォルトの母語を設定
     // まず利用可能な言語を取得
     const availableLanguages = await prisma.language.findMany({
-      where: { code: { in: ['ja', 'en'] } }
+      where: { code: { in: Array.from(UI_LANGUAGES) } }
     })
     
     let defaultNativeLanguageId: string | null = null
-    if (displayLanguage === 'ja') {
-      const japaneseLanguage = availableLanguages.find(lang => lang.code === 'ja')
-      defaultNativeLanguageId = japaneseLanguage?.id || null
-    } else if (displayLanguage === 'en') {
-      const englishLanguage = availableLanguages.find(lang => lang.code === 'en')
-      defaultNativeLanguageId = englishLanguage?.id || null
+    
+    // 表示言語に対応する言語が利用可能な場合はそれを設定
+    if (UI_LANGUAGES.includes(displayLanguage as never)) {
+      const matchingLanguage = availableLanguages.find((lang: { code: string }) => lang.code === displayLanguage)
+      defaultNativeLanguageId = matchingLanguage?.id || null
+    }
+    
+    // 見つからない場合はデフォルト言語を使用
+    if (!defaultNativeLanguageId) {
+      const defaultLanguage = availableLanguages.find((lang: { code: string }) => lang.code === DEFAULT_LANGUAGE)
+      defaultNativeLanguageId = defaultLanguage?.id || null
     }
 
     const result = await prisma.user.create({

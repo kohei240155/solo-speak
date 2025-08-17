@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 import { QuizPhrase, QuizSession } from '@/types/quiz'
 import { PiHandTapLight } from 'react-icons/pi'
 import { IoCheckboxOutline } from 'react-icons/io5'
@@ -40,7 +41,7 @@ export default function QuizPractice({
 
   // TTS機能の初期化
   const { isPlaying, error: ttsError, playText } = useTextToSpeech({
-    languageCode: currentPhrase?.languageCode || 'en'
+    languageCode: currentPhrase?.languageCode || DEFAULT_LANGUAGE
   })
 
   // カウントダウンの管理
