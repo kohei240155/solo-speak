@@ -16,6 +16,10 @@ export const DEMO_SAMPLES = {
   ['ja']: {
     text: "日本にはどのぐらい住んでいるの？",
     voiceLanguage: LANGUAGE_CODES.JAPANESE
+  },
+  ['ko']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.KOREAN
   }
 } as const
 
