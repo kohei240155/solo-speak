@@ -18,6 +18,18 @@ export default function PhraseAddPage() {
   const { t } = useTranslation('common')
   const { loading: authLoading } = useAuthGuard()
   
+  // 言語設定変更後のリロード処理
+  useEffect(() => {
+    const shouldReload = sessionStorage.getItem('reloadAfterLanguageChange')
+    if (shouldReload === 'true') {
+      sessionStorage.removeItem('reloadAfterLanguageChange')
+      // 少し遅延してからリロードして、画面の読み込みを完了させる
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
+    }
+  }, [])
+  
   const {
     // State - ページレベルで使用
     nativeLanguage,

@@ -25,11 +25,17 @@ export function useUserSettingsSubmit(
       // 現在のユーザー設定を取得して既存のiconUrlを保持
       let existingIconUrl = ''
       let isFirstTimeSetup = false
+      let currentLanguageSettings = { nativeLanguageId: '', defaultLearningLanguageId: '' }
+      
       try {
         const currentSettings = await api.get('/api/user/settings', {
           showErrorToast: false // 404エラー時のトーストを無効化
-        }) as { iconUrl?: string }
+        }) as { iconUrl?: string; nativeLanguageId?: string; defaultLearningLanguageId?: string }
         existingIconUrl = currentSettings.iconUrl || ''
+        currentLanguageSettings = {
+          nativeLanguageId: currentSettings.nativeLanguageId || '',
+          defaultLearningLanguageId: currentSettings.defaultLearningLanguageId || ''
+        }
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
           // 初回セットアップの場合
@@ -41,6 +47,12 @@ export function useUserSettingsSubmit(
           // その他のエラーの場合はログに記録するがトーストは表示しない
         }
       }
+
+      // 言語設定が変更されたかをチェック
+      const languageChanged = !isFirstTimeSetup && (
+        currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
+        currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
+      )
 
       // 初回セットアップでGoogleアバターがある場合の自動設定
       if (isFirstTimeSetup && user && (!finalData.iconUrl || finalData.iconUrl.trim() === '')) {
@@ -159,14 +171,19 @@ export function useUserSettingsSubmit(
         window.dispatchEvent(new Event('userSettingsUpdated'))
       }, 100)
       
-      // 成功メッセージを表示してから遷移
+      // 成功メッセージを表示
       setError('')
       toast.success('Settings saved successfully!', {
         duration: 3000,
         position: 'top-center',
       })
       
-      // 少し遅延してからPhrase Add画面に遷移
+      // 言語設定が変更された場合はPhrase Add画面でリロードするためのフラグを設定
+      if (languageChanged) {
+        sessionStorage.setItem('reloadAfterLanguageChange', 'true')
+      }
+      
+      // 常にPhrase Add画面に遷移
       setTimeout(() => {
         router.push('/phrase/add')
       }, 500)
