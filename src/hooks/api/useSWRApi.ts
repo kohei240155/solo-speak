@@ -10,7 +10,7 @@ import { UserSettingsResponse } from '@/types/userSettings'
 import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用の統一fetcher関数
-const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean }): Promise<T> => {
+const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean; useAuth?: boolean }): Promise<T> => {
   return await api.get<T>(url, options || {})
 }
 
@@ -84,9 +84,13 @@ export function useUserSettings() {
   }
 }
 
-// 言語リストを取得するSWRフック
+// 言語リストを取得するSWRフック（認証不要）
 export function useLanguages() {
-  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher<LanguageInfo[]>, SWR_CONFIGS.LONG_CACHE)
+  const { data, error, isLoading, mutate } = useSWR(
+    '/api/languages', 
+    async (url) => fetcher<LanguageInfo[]>(url, { useAuth: false }), 
+    SWR_CONFIGS.LONG_CACHE
+  )
 
   return {
     languages: data,

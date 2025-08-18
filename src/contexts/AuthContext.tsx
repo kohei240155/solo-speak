@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     refresh: refreshUserSettings 
   } = useUserSettingsData(user?.id ?? null)
 
-  // SWRを使用して言語リストを取得
+  // SWRを使用して言語リストを取得（認証不要）
   const { 
     languages, 
     isLoading: languagesLoading 
