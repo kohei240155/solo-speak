@@ -33,7 +33,7 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  // サーバーサイドでも適切な初期値を設定
+  // 初期言語設定を保存された値またはブラウザ検出に戻す
   const [locale, setLocaleState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       // クライアントサイドでは即座に保存された値または検出された値を使用
