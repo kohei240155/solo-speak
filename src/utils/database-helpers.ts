@@ -84,46 +84,7 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
   }
 }
 
-/**
- * 初回ログイン時のユーザー初期化
- * @param user Supabaseユーザー情報
- * @param displayLanguage 表示言語設定（ローカルストレージから取得）
- * @returns 作成されたユーザーデータ
- */
-export async function initializeUser(user: User): Promise<UserSettingsResponse> {
-  try {
-    // Googleから取得した情報
-    const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
-    const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
-    
-    // アイコンURLの設定（Googleのアバターがない場合はデフォルト画像を使用）
-    const iconUrl = googleAvatarUrl || '/images/user-icon/user-icon.png'
 
-    // 初回ユーザー作成時は母国語と学習言語を未設定にして、ユーザーが選択するまで待機
-    const result = await prisma.user.create({
-      data: {
-        id: user.id,
-        email: user.email || '',
-        username: googleDisplayName || null, // Googleの表示名を初期値として設定
-        iconUrl: iconUrl, // 修正: 設定したiconUrlを使用
-        nativeLanguageId: null, // 初回ユーザーは未選択状態
-        defaultLearningLanguageId: null, // 初期状態では空（後で設定）
-      },
-    })
-
-    return {
-      iconUrl: result.iconUrl,
-      username: result.username,
-      nativeLanguageId: result.nativeLanguageId,
-      defaultLearningLanguageId: result.defaultLearningLanguageId,
-      email: result.email,
-      nativeLanguage: null, // 初回ユーザーは未設定
-      defaultLearningLanguage: null
-    }
-  } catch (error) {
-    throw error
-  }
-}
 
 /**
  * ユーザー設定の作成

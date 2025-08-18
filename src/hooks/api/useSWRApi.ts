@@ -56,17 +56,7 @@ export function useUserSettingsData(userId: string | null) {
   const { data, error, isLoading, mutate } = useSWR(
     userSettingsKey,
     async ([url]) => {
-      try {
-        return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
-      } catch (error: unknown) {
-        // 404エラー（初回ユーザー）の場合は自動作成
-        if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
-          await api.post('/api/user/init', {}, { showErrorToast: false })
-          // 作成後に再取得
-          return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
-        }
-        throw error
-      }
+      return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
     },
     {
       ...SWR_CONFIGS.MEDIUM_CACHE,
