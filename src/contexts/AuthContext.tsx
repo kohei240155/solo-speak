@@ -19,7 +19,6 @@ type AuthContextType = {
   userSettingsLoading: boolean
   userIconUrl: string | null
   isUserSetupComplete: boolean
-  shouldRedirectToSettings: boolean
   isLoginModalOpen: boolean
   languages: LanguageInfo[] | undefined
   languagesLoading: boolean
@@ -29,7 +28,6 @@ type AuthContextType = {
   refreshUser: () => Promise<void>
   refreshUserSettings: () => void
   refreshSession: () => Promise<void>
-  clearSettingsRedirect: () => void
   showLoginModal: () => void
   hideLoginModal: () => void
 }
@@ -51,8 +49,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
-  const [shouldRedirectToSettings, setShouldRedirectToSettings] = useState(false)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [hasRedirected, setHasRedirected] = useState(false) // リダイレクト済みフラグ
 
   // SWRを使用してユーザー設定を取得
   const { 
@@ -116,10 +114,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ユーザー設定が変更されたときの処理
   useEffect(() => {
+    if (!userSettings && user?.id) {
+      setUserIconUrl(null)
+      setIsUserSetupComplete(false)
+      return
+    }
+
     if (!userSettings) {
       setUserIconUrl(null)
       setIsUserSetupComplete(false)
-      setShouldRedirectToSettings(!!user?.id)
       return
     }
 
@@ -140,7 +143,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     )
     
     setIsUserSetupComplete(isComplete)
-    setShouldRedirectToSettings(!isComplete)
 
     // 表示言語の自動設定（設定完了時のみ）
     if (isComplete && userSettings.nativeLanguage?.code) {
@@ -156,6 +158,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [userSettings, user?.user_metadata, user?.id])
+
+  // 自動リダイレクトロジック（ログイン後は一律Phrase Addに遷移）
+  useEffect(() => {
+    if (!user?.id || userSettingsLoading || hasRedirected) return
+    
+    const currentPath = window.location.pathname
+    
+    // 認証コールバックページではリダイレクトしない
+    if (currentPath === '/auth/callback') {
+      return
+    }
+    
+    // ユーザー設定が取得できない場合は処理を待つ
+    if (userSettings === undefined) {
+      return
+    }
+    
+    // ホームページにいる場合、Phrase Listへ直接リダイレクト
+    if (currentPath === '/') {
+      setHasRedirected(true)
+      router.push('/phrase/list')
+      return
+    }
+  }, [user?.id, userSettings, userSettingsLoading, hasRedirected, router])
+
+  // ユーザーが変更された時にリダイレクトフラグをリセット
+  useEffect(() => {
+    setHasRedirected(false)
+  }, [user?.id])
 
   const signOut = async () => {
     try {
@@ -222,10 +253,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const clearSettingsRedirect = () => {
-    setShouldRedirectToSettings(false)
-  }
-
   const showLoginModal = () => {
     setIsLoginModalOpen(true)
   }
@@ -242,7 +269,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     userSettingsLoading,
     userIconUrl,
     isUserSetupComplete,
-    shouldRedirectToSettings,
     isLoginModalOpen,
     languages,
     languagesLoading,
@@ -252,7 +278,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     refreshUser,
     refreshUserSettings,
     refreshSession,
-    clearSettingsRedirect,
     showLoginModal,
     hideLoginModal,
   }
