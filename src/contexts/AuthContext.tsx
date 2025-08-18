@@ -82,17 +82,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       async (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
+        setLoading(false)
         
-        // ユーザー状態が変更されたらアイコンURLもリセット
         if (!session?.user) {
+          // ログアウト時の状態リセット
           setUserIconUrl(null)
           setIsUserSetupComplete(false)
+          setUserSettings(null)
+          setIsLoginModalOpen(false)
         } else {
-          // ログイン成功時はログインモーダルを閉じる
+          // ログイン成功時
           setIsLoginModalOpen(false)
         }
-        
-        setLoading(false)
       }
     )
 
@@ -102,31 +103,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const signOut = async () => {
-    // TOPページに即座に遷移
-    router.push('/')
-    
-    // その後でローカル状態をクリア
-    setUser(null)
-    setSession(null)
-    setUserIconUrl(null)
-    setIsUserSetupComplete(false)
-    setIsLoginModalOpen(false) // ログインモーダルを閉じる
-    
-    // Supabaseからのログアウト（バックグラウンドで実行）
     try {
+      // Supabaseからログアウト（状態は onAuthStateChange で自動更新される）
       await supabase.auth.signOut()
-    } catch {
-      // ローカルストレージから認証情報を手動でクリア
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('supabase.auth.token')
-        window.sessionStorage.removeItem('supabase.auth.token')
-      }
-    }
-    
-    // ユーザー設定関連のローカルストレージをクリア（もしあれば）
-    if (typeof window !== 'undefined') {
-      // ヘッダー関連の状態をクリアするためのカスタムイベントを発行
-      window.dispatchEvent(new Event('userSignedOut'))
+    } catch (error) {
+      console.error('Sign out error:', error)
+    } finally {
+      // ログアウト完了後にホームページへリダイレクト
+      router.push('/')
     }
   }
 
