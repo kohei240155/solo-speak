@@ -23,8 +23,8 @@ export const LANGUAGE_CODES = {
 // サポート言語の配列（配列として必要な場合）
 export const SUPPORTED_LANGUAGES = Object.values(LANGUAGE_CODES)
 
-// デフォルト言語
-export const DEFAULT_LANGUAGE = LANGUAGE_CODES.ENGLISH
+// デフォルト言語（Top画面の初期表示は必ず日本語）
+export const DEFAULT_LANGUAGE = LANGUAGE_CODES.JAPANESE
 
 // フォールバック言語（翻訳が見つからない場合に使用）
 export const FALLBACK_LANGUAGE = LANGUAGE_CODES.JAPANESE
