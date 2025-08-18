@@ -25,8 +25,8 @@ export const useAuthGuard = (redirectPath = '/', requireUserSetup = true) => {
       return
     }
 
-    // ユーザー設定完了が必須で、設定が未完了の場合はSettings画面にリダイレクト
-    if (requireUserSetup && userSettings !== undefined && !isUserSetupComplete) {
+    // ユーザー設定が必須で、データが存在しない場合はSettings画面にリダイレクト
+    if (requireUserSetup && userSettings === null) {
       const currentPath = window.location.pathname
       // 既にSettings画面にいる場合はリダイレクトしない
       if (currentPath !== '/settings') {
