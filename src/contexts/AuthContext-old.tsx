@@ -1,15 +1,14 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { UserSettingsResponse } from '@/types/userSettings'
-import { LanguageInfo } from '@/types/common'
 import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
 import { isUILanguage } from '@/constants/languages'
 import LoginModal from '@/components/auth/LoginModal'
-import { useUserSettingsData, useLanguages } from '@/hooks/api/useSWRApi'
+import { useUserSettings } from '@/hooks/auth/useUserSettings'
 
 type AuthContextType = {
   user: User | null
@@ -21,13 +20,11 @@ type AuthContextType = {
   isUserSetupComplete: boolean
   shouldRedirectToSettings: boolean
   isLoginModalOpen: boolean
-  languages: LanguageInfo[] | undefined
-  languagesLoading: boolean
   signOut: () => Promise<void>
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   updateUserMetadata: (metadata: Record<string, string>) => Promise<void>
   refreshUser: () => Promise<void>
-  refreshUserSettings: () => void
+  refreshUserSettings: () => Promise<void>
   refreshSession: () => Promise<void>
   clearSettingsRedirect: () => void
   showLoginModal: () => void
@@ -59,13 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     userSettings, 
     isLoading: userSettingsLoading, 
     refresh: refreshUserSettings 
-  } = useUserSettingsData(user?.id ?? null)
-
-  // SWRを使用して言語リストを取得
-  const { 
-    languages, 
-    isLoading: languagesLoading 
-  } = useLanguages()
+  } = useUserSettings(user?.id ?? null)
 
   useEffect(() => {
     // 現在のセッションを取得
@@ -92,7 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
@@ -114,61 +105,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [])
 
-  // ユーザー設定が変更されたときの処理
-  useEffect(() => {
-    if (!userSettings) {
-      setUserIconUrl(null)
-      setIsUserSetupComplete(false)
-      setShouldRedirectToSettings(!!user?.id)
-      return
-    }
-
-    // アイコンの設定
-    if (userSettings.iconUrl?.trim()) {
-      setUserIconUrl(userSettings.iconUrl)
-    } else {
-      // Googleアバターをフォールバック
-      const googleAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
-      setUserIconUrl(googleAvatarUrl || null)
-    }
-
-    // 設定完了判定
-    const isComplete = !!(
-      userSettings.username?.trim() &&
-      userSettings.nativeLanguageId &&
-      userSettings.defaultLearningLanguageId
-    )
-    
-    setIsUserSetupComplete(isComplete)
-    setShouldRedirectToSettings(!isComplete)
-
-    // 表示言語の自動設定（設定完了時のみ）
-    if (isComplete && userSettings.nativeLanguage?.code) {
-      const nativeLanguageCode = userSettings.nativeLanguage.code
-      const targetLanguage = isUILanguage(nativeLanguageCode) ? nativeLanguageCode : 'en'
-      const currentDisplayLanguage = getStoredDisplayLanguage()
-      
-      if (currentDisplayLanguage !== targetLanguage) {
-        setStoredDisplayLanguage(targetLanguage)
-        window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
-          detail: { locale: targetLanguage } 
-        }))
-      }
-    }
-  }, [userSettings, user?.user_metadata, user?.id])
-
   const signOut = async () => {
     try {
+      // Supabaseからログアウト（状態は onAuthStateChange で自動更新される）
       await supabase.auth.signOut()
     } catch (error) {
       console.error('Sign out error:', error)
     } finally {
+      // ログアウト完了後にホームページへリダイレクト
       router.push('/')
     }
   }
 
   const signInWithGoogle = async () => {
     try {
+      // 環境変数から適切なベースURLを取得
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://solo-speak.com'
       const redirectUrl = `${baseUrl}/auth/callback`
 
@@ -183,8 +134,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       
+      // OAuth認証が正常に開始されたかログで確認
       if (data?.url) {
+        // 明示的にOAuth URLに遷移（ブラウザによってはこれが必要）
         window.location.href = data.url
+      } else if (!error) {
+        // OAuth started but no URL was returned
       }
       
       return { error }
@@ -205,6 +160,122 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       throw error
     }
   }
+
+  // ユーザー設定データの取得
+  const fetchUserSettings = useCallback(async () => {
+    if (!user?.id) return null
+    
+    try {
+      return await mutate(
+        ['/api/user/settings', user.id],
+        api.get<UserSettingsResponse>('/api/user/settings', {
+          showErrorToast: false
+        })
+      )
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        // 初回ユーザーの場合は自動作成
+        await api.post('/api/user/init', {}, { showErrorToast: false })
+        return null
+      }
+      throw error
+    }
+  }, [user?.id])
+
+  // ユーザーアイコンの設定
+  const updateUserIcon = useCallback((userData: UserSettingsResponse | null) => {
+    if (userData?.iconUrl?.trim()) {
+      setUserIconUrl(userData.iconUrl)
+    } else {
+      // Googleアバターをフォールバック
+      const googleAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture
+      setUserIconUrl(googleAvatarUrl || null)
+    }
+  }, [user?.user_metadata])
+
+  // 表示言語の自動設定
+  const updateDisplayLanguage = useCallback((userData: UserSettingsResponse) => {
+    if (!userData.nativeLanguage?.code) return
+    
+    const nativeLanguageCode = userData.nativeLanguage.code
+    const targetLanguage = isUILanguage(nativeLanguageCode) ? nativeLanguageCode : 'en'
+    const currentDisplayLanguage = getStoredDisplayLanguage()
+    
+    if (currentDisplayLanguage !== targetLanguage) {
+      setStoredDisplayLanguage(targetLanguage)
+      window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
+        detail: { locale: targetLanguage } 
+      }))
+    }
+  }, [])
+
+  // 設定完了判定
+  const checkSetupComplete = useCallback((userData: UserSettingsResponse | null) => {
+    if (!userData) return false
+    
+    return !!(
+      userData.username?.trim() &&
+      userData.nativeLanguageId &&
+      userData.defaultLearningLanguageId
+    )
+  }, [])
+
+  const refreshUserSettings = useCallback(async () => {
+    if (!user?.id || !session) {
+      setIsUserSetupComplete(false)
+      setUserIconUrl(null)
+      setUserSettings(null)
+      setUserSettingsLoading(false)
+      return
+    }
+
+    setUserSettingsLoading(true)
+    try {
+      const userData = await fetchUserSettings()
+      
+      setUserSettings(userData ?? null)
+      updateUserIcon(userData ?? null)
+      
+      const isComplete = checkSetupComplete(userData ?? null)
+      setIsUserSetupComplete(isComplete)
+      setShouldRedirectToSettings(!isComplete)
+      
+      if (isComplete && userData) {
+        updateDisplayLanguage(userData)
+      }
+    } catch (error) {
+      console.error('Failed to refresh user settings:', error)
+      setUserSettings(null)
+      setIsUserSetupComplete(false)
+      setShouldRedirectToSettings(true)
+      updateUserIcon(null)
+    } finally {
+      setUserSettingsLoading(false)
+    }
+  }, [user?.id, session, fetchUserSettings, updateUserIcon, checkSetupComplete, updateDisplayLanguage])
+
+  // ユーザーとセッションが利用可能になったらユーザー設定を取得
+  useEffect(() => {
+    if (user?.id && session && !loading) {
+      refreshUserSettings()
+    }
+  }, [user?.id, session, loading, refreshUserSettings])
+
+  // ユーザー設定更新イベントの監視
+  useEffect(() => {
+    const handleUserSettingsUpdate = () => {
+      if (user?.id && session && !loading) {
+        mutate(['/api/user/settings', user.id])
+        refreshUserSettings()
+      }
+    }
+
+    window.addEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    
+    return () => {
+      window.removeEventListener('userSettingsUpdated', handleUserSettingsUpdate)
+    }
+  }, [user?.id, session, loading, refreshUserSettings])
 
   const refreshUser = async () => {
     const { data: { user: refreshedUser }, error } = await supabase.auth.getUser()
@@ -238,14 +309,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     session,
     loading,
-    userSettings: userSettings ?? null,
+    userSettings,
     userSettingsLoading,
     userIconUrl,
     isUserSetupComplete,
     shouldRedirectToSettings,
     isLoginModalOpen,
-    languages,
-    languagesLoading,
     signOut,
     signInWithGoogle,
     updateUserMetadata,

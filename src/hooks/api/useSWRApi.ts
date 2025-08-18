@@ -6,6 +6,7 @@ import { SituationsListResponse } from '@/types/situation'
 import { DashboardData } from '@/types/dashboard'
 import { LanguageInfo } from '@/types/common'
 import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData, UnifiedRankingUser } from '@/types/ranking'
+import { UserSettingsResponse } from '@/types/userSettings'
 import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用の統一fetcher関数
@@ -47,6 +48,39 @@ const SWR_CONFIGS = {
     shouldRetryOnError: true,
   }
 } as const
+
+// ユーザー設定を取得するSWRフック（完全版）
+export function useUserSettingsData(userId: string | null) {
+  const userSettingsKey = userId ? [`/api/user/settings`, userId] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(
+    userSettingsKey,
+    async ([url]) => {
+      try {
+        return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
+      } catch (error: unknown) {
+        // 404エラー（初回ユーザー）の場合は自動作成
+        if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+          await api.post('/api/user/init', {}, { showErrorToast: false })
+          // 作成後に再取得
+          return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
+        }
+        throw error
+      }
+    },
+    {
+      ...SWR_CONFIGS.MEDIUM_CACHE,
+      errorRetryCount: 1, // 404エラー後の無限ループを防ぐ
+    }
+  )
+
+  return {
+    userSettings: data,
+    isLoading,
+    error,
+    refresh: mutate
+  }
+}
 
 // ユーザー設定を取得するSWRフック（軽量版 - AuthContextのデータを参照）
 export function useUserSettings() {
