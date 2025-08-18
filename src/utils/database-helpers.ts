@@ -17,6 +17,7 @@ export async function checkUsernameConflict(
   const existingUser = await prisma.user.findFirst({
     where: { 
       username: username,
+      deletedAt: null, // 削除されていないユーザーのみチェック
       ...(excludeUserId && { id: { not: excludeUserId } })
     }
   })
@@ -32,7 +33,10 @@ export async function checkUsernameConflict(
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { 
+        id: userId,
+        deletedAt: null // 削除されていないユーザーのみ確認
+      }
     })
     const exists = !!user
     return exists
@@ -48,7 +52,10 @@ export async function checkUserExists(userId: string): Promise<boolean> {
  */
 export async function getUserSettings(userId: string): Promise<UserSettingsResponse | null> {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { 
+      id: userId,
+      deletedAt: null // 削除されていないユーザーのみ取得
+    },
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
@@ -221,7 +228,10 @@ export async function updateUserSettings(
   userData: UserSettingsUpdateRequest
 ): Promise<UserSettingsResponse> {
   const result = await prisma.user.update({
-    where: { id: userId },
+    where: { 
+      id: userId,
+      deletedAt: null // 削除されていないユーザーのみ更新
+    },
     data: {
       username: userData.username,
       iconUrl: userData.iconUrl,
