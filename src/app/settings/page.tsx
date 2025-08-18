@@ -17,7 +17,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 // import { useSearchParams } from 'next/navigation'
 
 export default function UserSettingsPage() {
-  const { loading: authLoading } = useAuthGuard()
+  const { loading: authLoading } = useAuthGuard('/', false) // ユーザー設定完了チェックを無効化
   // SUBSCRIPTION_DISABLED: URLパラメータによるタブ切り替えを一時的に無効化
   // const searchParams = useSearchParams()
   // const tabParam = searchParams.get('tab')

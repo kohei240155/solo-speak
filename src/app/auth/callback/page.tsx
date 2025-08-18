@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/spabase'
 import { api, ApiError } from '@/utils/api'
+import { UserSettingsResponse } from '@/types/userSettings'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function AuthCallback() {
@@ -28,12 +29,22 @@ export default function AuthCallback() {
           
           try {
             // ユーザー設定を取得してユーザーが既に存在するかチェック
-            await api.get('/api/user/settings', { showErrorToast: false })
+            const userSettingsResponse = await api.get<UserSettingsResponse>('/api/user/settings', { showErrorToast: false })
             
-            // ユーザー設定が存在する場合はPhrase List画面に遷移
-            setTimeout(() => {
-              router.replace('/phrase/list')
-            }, 100)
+            // ユーザー設定が存在し、必要な情報が揃っている場合はPhrase List画面に遷移
+            if (userSettingsResponse && 
+                userSettingsResponse.username?.trim() && 
+                userSettingsResponse.nativeLanguageId && 
+                userSettingsResponse.defaultLearningLanguageId) {
+              setTimeout(() => {
+                router.replace('/phrase/list')
+              }, 100)
+            } else {
+              // ユーザー設定が不完全な場合はSettings画面に遷移
+              setTimeout(() => {
+                router.replace('/settings')
+              }, 100)
+            }
           } catch (error: unknown) {
             // 404エラー（ユーザーが存在しない）の場合はSettings画面に遷移
             const is404Error = (
@@ -46,9 +57,9 @@ export default function AuthCallback() {
                 router.replace('/settings')
               }, 100)
             } else {
-              // その他のエラーの場合はPhrase List画面に遷移（デフォルト動作）
+              // その他のエラーの場合もSettings画面に遷移（安全側に倒す）
               setTimeout(() => {
-                router.replace('/phrase/list')
+                router.replace('/settings')
               }, 100)
             }
           }
