@@ -55,37 +55,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   useEffect(() => {
-    // タイムアウト設定（5秒後に強制的にローディング解除）
-    const loadingTimeout = setTimeout(() => {
-      setLoading(false)
-      setSession(null)
-      setUser(null)
-      setUserIconUrl(null)
-      setIsUserSetupComplete(false)
-      
-      // ローカル認証情報もクリア
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('supabase.auth.token')
-        window.sessionStorage.removeItem('supabase.auth.token')
-      }
-    }, 5000)
-
     // 現在のセッションを取得
     const getSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
-          // エラー時はローカル認証情報をクリア（サーバー通信なしで）
-          try {
-            await supabase.auth.signOut()
-          } catch {
-            // ローカルストレージから認証情報を手動でクリア
-            if (typeof window !== 'undefined') {
-              window.localStorage.removeItem('supabase.auth.token')
-              window.sessionStorage.removeItem('supabase.auth.token')
-            }
-          }
           setSession(null)
           setUser(null)
         } else {
@@ -93,20 +68,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(session?.user ?? null)
         }
       } catch {
-        // 例外時はローカル認証情報をクリア（サーバー通信なしで）
-        try {
-          await supabase.auth.signOut()
-        } catch {
-          // ローカルストレージから認証情報を手動でクリア
-          if (typeof window !== 'undefined') {
-            window.localStorage.removeItem('supabase.auth.token')
-            window.sessionStorage.removeItem('supabase.auth.token')
-          }
-        }
         setSession(null)
         setUser(null)
       } finally {
-        clearTimeout(loadingTimeout)
         setLoading(false)
       }
     }
@@ -116,32 +80,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        try {
-          setSession(session)
-          setUser(session?.user ?? null)
-          // ユーザー状態が変更されたらアイコンURLもリセット
-          if (!session?.user) {
-            setUserIconUrl(null)
-            setIsUserSetupComplete(false)
-          } else {
-            // ログイン成功時はログインモーダルを閉じる
-            setIsLoginModalOpen(false)
-          }
-        } catch {
-          setSession(null)
-          setUser(null)
+        setSession(session)
+        setUser(session?.user ?? null)
+        
+        // ユーザー状態が変更されたらアイコンURLもリセット
+        if (!session?.user) {
           setUserIconUrl(null)
           setIsUserSetupComplete(false)
+        } else {
+          // ログイン成功時はログインモーダルを閉じる
+          setIsLoginModalOpen(false)
         }
-        // finallyブロック外でもsetLoading(false)を必ず呼ぶ
-        clearTimeout(loadingTimeout)
+        
         setLoading(false)
       }
     )
 
     return () => {
       subscription.unsubscribe()
-      clearTimeout(loadingTimeout)
     }
   }, [])
 
