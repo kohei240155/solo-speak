@@ -1,5 +1,4 @@
 import { prisma } from '@/utils/prisma'
-import { UI_LANGUAGES } from '@/constants/languages'
 import { User } from '@supabase/supabase-js'
 import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
@@ -100,41 +99,25 @@ export async function initializeUser(user: User): Promise<UserSettingsResponse> 
     // アイコンURLの設定（Googleのアバターがない場合はデフォルト画像を使用）
     const iconUrl = googleAvatarUrl || '/images/user-icon/user-icon.png'
 
-    // 初回ユーザー作成時は一律英語を母国語として設定
-    const availableLanguages = await prisma.language.findMany({
-      where: { code: { in: Array.from(UI_LANGUAGES) } }
-    })
-    
-    // 英語を検索
-    const englishLanguage = availableLanguages.find((lang: { code: string }) => lang.code === 'en')
-    const defaultNativeLanguageId = englishLanguage?.id || null
-
+    // 初回ユーザー作成時は母国語と学習言語を未設定にして、ユーザーが選択するまで待機
     const result = await prisma.user.create({
       data: {
         id: user.id,
         email: user.email || '',
         username: googleDisplayName || null, // Googleの表示名を初期値として設定
         iconUrl: iconUrl, // 修正: 設定したiconUrlを使用
-        nativeLanguageId: defaultNativeLanguageId, // 初回ユーザーは一律英語
+        nativeLanguageId: null, // 初回ユーザーは未選択状態
         defaultLearningLanguageId: null, // 初期状態では空（後で設定）
       },
     })
 
-    // 関連データを取得
-    const nativeLanguage = defaultNativeLanguageId ? 
-      await prisma.language.findUnique({ where: { id: defaultNativeLanguageId } }) : null
-    
     return {
       iconUrl: result.iconUrl,
       username: result.username,
       nativeLanguageId: result.nativeLanguageId,
       defaultLearningLanguageId: result.defaultLearningLanguageId,
       email: result.email,
-      nativeLanguage: nativeLanguage ? {
-        id: nativeLanguage.id,
-        name: nativeLanguage.name,
-        code: nativeLanguage.code
-      } : null,
+      nativeLanguage: null, // 初回ユーザーは未設定
       defaultLearningLanguage: null
     }
   } catch (error) {

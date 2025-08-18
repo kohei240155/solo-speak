@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       }, { status: 200 })
     }
 
-    // 初期ユーザーデータを作成（一律英語で初期化）
+    // 初期ユーザーデータを作成（母国語は未選択状態で初期化）
     const newUser = await initializeUser(user)
 
     return NextResponse.json({
