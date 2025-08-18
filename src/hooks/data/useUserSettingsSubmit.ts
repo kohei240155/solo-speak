@@ -50,11 +50,11 @@ export function useUserSettingsSubmit(
         }
       }
 
-      // 言語設定が変更されたかをチェック
-      const languageChanged = !isFirstTimeSetup && (
-        currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
-        currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
-      )
+      // 言語設定が変更されたかをチェック（ログ用）
+      // const languageChanged = !isFirstTimeSetup && (
+      //   currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
+      //   currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
+      // )
       
       // 母国語が変更されたかをチェック
       const nativeLanguageChanged = !isFirstTimeSetup && 
@@ -203,11 +203,6 @@ export function useUserSettingsSubmit(
         duration: 3000,
         position: 'top-center',
       })
-      
-      // 言語設定が変更された場合はPhrase List画面でリロードするためのフラグを設定
-      if (languageChanged) {
-        sessionStorage.setItem('reloadAfterLanguageChange', 'true')
-      }
       
       // 設定完了後はPhrase Add画面に遷移
       setTimeout(() => {
