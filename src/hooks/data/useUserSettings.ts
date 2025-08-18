@@ -1,24 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguage } from '@/contexts/LanguageContext'
 import { api } from '@/utils/api'
 import { UseFormSetValue } from 'react-hook-form'
 import { UserSetupFormData, UserSettingsResponse } from '@/types/userSettings'
-import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   const { user, languages } = useAuth()
-  const { setLocale } = useLanguage()
   const [error, setError] = useState('')
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
-
-  // 未認証ユーザーの場合は言語を英語に強制設定
-  useEffect(() => {
-    if (!user) {
-      setLocale(DEFAULT_LANGUAGE)
-    }
-  }, [user, setLocale])
 
   const fetchUserSettings = useCallback(async () => {
     try {

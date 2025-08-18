@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
 import { useUserSettings } from '@/hooks/data/useUserSettings'
+import { useSettingsLanguage } from '@/hooks/ui/useSettingsLanguage'
 import UserSettingsForm from '@/components/settings/UserSettingsForm'
 // SUBSCRIPTION_DISABLED: SubscriptionTab import を一時的に無効化
 // import SubscriptionTab from '@/components/settings/SubscriptionTab'
@@ -18,6 +19,10 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 export default function UserSettingsPage() {
   const { loading: authLoading } = useAuthGuard('/', false) // ユーザー設定完了チェックを無効化
+  
+  // Settingsページ専用の言語管理
+  useSettingsLanguage()
+  
   // SUBSCRIPTION_DISABLED: URLパラメータによるタブ切り替えを一時的に無効化
   // const searchParams = useSearchParams()
   // const tabParam = searchParams.get('tab')

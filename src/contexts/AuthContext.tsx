@@ -153,7 +153,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (currentDisplayLanguage !== targetLanguage) {
         setStoredDisplayLanguage(targetLanguage)
         window.dispatchEvent(new CustomEvent('displayLanguageChanged', { 
-          detail: { locale: targetLanguage } 
+          detail: { locale: targetLanguage, isUserLanguage: true } 
         }))
       }
     }

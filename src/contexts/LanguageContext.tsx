@@ -8,6 +8,7 @@ interface LanguageContextType {
   setLocale: (locale: string) => void
   availableLocales: string[]
   isLoadingLocale: boolean
+  isUserLanguageMode: boolean
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -48,6 +49,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     return DEFAULT_LOCALE
   })
   const [isLoadingLocale] = useState(false) // 初期状態はfalse、ロードは不要
+  const [isUserLanguageMode, setIsUserLanguageMode] = useState(false) // ユーザー言語モードフラグ
 
   // 初期言語設定（日本語優先）
   useEffect(() => {
@@ -69,9 +71,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     if (typeof window === 'undefined') return
 
     const handleDisplayLanguageChanged = (event: CustomEvent) => {
-      const { locale: newLocale } = event.detail
+      const { locale: newLocale, isUserLanguage } = event.detail
       if (AVAILABLE_LOCALES.includes(newLocale) && newLocale !== locale) {
         setLocaleState(newLocale)
+        setIsUserLanguageMode(isUserLanguage || false)
       }
     }
 
@@ -86,6 +89,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLocale = (newLocale: string) => {
     if (AVAILABLE_LOCALES.includes(newLocale)) {
       setLocaleState(newLocale)
+      setIsUserLanguageMode(false) // 手動変更時はユーザー言語モードを解除
       // ローカルストレージに即座に保存
       setStoredDisplayLanguage(newLocale)
       
@@ -101,6 +105,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         setLocale,
         availableLocales: AVAILABLE_LOCALES,
         isLoadingLocale,
+        isUserLanguageMode,
       }}
     >
       {children}
