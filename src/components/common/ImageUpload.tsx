@@ -192,40 +192,20 @@ const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
       {/* 現在のアイコン表示 */}
       <div className="flex items-center space-x-4">
         <div 
-          className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300 cursor-pointer transition-all duration-200"
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#9CA3AF'
-            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#D1D5DB'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
+          className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden border border-gray-300"
         >
           {currentImage && currentImage.trim() !== '' ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={currentImage.startsWith('data:') ? currentImage : `${currentImage}${currentImage.includes('?') ? '&' : '?'}t=${Date.now()}`}
               alt="User Icon"
-              className="w-full h-full object-cover transition-transform duration-200"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'
-              }}
+              className="w-full h-full object-cover"
             />
           ) : (
             <svg 
-              className="w-6 h-6 text-gray-500 transition-colors duration-200" 
+              className="w-6 h-6 text-gray-500" 
               fill="currentColor" 
               viewBox="0 0 20 20"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#6B7280'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#9CA3AF'
-              }}
             >
               <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
             </svg>

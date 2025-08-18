@@ -6,10 +6,11 @@ import { SituationsListResponse } from '@/types/situation'
 import { DashboardData } from '@/types/dashboard'
 import { LanguageInfo } from '@/types/common'
 import { SpeakRankingResponseData, QuizRankingResponseData, PhraseRankingResponseData, UnifiedRankingUser } from '@/types/ranking'
+import { UserSettingsResponse } from '@/types/userSettings'
 import { useAuth } from '@/contexts/AuthContext'
 
 // SWR用の統一fetcher関数
-const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean }): Promise<T> => {
+const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: boolean; useAuth?: boolean }): Promise<T> => {
   return await api.get<T>(url, options || {})
 }
 
@@ -48,6 +49,29 @@ const SWR_CONFIGS = {
   }
 } as const
 
+// ユーザー設定を取得するSWRフック（完全版）
+export function useUserSettingsData(userId: string | null) {
+  const userSettingsKey = userId ? [`/api/user/settings`, userId] as const : null
+  
+  const { data, error, isLoading, mutate } = useSWR(
+    userSettingsKey,
+    async ([url]) => {
+      return await fetcher<UserSettingsResponse>(url, { showErrorToast: false })
+    },
+    {
+      ...SWR_CONFIGS.MEDIUM_CACHE,
+      errorRetryCount: 1, // 404エラー後の無限ループを防ぐ
+    }
+  )
+
+  return {
+    userSettings: data,
+    isLoading,
+    error,
+    refresh: mutate
+  }
+}
+
 // ユーザー設定を取得するSWRフック（軽量版 - AuthContextのデータを参照）
 export function useUserSettings() {
   const { userSettings, userSettingsLoading, refreshUserSettings } = useAuth()
@@ -60,9 +84,13 @@ export function useUserSettings() {
   }
 }
 
-// 言語リストを取得するSWRフック
+// 言語リストを取得するSWRフック（認証不要）
 export function useLanguages() {
-  const { data, error, isLoading, mutate } = useSWR('/api/languages', fetcher<LanguageInfo[]>, SWR_CONFIGS.LONG_CACHE)
+  const { data, error, isLoading, mutate } = useSWR(
+    '/api/languages', 
+    async (url) => fetcher<LanguageInfo[]>(url, { useAuth: false }), 
+    SWR_CONFIGS.LONG_CACHE
+  )
 
   return {
     languages: data,

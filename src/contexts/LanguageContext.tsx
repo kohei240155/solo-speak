@@ -8,6 +8,7 @@ interface LanguageContextType {
   setLocale: (locale: string) => void
   availableLocales: string[]
   isLoadingLocale: boolean
+  isUserLanguageMode: boolean
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -33,45 +34,33 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  // サーバーサイドでも適切な初期値を設定
+  // 初期言語設定を日本語に固定（Top画面の初期表示は必ず日本語）
   const [locale, setLocaleState] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      // クライアントサイドでは即座に保存された値または検出された値を使用
+      // クライアントサイドでは保存された値を優先、なければ日本語に設定
       const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY)
       if (savedLocale && AVAILABLE_LOCALES.includes(savedLocale)) {
         return savedLocale
       }
       
-      const browserLanguage = navigator.language || navigator.languages?.[0] || DEFAULT_LOCALE
-      const primaryLanguage = browserLanguage.split('-')[0].toLowerCase()
-      return AVAILABLE_LOCALES.includes(primaryLanguage) ? primaryLanguage : DEFAULT_LOCALE
+      // 保存された設定がない場合は日本語を設定
+      return DEFAULT_LOCALE
     }
     return DEFAULT_LOCALE
   })
   const [isLoadingLocale] = useState(false) // 初期状態はfalse、ロードは不要
+  const [isUserLanguageMode, setIsUserLanguageMode] = useState(false) // ユーザー言語モードフラグ
 
-  // ブラウザの言語設定から優先言語を検出
-  const detectBrowserLanguage = (): string => {
-    if (typeof window === 'undefined') return DEFAULT_LOCALE
-
-    const browserLanguage = navigator.language || navigator.languages?.[0] || DEFAULT_LOCALE
-    const primaryLanguage = browserLanguage.split('-')[0].toLowerCase()
-    
-    // サポートされている言語かチェック
-    return AVAILABLE_LOCALES.includes(primaryLanguage) ? primaryLanguage : DEFAULT_LOCALE
-  }
-
-  // 初期言語設定（軽量化）
+  // 初期言語設定（日本語優先）
   useEffect(() => {
-    // クライアントサイドでの細かい調整のみ
+    // クライアントサイドでの調整
     if (typeof window !== 'undefined') {
       const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY)
       if (!savedLocale) {
-        // 保存された設定がない場合のみブラウザ言語を検出して保存
-        const detectedLocale = detectBrowserLanguage()
-        if (detectedLocale !== locale) {
-          setLocaleState(detectedLocale)
-          setStoredDisplayLanguage(detectedLocale)
+        // 保存された設定がない場合は日本語を設定して保存
+        if (locale !== DEFAULT_LOCALE) {
+          setLocaleState(DEFAULT_LOCALE)
+          setStoredDisplayLanguage(DEFAULT_LOCALE)
         }
       }
     }
@@ -82,9 +71,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     if (typeof window === 'undefined') return
 
     const handleDisplayLanguageChanged = (event: CustomEvent) => {
-      const { locale: newLocale } = event.detail
+      const { locale: newLocale, isUserLanguage } = event.detail
       if (AVAILABLE_LOCALES.includes(newLocale) && newLocale !== locale) {
         setLocaleState(newLocale)
+        setIsUserLanguageMode(isUserLanguage || false)
       }
     }
 
@@ -99,6 +89,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const setLocale = (newLocale: string) => {
     if (AVAILABLE_LOCALES.includes(newLocale)) {
       setLocaleState(newLocale)
+      setIsUserLanguageMode(false) // 手動変更時はユーザー言語モードを解除
       // ローカルストレージに即座に保存
       setStoredDisplayLanguage(newLocale)
       
@@ -114,6 +105,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         setLocale,
         availableLocales: AVAILABLE_LOCALES,
         isLoadingLocale,
+        isUserLanguageMode,
       }}
     >
       {children}

@@ -12,7 +12,7 @@ export function useUserSettingsSubmit(
   setError: (error: string) => void,
   setIsUserSetupComplete: (complete: boolean) => void
 ) {
-  const { user, updateUserMetadata, refreshUserSettings, clearSettingsRedirect } = useAuth()
+  const { user, updateUserMetadata, refreshUserSettings } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const imageUploadRef = useRef<ImageUploadRef>(null)
   const router = useRouter()
@@ -50,11 +50,11 @@ export function useUserSettingsSubmit(
         }
       }
 
-      // 言語設定が変更されたかをチェック
-      const languageChanged = !isFirstTimeSetup && (
-        currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
-        currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
-      )
+      // 言語設定が変更されたかをチェック（ログ用）
+      // const languageChanged = !isFirstTimeSetup && (
+      //   currentLanguageSettings.nativeLanguageId !== data.nativeLanguageId ||
+      //   currentLanguageSettings.defaultLearningLanguageId !== data.defaultLearningLanguageId
+      // )
       
       // 母国語が変更されたかをチェック
       const nativeLanguageChanged = !isFirstTimeSetup && 
@@ -174,9 +174,6 @@ export function useUserSettingsSubmit(
         await refreshUserSettings()
       }
       
-      // Settings画面への遷移フラグをクリア
-      clearSettingsRedirect()
-      
       // ヘッダーに設定更新を通知するカスタムイベントを発行（少し遅延を入れる）
       setTimeout(() => {
         window.dispatchEvent(new Event('userSettingsUpdated'))
@@ -207,12 +204,7 @@ export function useUserSettingsSubmit(
         position: 'top-center',
       })
       
-      // 言語設定が変更された場合はPhrase Add画面でリロードするためのフラグを設定
-      if (languageChanged) {
-        sessionStorage.setItem('reloadAfterLanguageChange', 'true')
-      }
-      
-      // 常にPhrase Add画面に遷移
+      // 設定完了後はPhrase Add画面に遷移
       setTimeout(() => {
         router.push('/phrase/add')
       }, 500)

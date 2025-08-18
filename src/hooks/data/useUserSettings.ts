@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/utils/api'
 import { UseFormSetValue } from 'react-hook-form'
-import { UserSetupFormData, Language, UserSettingsResponse } from '@/types/userSettings'
+import { UserSetupFormData, UserSettingsResponse } from '@/types/userSettings'
 
 export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
-  const { user } = useAuth()
-  const [languages, setLanguages] = useState<Language[]>([])
+  const { user, languages } = useAuth()
   const [error, setError] = useState('')
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [dataLoading, setDataLoading] = useState(true)
@@ -79,26 +78,13 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   }, [setValue, user, setIsUserSetupComplete])
 
   const fetchLanguages = useCallback(async () => {
-    try {
-      // ユーザー設定画面では常にDBから最新データを取得（キャッシュ無効）
-      const data = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-      
-      if (Array.isArray(data) && data.length > 0) {
-        setLanguages(data)
-        setError('') // エラーをクリア
-      } else {
-        setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
-      }
-    } catch {
-      setError('言語データの取得に失敗しました。ネットワーク接続を確認してください。')
+    // AuthContextからSWRで取得された言語データを使用
+    if (languages && languages.length > 0) {
+      setError('') // エラーをクリア
+    } else {
+      setError('言語データが見つかりません。データベースに言語データが登録されていない可能性があります。')
     }
-  }, [])
+  }, [languages])
 
   // データの並列初期化（再ログイン時は強制リフレッシュ）
   useEffect(() => {
@@ -116,7 +102,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
   }, [user, fetchUserSettings, fetchLanguages])
 
   return {
-    languages,
+    languages: languages || [],
     error,
     setError,
     isUserSetupComplete,

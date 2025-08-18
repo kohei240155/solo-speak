@@ -1,6 +1,5 @@
 'use client'
 
-import { useRedirect } from '@/hooks/navigation/useRedirect'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -47,7 +46,6 @@ const useScrollAnimation = () => {
 }
 
 export default function Home() {
-  const { loading } = useRedirect()
   const { t, isLoading: isLoadingTranslation } = useTranslation('common')
   const { showLoginModal } = useAuth()
   const { locale } = useLanguage()
@@ -173,7 +171,7 @@ export default function Home() {
     )
   }
 
-  if (loading || isLoadingTranslation) {
+  if (isLoadingTranslation) {
     return <LoadingSpinner fullScreen message="Loading..." />
   }
 

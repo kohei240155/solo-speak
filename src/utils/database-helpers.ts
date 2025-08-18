@@ -1,5 +1,4 @@
 import { prisma } from '@/utils/prisma'
-import { UI_LANGUAGES } from '@/constants/languages'
 import { User } from '@supabase/supabase-js'
 import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
@@ -17,6 +16,7 @@ export async function checkUsernameConflict(
   const existingUser = await prisma.user.findFirst({
     where: { 
       username: username,
+      deletedAt: null, // 削除されていないユーザーのみチェック
       ...(excludeUserId && { id: { not: excludeUserId } })
     }
   })
@@ -32,7 +32,10 @@ export async function checkUsernameConflict(
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { 
+        id: userId,
+        deletedAt: null // 削除されていないユーザーのみ確認
+      }
     })
     const exists = !!user
     return exists
@@ -48,7 +51,10 @@ export async function checkUserExists(userId: string): Promise<boolean> {
  */
 export async function getUserSettings(userId: string): Promise<UserSettingsResponse | null> {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { 
+      id: userId,
+      deletedAt: null // 削除されていないユーザーのみ取得
+    },
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
@@ -78,62 +84,7 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
   }
 }
 
-/**
- * 初回ログイン時のユーザー初期化
- * @param user Supabaseユーザー情報
- * @param displayLanguage 表示言語設定（ローカルストレージから取得）
- * @returns 作成されたユーザーデータ
- */
-export async function initializeUser(user: User): Promise<UserSettingsResponse> {
-  try {
-    // Googleから取得した情報
-    const googleDisplayName = user.user_metadata?.full_name || user.user_metadata?.name || ''
-    const googleAvatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
-    
-    // アイコンURLの設定（Googleのアバターがない場合はデフォルト画像を使用）
-    const iconUrl = googleAvatarUrl || '/images/user-icon/user-icon.png'
 
-    // 初回ユーザー作成時は一律英語を母国語として設定
-    const availableLanguages = await prisma.language.findMany({
-      where: { code: { in: Array.from(UI_LANGUAGES) } }
-    })
-    
-    // 英語を検索
-    const englishLanguage = availableLanguages.find((lang: { code: string }) => lang.code === 'en')
-    const defaultNativeLanguageId = englishLanguage?.id || null
-
-    const result = await prisma.user.create({
-      data: {
-        id: user.id,
-        email: user.email || '',
-        username: googleDisplayName || null, // Googleの表示名を初期値として設定
-        iconUrl: iconUrl, // 修正: 設定したiconUrlを使用
-        nativeLanguageId: defaultNativeLanguageId, // 初回ユーザーは一律英語
-        defaultLearningLanguageId: null, // 初期状態では空（後で設定）
-      },
-    })
-
-    // 関連データを取得
-    const nativeLanguage = defaultNativeLanguageId ? 
-      await prisma.language.findUnique({ where: { id: defaultNativeLanguageId } }) : null
-    
-    return {
-      iconUrl: result.iconUrl,
-      username: result.username,
-      nativeLanguageId: result.nativeLanguageId,
-      defaultLearningLanguageId: result.defaultLearningLanguageId,
-      email: result.email,
-      nativeLanguage: nativeLanguage ? {
-        id: nativeLanguage.id,
-        name: nativeLanguage.name,
-        code: nativeLanguage.code
-      } : null,
-      defaultLearningLanguage: null
-    }
-  } catch (error) {
-    throw error
-  }
-}
 
 /**
  * ユーザー設定の作成
@@ -221,7 +172,10 @@ export async function updateUserSettings(
   userData: UserSettingsUpdateRequest
 ): Promise<UserSettingsResponse> {
   const result = await prisma.user.update({
-    where: { id: userId },
+    where: { 
+      id: userId,
+      deletedAt: null // 削除されていないユーザーのみ更新
+    },
     data: {
       username: userData.username,
       iconUrl: userData.iconUrl,

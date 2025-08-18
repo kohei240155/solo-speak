@@ -201,7 +201,7 @@ const Header = memo(function Header() {
                     getDefaultUserIcon
                   )
                 }
-                triggerClassName="p-1 rounded-full hover:bg-gray-100"
+                triggerClassName="p-1 rounded-full"
               />
             ) : (
               <div className="flex items-center space-x-6">
@@ -254,7 +254,7 @@ const Header = memo(function Header() {
                     getDefaultUserIcon
                   )
                 }
-                triggerClassName="p-2 rounded-full hover:bg-gray-100 touch-manipulation"
+                triggerClassName="p-2 rounded-full touch-manipulation"
               />
             ) : (
               <div className="flex items-center space-x-2">

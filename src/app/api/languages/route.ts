@@ -1,16 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { authenticateRequest, createErrorResponse } from '@/utils/api-helpers'
+import { NextResponse } from 'next/server'
+import { createErrorResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
 import { LanguagesResponseData } from '@/types/language'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // 認証チェック
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
-    }
-
+    // 言語リストは認証なしでアクセス可能
     const languages: LanguagesResponseData = await prisma.language.findMany({
       where: {
         deletedAt: null
