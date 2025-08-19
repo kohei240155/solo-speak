@@ -13,6 +13,7 @@ import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
+import { useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
@@ -20,6 +21,9 @@ export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
   const router = useRouter()
+
+  // Phrase Listのキャッシュ無効化用
+  const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
 
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
@@ -38,36 +42,20 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  // pendingSpeakCountの状態を管理（離脱警告用）
+  // pendingSpeakCountの状態を管理（QuizPracticeコンポーネントとの互換性のため）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingSpeakCount, setPendingSpeakCount] = useState(0)
-
-  // ページ離脱警告（pendingSpeakCountが1以上の時）
-  usePageLeaveWarning({ 
-    hasPendingChanges: pendingSpeakCount > 0 
-  })
-
-  // Speak画面と同様のbeforeunload処理を追加
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (pendingSpeakCount > 0) {
-        event.preventDefault()
-        event.returnValue = 'Countが登録されていません。このページを離れますか？'
-        return event.returnValue
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [pendingSpeakCount])
 
   // Quiz mode state
   const [quizMode, setQuizMode] = useState<QuizModeState>({
     active: false,
     config: null,
     session: null
+  })
+
+  // ページ離脱警告（クイズがアクティブな時、ただしAll Done状態を除く）
+  usePageLeaveWarning({ 
+    hasPendingChanges: quizMode.active && !!currentPhrase && !isQuizCompleted
   })
 
   // Quiz開始処理
@@ -131,6 +119,13 @@ export default function PhraseQuizPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizMode.active, isQuizCompleted, learningLanguage])
 
+  // All Done状態になったときにPhrase Listのキャッシュを無効化
+  useEffect(() => {
+    if (isQuizCompleted) {
+      refetchPhraseList()
+    }
+  }, [isQuizCompleted, refetchPhraseList])
+
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
     // クイズを実際に開始する時に状態をリセット
@@ -182,7 +177,11 @@ export default function PhraseQuizPage() {
 
   // Quizタブからの離脱時の未保存変更チェック
   const checkUnsavedChanges = () => {
-    return pendingSpeakCount > 0
+    // All Done状態では離脱警告を表示しない
+    if (isQuizCompleted) {
+      return false
+    }
+    return quizMode.active && !!currentPhrase
   }
 
   // 認証ローディング中は何も表示しない
@@ -205,6 +204,7 @@ export default function PhraseQuizPage() {
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={quizMode.active ? undefined : () => setShowQuizModal(true)}
           checkUnsavedChanges={checkUnsavedChanges}
+          onCacheInvalidate={refetchPhraseList}
         />
 
         {/* コンテンツエリア */}

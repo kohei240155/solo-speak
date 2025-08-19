@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 import { SpeakPhrase, SpeakConfig } from '@/types/speak'
+import { useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface SpeakSessionState {
@@ -25,6 +26,9 @@ export const useSpeakSession = (learningLanguage: string) => {
   const [totalCount, setTotalCount] = useState(0)
   const [pendingCount, setPendingCount] = useState(0)
   const [isCountDisabled, setIsCountDisabled] = useState(false)
+
+  // Phrase Listのキャッシュを取得（キャッシュ無効化用）
+  const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
 
   // URL管理: URLパラメータから設定を読み取る
   const readConfigFromURL = useCallback((): SpeakConfig | null => {
@@ -145,19 +149,9 @@ export const useSpeakSession = (learningLanguage: string) => {
       }
     }
 
-    const handleBeforeUnloadWarning = (event: BeforeUnloadEvent) => {
-      if (pendingCount > 0) {
-        event.preventDefault()
-        event.returnValue = '保存されていないカウントがあります。本当にページを離れますか？'
-        return event.returnValue
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnloadWarning)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnloadWarning)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [currentPhrase, pendingCount, sendPendingCount])
@@ -265,6 +259,9 @@ export const useSpeakSession = (learningLanguage: string) => {
       }
     }
 
+    // Phrase Listのキャッシュを無効化
+    refetchPhraseList()
+
     // 状態をリセット
     setSessionState({ active: false, config: null })
     setCurrentPhrase(null)
@@ -272,7 +269,7 @@ export const useSpeakSession = (learningLanguage: string) => {
     setTotalCount(0)
     setPendingCount(0)
     clearURL()
-  }, [currentPhrase, pendingCount, sendPendingCount, clearURL, t])
+  }, [currentPhrase, pendingCount, sendPendingCount, refetchPhraseList, clearURL, t])
 
   // 設定リセット
   const resetSession = useCallback(() => {
@@ -299,6 +296,7 @@ export const useSpeakSession = (learningLanguage: string) => {
     handleFinish,
     resetSession,
     sendPendingCount,
+    refetchPhraseList,
     
     // 内部関数（後方互換性のため）
     fetchSpeakPhrase

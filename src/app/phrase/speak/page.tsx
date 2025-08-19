@@ -32,14 +32,14 @@ function PhraseSpeakPage() {
     isLoadingPhrase,
     todayCount,
     totalCount,
-    pendingCount,
     isCountDisabled,
     handleStart,
     handleCount,
     handleNext,
     handleFinish,
     resetSession,
-    sendPendingCount
+    sendPendingCount,
+    refetchPhraseList
     // fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
   } = useSpeakSession(learningLanguage)
 
@@ -75,6 +75,7 @@ function PhraseSpeakPage() {
   // 単一フレーズ練習用のフック
   const singlePhraseSpeak = useSinglePhraseSpeak({
     phraseId,
+    learningLanguage,
     sendPendingCount
   })
 
@@ -106,10 +107,11 @@ function PhraseSpeakPage() {
 
   // ページ離脱警告
   const hasPendingCount = isSinglePhraseMode 
-    ? singlePhraseSpeak.singlePhrasePendingCount > 0 
-    : pendingCount > 0
+    ? !!singlePhraseSpeak.singlePhrase // 単一フレーズモードでフレーズが表示されている場合
+    : !!currentPhrase // 複数フレーズモードでフレーズが表示されている場合
   
-  usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
+  // All Done状態では離脱警告を表示しない
+  usePageLeaveWarning({ hasPendingChanges: hasPendingCount && !isSpeakCompleted })
 
   // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
   useEffect(() => {
@@ -123,8 +125,19 @@ function PhraseSpeakPage() {
     }
   }, [learningLanguage, router])
 
+  // All Done状態になったときにPhrase Listのキャッシュを無効化
+  useEffect(() => {
+    if (isSpeakCompleted) {
+      refetchPhraseList()
+    }
+  }, [isSpeakCompleted, refetchPhraseList])
+
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
+    // All Done状態では離脱警告を表示しない
+    if (isSpeakCompleted) {
+      return false
+    }
     return hasPendingCount
   }
 
@@ -149,6 +162,7 @@ function PhraseSpeakPage() {
             checkUnsavedChanges={checkUnsavedChanges}
             onSpeakModalOpen={speakMode.active ? undefined : modalManager.openSpeakModal}
             onQuizModalOpen={modalManager.openQuizModal}
+            onCacheInvalidate={refetchPhraseList}
           />
 
           {/* コンテンツエリア */}

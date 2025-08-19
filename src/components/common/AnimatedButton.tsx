@@ -61,11 +61,11 @@ export default function AnimatedButton({
   const getSizeStyles = () => {
     switch (size) {
       case 'sm':
-        return 'py-1 px-3 text-sm'
+        return 'h-8 px-3 text-sm'
       case 'lg':
-        return 'py-3 px-8 text-lg'
+        return 'h-12 px-8 text-lg'
       default:
-        return 'py-2 px-4'
+        return 'h-10 px-4'
     }
   }
 
