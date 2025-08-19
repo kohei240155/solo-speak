@@ -102,7 +102,8 @@ function PhraseSpeakPage() {
   // All Done画面管理
   const allDoneScreen = useAllDoneScreen({
     openSpeakModal: modalManager.openSpeakModal,
-    resetSavedConfig
+    resetSavedConfig,
+    onCacheInvalidate: refetchPhraseList
   })
 
   // ページ離脱警告

@@ -150,11 +150,15 @@ export default function PhraseQuizPage() {
 
   // 完了画面からのFinish処理
   const handleFinish = () => {
+    // キャッシュ無効化
+    refetchPhraseList()
     router.push('/phrase/list')
   }
 
   // 完了画面からのRetry処理
   const handleRetry = () => {
+    // キャッシュ無効化
+    refetchPhraseList()
     // モーダルを開くだけで、All Done画面の状態は維持
     setShowQuizModal(true)
   }
