@@ -22,7 +22,7 @@ export const usePhraseManagerSWR = () => {
   const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
-  const { totalCount: availablePhraseCount } = useInfinitePhrases(learningLanguage)
+  const { totalCount: availablePhraseCount, refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
   const [desiredPhrase, setDesiredPhrase] = useState('')
   const [selectedContext, setSelectedContext] = useState<string | null>(null)
   const [generatedVariations, setGeneratedVariations] = useState<PhraseVariation[]>([])
@@ -209,6 +209,9 @@ export const usePhraseManagerSWR = () => {
         setPhraseValidationError('')
       })
 
+      // Phrase Listのキャッシュを無効化
+      refetchPhraseList()
+
       toast.success(t('phrase.messages.saveSuccess'))
 
       // フレーズ数が1になったときにホーム画面追加モーダルを表示
@@ -221,7 +224,7 @@ export const usePhraseManagerSWR = () => {
       setSavingVariationIndex(null)
       setIsSaving(false)
     }
-  }, [editingVariations, desiredPhrase, learningLanguage, languages, validateVariation, t])
+  }, [editingVariations, desiredPhrase, learningLanguage, languages, validateVariation, refetchPhraseList, t])
 
   // 学習言語変更ハンドラー
   const handleLearningLanguageChange = useCallback((language: string) => {
