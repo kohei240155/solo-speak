@@ -2,15 +2,16 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { SpeakPhrase } from '@/types/speak'
-import { useSpeakPhraseById } from '@/hooks/api/useSWRApi'
+import { useSpeakPhraseById, useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface UseSinglePhraseSpeakProps {
   phraseId: string | null
+  learningLanguage: string
   sendPendingCount: (phraseId: string, count: number) => Promise<boolean>
 }
 
-export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePhraseSpeakProps) {
+export function useSinglePhraseSpeak({ phraseId, learningLanguage, sendPendingCount }: UseSinglePhraseSpeakProps) {
   const { t } = useTranslation()
   const router = useRouter()
   
@@ -25,6 +26,9 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
   
   // SWRフックを使用してフレーズを取得
   const { data: singlePhraseData, phrase: singlePhraseFromSWR, isLoading: isLoadingSinglePhraseSWR, refetch: refetchPhrase } = useSpeakPhraseById(phraseId || undefined)
+  
+  // Phrase Listのキャッシュを取得（キャッシュ無効化用）
+  const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
 
   // エラーハンドリング用のコールバック
   const handleNotFoundError = useCallback(() => {
@@ -100,13 +104,17 @@ export function useSinglePhraseSpeak({ phraseId, sendPendingCount }: UseSinglePh
           toast.error(t('phrase.messages.countError'))
         }
       }
+      
+      // Phrase Listのキャッシュを無効化
+      refetchPhraseList()
+      
       router.push('/phrase/list')
     } catch {
       toast.error(t('speak.messages.endError'))
     } finally {
       setIsFinishing(false)
     }
-  }, [singlePhrase, singlePhrasePendingCount, sendPendingCount, t, router])
+  }, [singlePhrase, singlePhrasePendingCount, sendPendingCount, refetchPhraseList, t, router])
 
   // 日付変更の検出（UTC基準）- 単一フレーズSpeak練習用
   useEffect(() => {

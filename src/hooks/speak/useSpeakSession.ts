@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/utils/api'
 import toast from 'react-hot-toast'
 import { SpeakPhrase, SpeakConfig } from '@/types/speak'
+import { useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
 interface SpeakSessionState {
@@ -25,6 +26,9 @@ export const useSpeakSession = (learningLanguage: string) => {
   const [totalCount, setTotalCount] = useState(0)
   const [pendingCount, setPendingCount] = useState(0)
   const [isCountDisabled, setIsCountDisabled] = useState(false)
+
+  // Phrase Listのキャッシュを取得（キャッシュ無効化用）
+  const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
 
   // URL管理: URLパラメータから設定を読み取る
   const readConfigFromURL = useCallback((): SpeakConfig | null => {
@@ -265,6 +269,9 @@ export const useSpeakSession = (learningLanguage: string) => {
       }
     }
 
+    // Phrase Listのキャッシュを無効化
+    refetchPhraseList()
+
     // 状態をリセット
     setSessionState({ active: false, config: null })
     setCurrentPhrase(null)
@@ -272,7 +279,7 @@ export const useSpeakSession = (learningLanguage: string) => {
     setTotalCount(0)
     setPendingCount(0)
     clearURL()
-  }, [currentPhrase, pendingCount, sendPendingCount, clearURL, t])
+  }, [currentPhrase, pendingCount, sendPendingCount, refetchPhraseList, clearURL, t])
 
   // 設定リセット
   const resetSession = useCallback(() => {

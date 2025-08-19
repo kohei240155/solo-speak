@@ -75,6 +75,7 @@ function PhraseSpeakPage() {
   // 単一フレーズ練習用のフック
   const singlePhraseSpeak = useSinglePhraseSpeak({
     phraseId,
+    learningLanguage,
     sendPendingCount
   })
 
