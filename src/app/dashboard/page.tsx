@@ -33,6 +33,10 @@ export default function DashboardPage() {
       // 必須項目（母国語と学習言語）が設定されているかチェック
       if (userSettings && userSettings.nativeLanguage && userSettings.defaultLearningLanguage) {
         setSetupCheckLoading(false)
+      } else if (userSettings === null) {
+        // userSettingsがnullの場合はPWA環境での一時的な取得失敗の可能性があるため
+        // Settings画面にはリダイレクトせず、データ表示をスキップ
+        setSetupCheckLoading(false)
       } else {
         // 必須項目が未設定の場合は設定ページにリダイレクト
         router.push('/settings')
