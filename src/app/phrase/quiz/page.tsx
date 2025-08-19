@@ -53,9 +53,9 @@ export default function PhraseQuizPage() {
     session: null
   })
 
-  // ページ離脱警告（クイズがアクティブな時）
+  // ページ離脱警告（クイズがアクティブな時、ただしAll Done状態を除く）
   usePageLeaveWarning({ 
-    hasPendingChanges: quizMode.active && !!currentPhrase
+    hasPendingChanges: quizMode.active && !!currentPhrase && !isQuizCompleted
   })
 
   // Quiz開始処理
@@ -119,6 +119,13 @@ export default function PhraseQuizPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizMode.active, isQuizCompleted, learningLanguage])
 
+  // All Done状態になったときにPhrase Listのキャッシュを無効化
+  useEffect(() => {
+    if (isQuizCompleted) {
+      refetchPhraseList()
+    }
+  }, [isQuizCompleted, refetchPhraseList])
+
   // Quiz開始処理（モーダルから呼ばれる）
   const handleQuizStartWithModal = async (config: QuizConfig) => {
     // クイズを実際に開始する時に状態をリセット
@@ -150,15 +157,11 @@ export default function PhraseQuizPage() {
 
   // 完了画面からのFinish処理
   const handleFinish = () => {
-    // キャッシュ無効化
-    refetchPhraseList()
     router.push('/phrase/list')
   }
 
   // 完了画面からのRetry処理
   const handleRetry = () => {
-    // キャッシュ無効化
-    refetchPhraseList()
     // モーダルを開くだけで、All Done画面の状態は維持
     setShowQuizModal(true)
   }
@@ -174,6 +177,10 @@ export default function PhraseQuizPage() {
 
   // Quizタブからの離脱時の未保存変更チェック
   const checkUnsavedChanges = () => {
+    // All Done状態では離脱警告を表示しない
+    if (isQuizCompleted) {
+      return false
+    }
     return quizMode.active && !!currentPhrase
   }
 

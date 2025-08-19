@@ -102,8 +102,7 @@ function PhraseSpeakPage() {
   // All Done画面管理
   const allDoneScreen = useAllDoneScreen({
     openSpeakModal: modalManager.openSpeakModal,
-    resetSavedConfig,
-    onCacheInvalidate: refetchPhraseList
+    resetSavedConfig
   })
 
   // ページ離脱警告
@@ -111,7 +110,8 @@ function PhraseSpeakPage() {
     ? !!singlePhraseSpeak.singlePhrase // 単一フレーズモードでフレーズが表示されている場合
     : !!currentPhrase // 複数フレーズモードでフレーズが表示されている場合
   
-  usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
+  // All Done状態では離脱警告を表示しない
+  usePageLeaveWarning({ hasPendingChanges: hasPendingCount && !isSpeakCompleted })
 
   // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
   useEffect(() => {
@@ -125,8 +125,19 @@ function PhraseSpeakPage() {
     }
   }, [learningLanguage, router])
 
+  // All Done状態になったときにPhrase Listのキャッシュを無効化
+  useEffect(() => {
+    if (isSpeakCompleted) {
+      refetchPhraseList()
+    }
+  }, [isSpeakCompleted, refetchPhraseList])
+
   // 未保存の変更チェック関数
   const checkUnsavedChanges = () => {
+    // All Done状態では離脱警告を表示しない
+    if (isSpeakCompleted) {
+      return false
+    }
     return hasPendingCount
   }
 
