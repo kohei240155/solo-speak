@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDashboardData, useLanguages } from '@/hooks/api/useSWRApi'
@@ -11,7 +10,6 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuthGuard()
   const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
-  const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
   // ユーザーのデフォルト学習言語を初期値として設定
   const [selectedLanguage, setSelectedLanguage] = useState(() => {
@@ -22,30 +20,16 @@ export default function DashboardPage() {
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
   const { languages } = useLanguages()
 
-  // ユーザー設定の完了状態をチェック（必須項目のみ）
+  // ユーザー設定の完了状態をチェック（useAuthGuardで基本的なチェックは完了）
   const checkUserSetupComplete = useCallback(async () => {
     if (!user) {
       setSetupCheckLoading(false)
       return
     }
 
-    try {
-      // 必須項目（母国語と学習言語）が設定されているかチェック
-      if (userSettings && userSettings.nativeLanguage && userSettings.defaultLearningLanguage) {
-        setSetupCheckLoading(false)
-      } else if (userSettings === null) {
-        // userSettingsがnullの場合はPWA環境での一時的な取得失敗の可能性があるため
-        // Settings画面にはリダイレクトせず、データ表示をスキップ
-        setSetupCheckLoading(false)
-      } else {
-        // 必須項目が未設定の場合は設定ページにリダイレクト
-        router.push('/settings')
-      }
-    } catch {
-      // エラー時も設定画面にリダイレクトしない（データ表示をスキップ）
-      setSetupCheckLoading(false)
-    }
-  }, [user, router, userSettings])
+    // useAuthGuardでuserSettingsの存在チェックは完了しているため、シンプルに設定完了
+    setSetupCheckLoading(false)
+  }, [user])
 
   useEffect(() => {
     if (user && userSettings !== undefined) {

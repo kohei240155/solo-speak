@@ -120,8 +120,11 @@ export default function PhraseList({
   }, [onUpdatePhrase])
 
   if (isLoadingPhrases && savedPhrases.length === 0) {
-    return <LoadingSpinner message="Loading phrases..." />
-  }
+    return (
+    <div className='pt-20'>
+      <LoadingSpinner message="Loading phrases..." />
+    </div>
+  )}
 
   if (savedPhrases.length === 0) {
     return (

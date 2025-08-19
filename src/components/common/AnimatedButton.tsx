@@ -7,7 +7,6 @@ interface AnimatedButtonProps {
   variant?: 'primary' | 'secondary'
   size?: 'sm' | 'md' | 'lg'
   isLoading?: boolean
-  loadingText?: string
   className?: string
   style?: React.CSSProperties
 }
@@ -19,7 +18,6 @@ export default function AnimatedButton({
   variant = 'primary',
   size = 'md',
   isLoading = false,
-  loadingText,
   className = '',
   style = {}
 }: AnimatedButtonProps) {
@@ -127,8 +125,7 @@ export default function AnimatedButton({
     >
       {isLoading ? (
         <div className="flex items-center justify-center">
-          <div className={`animate-spin rounded-full h-5 w-5 border-b-2 ${variantStyles.spinnerColor} mr-2`}></div>
-          {loadingText || children}
+          <div className={`animate-spin rounded-full h-5 w-5 border-b-2 ${variantStyles.spinnerColor}`}></div>
         </div>
       ) : (
         children
