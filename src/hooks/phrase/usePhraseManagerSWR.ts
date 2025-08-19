@@ -308,6 +308,7 @@ export const usePhraseManagerSWR = () => {
     addSituation,
     deleteSituation,
     checkUnsavedChanges,
-    closeAddToHomeScreenModal
+    closeAddToHomeScreenModal,
+    refetchPhraseList
   }
 }

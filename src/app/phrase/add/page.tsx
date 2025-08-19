@@ -49,7 +49,8 @@ export default function PhraseAddPage() {
     handleSelectVariation,
     handleContextChange,
     addSituation,
-    deleteSituation
+    deleteSituation,
+    refetchPhraseList
   } = usePhraseManagerSWR()
 
   // Modal functionality
@@ -111,6 +112,7 @@ export default function PhraseAddPage() {
           checkUnsavedChanges={checkUnsavedChanges}
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={openQuizModal}
+          onCacheInvalidate={refetchPhraseList}
         />
 
         {/* コンテンツエリア */}

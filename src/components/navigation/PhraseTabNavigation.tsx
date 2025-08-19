@@ -8,9 +8,10 @@ interface PhraseTabNavigationProps {
   checkUnsavedChanges?: () => boolean // Optional function to check for unsaved changes
   onSpeakModalOpen?: () => void // Speak modal open handler
   onQuizModalOpen?: () => void // Quiz modal open handler
+  onCacheInvalidate?: () => void // Optional function to invalidate caches when leaving
 }
 
-export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen, onQuizModalOpen }: PhraseTabNavigationProps) {
+export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsavedChanges, onSpeakModalOpen, onQuizModalOpen, onCacheInvalidate }: PhraseTabNavigationProps) {
   const router = useRouter()
   const { t } = useTranslation('common')
 
@@ -36,6 +37,10 @@ export default function PhraseTabNavigation({ activeTab, onTabChange, checkUnsav
         const confirmLeave = window.confirm(message)
         if (!confirmLeave) {
           return // ユーザーがキャンセルした場合は何もしない
+        }
+        // ユーザーがOKを押した場合、キャッシュを無効化
+        if (onCacheInvalidate) {
+          onCacheInvalidate()
         }
       }
     }

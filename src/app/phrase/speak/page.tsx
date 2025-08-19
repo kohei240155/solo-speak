@@ -38,7 +38,8 @@ function PhraseSpeakPage() {
     handleNext,
     handleFinish,
     resetSession,
-    sendPendingCount
+    sendPendingCount,
+    refetchPhraseList
     // fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
   } = useSpeakSession(learningLanguage)
 
@@ -149,6 +150,7 @@ function PhraseSpeakPage() {
             checkUnsavedChanges={checkUnsavedChanges}
             onSpeakModalOpen={speakMode.active ? undefined : modalManager.openSpeakModal}
             onQuizModalOpen={modalManager.openQuizModal}
+            onCacheInvalidate={refetchPhraseList}
           />
 
           {/* コンテンツエリア */}

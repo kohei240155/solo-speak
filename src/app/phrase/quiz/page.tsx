@@ -13,6 +13,7 @@ import { usePhraseSettings } from '@/hooks/phrase/usePhraseSettings'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
+import { useInfinitePhrases } from '@/hooks/api/useSWRApi'
 import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
@@ -20,6 +21,9 @@ export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
   const router = useRouter()
+
+  // Phrase Listのキャッシュ無効化用
+  const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
 
   // クイズ完了状態
   const [isQuizCompleted, setIsQuizCompleted] = useState(false)
@@ -189,6 +193,7 @@ export default function PhraseQuizPage() {
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={quizMode.active ? undefined : () => setShowQuizModal(true)}
           checkUnsavedChanges={checkUnsavedChanges}
+          onCacheInvalidate={refetchPhraseList}
         />
 
         {/* コンテンツエリア */}
