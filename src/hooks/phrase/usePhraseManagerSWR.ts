@@ -6,7 +6,7 @@ import { PhraseVariation, CreatePhraseResponseData, GeneratePhraseRequestBody, C
 import { useLanguages, useInfinitePhrases, useRemainingGenerations, useSituations } from '@/hooks/api/useSWRApi'
 import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
-import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const usePhraseManagerSWR = () => {
   const { user, userSettings, userSettingsLoading } = useAuth() // AuthContextから直接ユーザー設定を取得
@@ -18,8 +18,12 @@ export const usePhraseManagerSWR = () => {
   const { situations, situationsData, refetch: mutateSituations } = useSituations()
 
   // ローカル状態
-  const [nativeLanguage, setNativeLanguage] = useState<string>(LANGUAGE_CODES.JAPANESE)
-  const [learningLanguage, setLearningLanguage] = useState<string>(DEFAULT_LANGUAGE)
+  const [nativeLanguage, setNativeLanguage] = useState<string>(() => {
+    return userSettings?.nativeLanguage?.code || ''
+  })
+  const [learningLanguage, setLearningLanguage] = useState<string>(() => {
+    return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE
+  })
   
   // フレーズ数をSWRで取得（学習言語変更に対応）
   const { totalCount: availablePhraseCount, refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
@@ -39,18 +43,19 @@ export const usePhraseManagerSWR = () => {
   const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] = useState(false)
   const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
 
-  // ユーザー設定からの初期化
+  // ユーザー設定が読み込まれた時の初期化
   useEffect(() => {
     if (userSettings && !userSettingsInitialized) {
-      if (userSettings.nativeLanguage?.code) {
+      if (userSettings.nativeLanguage?.code && !nativeLanguage) {
         setNativeLanguage(userSettings.nativeLanguage.code)
       }
-      if (userSettings.defaultLearningLanguage?.code) {
+      if (userSettings.defaultLearningLanguage?.code && 
+          (learningLanguage === DEFAULT_LANGUAGE || !learningLanguage)) {
         setLearningLanguage(userSettings.defaultLearningLanguage.code)
       }
       setUserSettingsInitialized(true)
     }
-  }, [userSettings, userSettingsInitialized])
+  }, [userSettings, userSettingsInitialized, nativeLanguage, learningLanguage])
 
   // ユーザーがログアウトした時の状態クリア
   useEffect(() => {

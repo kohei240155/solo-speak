@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
+import { useAuth } from '@/contexts/AuthContext'
 import { Toaster } from 'react-hot-toast'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
@@ -9,10 +10,10 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useRankingData } from '@/hooks/data/useRankingData'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { useEffect } from 'react'
-import { LANGUAGE_CODES } from '@/constants/languages'
 
 export default function RankingPage() {
   const { user, loading: authLoading } = useAuthGuard()
+  const { userSettings } = useAuth()
   const { t } = useTranslation()
   
   // カスタムフックを使用してランキングデータを管理
@@ -58,7 +59,7 @@ export default function RankingPage() {
               learningLanguage={selectedLanguage}
               onLanguageChange={handleLanguageChange}
               languages={languages || []}
-              nativeLanguage={LANGUAGE_CODES.JAPANESE}
+              nativeLanguage={userSettings?.nativeLanguage?.code || ''}
             />
           </div>
           

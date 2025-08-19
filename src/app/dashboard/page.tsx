@@ -13,7 +13,10 @@ export default function DashboardPage() {
   const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
   const router = useRouter()
   const [setupCheckLoading, setSetupCheckLoading] = useState(true)
-  const [selectedLanguage, setSelectedLanguage] = useState('')
+  // ユーザーのデフォルト学習言語を初期値として設定
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    return userSettings?.defaultLearningLanguage?.code || ''
+  })
 
   // SWRを使用してデータを取得
   const { dashboardData, isLoading: dashboardLoading, error: dashboardError } = useDashboardData(selectedLanguage)
@@ -46,12 +49,12 @@ export default function DashboardPage() {
     }
   }, [user, userSettings, checkUserSetupComplete])
 
-  // 言語設定の初期化
+  // 言語設定の初期化（ユーザー設定が読み込まれた時のみ更新）
   useEffect(() => {
     if (userSettings?.defaultLearningLanguage?.code && !selectedLanguage) {
       setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
-  }, [userSettings, selectedLanguage])
+  }, [userSettings?.defaultLearningLanguage?.code, selectedLanguage])
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
@@ -69,7 +72,7 @@ export default function DashboardPage() {
           {/* ヘッダー */}
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            {userSettings && languages && (
+            {userSettings && languages && selectedLanguage && (
               <LanguageSelector
                 learningLanguage={selectedLanguage}
                 onLanguageChange={setSelectedLanguage}

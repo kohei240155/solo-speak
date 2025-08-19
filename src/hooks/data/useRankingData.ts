@@ -4,14 +4,17 @@ import { useLanguages, useRanking } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(DEFAULT_LANGUAGE)
-  const [activeTab, setActiveTab] = useState('Total') // Phraseがデフォルトなので初期値はTotal
-  const [activeRankingType, setActiveRankingType] = useState<'phrase' | 'speak' | 'quiz'>('phrase')
-  const [userSettingsInitialized, setUserSettingsInitialized] = useState(false)
-
-  // SWRフックを使用してデータを取得
   const { languages } = useLanguages()
   const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
+
+  // ユーザーのデフォルト学習言語を初期値として設定
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
+    return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE
+  })
+  const [activeTab, setActiveTab] = useState('Total') // Phraseがデフォルトなので初期値はTotal
+  const [activeRankingType, setActiveRankingType] = useState<'phrase' | 'speak' | 'quiz'>('phrase')
+
+  // SWRフックを使用してデータを取得
 
   // ランキングデータを取得
   // Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定
@@ -25,15 +28,13 @@ export const useRankingData = () => {
     refetch 
   } = useRanking(activeRankingType, selectedLanguage, period)
 
-  // ユーザー設定から言語情報を初期化
+  // ユーザー設定が読み込まれた時に言語を初期化（初回のみ）
   useEffect(() => {
-    if (userSettings && !userSettingsInitialized) {
-      if (userSettings.defaultLearningLanguage?.code) {
-        setSelectedLanguage(userSettings.defaultLearningLanguage.code)
-      }
-      setUserSettingsInitialized(true)
+    if (userSettings?.defaultLearningLanguage?.code && 
+        (selectedLanguage === DEFAULT_LANGUAGE || !selectedLanguage)) {
+      setSelectedLanguage(userSettings.defaultLearningLanguage.code)
     }
-  }, [userSettings, userSettingsInitialized])
+  }, [userSettings?.defaultLearningLanguage?.code, selectedLanguage])
 
   // 言語変更ハンドラー
   const handleLanguageChange = (languageCode: string) => {
