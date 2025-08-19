@@ -60,7 +60,11 @@ export function useUserSettingsData(userId: string | null) {
     },
     {
       ...SWR_CONFIGS.MEDIUM_CACHE,
-      errorRetryCount: 1, // 404エラー後の無限ループを防ぐ
+      errorRetryCount: 2, // PWA環境でのリトライ回数を増加
+      errorRetryInterval: 3000, // リトライ間隔を短縮
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false, // PWA環境での不要な再検証を防ぐ
+      dedupingInterval: 5 * 60 * 1000, // 5分間はキャッシュを使用
     }
   )
 
