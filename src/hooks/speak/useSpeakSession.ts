@@ -149,19 +149,9 @@ export const useSpeakSession = (learningLanguage: string) => {
       }
     }
 
-    const handleBeforeUnloadWarning = (event: BeforeUnloadEvent) => {
-      if (pendingCount > 0) {
-        event.preventDefault()
-        event.returnValue = '保存されていないカウントがあります。本当にページを離れますか？'
-        return event.returnValue
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnloadWarning)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnloadWarning)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [currentPhrase, pendingCount, sendPendingCount])

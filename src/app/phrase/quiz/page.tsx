@@ -38,36 +38,20 @@ export default function PhraseQuizPage() {
     resetQuiz
   } = useQuizPhrase()
 
-  // pendingSpeakCountの状態を管理（離脱警告用）
+  // pendingSpeakCountの状態を管理（QuizPracticeコンポーネントとの互換性のため）
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingSpeakCount, setPendingSpeakCount] = useState(0)
-
-  // ページ離脱警告（pendingSpeakCountが1以上の時）
-  usePageLeaveWarning({ 
-    hasPendingChanges: pendingSpeakCount > 0 
-  })
-
-  // Speak画面と同様のbeforeunload処理を追加
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (pendingSpeakCount > 0) {
-        event.preventDefault()
-        event.returnValue = 'Countが登録されていません。このページを離れますか？'
-        return event.returnValue
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [pendingSpeakCount])
 
   // Quiz mode state
   const [quizMode, setQuizMode] = useState<QuizModeState>({
     active: false,
     config: null,
     session: null
+  })
+
+  // ページ離脱警告（クイズがアクティブな時）
+  usePageLeaveWarning({ 
+    hasPendingChanges: quizMode.active && !!currentPhrase
   })
 
   // Quiz開始処理
@@ -182,7 +166,7 @@ export default function PhraseQuizPage() {
 
   // Quizタブからの離脱時の未保存変更チェック
   const checkUnsavedChanges = () => {
-    return pendingSpeakCount > 0
+    return quizMode.active && !!currentPhrase
   }
 
   // 認証ローディング中は何も表示しない

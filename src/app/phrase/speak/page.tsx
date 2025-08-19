@@ -32,7 +32,6 @@ function PhraseSpeakPage() {
     isLoadingPhrase,
     todayCount,
     totalCount,
-    pendingCount,
     isCountDisabled,
     handleStart,
     handleCount,
@@ -107,8 +106,8 @@ function PhraseSpeakPage() {
 
   // ページ離脱警告
   const hasPendingCount = isSinglePhraseMode 
-    ? singlePhraseSpeak.singlePhrasePendingCount > 0 
-    : pendingCount > 0
+    ? !!singlePhraseSpeak.singlePhrase // 単一フレーズモードでフレーズが表示されている場合
+    : !!currentPhrase // 複数フレーズモードでフレーズが表示されている場合
   
   usePageLeaveWarning({ hasPendingChanges: hasPendingCount })
 
