@@ -11,7 +11,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal'
 import ExplanationModal from './ExplanationModal'
 import SpeakModeModal from '../modals/SpeakModeModal'
 
-import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from '@/constants/languages'
+import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 interface PhraseListProps {
   isModalContext?: boolean
@@ -29,7 +29,7 @@ interface PhraseListProps {
 }
 
 export default function PhraseList({
-  nativeLanguage = LANGUAGE_CODES.JAPANESE,
+  nativeLanguage = '',
   learningLanguage = DEFAULT_LANGUAGE,
   onUpdatePhrase,
   onRefreshPhrases,
