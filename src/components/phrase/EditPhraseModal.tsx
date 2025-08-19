@@ -184,7 +184,6 @@ export default function EditPhraseModal({
             disabled={isUpdating || !editedText.trim() || !editedTranslation.trim() || editedText.length > 200 || editedTranslation.length > 200}
             variant="primary"
             isLoading={isUpdating && selectedAction === 'save'}
-            loadingText="Saving..."
           >
             Save
           </AnimatedButton>
