@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 /**
  * 認証ガードフック
  * ログインしていないユーザーをホームページにリダイレクトし、
- * ユーザー設定が未完了の場合はSettings画面にリダイレクトする
+ * ユーザーデータがDBに存在しない場合はSettings画面にリダイレクトする
  * 
  * @param redirectPath - 未ログイン時のリダイレクト先のパス（デフォルト: '/'）
  * @param requireUserSetup - ユーザー設定完了を必須とするか（デフォルト: true）
@@ -25,9 +25,8 @@ export const useAuthGuard = (redirectPath = '/', requireUserSetup = true) => {
       return
     }
 
-    // ユーザー設定が必須で、設定が未完了の場合のみSettings画面にリダイレクト
-    // PWA環境での一時的なデータ取得失敗を考慮し、isUserSetupCompleteがfalseの場合のみリダイレクト
-    if (requireUserSetup && userSettings === null && !isUserSetupComplete) {
+    // ユーザーデータがDBに存在しない場合のみSettings画面にリダイレクト
+    if (requireUserSetup && userSettings === null) {
       const currentPath = window.location.pathname
       // 既にSettings画面にいる場合はリダイレクトしない
       if (currentPath !== '/settings') {
@@ -36,7 +35,7 @@ export const useAuthGuard = (redirectPath = '/', requireUserSetup = true) => {
       }
     }
 
-  }, [user, loading, userSettings, userSettingsLoading, isUserSetupComplete, router, redirectPath, requireUserSetup])
+  }, [user, loading, userSettings, userSettingsLoading, router, redirectPath, requireUserSetup])
 
   return {
     user,

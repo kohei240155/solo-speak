@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [userSettings, user?.user_metadata, user?.id])
 
-  // 自動リダイレクトロジック（ログイン後は一律Phrase Listに遷移）
+  // 自動リダイレクトロジック（ホームページからPhrase Listへのリダイレクトのみ）
   useEffect(() => {
     if (!user?.id || userSettingsLoading || hasRedirected) return
     
@@ -175,22 +175,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return
     }
     
-    // ホームページにいる場合、Phrase Listへ直接リダイレクト
-    // PWA環境でuserSettingsがnullでもisUserSetupCompleteがtrueなら安全にリダイレクト
+    // ホームページにいる場合のみPhrase Listへリダイレクト
     if (currentPath === '/') {
       setHasRedirected(true)
       router.push('/phrase/list')
       return
     }
-    
-    // PWA環境でSettings画面に誤ってリダイレクトされた場合の救済措置
-    // userSettingsがnullでもisUserSetupCompleteがtrueの場合はPhrase Listにリダイレクト
-    if (currentPath === '/settings' && userSettings === null && isUserSetupComplete) {
-      setHasRedirected(true)
-      router.push('/phrase/list')
-      return
-    }
-  }, [user?.id, userSettings, userSettingsLoading, hasRedirected, isUserSetupComplete, router])
+  }, [user?.id, userSettings, userSettingsLoading, hasRedirected, router])
 
   // ユーザーが変更された時にリダイレクトフラグをリセット
   useEffect(() => {
