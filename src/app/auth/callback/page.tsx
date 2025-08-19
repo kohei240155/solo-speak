@@ -25,7 +25,7 @@ export default function AuthCallback() {
 
         if (authData.session) {
           // 認証成功後、ユーザー設定の存在をチェック
-          setStatusMessage("Checking user status...")
+          setStatusMessage("Authenticating...")
           
           try {
             // ユーザー設定を取得してユーザーが既に存在するかチェック
