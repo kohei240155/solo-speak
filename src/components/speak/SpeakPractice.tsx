@@ -192,7 +192,6 @@ export default function SpeakPractice({
                 disabled={isFinishing}
                 variant="secondary"
                 isLoading={isFinishing}
-                loadingText="Finishing..."
                 className="px-6"
               >
                 Finish
@@ -231,7 +230,6 @@ export default function SpeakPractice({
                 disabled={isNextLoading}
                 variant="primary"
                 isLoading={isNextLoading}
-                loadingText="Loading..."
                 className="px-6"
               >
                 Next
@@ -248,7 +246,6 @@ export default function SpeakPractice({
               disabled={isFinishing}
               variant="secondary"
               isLoading={isFinishing}
-              loadingText="Finishing..."
               className="px-6"
             >
               Finish
