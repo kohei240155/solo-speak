@@ -9,6 +9,7 @@ import { LanguageInfo } from '@/types/common'
 import { getStoredDisplayLanguage, setStoredDisplayLanguage } from '@/contexts/LanguageContext'
 import { isUILanguage } from '@/constants/languages'
 import LoginModal from '@/components/auth/LoginModal'
+import { userSetupCache } from '@/utils/userSetupCache'
 import { useUserSettingsData, useLanguages } from '@/hooks/api/useSWRApi'
 
 type AuthContextType = {
@@ -115,8 +116,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // ユーザー設定が変更されたときの処理
   useEffect(() => {
     if (!userSettings && user?.id) {
+      // PWA環境でのキャッシュから設定完了状態を確認
+      const cachedSetupStatus = userSetupCache.getUserSetupComplete(user.id)
+      
       setUserIconUrl(null)
-      setIsUserSetupComplete(false)
+      setIsUserSetupComplete(cachedSetupStatus === true ? true : false)
       return
     }
 
@@ -143,6 +147,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     )
     
     setIsUserSetupComplete(isComplete)
+
+    // 設定完了状態をキャッシュに保存
+    if (user?.id) {
+      userSetupCache.setUserSetupComplete(user.id, isComplete)
+    }
 
     // 表示言語の自動設定（設定完了時のみ）
     if (isComplete && userSettings.nativeLanguage?.code) {
@@ -190,6 +199,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
+      // ユーザー設定キャッシュをクリア
+      userSetupCache.clearUserSetupCache()
       await supabase.auth.signOut()
     } catch (error) {
       console.error('Sign out error:', error)
