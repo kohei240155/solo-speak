@@ -18,19 +18,19 @@ const fetcher = async <T = unknown>(url: string, options?: { showErrorToast?: bo
 const SWR_CONFIGS = {
   // 短期キャッシュ（動的データ用）
   SHORT_CACHE: {
-    dedupingInterval: 1 * 60 * 1000, // 1分に短縮（高速化）
-    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
+    dedupingInterval: 2 * 60 * 1000, // 2分
+    revalidateOnFocus: false,
     revalidateOnReconnect: true,
     shouldRetryOnError: true,
-    errorRetryInterval: 5000, // エラー時の再試行間隔を短縮
+    errorRetryInterval: 10000,
   },
   // 中期キャッシュ（ユーザーデータ用）
   MEDIUM_CACHE: {
-    dedupingInterval: 5 * 60 * 1000, // 5分に短縮
-    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
-    revalidateOnReconnect: true, // ネットワーク復旧時のみ更新
+    dedupingInterval: 10 * 60 * 1000, // 10分
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
     shouldRetryOnError: true,
-    errorRetryInterval: 10000,
+    errorRetryInterval: 15000,
   },
   // 長期キャッシュ（静的データ用）
   LONG_CACHE: {
@@ -39,12 +39,12 @@ const SWR_CONFIGS = {
     revalidateOnReconnect: false,
     shouldRetryOnError: true,
   },
-  // リアルタイムデータ用（自動更新間隔を長く）
+  // リアルタイムデータ用
   REALTIME: {
     dedupingInterval: 5 * 60 * 1000, // 5分
-    revalidateOnFocus: false, // フォーカス時の自動更新を無効化
+    revalidateOnFocus: false,
     revalidateOnReconnect: true,
-    refreshInterval: 2 * 60 * 1000, // 2分間隔で自動更新（30秒→2分）
+    refreshInterval: 5 * 60 * 1000, // 5分間隔で自動更新
     shouldRetryOnError: true,
   }
 } as const

@@ -17,17 +17,13 @@ export default function PhraseListPage() {
   const { loading: authLoading } = useAuthGuard()
   
   const {
-    // State
     learningLanguage,
     languages,
     savedPhrases,
     isLoadingPhrases,
     isLoadingMore,
     hasMorePhrases,
-    phrasePage,
     nativeLanguage,
-    
-    // Handlers
     handleLearningLanguageChange,
     loadMorePhrases,
     refreshPhrases,
@@ -48,40 +44,20 @@ export default function PhraseListPage() {
     handleQuizStart
   } = useQuizModal()
 
-  // 無限スクロール機能（高速化・早期ローディング表示）
+  // 無限スクロール
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
-
     const handleScroll = () => {
-      // スロットリング: 10ms間隔でより高速に実行
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      
-      timeoutId = setTimeout(() => {
-        // スクロール位置が下部に達していない場合は何もしない（閾値を800pxに増加してより早くローディング開始）
-        if (window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 800) {
-          return
-        }
-        
-        // 追加読み込みの条件を満たしていない場合は何もしない
-        // isLoadingMoreの判定を追加してローディング中の重複リクエストを防ぐ
-        if (!hasMorePhrases || isLoadingPhrases || isLoadingMore) {
-          return
-        }
-        
+      if (
+        window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1000 &&
+        hasMorePhrases && !isLoadingPhrases && !isLoadingMore
+      ) {
         loadMorePhrases()
-      }, 10)
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [hasMorePhrases, isLoadingPhrases, isLoadingMore, phrasePage, loadMorePhrases])
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [hasMorePhrases, isLoadingPhrases, isLoadingMore, loadMorePhrases])
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
@@ -132,10 +108,7 @@ export default function PhraseListPage() {
               closeSpeakModal()
             }
           }}
-          onRefreshPhrases={() => {
-            // リストを最初のページから再取得
-            refreshPhrases()
-          }}
+          onRefreshPhrases={refreshPhrases}
         />
       </div>
       
