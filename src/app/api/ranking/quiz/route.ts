@@ -54,12 +54,13 @@ export async function GET(request: NextRequest) {
       startDate = new Date('1970-01-01')
     }
 
-    // Prismaを使用してQuiz Resultsデータを取得
+    // Prismaを使用してQuiz Resultsデータを取得（正解のみ）
     const quizResults = await prisma.quizResult.findMany({
       where: {
         date: {
           gte: startDate
         },
+        correct: true, // 正解のみを取得
         deletedAt: null, // 削除されていないクイズ結果のみ
         phrase: {
           languageId: languageId,
@@ -82,7 +83,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // ユーザー別に回数を集計（QuizResultはcorrect/incorrectの回数なので、総回答数をカウント）
+    // ユーザー別に正解数を集計
     const userCountMap = new Map<string, { 
       user: { id: string, username: string | null, iconUrl: string | null, createdAt: Date }, 
       totalCount: number 
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
       const currentData = userCountMap.get(userId)
       
       if (currentData) {
-        currentData.totalCount += 1 // クイズ結果1件につき1回とカウント
+        currentData.totalCount += 1 // 正解数をカウント
       } else {
         userCountMap.set(userId, {
           user: result.phrase.user,
