@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
-export const usePhraseManagerSWR = () => {
+export const usePhraseManager = () => {
   const { user, userSettings, userSettingsLoading } = useAuth() // AuthContextから直接ユーザー設定を取得
   const { t } = useTranslation()
   

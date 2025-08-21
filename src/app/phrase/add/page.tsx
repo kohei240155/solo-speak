@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { usePhraseManagerSWR } from '@/hooks/phrase/usePhraseManagerSWR'
+import { usePhraseManager } from '@/hooks/phrase/usePhraseManager'
 import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizModal } from '@/hooks/quiz/useQuizModal'
 import { useTranslation } from '@/hooks/ui/useTranslation'
@@ -51,7 +51,7 @@ export default function PhraseAddPage() {
     addSituation,
     deleteSituation,
     refetchPhraseList
-  } = usePhraseManagerSWR()
+  } = usePhraseManager()
 
   // Modal functionality
   const {

@@ -64,7 +64,7 @@ WHERE id = userId
 ```
 
 ### 自動検出機能
-**フロントエンド**: `usePhraseManagerSWR.ts`で1分ごとにUTC日付変更を監視
+**フロントエンド**: `usePhraseManager.ts`で1分ごとにUTC日付変更を監視
 ```typescript
 // UTC日付が変わったら自動的にAPI再実行
 if (newUTCDate !== currentUTCDate) {
