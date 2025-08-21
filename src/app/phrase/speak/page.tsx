@@ -18,6 +18,7 @@ import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
 import { useModalManager } from '@/hooks/ui/useModalManager'
 import { useMultiPhraseSpeak } from '@/hooks/speak/useMultiPhraseSpeak'
 import { useAllDoneScreen } from '@/hooks/ui/useAllDoneScreen'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import { Toaster } from 'react-hot-toast'
 
 function PhraseSpeakPage() {
@@ -25,6 +26,7 @@ function PhraseSpeakPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { learningLanguage, languages } = usePhraseSettings()
+  const { t } = useTranslation('common')
   
   const {
     sessionState,
@@ -32,6 +34,7 @@ function PhraseSpeakPage() {
     isLoadingPhrase,
     todayCount,
     totalCount,
+    pendingCount,
     isCountDisabled,
     handleStart,
     handleCount,
@@ -105,13 +108,16 @@ function PhraseSpeakPage() {
     resetSavedConfig
   })
 
-  // ページ離脱警告
+  // ページ離脱警告（カウントボタンが1回以上押された状態の場合のみ）
   const hasPendingCount = isSinglePhraseMode 
-    ? !!singlePhraseSpeak.singlePhrase // 単一フレーズモードでフレーズが表示されている場合
-    : !!currentPhrase // 複数フレーズモードでフレーズが表示されている場合
+    ? singlePhraseSpeak.singlePhrasePendingCount > 0 // 単一フレーズモードでペンディングカウントがある場合
+    : pendingCount > 0 // 複数フレーズモードでペンディングカウントがある場合
   
   // All Done状態では離脱警告を表示しない
-  usePageLeaveWarning({ hasPendingChanges: hasPendingCount && !isSpeakCompleted })
+  usePageLeaveWarning({ 
+    hasPendingChanges: hasPendingCount && !isSpeakCompleted,
+    warningMessage: hasPendingCount ? t('confirm.unsavedCount') : undefined
+  })
 
   // 直接アクセスチェック: URLパラメータがない場合はPhrase Listに遷移
   useEffect(() => {

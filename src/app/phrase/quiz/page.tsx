@@ -14,6 +14,7 @@ import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
 import { useQuizPhrase } from '@/hooks/quiz/useQuizPhrase'
 import { usePageLeaveWarning } from '@/hooks/ui/usePageLeaveWarning'
 import { useInfinitePhrases } from '@/hooks/api/useSWRApi'
+import { useTranslation } from '@/hooks/ui/useTranslation'
 import { QuizConfig, QuizModeState } from '@/types/quiz'
 import { Toaster } from 'react-hot-toast'
 
@@ -21,6 +22,7 @@ export default function PhraseQuizPage() {
   const { loading: authLoading } = useAuthGuard()
   const { learningLanguage, languages } = usePhraseSettings()
   const router = useRouter()
+  const { t } = useTranslation('common')
 
   // Phrase Listのキャッシュ無効化用
   const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage)
@@ -43,7 +45,6 @@ export default function PhraseQuizPage() {
   } = useQuizPhrase()
 
   // pendingSpeakCountの状態を管理（QuizPracticeコンポーネントとの互換性のため）
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [pendingSpeakCount, setPendingSpeakCount] = useState(0)
 
   // Quiz mode state
@@ -53,9 +54,10 @@ export default function PhraseQuizPage() {
     session: null
   })
 
-  // ページ離脱警告（クイズがアクティブな時、ただしAll Done状態を除く）
+  // ページ離脱警告（カウントボタンが1回以上押された状態かつクイズがアクティブな時、ただしAll Done状態を除く）
   usePageLeaveWarning({ 
-    hasPendingChanges: quizMode.active && !!currentPhrase && !isQuizCompleted
+    hasPendingChanges: quizMode.active && !!currentPhrase && !isQuizCompleted && pendingSpeakCount > 0,
+    warningMessage: pendingSpeakCount > 0 ? t('confirm.unsavedCount') : undefined
   })
 
   // Quiz開始処理
@@ -181,7 +183,7 @@ export default function PhraseQuizPage() {
     if (isQuizCompleted) {
       return false
     }
-    return quizMode.active && !!currentPhrase
+    return quizMode.active && !!currentPhrase && pendingSpeakCount > 0
   }
 
   // 認証ローディング中は何も表示しない
