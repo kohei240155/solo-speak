@@ -12,7 +12,7 @@
   },
   "confirm": {
     "unsavedPhrase": "Generated phrases have not been saved. Do you want to leave this page?",
-    "unsavedCount": "Count data has not been saved. Do you want to leave this page?"
+    "unsavedCount": "Reading aloud count has not been saved. Do you want to leave this page?"
   },
   "common": {
     "backToHome": "Back to Home",
