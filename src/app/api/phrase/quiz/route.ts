@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
     // 音読回数フィルターを取得
     const speakCountMinimum = speakCountFilter ? parseInt(speakCountFilter, 10) : null
 
-    // UTC 0時（バンクーバー時間午後5時）を境にリセット
-    // 現在のUTC時間から24時間前を「昨日の同時刻」として計算
-    const twentyFourHoursAgoUTC = new Date()
-    twentyFourHoursAgoUTC.setHours(twentyFourHoursAgoUTC.getHours() - 24)
+    // 今日の開始時刻（UTC 0時）を取得
+    // 前日だったら出題対象、同日だったら対象外になるように比較
+    const todayStartUTC = new Date()
+    todayStartUTC.setUTCHours(0, 0, 0, 0)
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases] = await Promise.all([
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
           ...(excludeTodayQuizzed && {
             OR: [
               { lastQuizDate: null }, // lastQuizDateがnullの場合（一度も出題されていない）
-              { lastQuizDate: { lt: twentyFourHoursAgoUTC } } // lastQuizDateが24時間前より前の場合
+              { lastQuizDate: { lt: todayStartUTC } } // lastQuizDateが今日より前の場合（前日以前）
             ]
           })
         },
