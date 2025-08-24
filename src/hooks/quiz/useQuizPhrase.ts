@@ -57,8 +57,8 @@ export function useQuizPhrase(): UseQuizPhraseReturn {
         setSession(newSession)
         return true
       } else {
-        const errorMessage = data.message || t('phrase.messages.notFound')
-        toast.error(errorMessage)
+        // APIメッセージではなくi18n対応されたメッセージを表示
+        toast.error(t('phrase.messages.noPhrasesForQuiz'))
         return false
       }
     } catch {

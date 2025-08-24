@@ -39,6 +39,7 @@
       "fetchFailed": "문장 불러오기에 실패했습니다.",
       "countError": "횟수 전송에 실패했습니다.",
       "notFound": "문장을 찾을 수 없습니다.",
+      "noPhrasesForQuiz": "지정된 조건에 해당하는 문장을 찾을 수 없습니다.",
       "nextPhraseNotFound": "다음 문장을 찾을 수 없습니다.",
       "nextPhraseError": "다음 문장을 불러오는 데 실패했습니다.",
       "dailyLimitExceeded": "오늘의 생성 횟수를 초과했습니다. 내일 다시 시도해 주세요.",
