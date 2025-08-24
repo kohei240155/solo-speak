@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import BaseModal from '../common/BaseModal'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 
@@ -13,7 +13,6 @@ interface AddContextModalProps {
 export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextModalProps) {
   const { t } = useTranslation('common')
   const [contextName, setContextName] = useState('')
-  const isComposingRef = useRef(false)
 
   const handleSubmit = () => {
     if (contextName.trim()) {
@@ -41,17 +40,6 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
           onChange={(e) => setContextName(e.target.value)}
           placeholder={t('phrase.placeholders.situationInput')}
           className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none"
-          onCompositionStart={() => {
-            isComposingRef.current = true
-          }}
-          onCompositionEnd={() => {
-            isComposingRef.current = false
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !isComposingRef.current) {
-              handleSubmit()
-            }
-          }}
         />
         
         {/* 50文字を超えた場合のバリデーションメッセージ */}
