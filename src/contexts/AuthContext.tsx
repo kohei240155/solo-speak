@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userIconUrl, setUserIconUrl] = useState<string | null>(null)
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false)
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const [hasRedirected, setHasRedirected] = useState(false) // リダイレクト済みフラグ
+  const [hasRedirected, setHasRedirected] = useState(false)
 
   // SWRを使用してユーザー設定を取得
   const { 
