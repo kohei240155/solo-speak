@@ -39,6 +39,7 @@
       "fetchFailed": "Failed to fetch phrase",
       "countError": "Failed to send count",
       "notFound": "Phrase not found",
+      "noPhrasesForQuiz": "No phrases found with the specified conditions",
       "nextPhraseNotFound": "No next phrase found",
       "nextPhraseError": "Failed to get next phrase",
       "dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",

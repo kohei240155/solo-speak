@@ -40,11 +40,6 @@ export default function AddContextModal({ isOpen, onClose, onAdd }: AddContextMo
           onChange={(e) => setContextName(e.target.value)}
           placeholder={t('phrase.placeholders.situationInput')}
           className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSubmit()
-            }
-          }}
         />
         
         {/* 50文字を超えた場合のバリデーションメッセージ */}

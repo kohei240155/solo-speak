@@ -49,7 +49,7 @@ const SWR_CONFIGS = {
   }
 } as const
 
-// ユーザー設定を取得するSWRフック（完全版）
+// ユーザー設定を取得するSWRフック
 export function useUserSettingsData(userId: string | null) {
   const userSettingsKey = userId ? [`/api/user/settings`, userId] as const : null
   

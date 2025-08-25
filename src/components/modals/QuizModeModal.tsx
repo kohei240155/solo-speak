@@ -101,8 +101,8 @@ export default function QuizModeModal({ isOpen, onClose, onStart, languages, def
         await onStart(config)
       } else {
         // フレーズが見つからない場合はユーザーに通知してモーダルは開いたままにする
-        const errorMessage = data.message || t('phrase.messages.notFound')
-        toast.error(errorMessage)
+        // APIメッセージではなくi18n対応されたメッセージを表示
+        toast.error(t('phrase.messages.noPhrasesForQuiz'))
       }
     } catch {
       toast.error(t('quiz.messages.startError'))
