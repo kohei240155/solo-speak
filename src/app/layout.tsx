@@ -12,6 +12,7 @@ import DeploymentChecker from "@/components/common/DeploymentChecker";
 import AppVersionChecker from "@/components/common/AppVersionChecker";
 import AuthApiConnection from "@/components/auth/AuthApiConnection";
 import TranslationPreloader from "@/components/common/TranslationPreloader";
+import ChineseFontHandler from "@/components/common/ChineseFontHandler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body
+            <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900 font-sans`}
         style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
       >
@@ -74,6 +75,7 @@ export default function RootLayout({
         <DeploymentChecker />
         <AppVersionChecker />
         <LanguageProvider>
+          <ChineseFontHandler />
           <TranslationPreloader />
           <AuthProvider>
             <AuthApiConnection />
