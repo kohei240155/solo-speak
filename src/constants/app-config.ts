@@ -20,6 +20,10 @@ export const DEMO_SAMPLES = {
   ['ko']: {
     text: "How long have you been living in Japan?",
     voiceLanguage: LANGUAGE_CODES.KOREAN
+  },
+  ['zh']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.CHINESE
   }
 } as const
 
