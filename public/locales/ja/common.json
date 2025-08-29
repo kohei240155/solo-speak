@@ -8,6 +8,19 @@
     "selectLanguage": "言語を選択してください",
     "validation": {
       "sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
+    },
+    "withdrawal": {
+      "button": "退会する",
+      "title": "アカウント削除の確認",
+      "message": "本当にアカウントを削除しますか？\n\nこの操作により、以下のデータがすべて削除されます：\n• ユーザー情報\n• 作成したフレーズ\n• スピーキング履歴\n• クイズ結果\n• シチュエーション\n\nこの操作は取り消すことができません。",
+      "emailConfirmLabel": "確認のため、登録されているメールアドレスを入力してください",
+      "emailPlaceholder": "example@email.com",
+      "confirmButton": "削除する",
+      "cancelButton": "キャンセル",
+      "success": "アカウントを削除しました。ログイン画面に戻ります。",
+      "error": "アカウントの削除に失敗しました。しばらくしてから再度お試しください。",
+      "emailNotFound": "登録されたメールアドレスが見つかりません",
+      "emailMismatch": "入力されたメールアドレスが登録されたメールアドレスと一致しません"
     }
   },
   "confirm": {

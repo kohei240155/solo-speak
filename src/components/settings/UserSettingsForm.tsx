@@ -1,9 +1,11 @@
 import { UseFormRegister, FieldErrors, UseFormSetValue, UseFormWatch, UseFormHandleSubmit } from 'react-hook-form'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { UserSetupFormData, Language } from '@/types/userSettings'
 import { useUserSettingsSubmit } from '@/hooks/data/useUserSettingsSubmit'
 import { useTranslation } from '@/hooks/ui/useTranslation'
 import ImageUpload from '@/components/common/ImageUpload'
+import WithdrawalModal from '@/components/modals/WithdrawalModal'
+import { IoExitOutline } from 'react-icons/io5'
 
 interface UserSettingsFormProps {
   register: UseFormRegister<UserSetupFormData>
@@ -38,6 +40,8 @@ export default function UserSettingsForm({
     setError, 
     setIsUserSetupComplete
   )
+  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false)
+  
   const watchIconUrl = watch('iconUrl')
   const watchNativeLanguageId = watch('nativeLanguageId')
   const watchDefaultLearningLanguageId = watch('defaultLearningLanguageId')
@@ -57,12 +61,23 @@ export default function UserSettingsForm({
   }, [watchNativeLanguageId, isSameLanguage, setValue])
 
   return (
-    <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit(onSubmitFromHook)} className="space-y-6">
       {/* User Icon */}
       <div>
-        <label className="block text-gray-700 mb-2 text-base md:text-lg font-bold">
-          {t('settings.userIcon')}
-        </label>
+        <div className="flex justify-between items-center mb-2">
+          <label className="block text-gray-700 text-base md:text-lg font-bold">
+            {t('settings.userIcon')}
+          </label>
+          <button
+            type="button"
+            onClick={() => setIsWithdrawalModalOpen(true)}
+            className="flex items-center justify-center w-8 h-8 text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 transition-colors"
+            title={t('settings.withdrawal.button')}
+          >
+            <IoExitOutline className="w-4 h-4" />
+          </button>
+        </div>
         <ImageUpload
           ref={imageUploadRef}
           currentImage={watchIconUrl}
@@ -214,5 +229,12 @@ export default function UserSettingsForm({
         </button>
       </div>
     </form>
+
+    {/* Withdrawal Modal */}
+    <WithdrawalModal
+      isOpen={isWithdrawalModalOpen}
+      onClose={() => setIsWithdrawalModalOpen(false)}
+    />
+  </>
   )
 }

@@ -8,6 +8,19 @@
     "selectLanguage": "Select a language",
     "validation": {
       "sameLanguageError": "Native language and default learning language must be different"
+    },
+    "withdrawal": {
+      "button": "Delete Account",
+      "title": "Confirm Account Deletion",
+      "message": "Are you sure you want to delete your account?\n\nThis action will permanently delete all of the following data:\n• User information\n• Created phrases\n• Speaking history\n• Quiz results\n• Situations\n\nThis action cannot be undone.",
+      "emailConfirmLabel": "Please enter your registered email address to confirm",
+      "emailPlaceholder": "example@email.com",
+      "confirmButton": "Delete",
+      "cancelButton": "Cancel",
+      "success": "Account deleted successfully. You will be redirected to the login page.",
+      "error": "Failed to delete account. Please try again later.",
+      "emailNotFound": "Registered email address not found",
+      "emailMismatch": "The entered email address does not match the registered email address"
     }
   },
   "confirm": {
