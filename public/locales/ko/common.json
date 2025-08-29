@@ -8,6 +8,19 @@
     "selectLanguage": "언어를 선택하세요",
     "validation": {
       "sameLanguageError": "모국어와 기본 학습 언어는 서로 다르게 선택해야 합니다."
+    },
+    "withdrawal": {
+      "button": "계정 삭제",
+      "title": "계정 삭제 확인",
+      "message": "정말로 계정을 삭제하시겠습니까?\n\n이 작업으로 다음 데이터가 모두 삭제됩니다:\n• 사용자 정보\n• 생성한 문장\n• 말하기 기록\n• 퀴즈 결과\n• 상황\n\n이 작업은 되돌릴 수 없습니다.",
+      "emailConfirmLabel": "확인을 위해 등록된 이메일 주소를 입력해주세요",
+      "emailPlaceholder": "example@email.com",
+      "confirmButton": "삭제",
+      "cancelButton": "취소",
+      "success": "계정이 삭제되었습니다. 로그인 화면으로 돌아갑니다.",
+      "error": "계정 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      "emailNotFound": "등록된 이메일 주소를 찾을 수 없습니다",
+      "emailMismatch": "입력한 이메일 주소가 등록된 이메일 주소와 일치하지 않습니다"
     }
   },
   "confirm": {

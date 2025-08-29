@@ -8,6 +8,19 @@
     "selectLanguage": "请选择语言",
     "validation": {
       "sameLanguageError": "母语和默认学习语言必须选择不同的语言"
+    },
+    "withdrawal": {
+      "button": "删除账户",
+      "title": "确认删除账户",
+      "message": "您确定要删除您的账户吗？\n\n此操作将永久删除以下所有数据：\n• 用户信息\n• 创建的短语\n• 口语练习记录\n• 测验结果\n• 情景\n\n此操作无法撤销。",
+      "emailConfirmLabel": "请输入您注册的邮箱地址以确认",
+      "emailPlaceholder": "example@email.com",
+      "confirmButton": "删除",
+      "cancelButton": "取消",
+      "success": "账户删除成功。将返回到登录页面。",
+      "error": "删除账户失败。请稍后再试。",
+      "emailNotFound": "未找到注册的邮箱地址",
+      "emailMismatch": "输入的邮箱地址与注册的邮箱地址不匹配"
     }
   },
   "confirm": {
