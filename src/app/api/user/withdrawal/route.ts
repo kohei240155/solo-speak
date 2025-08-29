@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { createErrorResponse } from '@/utils/api-helpers'
 import { prisma } from '@/utils/prisma'
-import { supabase } from '@/utils/spabase'
+import { createServerSupabaseClient } from '@/utils/supabase-server'
 
 // ユーザー退会（物理削除）
 export async function DELETE(request: NextRequest) {
@@ -65,16 +65,23 @@ export async function DELETE(request: NextRequest) {
     // Supabaseストレージからアイコン画像を削除
     if (user?.iconUrl && user.iconUrl.includes('supabase')) {
       try {
+        // サーバー用Supabaseクライアントを作成（管理者権限）
+        const supabaseAdmin = createServerSupabaseClient()
+        
         // URLからファイルパスを抽出
         const url = new URL(user.iconUrl)
-        const pathParts = url.pathname.split('/')
-        const bucketIndex = pathParts.findIndex(part => part === 'user-icons')
+        const pathParts = url.pathname.split('/').filter(part => part.length > 0)
         
-        if (bucketIndex !== -1 && pathParts[bucketIndex + 1]) {
-          const filePath = pathParts.slice(bucketIndex + 1).join('/')
+        // /storage/v1/object/public/images/user-icons/filename.png の構造から
+        // バケット名とファイルパスを抽出
+        const publicIndex = pathParts.findIndex(part => part === 'public')
+        
+        if (publicIndex !== -1 && pathParts.length > publicIndex + 2) {
+          const bucketName = pathParts[publicIndex + 1] // 'images'
+          const filePath = pathParts.slice(publicIndex + 2).join('/') // 'user-icons/filename.png'
           
-          const { error: deleteError } = await supabase.storage
-            .from('user-icons')
+          const { error: deleteError } = await supabaseAdmin.storage
+            .from(bucketName)
             .remove([filePath])
             
           if (deleteError) {

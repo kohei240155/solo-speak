@@ -72,7 +72,7 @@ export default function UserSettingsForm({
           <button
             type="button"
             onClick={() => setIsWithdrawalModalOpen(true)}
-            className="flex items-center justify-center w-8 h-8 text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+            className="flex items-center justify-center w-8 h-8 text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 transition-colors"
             title={t('settings.withdrawal.button')}
           >
             <IoExitOutline className="w-4 h-4" />
