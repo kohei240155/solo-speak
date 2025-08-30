@@ -116,7 +116,7 @@ export default function RankingPage() {
             ) : (
               <div className="mb-4 border-b border-gray-200">
                 <nav className="flex space-x-0">
-                  {['Daily', 'Weekly', 'Total'].map((tab) => (
+                  {['Daily', 'Weekly', 'Total', 'Streak'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => handleTabChange(tab)}
@@ -140,7 +140,9 @@ export default function RankingPage() {
                   <div className="text-left pl-2">Rank</div>
                   <div className="text-left ml-8 sm:ml-12">User</div>
                   <div className="text-right pr-2">
-                    {activeRankingType === 'phrase' && activeTab === 'Streak' ? 'Days' : 'Count'}
+                    {(activeRankingType === 'phrase' && activeTab === 'Streak') || 
+                     (activeRankingType === 'speak' && activeTab === 'Streak') ||
+                     (activeRankingType === 'quiz' && activeTab === 'Streak') ? 'Days' : 'Count'}
                   </div>
                 </div>
               </div>

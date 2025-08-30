@@ -3,7 +3,7 @@ import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
-/** フレーズStreak ランキングAPIエンドポイント
+/** QuizStreak ランキングAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
  * @returns Streakランキングデータ
  */
@@ -35,14 +35,17 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 各ユーザーのフレーズ作成日のStreak計算
+    // 各ユーザーのQuiz記録からStreak計算
     const users = await prisma.user.findMany({
       where: {
         deletedAt: null,
         phrases: {
           some: {
             languageId: languageRecord.id,
-            deletedAt: null
+            deletedAt: null,
+            quizResults: {
+              some: {}
+            }
           }
         }
       },
@@ -57,25 +60,35 @@ export async function GET(request: NextRequest) {
             deletedAt: null
           },
           select: {
-            createdAt: true
-          },
-          orderBy: {
-            createdAt: 'asc'
+            quizResults: {
+              where: {
+                deletedAt: null
+              },
+              select: {
+                date: true
+              },
+              orderBy: {
+                date: 'asc'
+              }
+            }
           }
         }
       }
     })
 
-    // 各ユーザーのStreakを計算
+    // 各ユーザーのStreak を計算
     const streakData = users.map(userData => {
-      const phraseDates = userData.phrases.map(phrase => {
-        const date = new Date(phrase.createdAt)
-        // UTC日付をそのまま使用
-        return date.toISOString().split('T')[0]
-      })
+      // 全ての quiz 結果の日付を集める
+      const allQuizDates = userData.phrases.flatMap(phrase =>
+        phrase.quizResults.map(result => {
+          const date = new Date(result.date)
+          // UTC日付をそのまま使用
+          return date.toISOString().split('T')[0]
+        })
+      )
 
       // 重複を除去してソート
-      const uniqueDates = [...new Set(phraseDates)].sort()
+      const uniqueDates = [...new Set(allQuizDates)].sort()
 
       if (uniqueDates.length === 0) {
         return {
@@ -161,7 +174,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Phrase streak ranking error:', error)
+    console.error('Quiz streak ranking error:', error)
     return NextResponse.json({ 
       success: false, 
       error: 'Internal server error'

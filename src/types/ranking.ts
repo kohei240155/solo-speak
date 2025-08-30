@@ -103,3 +103,39 @@ export interface PhraseStreakRankingResponseData {
     rank: number
   } | null
 }
+
+export interface SpeakStreakRankingResponseData {
+  success: true
+  topUsers: Array<{
+    userId: string
+    username: string
+    iconUrl: string | null
+    streakDays: number
+    rank: number
+  }>
+  currentUser: {
+    userId: string
+    username: string
+    iconUrl: string | null
+    streakDays: number
+    rank: number
+  } | null
+}
+
+export interface QuizStreakRankingResponseData {
+  success: true
+  topUsers: Array<{
+    userId: string
+    username: string
+    iconUrl: string | null
+    streakDays: number
+    rank: number
+  }>
+  currentUser: {
+    userId: string
+    username: string
+    iconUrl: string | null
+    streakDays: number
+    rank: number
+  } | null
+}

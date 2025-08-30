@@ -3,7 +3,7 @@ import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
-/** フレーズStreak ランキングAPIエンドポイント
+/** SpeakStreak ランキングAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
  * @returns Streakランキングデータ
  */
@@ -35,14 +35,17 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 各ユーザーのフレーズ作成日のStreak計算
+    // 各ユーザーのSpeak記録からStreak計算
     const users = await prisma.user.findMany({
       where: {
         deletedAt: null,
         phrases: {
           some: {
             languageId: languageRecord.id,
-            deletedAt: null
+            deletedAt: null,
+            speakLogs: {
+              some: {}
+            }
           }
         }
       },
@@ -57,25 +60,35 @@ export async function GET(request: NextRequest) {
             deletedAt: null
           },
           select: {
-            createdAt: true
-          },
-          orderBy: {
-            createdAt: 'asc'
+            speakLogs: {
+              where: {
+                deletedAt: null
+              },
+              select: {
+                date: true
+              },
+              orderBy: {
+                date: 'asc'
+              }
+            }
           }
         }
       }
     })
 
-    // 各ユーザーのStreakを計算
+    // 各ユーザーのStreak を計算
     const streakData = users.map(userData => {
-      const phraseDates = userData.phrases.map(phrase => {
-        const date = new Date(phrase.createdAt)
-        // UTC日付をそのまま使用
-        return date.toISOString().split('T')[0]
-      })
+      // 全ての speak ログの日付を集める
+      const allSpeakDates = userData.phrases.flatMap(phrase =>
+        phrase.speakLogs.map(log => {
+          const date = new Date(log.date)
+          // UTC日付をそのまま使用
+          return date.toISOString().split('T')[0]
+        })
+      )
 
       // 重複を除去してソート
-      const uniqueDates = [...new Set(phraseDates)].sort()
+      const uniqueDates = [...new Set(allSpeakDates)].sort()
 
       if (uniqueDates.length === 0) {
         return {
@@ -161,7 +174,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Phrase streak ranking error:', error)
+    console.error('Speak streak ranking error:', error)
     return NextResponse.json({ 
       success: false, 
       error: 'Internal server error'
