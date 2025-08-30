@@ -4,27 +4,6 @@ import { getInitialSituations } from '@/data/situations'
 import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
 
 /**
- * ユーザー名の重複チェック
- * @param username チェック対象のユーザー名
- * @param excludeUserId 除外するユーザーID（更新時に自分自身を除外）
- * @returns 重複があるかどうか
- */
-export async function checkUsernameConflict(
-  username: string, 
-  excludeUserId?: string
-): Promise<boolean> {
-  const existingUser = await prisma.user.findFirst({
-    where: { 
-      username: username,
-      deletedAt: null, // 削除されていないユーザーのみチェック
-      ...(excludeUserId && { id: { not: excludeUserId } })
-    }
-  })
-
-  return !!existingUser
-}
-
-/**
  * ユーザーの存在チェック
  * @param userId ユーザーID
  * @returns ユーザーが存在するかどうか

@@ -10,8 +10,7 @@ import {
   getUserSettings, 
   createUserSettings, 
   updateUserSettings, 
-  checkUserExists, 
-  checkUsernameConflict 
+  checkUserExists 
 } from '@/utils/database-helpers'
 import { prisma } from '@/utils/prisma'
 import { ApiErrorResponse } from '@/types/api'
@@ -157,14 +156,6 @@ export async function PUT(request: NextRequest) {
           error: usernameValidation.error || 'Username validation failed'
         }
         return NextResponse.json(errorResponse, { status: 400 })
-      }
-
-      // ユーザー名の重複チェック
-      const hasConflict = await checkUsernameConflict(username, authResult.user.id)
-      if (hasConflict) {
-        return NextResponse.json({ 
-          error: 'This username is already taken. Please choose another one.' 
-        }, { status: 400 })
       }
     }
 
