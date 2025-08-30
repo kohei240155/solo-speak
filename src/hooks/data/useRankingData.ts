@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguages, useRanking } from '@/hooks/api/useSWRApi'
+import { useLanguages, useRanking, usePhraseStreakRanking } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
@@ -20,13 +20,30 @@ export const useRankingData = () => {
   // Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定
   const period = activeRankingType === 'phrase' ? 'total' : (activeTab.toLowerCase() as 'daily' | 'weekly' | 'total')
   const { 
-    rankingData, 
-    currentUser,
-    isLoading, 
-    error, 
-    message, 
-    refetch 
+    rankingData: normalRankingData, 
+    currentUser: normalCurrentUser,
+    isLoading: normalIsLoading, 
+    error: normalError, 
+    message: normalMessage, 
+    refetch: normalRefetch 
   } = useRanking(activeRankingType, selectedLanguage, period)
+
+  // Phrase Streakランキングデータを取得
+  const { 
+    rankingData: streakRankingData, 
+    currentUser: streakCurrentUser,
+    isLoading: streakIsLoading, 
+    error: streakError, 
+    refetch: streakRefetch 
+  } = usePhraseStreakRanking(selectedLanguage)
+
+  // 表示するデータを決定
+  const isStreakTab = activeRankingType === 'phrase' && activeTab === 'Streak'
+  const rankingData = isStreakTab ? streakRankingData : normalRankingData
+  const currentUser = isStreakTab ? streakCurrentUser : normalCurrentUser
+  const isLoading = isStreakTab ? streakIsLoading : normalIsLoading
+  const error = isStreakTab ? streakError : normalError
+  const message = isStreakTab ? undefined : normalMessage
 
   // ユーザー設定が読み込まれた時に言語を初期化（初回のみ）
   useEffect(() => {
@@ -60,7 +77,11 @@ export const useRankingData = () => {
 
   // 手動リフレッシュ関数
   const refreshRanking = () => {
-    refetch()
+    if (isStreakTab) {
+      streakRefetch()
+    } else {
+      normalRefetch()
+    }
   }
 
   return {

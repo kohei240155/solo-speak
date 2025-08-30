@@ -94,15 +94,23 @@ export default function RankingPage() {
 
           {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-            {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotalのみ表示） */}
+            {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotal&Streakタブを表示） */}
             {activeRankingType === 'phrase' ? (
               <div className="mb-4 border-b border-gray-200">
                 <nav className="flex space-x-0">
-                  <button
-                    className="px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 border-gray-900 text-gray-900"
-                  >
-                    Total
-                  </button>
+                  {['Total', 'Streak'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => handleTabChange(tab)}
+                      className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                        activeTab === tab
+                          ? 'border-gray-900 text-gray-900'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
                 </nav>
               </div>
             ) : (
@@ -131,7 +139,9 @@ export default function RankingPage() {
                 <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 text-sm sm:text-base md:text-lg font-bold text-gray-900 pb-2">
                   <div className="text-left pl-2">Rank</div>
                   <div className="text-left ml-8 sm:ml-12">User</div>
-                  <div className="text-right pr-2">Count</div>
+                  <div className="text-right pr-2">
+                    {activeRankingType === 'phrase' && activeTab === 'Streak' ? 'Days' : 'Count'}
+                  </div>
                 </div>
               </div>
 
