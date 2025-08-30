@@ -355,3 +355,147 @@ export function useSituations() {
     refetch: mutate
   }
 }
+
+// フレーズStreakランキングを取得するSWRフック
+export function usePhraseStreakRanking(language?: string) {
+  const { user } = useAuth()
+  
+  // エンドポイントを構築
+  const url = language ? `/api/ranking/phrase/streak?language=${language}` : null
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const rankingKey = user && url ? [url, user.id] as const : null
+
+  const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<import('@/types/ranking').PhraseStreakRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
+
+  // データを統一形式に変換
+  let transformedData: import('@/types/ranking').UnifiedRankingUser[] = []
+
+  if (data?.success && data.topUsers) {
+    transformedData = data.topUsers.map(user => ({
+      userId: user.userId,
+      username: user.username,
+      iconUrl: user.iconUrl,
+      totalCount: user.streakDays, // streakDaysをtotalCountとして使用
+      rank: user.rank
+    }))
+  }
+
+  // currentUserも統一形式に変換
+  let currentUser: import('@/types/ranking').UnifiedRankingUser | null = null
+
+  if (data?.success && data.currentUser) {
+    currentUser = {
+      userId: data.currentUser.userId,
+      username: data.currentUser.username,
+      iconUrl: data.currentUser.iconUrl,
+      totalCount: data.currentUser.streakDays,
+      rank: data.currentUser.rank
+    }
+  }
+
+  return {
+    rankingData: transformedData,
+    currentUser,
+    isLoading,
+    error,
+    message: undefined,
+    refetch: mutate
+  }
+}
+
+// SpeakStreakランキングを取得するSWRフック
+export function useSpeakStreakRanking(language?: string) {
+  const { user } = useAuth()
+  
+  // エンドポイントを構築
+  const url = language ? `/api/ranking/speak/streak?language=${language}` : null
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const rankingKey = user && url ? [url, user.id] as const : null
+
+  const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<import('@/types/ranking').SpeakStreakRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
+
+  // データを統一形式に変換
+  let transformedData: import('@/types/ranking').UnifiedRankingUser[] = []
+
+  if (data?.success && data.topUsers) {
+    transformedData = data.topUsers.map(user => ({
+      userId: user.userId,
+      username: user.username,
+      iconUrl: user.iconUrl,
+      totalCount: user.streakDays, // streakDaysをtotalCountとして使用
+      rank: user.rank
+    }))
+  }
+
+  // currentUserも統一形式に変換
+  let currentUser: import('@/types/ranking').UnifiedRankingUser | null = null
+
+  if (data?.success && data.currentUser) {
+    currentUser = {
+      userId: data.currentUser.userId,
+      username: data.currentUser.username,
+      iconUrl: data.currentUser.iconUrl,
+      totalCount: data.currentUser.streakDays,
+      rank: data.currentUser.rank
+    }
+  }
+
+  return {
+    rankingData: transformedData,
+    currentUser,
+    isLoading,
+    error,
+    message: undefined,
+    refetch: mutate
+  }
+}
+
+// QuizStreakランキングを取得するSWRフック
+export function useQuizStreakRanking(language?: string) {
+  const { user } = useAuth()
+  
+  // エンドポイントを構築
+  const url = language ? `/api/ranking/quiz/streak?language=${language}` : null
+  
+  // ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+  const rankingKey = user && url ? [url, user.id] as const : null
+
+  const { data, error, isLoading, mutate } = useSWR(rankingKey, ([url]) => fetcher<import('@/types/ranking').QuizStreakRankingResponseData>(url), SWR_CONFIGS.SHORT_CACHE)
+
+  // データを統一形式に変換
+  let transformedData: import('@/types/ranking').UnifiedRankingUser[] = []
+
+  if (data?.success && data.topUsers) {
+    transformedData = data.topUsers.map(user => ({
+      userId: user.userId,
+      username: user.username,
+      iconUrl: user.iconUrl,
+      totalCount: user.streakDays, // streakDaysをtotalCountとして使用
+      rank: user.rank
+    }))
+  }
+
+  // currentUserも統一形式に変換
+  let currentUser: import('@/types/ranking').UnifiedRankingUser | null = null
+
+  if (data?.success && data.currentUser) {
+    currentUser = {
+      userId: data.currentUser.userId,
+      username: data.currentUser.username,
+      iconUrl: data.currentUser.iconUrl,
+      totalCount: data.currentUser.streakDays,
+      rank: data.currentUser.rank
+    }
+  }
+
+  return {
+    rankingData: transformedData,
+    currentUser,
+    isLoading,
+    error,
+    message: undefined,
+    refetch: mutate
+  }
+}

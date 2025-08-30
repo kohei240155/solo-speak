@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useLanguages, useRanking } from '@/hooks/api/useSWRApi'
+import { useLanguages, useRanking, usePhraseStreakRanking, useSpeakStreakRanking, useQuizStreakRanking } from '@/hooks/api/useSWRApi'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
 
 export const useRankingData = () => {
@@ -20,13 +20,73 @@ export const useRankingData = () => {
   // Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定
   const period = activeRankingType === 'phrase' ? 'total' : (activeTab.toLowerCase() as 'daily' | 'weekly' | 'total')
   const { 
-    rankingData, 
-    currentUser,
-    isLoading, 
-    error, 
-    message, 
-    refetch 
+    rankingData: normalRankingData, 
+    currentUser: normalCurrentUser,
+    isLoading: normalIsLoading, 
+    error: normalError, 
+    message: normalMessage, 
+    refetch: normalRefetch 
   } = useRanking(activeRankingType, selectedLanguage, period)
+
+  // Phrase Streakランキングデータを取得
+  const { 
+    rankingData: streakRankingData, 
+    currentUser: streakCurrentUser,
+    isLoading: streakIsLoading, 
+    error: streakError, 
+    refetch: streakRefetch 
+  } = usePhraseStreakRanking(selectedLanguage)
+
+  // Speak Streakランキングデータを取得
+  const { 
+    rankingData: speakStreakRankingData, 
+    currentUser: speakStreakCurrentUser,
+    isLoading: speakStreakIsLoading, 
+    error: speakStreakError, 
+    refetch: speakStreakRefetch 
+  } = useSpeakStreakRanking(selectedLanguage)
+
+  // Quiz Streakランキングデータを取得
+  const { 
+    rankingData: quizStreakRankingData, 
+    currentUser: quizStreakCurrentUser,
+    isLoading: quizStreakIsLoading, 
+    error: quizStreakError, 
+    refetch: quizStreakRefetch 
+  } = useQuizStreakRanking(selectedLanguage)
+
+  // 表示するデータを決定
+  const isPhraseStreakTab = activeRankingType === 'phrase' && activeTab === 'Streak'
+  const isSpeakStreakTab = activeRankingType === 'speak' && activeTab === 'Streak'
+  const isQuizStreakTab = activeRankingType === 'quiz' && activeTab === 'Streak'
+  
+  let rankingData, currentUser, isLoading, error, message
+  
+  if (isPhraseStreakTab) {
+    rankingData = streakRankingData
+    currentUser = streakCurrentUser
+    isLoading = streakIsLoading
+    error = streakError
+    message = undefined
+  } else if (isSpeakStreakTab) {
+    rankingData = speakStreakRankingData
+    currentUser = speakStreakCurrentUser
+    isLoading = speakStreakIsLoading
+    error = speakStreakError
+    message = undefined
+  } else if (isQuizStreakTab) {
+    rankingData = quizStreakRankingData
+    currentUser = quizStreakCurrentUser
+    isLoading = quizStreakIsLoading
+    error = quizStreakError
+    message = undefined
+  } else {
+    rankingData = normalRankingData
+    currentUser = normalCurrentUser
+    isLoading = normalIsLoading
+    error = normalError
+    message = normalMessage
+  }
 
   // ユーザー設定が読み込まれた時に言語を初期化（初回のみ）
   useEffect(() => {
@@ -60,7 +120,15 @@ export const useRankingData = () => {
 
   // 手動リフレッシュ関数
   const refreshRanking = () => {
-    refetch()
+    if (isPhraseStreakTab) {
+      streakRefetch()
+    } else if (isSpeakStreakTab) {
+      speakStreakRefetch()
+    } else if (isQuizStreakTab) {
+      quizStreakRefetch()
+    } else {
+      normalRefetch()
+    }
   }
 
   return {
