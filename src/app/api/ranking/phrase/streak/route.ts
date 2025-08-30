@@ -118,7 +118,10 @@ export async function GET(request: NextRequest) {
     })
 
     // Streak日数順でソート（同数の場合は登録日時が古い方が上位）
-    streakData.sort((a, b) => {
+    // Streakが0の場合は除外
+    const validStreakData = streakData.filter(data => data.streakDays > 0)
+    
+    validStreakData.sort((a, b) => {
       if (b.streakDays === a.streakDays) {
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       }
@@ -126,7 +129,7 @@ export async function GET(request: NextRequest) {
     })
 
     // ランクを付与（上位10位まで）
-    const topUsers = streakData
+    const topUsers = validStreakData
       .slice(0, 10)
       .map((userData, index) => ({
         rank: index + 1,
@@ -141,9 +144,9 @@ export async function GET(request: NextRequest) {
     
     // 10位圏外の場合、全データから該当ユーザーの順位を取得
     if (!currentUser) {
-      const userIndex = streakData.findIndex(u => u.userId === user.id)
+      const userIndex = validStreakData.findIndex(u => u.userId === user.id)
       if (userIndex !== -1) {
-        const userData = streakData[userIndex]
+        const userData = validStreakData[userIndex]
         currentUser = {
           rank: userIndex + 1,
           userId: userData.userId,
