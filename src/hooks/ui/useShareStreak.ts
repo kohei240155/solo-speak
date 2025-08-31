@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { LANGUAGE_NAMES, type LanguageCode } from '@/constants/languages'
+import { useTranslation } from './useTranslation'
 
 type RankingType = 'phrase' | 'speak' | 'quiz'
 type TabType = 'Daily' | 'Weekly' | 'Total' | 'Streak'
 
 export const useShareStreak = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useTranslation()
 
   const shareStreak = async (
     language: string, 
@@ -17,7 +19,7 @@ export const useShareStreak = () => {
     setIsLoading(true)
     try {
       if (count === 0) {
-        toast.error('カウントが0のため投稿できません')
+        toast.error(t('ranking.shareStreak.error.noCount'))
         return null
       }
 
@@ -25,37 +27,37 @@ export const useShareStreak = () => {
       const languageName = LANGUAGE_NAMES[language as LanguageCode] || language
 
       // ランキングタイプとタブに応じてメッセージを生成
-      let shareText = 'Solo Speakを使っています⚡\n\n'
+      let shareText = `${t('ranking.shareStreak.intro')}\n\n`
 
       if (rankingType === 'phrase') {
         if (tabType === 'Total') {
-          shareText += `これまでに ${count}フレーズ 生成しました！`
+          shareText += t('ranking.shareStreak.phrase.total', { count })
         } else if (tabType === 'Streak') {
-          shareText += `${count}日連続でフレーズを生成しました！`
+          shareText += t('ranking.shareStreak.phrase.streak', { count })
         }
       } else if (rankingType === 'speak') {
         if (tabType === 'Daily') {
-          shareText += `今日は ${count}回 音読しました！`
+          shareText += t('ranking.shareStreak.speak.daily', { count })
         } else if (tabType === 'Weekly') {
-          shareText += `今週は${count}回 音読しました！`
+          shareText += t('ranking.shareStreak.speak.weekly', { count })
         } else if (tabType === 'Total') {
-          shareText += `これまでに ${count}回 音読しました！`
+          shareText += t('ranking.shareStreak.speak.total', { count })
         } else if (tabType === 'Streak') {
-          shareText += `${count}日連続で音読を継続しました！`
+          shareText += t('ranking.shareStreak.speak.streak', { count })
         }
       } else if (rankingType === 'quiz') {
         if (tabType === 'Daily') {
-          shareText += `今日はクイズに ${count}回 正解しました！`
+          shareText += t('ranking.shareStreak.quiz.daily', { count })
         } else if (tabType === 'Weekly') {
-          shareText += `今週はクイズに ${count}回 正解しました！`
+          shareText += t('ranking.shareStreak.quiz.weekly', { count })
         } else if (tabType === 'Total') {
-          shareText += `これまでにクイズに ${count}回 正解しました！`
+          shareText += t('ranking.shareStreak.quiz.total', { count })
         } else if (tabType === 'Streak') {
-          shareText += `${count}日連続でクイズに正解しました！`
+          shareText += t('ranking.shareStreak.quiz.streak', { count })
         }
       }
 
-      shareText += '\n\nhttps://solo-speak.com \n#SoloSpeak'
+      shareText += `\n\n${t('ranking.shareStreak.url')} \n${t('ranking.shareStreak.hashtag')}`
 
       // Twitter/X用のURLを生成
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`
@@ -66,7 +68,7 @@ export const useShareStreak = () => {
       return { count, shareText, language: languageName, rankingType, tabType }
     } catch (error) {
       console.error('Share streak error:', error)
-      toast.error('投稿リンクの生成中にエラーが発生しました')
+      toast.error(t('ranking.shareStreak.error.failed'))
       return null
     } finally {
       setIsLoading(false)

@@ -256,7 +256,32 @@
     "checkoutError": "결제 세션 생성에 실패했습니다."
   },
   "ranking": {
-    "noData": "표시할 데이터가 없습니다."
+    "noData": "표시할 데이터가 없습니다.",
+    "shareStreak": {
+      "intro": "Solo Speak을 사용하고 있습니다⚡",
+      "phrase": {
+        "total": "지금까지 {count}개의 문장을 생성했습니다!",
+        "streak": "{count}일 연속으로 문장을 생성했습니다!"
+      },
+      "speak": {
+        "daily": "오늘 {count}번 음독했습니다!",
+        "weekly": "이번 주 {count}번 음독했습니다!",
+        "total": "지금까지 {count}번 음독했습니다!",
+        "streak": "{count}일 연속으로 음독을 계속했습니다!"
+      },
+      "quiz": {
+        "daily": "오늘 퀴즈에 {count}번 정답했습니다!",
+        "weekly": "이번 주 퀴즈에 {count}번 정답했습니다!",
+        "total": "지금까지 퀴즈에 {count}번 정답했습니다!",
+        "streak": "{count}일 연속으로 퀴즈에 정답했습니다!"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak",
+      "error": {
+        "noCount": "카운트가 0이므로 게시할 수 없습니다",
+        "failed": "게시 링크 생성 중 오류가 발생했습니다"
+      }
+    }
   },
   "auth": {
     "modal": {

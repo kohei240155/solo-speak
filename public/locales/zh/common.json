@@ -256,7 +256,32 @@
     "checkoutError": "创建结账会话失败"
   },
   "ranking": {
-    "noData": "没有要显示的数据"
+    "noData": "没有要显示的数据",
+    "shareStreak": {
+      "intro": "正在使用Solo Speak⚡",
+      "phrase": {
+        "total": "到目前为止生成了{count}个短语！",
+        "streak": "连续{count}天生成短语！"
+      },
+      "speak": {
+        "daily": "今天朗读了{count}次！",
+        "weekly": "本周朗读了{count}次！",
+        "total": "到目前为止朗读了{count}次！",
+        "streak": "连续{count}天坚持朗读！"
+      },
+      "quiz": {
+        "daily": "今天测验答对了{count}次！",
+        "weekly": "本周测验答对了{count}次！",
+        "total": "到目前为止测验答对了{count}次！",
+        "streak": "连续{count}天测验答对！"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak",
+      "error": {
+        "noCount": "计数为0，无法发布",
+        "failed": "生成发布链接时发生错误"
+      }
+    }
   },
   "auth": {
     "modal": {

@@ -256,7 +256,32 @@
     "checkoutError": "チェックアウトセッションの作成に失敗しました"
   },
   "ranking": {
-    "noData": "表示対象のデータがありません"
+    "noData": "表示対象のデータがありません",
+    "shareStreak": {
+      "intro": "Solo Speakを使っています⚡",
+      "phrase": {
+        "total": "これまでに {count}フレーズ 生成しました！",
+        "streak": "{count}日連続でフレーズを生成しました！"
+      },
+      "speak": {
+        "daily": "今日は {count}回 音読しました！",
+        "weekly": "今週は {count}回 音読しました！",
+        "total": "これまでに {count}回 音読しました！",
+        "streak": "{count}日連続で音読を継続しました！"
+      },
+      "quiz": {
+        "daily": "今日はクイズに {count}回 正解しました！",
+        "weekly": "今週はクイズに {count}回 正解しました！",
+        "total": "これまでにクイズに {count}回 正解しました！",
+        "streak": "{count}日連続でクイズに正解しました！"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak #英語学習 #多言語学習",
+      "error": {
+        "noCount": "カウントが0のため投稿できません",
+        "failed": "投稿リンクの生成中にエラーが発生しました"
+      }
+    }
   },
   "auth": {
     "modal": {
