@@ -9,12 +9,15 @@ import LanguageSelector from '@/components/common/LanguageSelector'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useRankingData } from '@/hooks/data/useRankingData'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { useShareStreak } from '@/hooks/ui/useShareStreak'
 import { useEffect } from 'react'
+import { AiOutlineX } from 'react-icons/ai'
 
 export default function RankingPage() {
   const { user, loading: authLoading } = useAuthGuard()
   const { userSettings } = useAuth()
   const { t } = useTranslation()
+  const { shareStreak, isLoading: isShareLoading } = useShareStreak()
   
   // カスタムフックを使用してランキングデータを管理
   const {
@@ -38,6 +41,25 @@ export default function RankingPage() {
       toast.error(message)
     }
   }, [error, message])
+
+  // ランキング投稿ハンドラー
+  const handleShareStreak = async () => {
+    if (isShareLoading) return
+    
+    // 現在のユーザーのカウント数を取得
+    let userCount = 0
+    
+    // ランキングデータから現在のユーザーのカウント数を探す
+    const userRankData = rankingData.find(rankUser => rankUser.userId === user?.id)
+    if (userRankData) {
+      userCount = userRankData.totalCount
+    } else if (currentUser) {
+      // 10位圏外の場合はcurrentUserから取得
+      userCount = currentUser.totalCount
+    }
+    
+    await shareStreak(selectedLanguage, userCount, activeRankingType, activeTab as 'Daily' | 'Weekly' | 'Total' | 'Streak')
+  }
 
   // 認証のローディング中のみ全画面ローディング
   if (authLoading) {
@@ -63,72 +85,96 @@ export default function RankingPage() {
             />
           </div>
           
-          {/* Phrase、Speak、Quizタブメニュー */}
-          <div className="flex mb-[18px]">
-            {[
-              { key: 'phrase' as const, label: 'Phrase' },
-              { key: 'speak' as const, label: 'Speak' },
-              { key: 'quiz' as const, label: 'Quiz' }
-            ].map((tab, index) => (
-              <button 
-                key={tab.key}
-                onClick={() => {
-                  handleRankingTypeChange(tab.key)
-                }}
-                className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
-                  index === 0 ? 'rounded-l-[20px]' : ''
-                } ${
-                  index === 2 ? 'rounded-r-[20px]' : ''
-                } ${
-                  index > 0 ? 'border-l-0' : ''
-                } ${
-                  tab.key === activeRankingType 
-                    ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
-                    : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+            {/* Phrase、Speak、Quizタブメニュー */}
+            <div className="flex mb-[18px]">
+              {[
+                { key: 'phrase' as const, label: 'Phrase' },
+                { key: 'speak' as const, label: 'Speak' },
+                { key: 'quiz' as const, label: 'Quiz' }
+              ].map((tab, index) => (
+                <button 
+                  key={tab.key}
+                  onClick={() => {
+                    handleRankingTypeChange(tab.key)
+                  }}
+                  className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
+                    index === 0 ? 'rounded-l-[20px]' : ''
+                  } ${
+                    index === 2 ? 'rounded-r-[20px]' : ''
+                  } ${
+                    index > 0 ? 'border-l-0' : ''
+                  } ${
+                    tab.key === activeRankingType 
+                      ? 'bg-gray-200 text-gray-700 font-bold cursor-default' 
+                      : 'bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
-          {/* コンテンツエリア */}
+            {/* コンテンツエリア */}
           <div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
             {/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotal&Streakタブを表示） */}
             {activeRankingType === 'phrase' ? (
               <div className="mb-4 border-b border-gray-200">
-                <nav className="flex space-x-0">
-                  {['Total', 'Streak'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => handleTabChange(tab)}
-                      className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
-                        activeTab === tab
-                          ? 'border-gray-900 text-gray-900'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <nav className="flex space-x-0 justify-between items-center">
+                  <div className="flex space-x-0">
+                    {['Total', 'Streak'].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => handleTabChange(tab)}
+                        className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                          activeTab === tab
+                            ? 'border-gray-900 text-gray-900'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* X投稿ボタン */}
+                  <button
+                    onClick={handleShareStreak}
+                    disabled={isShareLoading}
+                    className="flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+                    title="ランキング結果を投稿"
+                  >
+                    <AiOutlineX className="w-4 h-4" />
+                  </button>
                 </nav>
               </div>
             ) : (
               <div className="mb-4 border-b border-gray-200">
-                <nav className="flex space-x-0">
-                  {['Daily', 'Weekly', 'Total', 'Streak'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => handleTabChange(tab)}
-                      className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
-                        activeTab === tab
-                          ? 'border-gray-900 text-gray-900'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <nav className="flex space-x-0 justify-between items-center">
+                  <div className="flex space-x-0">
+                    {['Daily', 'Weekly', 'Total', 'Streak'].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => handleTabChange(tab)}
+                        className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+                          activeTab === tab
+                            ? 'border-gray-900 text-gray-900'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* X投稿ボタン */}
+                  <button
+                    onClick={handleShareStreak}
+                    disabled={isShareLoading}
+                    className="flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+                    title="ランキング結果を投稿"
+                  >
+                    <AiOutlineX className="w-4 h-4" />
+                  </button>
                 </nav>
               </div>
             )}
