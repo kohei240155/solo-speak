@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/utils/prisma'
 import { authenticateRequest } from '@/utils/api-helpers'
 import { DEFAULT_LANGUAGE } from '@/constants/languages'
+import { calculateStreak, formatDatesToStrings } from '@/utils/streak-calculator'
 
 /** フレーズStreak ランキングAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -68,51 +69,15 @@ export async function GET(request: NextRequest) {
 
     // 各ユーザーのStreakを計算
     const streakData = users.map(userData => {
-      const phraseDates = userData.phrases.map(phrase => {
-        const date = new Date(phrase.createdAt)
-        // UTC日付をそのまま使用
-        return date.toISOString().split('T')[0]
-      })
-
-      // 重複を除去してソート
-      const uniqueDates = [...new Set(phraseDates)].sort()
-
-      if (uniqueDates.length === 0) {
-        return {
-          userId: userData.id,
-          username: userData.username || 'Unknown User',
-          iconUrl: userData.iconUrl,
-          streakDays: 0,
-          createdAt: userData.createdAt
-        }
-      }
-
-      // 現在の連続日数を計算
-      const today = new Date()
-      const todayStr = today.toISOString().split('T')[0]
-      
-      let currentStreak = 0
-      const checkDate = new Date(todayStr)
-
-      // 今日から遡って連続日数を計算
-      while (true) {
-        const checkDateStr = checkDate.toISOString().split('T')[0]
-        
-        if (uniqueDates.includes(checkDateStr)) {
-          currentStreak++
-          // 前日をチェック
-          checkDate.setDate(checkDate.getDate() - 1)
-        } else {
-          // 連続が途切れた場合
-          break
-        }
-      }
+      const phraseDates = userData.phrases.map(phrase => phrase.createdAt)
+      const dateStrings = formatDatesToStrings(phraseDates)
+      const streakDays = calculateStreak(dateStrings)
 
       return {
         userId: userData.id,
         username: userData.username || 'Unknown User',
         iconUrl: userData.iconUrl,
-        streakDays: currentStreak,
+        streakDays,
         createdAt: userData.createdAt
       }
     })
