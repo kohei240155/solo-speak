@@ -14,7 +14,7 @@ import CTASection from '@/components/layout/CTASection'
 import { useState, useEffect } from 'react'
 
 export default function Home() {
-  const { t, isLoading: isLoadingTranslation } = useTranslation('common')
+  const { isLoading: isLoadingTranslation } = useTranslation('common')
   const { showLoginModal } = useAuth()
   const visibleSections = useScrollAnimation()
   const [showSplash, setShowSplash] = useState(true)
