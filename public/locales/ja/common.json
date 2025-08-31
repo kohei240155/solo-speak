@@ -267,7 +267,7 @@
         "daily": "今日は {count}回 音読しました！",
         "weekly": "今週は {count}回 音読しました！",
         "total": "これまでに {count}回 音読しました！",
-        "streak": "{count}日連続で音読を継続しました！"
+        "streak": "{count}日連続で音読を継続しています！"
       },
       "quiz": {
         "daily": "今日はクイズに {count}回 正解しました！",
