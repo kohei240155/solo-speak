@@ -256,7 +256,32 @@
     "checkoutError": "Failed to create checkout session"
   },
   "ranking": {
-    "noData": "No data available to display"
+    "noData": "No data available to display",
+    "shareStreak": {
+      "intro": "Using Solo Speak⚡",
+      "phrase": {
+        "total": "Generated {count} phrases so far!",
+        "streak": "Generated phrases for {count} consecutive days!"
+      },
+      "speak": {
+        "daily": "Read aloud {count} times today!",
+        "weekly": "Read aloud {count} times this week!",
+        "total": "Read aloud {count} times so far!",
+        "streak": "Continued reading aloud for {count} consecutive days!"
+      },
+      "quiz": {
+        "daily": "Got {count} quiz answers correct today!",
+        "weekly": "Got {count} quiz answers correct this week!",
+        "total": "Got {count} quiz answers correct so far!",
+        "streak": "Got quiz answers correct for {count} consecutive days!"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak",
+      "error": {
+        "noCount": "Cannot post because count is 0",
+        "failed": "Error occurred while generating post link"
+      }
+    }
   },
   "auth": {
     "modal": {

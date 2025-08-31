@@ -37,9 +37,15 @@ export function getNestedTranslation(
     return key
   }
   
-  // シンプルな変数置換（{{variable}}形式）
+  // シンプルな変数置換（{{variable}}形式と{variable}形式の両方をサポート）
   if (options) {
-    return value.replace(/\{\{(\w+)\}\}/g, (match: string, varName: string) => {
+    // {{variable}}形式の置換
+    value = value.replace(/\{\{(\w+)\}\}/g, (match: string, varName: string) => {
+      return String(options[varName] || match)
+    })
+    
+    // {variable}形式の置換（i18next形式）
+    value = value.replace(/\{(\w+)\}/g, (match: string, varName: string) => {
       return String(options[varName] || match)
     })
   }
