@@ -107,7 +107,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             />
             <div>
               <div className="flex items-center">
-                <label htmlFor="browser-acknowledgment" className="text-red-600 font-semibold cursor-pointer text-sm">
+                <label htmlFor="browser-acknowledgment" className="text-gray-600 font-semibold cursor-pointer text-sm">
                   {t('auth.modal.browserNote')}
                 </label>
                 <button
@@ -118,9 +118,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 >
                   <AiOutlineQuestionCircle size={16} />
                 </button>
-              </div>
-              <div className="mt-1 text-xs text-gray-500">
-                {t('auth.modal.appBrowserWarning')}
               </div>
             </div>
           </div>

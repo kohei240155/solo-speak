@@ -288,7 +288,6 @@
       "supportMessage": "Solo Speak is supporting your speaking practice journey.",
       "supportMessageShort": "Supporting your speaking practice journey.",
       "browserNote": "Please login with Safari/Chrome",
-      "appBrowserWarning": "( Login is not available from in-app browsers like X or LINE )",
       "popupBlockedError": "The authentication screen is taking time to display. Please check if popups are not blocked.",
       "authFailedError": "Authentication failed. Please try again.",
       "browserSwitchHelp": {
