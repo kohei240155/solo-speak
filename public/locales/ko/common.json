@@ -287,7 +287,8 @@
     "modal": {
       "supportMessage": "Solo Speak가 당신의 스피킹 학습을 지원합니다.",
       "supportMessageShort": "당신의 스피킹 학습을 지원합니다.",
-      "browserNote": "※ Safari/Chrome으로 로그인하세요.",
+      "browserNote": "Safari/Chrome으로 로그인하세요",
+      "appBrowserWarning": "( X나 LINE 등의 앱 내 브라우저에서는 로그인할 수 없습니다 )",
       "popupBlockedError": "인증 화면이 표시되는 데 시간이 걸리고 있습니다. 팝업 차단 여부를 확인하세요.",
       "authFailedError": "인증에 실패했습니다. 다시 시도해 주세요."
     }

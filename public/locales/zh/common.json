@@ -287,7 +287,8 @@
     "modal": {
       "supportMessage": "Solo Speak支持您的口语学习。",
       "supportMessageShort": "支持您的口语学习。",
-      "browserNote": "※请使用Safari/Chrome登录",
+      "browserNote": "请使用Safari/Chrome登录",
+      "appBrowserWarning": "( 无法从X或LINE等应用内浏览器登录 )",
       "popupBlockedError": "认证画面显示时间过长。请确认是否阻止了弹出窗口。",
       "authFailedError": "认证失败。请重试。"
     }
