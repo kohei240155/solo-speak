@@ -294,16 +294,16 @@
         "title": "How to Open in Browser",
         "xApp": {
           "title": "When opened from X app",
-          "step1": "Tap the \"Safari icon\" at the top right"
+          "step1": "Tap the \"Safari icon\" at the bottom right"
         },
         "lineApp": {
           "title": "When opened from LINE app",
-          "step1": "Tap the \"...\" menu at the top right",
+          "step1": "Tap the \"...\" menu at the bottom right",
           "step2": "Select \"Open in browser\""
         },
         "general": {
           "title": "For other apps",
-          "description": "Most apps have a menu button (..., ↗) at the top or top-right corner where you can find options like \"Open in browser\", \"Open in Safari\", or \"Open in external browser\"."
+          "description": "Most apps have a menu button (..., ↗) at the top or bottom-right corner where you can find options like \"Open in browser\", \"Open in Safari\", or \"Open in external browser\"."
         }
       }
     }
