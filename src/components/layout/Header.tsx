@@ -9,6 +9,7 @@ import { DisplayLanguageSelector } from '../common/DisplayLanguageSelector'
 import { BsClipboardData } from 'react-icons/bs'
 import { LuSettings } from 'react-icons/lu'
 import { MdLogout } from 'react-icons/md'
+import { VscFeedback } from 'react-icons/vsc'
 
 const Header = memo(function Header() {
   const { user, signOut, userIconUrl, isUserSetupComplete, refreshUserSettings, showLoginModal } = useAuth()
@@ -79,6 +80,12 @@ const Header = memo(function Header() {
           label: 'Dashboard',
           icon: BsClipboardData,
           onClick: () => router.push('/dashboard')
+        },
+        {
+          id: 'contact',
+          label: 'Contact',
+          icon: VscFeedback,
+          onClick: () => window.open('https://forms.gle/M9qBSGfiJCVWqmjE8', '_blank', 'noopener,noreferrer')
         },
         {
           id: 'settings',
