@@ -29,7 +29,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
       {/* 背景の装飾要素 */}
       <div className={`absolute inset-0 opacity-30 transition-opacity duration-1500 ease-out ${
         animationStarted ? 'opacity-30' : 'opacity-0'
-      }`} style={{ transitionDelay: '100ms' }}>
+      }`} style={{ transitionDelay: '200ms' }}>
         <div className="absolute top-20 left-20 w-72 h-72 bg-gray-200 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-gray-300 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gray-100 rounded-full blur-3xl"></div>
@@ -49,7 +49,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
             {/* メインタイトル */}
             <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 tracking-tight w-full max-w-2xl mb-4 transition-all duration-1000 ease-out ${
               animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ lineHeight: '1.2', transitionDelay: '400ms' }}>
+            }`} style={{ lineHeight: '1.2', transitionDelay: '200ms' }}>
               <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                 {t('home.hero.title').split('\n').map((line, index) => (
                   <span key={index}>
@@ -63,7 +63,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
             {/* アプリ画像 */}
             <div className={`flex items-center justify-center mt-6 transition-all duration-1000 ease-out ${
               animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ transitionDelay: '600ms' }}>
+            }`} style={{ transitionDelay: '200ms' }}>
               <div className="relative">
                 <div className="transform hover:scale-105 transition-transform duration-500">
                   <Image
@@ -81,7 +81,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
             {/* 特徴リスト */}
             <div className={`bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg w-full max-w-2xl mx-2 mt-6 transition-all duration-1000 ease-out ${
               animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ transitionDelay: '800ms' }}>
+            }`} style={{ transitionDelay: '200ms' }}>
               <div className="space-y-4">
                 <div className="flex items-start text-left">
                   <BsCheckSquareFill className="w-5 h-5 mr-4 flex-shrink-0 mt-1" style={{ color: '#616161' }} />
@@ -111,7 +111,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
               className={`inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-1000 group cursor-pointer shadow-lg mt-6 ease-out ${
                 animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
-              style={{ backgroundColor: '#616161', transitionDelay: '1000ms' }}
+              style={{ backgroundColor: '#616161', transitionDelay: '200ms' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#525252'
               }}
@@ -140,7 +140,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
               {/* メインタイトル */}
               <h1 className={`text-7xl font-bold text-gray-900 mb-8 leading-tight tracking-tight transition-all duration-1000 ease-out ${
                 animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`} style={{ transitionDelay: '400ms' }}>
+              }`} style={{ transitionDelay: '200ms' }}>
                 <span className="bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
                   {t('home.hero.title').split('\n').map((line, index) => (
                     <span key={index}>
@@ -154,7 +154,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
               {/* 特徴リスト */}
               <div className={`bg-white backdrop-blur-sm rounded-xl p-6 border border-gray-200 shadow-lg mb-8 max-w-lg transition-all duration-1000 ease-out ${
                 animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`} style={{ transitionDelay: '600ms' }}>
+              }`} style={{ transitionDelay: '200ms' }}>
                 <div className="space-y-4">
                   <div className="flex items-start text-left">
                     <BsCheckSquareFill className="w-5 h-5 mr-4 flex-shrink-0 mt-1" style={{ color: '#616161' }} />
@@ -184,7 +184,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
                 className={`inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-1000 group cursor-pointer shadow-lg ease-out ${
                   animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
-                style={{ backgroundColor: '#616161', transitionDelay: '800ms' }}
+                style={{ backgroundColor: '#616161', transitionDelay: '200ms' }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#525252'
                 }}
@@ -202,7 +202,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
             {/* 右側: アプリ画像 */}
             <div className={`flex items-center justify-center transition-all duration-1000 ease-out ${
               animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`} style={{ transitionDelay: '1000ms' }}>
+            }`} style={{ transitionDelay: '200ms' }}>
               <div className="relative">
                 <div className="transform hover:scale-105 transition-transform duration-500">
                   <Image
