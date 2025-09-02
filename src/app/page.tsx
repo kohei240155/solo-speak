@@ -55,7 +55,6 @@ export default function Home() {
       showContent ? 'opacity-100' : 'opacity-0'
     }`}>
       <HeroSection 
-        visibleSections={visibleSections}
         onGetStartedClick={handleGetStartedClick}
       />
 
