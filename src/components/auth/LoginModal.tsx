@@ -4,7 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { AiOutlineQuestionCircle } from 'react-icons/ai'
 import BaseModal from '../common/BaseModal'
+import BrowserSwitchHelpModal from './BrowserSwitchHelpModal'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -14,6 +16,8 @@ interface LoginModalProps {
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [browserAcknowledged, setBrowserAcknowledged] = useState(false)
+  const [showBrowserHelp, setShowBrowserHelp] = useState(false)
   const { signInWithGoogle } = useAuth()
   const { t } = useTranslation()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -62,6 +66,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
       setLoading(false)
       setError('')
+      setBrowserAcknowledged(false) // チェックボックスの状態もリセット
+      setShowBrowserHelp(false) // ヘルプモーダルも閉じる
     }
 
     // コンポーネントのクリーンアップ
@@ -86,12 +92,36 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             className="h-10 w-auto"
           />
         </div>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          <span className="hidden lg:inline">{t('auth.modal.supportMessage')}</span>
-          <span className="lg:hidden">{t('auth.modal.supportMessageShort')}</span>
-          <br />
-          <span className="text-red-600 font-semibold">{t('auth.modal.browserNote')}</span>
-        </p>
+        <div className="text-left">
+          <div className="mb-2">
+            <span className="hidden lg:inline text-gray-600 text-sm">{t('auth.modal.supportMessage')}</span>
+            <span className="lg:hidden text-gray-600 text-sm">{t('auth.modal.supportMessageShort')}</span>
+          </div>
+          <div className="flex items-start">
+            <input
+              type="checkbox"
+              id="browser-acknowledgment"
+              checked={browserAcknowledged}
+              onChange={(e) => setBrowserAcknowledged(e.target.checked)}
+              className="mt-1 mr-2 h-4 w-4 accent-gray-500 border-gray-300 rounded focus:outline-none"
+            />
+            <div>
+              <div className="flex items-center">
+                <label htmlFor="browser-acknowledgment" className="text-gray-600 font-semibold cursor-pointer text-sm">
+                  {t('auth.modal.browserNote')}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowBrowserHelp(true)}
+                  className="ml-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  aria-label="ブラウザー切り替え方法を表示"
+                >
+                  <AiOutlineQuestionCircle size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* エラーメッセージ */}
@@ -104,7 +134,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       {/* Googleログインボタン */}
       <button
         onClick={handleGoogleSignIn}
-        disabled={loading}
+        disabled={loading || !browserAcknowledged}
         className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
       >
         {loading ? (
@@ -124,6 +154,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </div>
         )}
       </button>
+      
+      {/* ブラウザー切り替えヘルプモーダル */}
+      <BrowserSwitchHelpModal 
+        isOpen={showBrowserHelp}
+        onClose={() => setShowBrowserHelp(false)}
+      />
     </BaseModal>
   )
 }
