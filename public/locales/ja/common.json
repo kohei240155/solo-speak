@@ -290,7 +290,23 @@
       "browserNote": "Safari/Chromeでログインしてください",
       "appBrowserWarning": "( XやLINEなどのアプリ内ブラウザからはログインできません )",
       "popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
-      "authFailedError": "認証に失敗しました。再度お試しください。"
+      "authFailedError": "認証に失敗しました。再度お試しください。",
+      "browserSwitchHelp": {
+        "title": "ブラウザーでの開き方",
+        "xApp": {
+          "title": "Xアプリから開いた場合",
+          "step1": "画面右上の「Safariアイコン」をタップ"
+        },
+        "lineApp": {
+          "title": "LINEアプリから開いた場合", 
+          "step1": "画面右上の「・・・」メニューをタップ",
+          "step2": "「ブラウザで開く」を選択"
+        },
+        "general": {
+          "title": "その他のアプリの場合",
+          "description": "多くのアプリでは画面上部や右上にメニューボタン（・・・や↗）があり、そこから「ブラウザーで開く」「Safariで開く」「外部ブラウザーで開く」などの選択肢を選ぶことができます。"
+        }
+      }
     }
   },
   "situation": {

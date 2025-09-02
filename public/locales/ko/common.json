@@ -290,7 +290,23 @@
       "browserNote": "Safari/Chrome으로 로그인하세요",
       "appBrowserWarning": "( X나 LINE 등의 앱 내 브라우저에서는 로그인할 수 없습니다 )",
       "popupBlockedError": "인증 화면이 표시되는 데 시간이 걸리고 있습니다. 팝업 차단 여부를 확인하세요.",
-      "authFailedError": "인증에 실패했습니다. 다시 시도해 주세요."
+      "authFailedError": "인증에 실패했습니다. 다시 시도해 주세요.",
+      "browserSwitchHelp": {
+        "title": "브라우저에서 열기 방법",
+        "xApp": {
+          "title": "X 앱에서 열었을 때",
+          "step1": "화면 우상단의 \"Safari 아이콘\"을 탭하세요"
+        },
+        "lineApp": {
+          "title": "LINE 앱에서 열었을 때",
+          "step1": "화면 우상단의 \"...\" 메뉴를 탭하세요",
+          "step2": "\"브라우저에서 열기\"를 선택하세요"
+        },
+        "general": {
+          "title": "기타 앱의 경우",
+          "description": "대부분의 앱은 화면 상단이나 우상단에 메뉴 버튼(..., ↗)이 있으며, 거기서 \"브라우저에서 열기\", \"Safari에서 열기\", \"외부 브라우저에서 열기\" 등의 옵션을 선택할 수 있습니다."
+        }
+      }
     }
   },
   "situation": {

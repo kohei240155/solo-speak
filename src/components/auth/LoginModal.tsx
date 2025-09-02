@@ -4,7 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTranslation } from '@/hooks/ui/useTranslation'
+import { AiOutlineQuestionCircle } from 'react-icons/ai'
 import BaseModal from '../common/BaseModal'
+import BrowserSwitchHelpModal from './BrowserSwitchHelpModal'
 
 interface LoginModalProps {
   isOpen: boolean
@@ -15,6 +17,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [browserAcknowledged, setBrowserAcknowledged] = useState(false)
+  const [showBrowserHelp, setShowBrowserHelp] = useState(false)
   const { signInWithGoogle } = useAuth()
   const { t } = useTranslation()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -64,6 +67,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(false)
       setError('')
       setBrowserAcknowledged(false) // チェックボックスの状態もリセット
+      setShowBrowserHelp(false) // ヘルプモーダルも閉じる
     }
 
     // コンポーネントのクリーンアップ
@@ -102,9 +106,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               className="mt-1 mr-2 h-4 w-4 accent-gray-500 border-gray-300 rounded focus:outline-none"
             />
             <div>
-              <label htmlFor="browser-acknowledgment" className="text-red-600 font-semibold cursor-pointer text-sm">
-                {t('auth.modal.browserNote')}
-              </label>
+              <div className="flex items-center">
+                <label htmlFor="browser-acknowledgment" className="text-red-600 font-semibold cursor-pointer text-sm">
+                  {t('auth.modal.browserNote')}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowBrowserHelp(true)}
+                  className="ml-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  aria-label="ブラウザー切り替え方法を表示"
+                >
+                  <AiOutlineQuestionCircle size={16} />
+                </button>
+              </div>
               <div className="mt-1 text-xs text-gray-500">
                 {t('auth.modal.appBrowserWarning')}
               </div>
@@ -143,6 +157,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </div>
         )}
       </button>
+      
+      {/* ブラウザー切り替えヘルプモーダル */}
+      <BrowserSwitchHelpModal 
+        isOpen={showBrowserHelp}
+        onClose={() => setShowBrowserHelp(false)}
+      />
     </BaseModal>
   )
 }

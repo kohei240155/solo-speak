@@ -290,7 +290,23 @@
       "browserNote": "请使用Safari/Chrome登录",
       "appBrowserWarning": "( 无法从X或LINE等应用内浏览器登录 )",
       "popupBlockedError": "认证画面显示时间过长。请确认是否阻止了弹出窗口。",
-      "authFailedError": "认证失败。请重试。"
+      "authFailedError": "认证失败。请重试。",
+      "browserSwitchHelp": {
+        "title": "在浏览器中打开的方法",
+        "xApp": {
+          "title": "从X应用打开时",
+          "step1": "点击右上角的\"Safari图标\""
+        },
+        "lineApp": {
+          "title": "从LINE应用打开时",
+          "step1": "点击右上角的\"...\"菜单",
+          "step2": "选择\"在浏览器中打开\""
+        },
+        "general": {
+          "title": "其他应用的情况",
+          "description": "大多数应用在顶部或右上角都有菜单按钮(...、↗)，您可以在那里找到\"在浏览器中打开\"、\"在Safari中打开\"、\"在外部浏览器中打开\"等选项。"
+        }
+      }
     }
   },
   "situation": {

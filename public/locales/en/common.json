@@ -290,7 +290,23 @@
       "browserNote": "Please login with Safari/Chrome",
       "appBrowserWarning": "( Login is not available from in-app browsers like X or LINE )",
       "popupBlockedError": "The authentication screen is taking time to display. Please check if popups are not blocked.",
-      "authFailedError": "Authentication failed. Please try again."
+      "authFailedError": "Authentication failed. Please try again.",
+      "browserSwitchHelp": {
+        "title": "How to Open in Browser",
+        "xApp": {
+          "title": "When opened from X app",
+          "step1": "Tap the \"Safari icon\" at the top right"
+        },
+        "lineApp": {
+          "title": "When opened from LINE app",
+          "step1": "Tap the \"...\" menu at the top right",
+          "step2": "Select \"Open in browser\""
+        },
+        "general": {
+          "title": "For other apps",
+          "description": "Most apps have a menu button (..., ↗) at the top or top-right corner where you can find options like \"Open in browser\", \"Open in Safari\", or \"Open in external browser\"."
+        }
+      }
     }
   },
   "situation": {
