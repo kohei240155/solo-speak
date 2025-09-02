@@ -29,7 +29,7 @@ export default function Home() {
     const hideTimer = setTimeout(() => {
       setShowSplash(false)
       setShowContent(true)
-    }, 2000) // 2秒後にスプラッシュ画面を非表示、コンテンツ表示
+    }, 1500) // 1.5秒後にスプラッシュ画面を非表示、コンテンツ表示
 
     return () => {
       clearTimeout(fadeTimer)
@@ -55,7 +55,6 @@ export default function Home() {
       showContent ? 'opacity-100' : 'opacity-0'
     }`}>
       <HeroSection 
-        visibleSections={visibleSections}
         onGetStartedClick={handleGetStartedClick}
       />
 
