@@ -186,7 +186,7 @@
         "title": "Votre \"collection personnelle de phrases\"\nest pratique",
         "description": "L'IA traduit les phrases que vous vouliez connaître en expressions naturelles. Comme c'est votre collection originale de phrases, vous pouvez immédiatement ressentir les bénéfices. Vous pouvez également choisir votre expression préférée parmi trois options générées.",
         "demo": {
-          "input": "日本にはどのぐらい住んでいるの？",
+          "input": "Depuis combien de temps vivez-vous au Japon ?",
           "outputs": [
             "How long have you been living in Japan?",
             "How long have you lived in Japan?",
@@ -200,7 +200,7 @@
         "description": "Une langue ne peut pas être parlée juste en la \"connaissant\". Visez 10 lectures par jour par phrase, avec un total de 50 lectures, jusqu'à ce qu'elle sorte naturellement de votre bouche grâce à une répétition complète.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？",
+          "output": "Depuis combien de temps vivez-vous au Japon ?",
           "todayLabel": "Aujourd'hui :",
           "totalLabel": "Total :",
           "goalAchieved": "Objectif Atteint !",
@@ -213,7 +213,7 @@
         "description": "Si les phrases mémorisées grâce à la pratique de lecture à voix haute peuvent être utilisées dans de vraies conversations. Si vous pouvez répondre instantanément aux phrases mémorisées en utilisant la fonction quiz, vous pourrez également parler couramment dans de vraies conversations.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？"
+          "output": "Depuis combien de temps vivez-vous au Japon ?"
         }
       }
     },

@@ -186,7 +186,7 @@
         "title": "Sua \"coleção pessoal de frases\"\né prática",
         "description": "A IA traduz as frases que você queria saber em expressões naturais. Como é sua coleção original de frases, você pode sentir imediatamente os benefícios. Você também pode escolher sua expressão preferida dentre três opções geradas.",
         "demo": {
-          "input": "日本にはどのぐらい住んでいるの？",
+          "input": "Há quanto tempo você mora no Japão?",
           "outputs": [
             "How long have you been living in Japan?",
             "How long have you lived in Japan?",
@@ -200,7 +200,7 @@
         "description": "Um idioma não pode ser falado apenas \"conhecendo-o\". Almeje 10 leituras por dia por frase, com um total de 50 leituras, até que saia naturalmente da sua boca através de repetição completa.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？",
+          "output": "Há quanto tempo você mora no Japão?",
           "todayLabel": "Hoje:",
           "totalLabel": "Total:",
           "goalAchieved": "Objetivo Alcançado!",
@@ -213,7 +213,7 @@
         "description": "Se as frases memorizadas através da prática de leitura em voz alta podem ser usadas em conversas reais. Se você conseguir responder instantaneamente às frases memorizadas usando a funcionalidade de quiz, também conseguirá falar fluentemente em conversas reais.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？"
+          "output": "Há quanto tempo você mora no Japão?"
         }
       }
     },

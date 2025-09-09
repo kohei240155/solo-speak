@@ -186,7 +186,7 @@
         "title": "Ihre \"persönliche Phrasensammlung\"\nist praktisch",
         "description": "Die KI übersetzt die Phrasen, die Sie wissen wollten, in natürliche Ausdrücke. Da es Ihre ursprüngliche Phrasensammlung ist, können Sie sofort die Wirkung spüren. Außerdem können Sie Ihren bevorzugten Ausdruck aus drei generierten Optionen wählen.",
         "demo": {
-          "input": "日本にはどのぐらい住んでいるの？",
+          "input": "Wie lange lebst du schon in Japan?",
           "outputs": [
             "How long have you been living in Japan?",
             "How long have you lived in Japan?",
@@ -200,7 +200,7 @@
         "description": "Sprache kann nicht gesprochen werden, nur weil man sie \"kennt\". Streben Sie 10 Wiederholungen pro Tag für eine Phrase an, insgesamt 50 Wiederholungen, bis sie natürlich aus dem Mund kommt durch gründliche Wiederholung.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？",
+          "output": "Wie lange lebst du schon in Japan?",
           "todayLabel": "Heute:",
           "totalLabel": "Gesamt:",
           "goalAchieved": "Ziel erreicht!",
@@ -213,7 +213,7 @@
         "description": "Ob durch Lautleseübung einprägte Phrasen in echten Gesprächen verwendet werden können. Wenn Sie mit der Quiz-Funktion sofort auf einprägte Phrasen antworten können, können Sie auch in echten Gesprächen fließend sprechen.",
         "demo": {
           "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？"
+          "output": "Wie lange lebst du schon in Japan?"
         }
       }
     },
