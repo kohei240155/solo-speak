@@ -12,6 +12,11 @@ const LANGUAGE_NAMES = {
   en: 'English',
   ko: 'Korean',
   zh: 'Chinese',
+  fr: 'French',
+  es: 'Spanish',
+  pt: 'Portuguese',
+  de: 'German',
+  th: 'Thai',
 }
 
 export const DisplayLanguageSelector: React.FC<DisplayLanguageSelectorProps> = ({ 

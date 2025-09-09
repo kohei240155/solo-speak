@@ -1,0 +1,353 @@
+{
+  "settings": {
+    "userIcon": "Benutzer-Avatar",
+    "displayName": "Ranking-Anzeigename",
+    "nativeLanguage": "Muttersprache",
+    "defaultLearningLanguage": "Standard-Lernsprache",
+    "contactEmail": "Kontakt-E-Mail-Adresse",
+    "selectLanguage": "Bitte wählen Sie eine Sprache",
+    "validation": {
+      "sameLanguageError": "Muttersprache und Standard-Lernsprache müssen unterschiedlich sein"
+    },
+    "withdrawal": {
+      "button": "Konto löschen",
+      "title": "Bestätigung der Kontolöschung",
+      "message": "Möchten Sie Ihr Konto wirklich löschen?\n\nDiese Aktion löscht dauerhaft alle folgenden Daten:\n• Benutzerinformationen\n• Erstellte Phrasen\n• Sprechverlauf\n• Quiz-Ergebnisse\n• Situationen\n\nDiese Aktion kann nicht rückgängig gemacht werden.",
+      "emailConfirmLabel": "Zur Bestätigung geben Sie bitte Ihre registrierte E-Mail-Adresse ein",
+      "emailPlaceholder": "beispiel@email.com",
+      "confirmButton": "Löschen",
+      "cancelButton": "Abbrechen",
+      "success": "Konto erfolgreich gelöscht. Sie werden zur Anmeldeseite weitergeleitet.",
+      "error": "Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.",
+      "emailNotFound": "Registrierte E-Mail-Adresse nicht gefunden",
+      "emailMismatch": "Die eingegebene E-Mail-Adresse stimmt nicht mit der registrierten E-Mail-Adresse überein"
+    }
+  },
+  "confirm": {
+    "unsavedPhrase": "Generierte Phrasen wurden nicht gespeichert. Möchten Sie diese Seite verlassen?",
+    "unsavedCount": "Die Anzahl der lauten Lesungen wurde nicht gespeichert. Möchten Sie diese Seite verlassen?"
+  },
+  "common": {
+    "backToHome": "Zurück zur Startseite",
+    "loginRequired": "Sie müssen sich anmelden, um diese Funktion zu verwenden"
+  },
+  "phrase": {
+    "noPhrasesYet": "Es wurden noch keine Phrasen registriert",
+    "placeholders": {
+      "phraseInput": "Beispiel: Wo warst du in letzter Zeit?",
+      "situationInput": "Beispiel: Bei der Bestellung im Restaurant"
+    },
+    "validation": {
+      "required": "Bitte geben Sie eine Phrase ein",
+      "phraseMaxLength": "Phrase muss innerhalb von 100 Zeichen eingegeben werden",
+      "situationMaxLength": "Bitte innerhalb von 50 Zeichen eingeben",
+      "variationMaxLength": "Bitte innerhalb von 200 Zeichen eingeben"
+    },
+    "messages": {
+      "updateSuccess": "Phrase erfolgreich aktualisiert!",
+      "updateError": "Fehler beim Aktualisieren der Phrase",
+      "saveSuccess": "Phrase gespeichert",
+      "saveError": "Fehler beim Speichern der Phrase aufgetreten",
+      "fetchError": "Fehler beim Abrufen der Phrase aufgetreten",
+      "fetchFailed": "Fehler beim Abrufen der Phrase",
+      "countError": "Fehler beim Senden der Anzahl",
+      "notFound": "Phrase nicht gefunden",
+      "noPhrasesForQuiz": "Keine Phrasen mit den angegebenen Bedingungen gefunden",
+      "nextPhraseNotFound": "Nächste Phrase nicht gefunden",
+      "nextPhraseError": "Fehler beim Abrufen der nächsten Phrase",
+      "dailyLimitExceeded": "Sie haben das heutige Generierungslimit überschritten. Bitte versuchen Sie es morgen erneut.",
+      "generationFailed": "Fehler beim Generieren der Phrase",
+      "generationError": "Fehler während der Phrasengenerierung aufgetreten"
+    },
+    "delete": {
+      "confirmMessage": "Sind Sie sicher, dass Sie diese Phrase löschen möchten?",
+      "warningMessage": "Diese Aktion kann nicht rückgängig gemacht werden."
+    }
+  },
+  "phraseGeneration": {
+    "help": {
+      "title": "Über Phrasengenerierung",
+      "resetTime": {
+        "title": "Zurücksetzungszeit",
+        "description": "Täglich um 0:00 UTC zurückgesetzt.\n• Japan: 9:00 Uhr\n• US-Ostküste: 20:00/19:00 Uhr\n• US-Westküste: 17:00/16:00 Uhr\n※ Sommer-/Winterzeit"
+      },
+      "dailyLimit": {
+        "title": "Tägliches Nutzungslimit",
+        "description": "Sie können die Phrasengenerierungs-Funktion bis zu 5 Mal pro Tag nutzen. Bauen Sie jeden Tag stetig 5 Phrasen auf."
+      }
+    }
+  },
+  "speak": {
+    "modal": {
+      "language": "Sprache",
+      "targetPhrases": "Ziel-Phrasen",
+      "optionsTitle": "Optionen",
+      "excludeTodayPracticedLabel": "Heute bereits geübte Phrasen ausschließen",
+      "options": {
+        "noLimit": "Keine Begrenzung",
+        "under50": "Unter 50 Mal",
+        "under60": "Unter 60 Mal",
+        "under70": "Unter 70 Mal",
+        "under80": "Unter 80 Mal",
+        "under90": "Unter 90 Mal",
+        "under100": "Unter 100 Mal"
+      }
+    },
+    "messages": {
+      "dailyLimitReached": "Sie haben das tägliche Limit von 100 Speak-Übungen erreicht. Versuchen Sie es morgen erneut!",
+      "endError": "Fehler während des Beendigungsprozesses aufgetreten",
+      "countError": "Fehler beim Aktualisieren der Sprechanzahl aufgetreten",
+      "sessionResetFailed": "Fehler beim Zurücksetzen des Sitzungsstatus",
+      "dailyCountResetFailed": "Fehler beim Zurücksetzen der täglichen Anzahl",
+      "phraseCountFetchFailedEmpty": "Fehler beim Abrufen der Phrasenzahl (leere Antwort)",
+      "phraseCountFetchFailed": "Fehler beim Abrufen der Phrasenzahl",
+      "noPracticeablePhrases": "In diesem Modus gibt es keine Phrasen zum Üben",
+      "phraseCountCheckError": "Fehler beim Überprüfen der Phrasenzahl aufgetreten",
+      "noPhraseFound": "Keine Phrase gefunden"
+    },
+    "explanation": {
+      "title": "Speak-Modus Anleitung",
+      "howToUse": {
+        "title": "Verwendung",
+        "description": "Lesen Sie die angezeigten Phrasen laut vor und drücken Sie bei jeder Übung den Zählknopf, um Ihre Übungsanzahl zu erfassen."
+      },
+      "goals": {
+        "title": "Ziele und Übungsanzahl",
+        "description": "Streben Sie an, täglich 10 Mal laut zu lesen. Es wird empfohlen, jede Phrase mindestens 50 Mal laut zu lesen. Durch kontinuierliche und wiederholte Übung werden Phrasen natürlich aus dem Mund kommen."
+      },
+      "effectiveMethods": {
+        "title": "Effektive Übungsmethoden",
+        "naturalSpeed": "Wiederholen, bis Sie mit natürlicher Geschwindigkeit lesen können",
+        "understanding": "Üben Sie, während Sie die Bedeutung der Phrasen verstehen",
+        "pronunciation": "Stellen Sie sich vor, die Phrasen in realen Situationen zu verwenden"
+      }
+    }
+  },
+  "quiz": {
+    "modal": {
+      "mode": "Modus",
+      "quizLength": "Anzahl der Fragen",
+      "speakCountFilter": "Sprechanzahl",
+      "optionsTitle": "Optionen",
+      "excludeTodayQuizzedLabel": "Heute bereits abgefragte Phrasen ausschließen",
+      "options": {
+        "normal": "Normal",
+        "random": "Zufällig"
+      },
+      "speakCountOptions": {
+        "noLimit": "Keine Angabe",
+        "over50": "Über 50 Mal",
+        "over60": "Über 60 Mal",
+        "over70": "Über 70 Mal",
+        "over80": "Über 80 Mal",
+        "over90": "Über 90 Mal",
+        "over100": "Über 100 Mal"
+      },
+      "questions": "Fragen"
+    },
+    "messages": {
+      "startError": "Fehler beim Starten des Quiz",
+      "fetchError": "Fehler beim Abrufen der Phrase aufgetreten",
+      "submitError": "Fehler beim Senden der Antwort aufgetreten"
+    }
+  },
+  "home": {
+    "hero": {
+      "subtitle": "\\ Monolog-Training /",
+      "title": "Die ultimative\nPhrasen-Memo-App",
+      "cta": {
+        "desktop": "Jetzt starten →"
+      },
+      "features": {
+        "aiGeneration": "KI generiert natürliche Phrasen!",
+        "practiceSupport": "Erstellen Sie Ihre eigene Phrasensammlung!",
+        "quizFunction": "Damit können Sie alltägliche Gespräche führen!"
+      }
+    },
+    "features": {
+      "title": "Haben Sie diese Probleme?",
+      "speechRecognition": {
+        "title": "Ich habe ein Phrasenbuch ausprobiert, aber aufgegeben, weil es voller Phrasen war, die ich nie verwende"
+      },
+      "quiz": {
+        "title": "Ich fand Phrasen, die ich wissen wollte, und generierte sie mit KI, aber ließ sie unberührt, ohne sie zu wiederholen"
+      },
+      "progress": {
+        "title": "Ich dachte, ich hätte Phrasen auswendig gelernt, aber konnte sie nicht in echten Gesprächen verwenden"
+      }
+    },
+    "solutions": {
+      "title": {
+        "mobile": "\\ Diese Probleme lösen wir /",
+        "desktop": "\\ Solo Speak löst diese Probleme /"
+      },
+      "feature1": {
+        "number": "01",
+        "title": "Ihre \"persönliche Phrasensammlung\"\nist praktisch",
+        "description": "Die KI übersetzt die Phrasen, die Sie wissen wollten, in natürliche Ausdrücke. Da es Ihre ursprüngliche Phrasensammlung ist, können Sie sofort die Wirkung spüren. Außerdem können Sie Ihren bevorzugten Ausdruck aus drei generierten Optionen wählen.",
+        "demo": {
+          "input": "Wie lange lebst du schon in Japan?",
+          "outputs": [
+            "How long have you been living in Japan?",
+            "How long have you lived in Japan?",
+            "How long is it since you moved to Japan?"
+          ]
+        }
+      },
+      "feature2": {
+        "number": "02",
+        "title": "Lautzählungs-Funktion für\ngründliche Unterstützung \"bis zum Auswendiglernen\"",
+        "description": "Sprache kann nicht gesprochen werden, nur weil man sie \"kennt\". Streben Sie 10 Wiederholungen pro Tag für eine Phrase an, insgesamt 50 Wiederholungen, bis sie natürlich aus dem Mund kommt durch gründliche Wiederholung.",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "Wie lange lebst du schon in Japan?",
+          "todayLabel": "Heute:",
+          "totalLabel": "Gesamt:",
+          "goalAchieved": "Ziel erreicht!",
+          "goalAchievedMessage": "10 Wiederholungen abgeschlossen"
+        }
+      },
+      "feature3": {
+        "number": "03",
+        "title": "Überprüfen Sie Ihre \"Spontanreaktion\"\nmit Quiz-Funktionen",
+        "description": "Ob durch Lautleseübung einprägte Phrasen in echten Gesprächen verwendet werden können. Wenn Sie mit der Quiz-Funktion sofort auf einprägte Phrasen antworten können, können Sie auch in echten Gesprächen fließend sprechen.",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "Wie lange lebst du schon in Japan?"
+        }
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "q1": {
+        "question": "Gibt es ein Limit für Phrasengenerierungen?",
+        "answer": "Sie können es bis zu 5 Mal pro Tag nutzen.",
+        "answerDetail": "Bauen Sie jeden Tag stetig 5 Phrasen auf."
+      },
+      "q2": {
+        "question": "Wann wird die Anzahl der Phrasengenerierungen zurückgesetzt?",
+        "answer": "Sie wird um 0:00 UTC (Koordinierte Weltzeit) zurückgesetzt.",
+        "answerDetail": "In der japanischen Zeit wird sie um 9:00 Uhr (Winterzeit) oder 8:00 Uhr (Sommerzeit) zurückgesetzt. In der Vancouverer Zeit wird sie um 16:00 Uhr (Winterzeit) oder 17:00 Uhr (Sommerzeit) zurückgesetzt."
+      },
+      "q3": {
+        "question": "Ist Solo Speak kostenlos nutzbar?",
+        "answer": "Grundfunktionen sind derzeit kostenlos verfügbar.",
+        "answerDetail": "In Zukunft könnten wir mit der Erweiterung unserer Dienste kostenpflichtige Funktionen einführen, aber wir werden Sie im Voraus informieren."
+      }
+    },
+    "cta": {
+      "title": "Beginnen Sie jetzt mit dem\nSprech-Training",
+      "subtitle": "Bringen Sie Ihr Sprachlernen mit Solo Speak auf die nächste Stufe",
+      "button": "Jetzt starten →"
+    }
+  },
+  "subscription": {
+    "status": "Status",
+    "nextBillingDate": "Nächstes Abrechnungsdatum",
+    "expiresOn": "Läuft ab am",
+    "plans": "Pläne",
+    "subscriptionRequired": "Für die Nutzung der KI-Phrasengenerierungs-Funktion ist eine Registrierung für den Basic-Plan erforderlich",
+    "subscribeToBasicPlan": "Für Basic-Plan registrieren",
+    "manageSubscription": "Abonnement in den Einstellungen verwalten →",
+    "cancelConfirm": "Möchten Sie Ihr Abonnement wirklich kündigen? Der Zugang zur KI-Phrasengenerierungs-Funktion wird sofort deaktiviert.",
+    "cancelSuccess": "Abonnement erfolgreich gekündigt.",
+    "cancelError": "Fehler beim Kündigen des Abonnements",
+    "fetchError": "Fehler beim Abrufen des Abonnement-Status",
+    "checkoutError": "Fehler beim Erstellen der Checkout-Sitzung"
+  },
+  "ranking": {
+    "noData": "Keine anzuzeigenden Daten verfügbar",
+    "shareStreak": {
+      "intro": "Ich verwende Solo Speak⚡",
+      "phrase": {
+        "total": "Bisher {count} Phrasen generiert!",
+        "streak": "{count} Tage in Folge Phrasen generiert!"
+      },
+      "speak": {
+        "daily": "Heute {count} Mal laut gelesen!",
+        "weekly": "Diese Woche {count} Mal laut gelesen!",
+        "total": "Bisher {count} Mal laut gelesen!",
+        "streak": "{count} Tage in Folge laut gelesen!"
+      },
+      "quiz": {
+        "daily": "Heute {count} Quiz-Fragen richtig beantwortet!",
+        "weekly": "Diese Woche {count} Quiz-Fragen richtig beantwortet!",
+        "total": "Bisher {count} Quiz-Fragen richtig beantwortet!",
+        "streak": "{count} Tage in Folge Quiz-Fragen richtig beantwortet!"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak #Deutschlernen #Sprachlernen",
+      "error": {
+        "noCount": "Kann nicht posten, da die Anzahl 0 ist",
+        "failed": "Fehler beim Generieren des Post-Links aufgetreten"
+      }
+    }
+  },
+  "auth": {
+    "modal": {
+      "supportMessage": "Solo Speak unterstützt Ihr Sprech-Training.",
+      "supportMessageShort": "Unterstützt Ihr Sprech-Training.",
+      "browserNote": "Bitte melden Sie sich mit Safari/Chrome an",
+      "popupBlockedError": "Die Anzeige des Authentifizierungsbildschirms dauert lange. Bitte überprüfen Sie, ob Popups nicht blockiert werden.",
+      "authFailedError": "Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "browserSwitchHelp": {
+        "title": "So öffnen Sie im Browser",
+        "xApp": {
+          "title": "Wenn von der X-App geöffnet",
+          "step1": "Tippen Sie auf das \"Safari-Symbol\" unten rechts"
+        },
+        "lineApp": {
+          "title": "Wenn von der LINE-App geöffnet",
+          "step1": "Tippen Sie auf das \"...\" Menü unten rechts",
+          "step2": "Wählen Sie \"Im Browser öffnen\""
+        },
+        "general": {
+          "title": "Bei anderen Apps",
+          "description": "Die meisten Apps haben einen Menü-Button (..., ↗) oben oder unten rechts, wo Sie Optionen wie \"Im Browser öffnen\", \"In Safari öffnen\" oder \"In externem Browser öffnen\" finden können."
+        }
+      }
+    }
+  },
+  "situation": {
+    "addSuccess": "Situation erfolgreich hinzugefügt",
+    "addError": "Fehler beim Hinzufügen der Situation aufgetreten",
+    "deleteSuccess": "Situation erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen der Situation aufgetreten",
+    "delete": {
+      "confirmMessage": "Sind Sie sicher, dass Sie diese Situation löschen möchten?",
+      "warningMessage": "Diese Aktion kann nicht rückgängig gemacht werden."
+    }
+  },
+  "addToHomeScreen": {
+    "title": "Schneller Zugriff vom Startbildschirm!",
+    "description": "Sie können dies zum Startbildschirm Ihres Smartphones hinzufügen und wie eine App verwenden!",
+    "safari": {
+      "step1": "Öffnen Sie diese Seite in Safari",
+      "step2": "Tippen Sie auf die Teilen-Schaltfläche unten",
+      "step3": "Tippen Sie auf 'Zum Startbildschirm hinzufügen'",
+      "step4": "Bestätigen Sie den App-Namen und tippen Sie auf 'Hinzufügen'"
+    },
+    "android": {
+      "step1": "Öffnen Sie diese Seite in Chrome",
+      "step2": "Tippen Sie auf die Menü-Schaltfläche (drei Punkte) oben rechts",
+      "step3": "Tippen Sie auf 'Zum Startbildschirm hinzufügen' oder 'App installieren'",
+      "step4": "Bestätigen Sie den App-Namen und tippen Sie auf 'Hinzufügen'"
+    }
+  },
+  "footer": {
+    "description": "Unterstützt Ihr Sprech-Training.",
+    "sections": {
+      "service": "Service",
+      "legal": "Rechtliches",
+      "support": "Support"
+    },
+    "links": {
+      "about": "Über Solo Speak",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "commercialTransaction": "Handelsgesetz",
+      "contact": "Kontakt"
+    },
+    "copyright": "Alle Rechte vorbehalten."
+  }
+}

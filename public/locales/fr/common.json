@@ -1,0 +1,353 @@
+{
+  "settings": {
+    "userIcon": "Icône d'Utilisateur",
+    "displayName": "Nom d'Affichage du Classement",
+    "nativeLanguage": "Langue Maternelle",
+    "defaultLearningLanguage": "Langue d'Apprentissage par Défaut",
+    "contactEmail": "Adresse Email de Contact",
+    "selectLanguage": "Veuillez sélectionner une langue",
+    "validation": {
+      "sameLanguageError": "La langue maternelle et la langue d'apprentissage par défaut doivent être différentes"
+    },
+    "withdrawal": {
+      "button": "Supprimer le Compte",
+      "title": "Confirmation de Suppression du Compte",
+      "message": "Êtes-vous sûr de vouloir supprimer votre compte ?\n\nCette action supprimera définitivement toutes les données suivantes :\n• Informations utilisateur\n• Phrases créées\n• Historique de pratique orale\n• Résultats des quiz\n• Situations\n\nCette action ne peut pas être annulée.",
+      "emailConfirmLabel": "Pour confirmer, veuillez saisir votre adresse email enregistrée",
+      "emailPlaceholder": "exemple@email.com",
+      "confirmButton": "Supprimer",
+      "cancelButton": "Annuler",
+      "success": "Compte supprimé avec succès. Vous serez redirigé vers la page de connexion.",
+      "error": "Erreur lors de la suppression du compte. Veuillez réessayer plus tard.",
+      "emailNotFound": "Adresse email enregistrée introuvable",
+      "emailMismatch": "L'adresse email saisie ne correspond pas à l'adresse enregistrée"
+    }
+  },
+  "confirm": {
+    "unsavedPhrase": "Les phrases générées n'ont pas été sauvegardées. Voulez-vous quitter cette page ?",
+    "unsavedCount": "Le nombre de lectures à voix haute n'a pas été sauvegardé. Voulez-vous quitter cette page ?"
+  },
+  "common": {
+    "backToHome": "Retour à l'Accueil",
+    "loginRequired": "Vous devez vous connecter pour utiliser cette fonctionnalité"
+  },
+  "phrase": {
+    "noPhrasesYet": "Aucune phrase n'a encore été enregistrée",
+    "placeholders": {
+      "phraseInput": "Exemple : Où êtes-vous allé récemment ?",
+      "situationInput": "Exemple : En commandant au restaurant"
+    },
+    "validation": {
+      "required": "Veuillez saisir une phrase",
+      "phraseMaxLength": "La phrase doit contenir moins de 100 caractères",
+      "situationMaxLength": "Veuillez saisir moins de 50 caractères",
+      "variationMaxLength": "Veuillez saisir moins de 200 caractères"
+    },
+    "messages": {
+      "updateSuccess": "Phrase mise à jour avec succès !",
+      "updateError": "Erreur lors de la mise à jour de la phrase",
+      "saveSuccess": "Phrase sauvegardée",
+      "saveError": "Erreur lors de la sauvegarde de la phrase",
+      "fetchError": "Erreur lors de la récupération de la phrase",
+      "fetchFailed": "Échec de la récupération de la phrase",
+      "countError": "Erreur lors de l'envoi du décompte",
+      "notFound": "Phrase introuvable",
+      "noPhrasesForQuiz": "Aucune phrase trouvée avec les conditions spécifiées",
+      "nextPhraseNotFound": "Phrase suivante introuvable",
+      "nextPhraseError": "Erreur lors de la récupération de la phrase suivante",
+      "dailyLimitExceeded": "Vous avez dépassé la limite de génération d'aujourd'hui. Veuillez réessayer demain.",
+      "generationFailed": "Erreur lors de la génération de la phrase",
+      "generationError": "Erreur survenue pendant la génération de phrases"
+    },
+    "delete": {
+      "confirmMessage": "Êtes-vous sûr de vouloir supprimer cette phrase ?",
+      "warningMessage": "Cette action ne peut pas être annulée."
+    }
+  },
+  "phraseGeneration": {
+    "help": {
+      "title": "À Propos de la Génération de Phrases",
+      "resetTime": {
+        "title": "Heure de Réinitialisation",
+        "description": "Réinitialisé quotidiennement à 0h00 UTC.\n• Japon : 9h00\n• Côte Est des États-Unis : 20h00/19h00\n• Côte Ouest des États-Unis : 17h00/16h00\n※ Heure d'été/d'hiver"
+      },
+      "dailyLimit": {
+        "title": "Limite d'Utilisation Quotidienne",
+        "description": "Vous pouvez utiliser la fonctionnalité de génération de phrases jusqu'à 5 fois par jour. Construisons régulièrement 5 phrases chaque jour."
+      }
+    }
+  },
+  "speak": {
+    "modal": {
+      "language": "Langue",
+      "targetPhrases": "Phrases Cibles",
+      "optionsTitle": "Options",
+      "excludeTodayPracticedLabel": "Exclure les phrases pratiquées aujourd'hui",
+      "options": {
+        "noLimit": "Sans limite",
+        "under50": "Moins de 50 fois",
+        "under60": "Moins de 60 fois",
+        "under70": "Moins de 70 fois",
+        "under80": "Moins de 80 fois",
+        "under90": "Moins de 90 fois",
+        "under100": "Moins de 100 fois"
+      }
+    },
+    "messages": {
+      "dailyLimitReached": "Vous avez atteint la limite quotidienne de 100 pratiques orales. Réessayez demain !",
+      "endError": "Erreur survenue pendant le processus de fin",
+      "countError": "Erreur lors de la mise à jour du décompte oral",
+      "sessionResetFailed": "Échec de la réinitialisation de l'état de session",
+      "dailyCountResetFailed": "Échec de la réinitialisation du décompte quotidien",
+      "phraseCountFetchFailedEmpty": "Échec de la récupération du nombre de phrases (réponse vide)",
+      "phraseCountFetchFailed": "Échec de la récupération du nombre de phrases",
+      "noPracticeablePhrases": "Aucune phrase à pratiquer dans ce mode",
+      "phraseCountCheckError": "Erreur lors de la vérification du nombre de phrases",
+      "noPhraseFound": "Aucune phrase trouvée"
+    },
+    "explanation": {
+      "title": "Guide du Mode Speak",
+      "howToUse": {
+        "title": "Comment Utiliser",
+        "description": "Lisez les phrases affichées à voix haute et appuyez sur le bouton de décompte à chaque pratique pour enregistrer votre nombre de pratiques."
+      },
+      "goals": {
+        "title": "Objectifs et Nombre de Pratiques",
+        "description": "Visez à lire à voix haute 10 fois par jour. Il est recommandé de lire chaque phrase à voix haute au moins 50 fois. Grâce à une pratique continue et répétitive, les phrases sortiront naturellement de votre bouche."
+      },
+      "effectiveMethods": {
+        "title": "Méthodes de Pratique Efficaces",
+        "naturalSpeed": "Répétez jusqu'à ce que vous puissiez lire à vitesse naturelle",
+        "understanding": "Pratiquez en comprenant le sens des phrases",
+        "pronunciation": "Imaginez utiliser les phrases dans des situations réelles"
+      }
+    }
+  },
+  "quiz": {
+    "modal": {
+      "mode": "Mode",
+      "quizLength": "Nombre de Questions",
+      "speakCountFilter": "Décompte Oral",
+      "optionsTitle": "Options",
+      "excludeTodayQuizzedLabel": "Exclure les phrases testées aujourd'hui",
+      "options": {
+        "normal": "Normal",
+        "random": "Aléatoire"
+      },
+      "speakCountOptions": {
+        "noLimit": "Non spécifié",
+        "over50": "Plus de 50 fois",
+        "over60": "Plus de 60 fois",
+        "over70": "Plus de 70 fois",
+        "over80": "Plus de 80 fois",
+        "over90": "Plus de 90 fois",
+        "over100": "Plus de 100 fois"
+      },
+      "questions": "questions"
+    },
+    "messages": {
+      "startError": "Erreur lors du démarrage du quiz",
+      "fetchError": "Erreur lors de la récupération de la phrase",
+      "submitError": "Erreur lors de l'envoi de la réponse"
+    }
+  },
+  "home": {
+    "hero": {
+      "subtitle": "\\ Entraînement en Monologue /",
+      "title": "L'Outil Ultime\npour Mémoriser les Phrases",
+      "cta": {
+        "desktop": "Commencer Maintenant →"
+      },
+      "features": {
+        "aiGeneration": "L'IA génère des phrases naturelles !",
+        "practiceSupport": "Créez votre propre collection de phrases !",
+        "quizFunction": "Cela vous aidera à avoir des conversations quotidiennes !"
+      }
+    },
+    "features": {
+      "title": "Avez-vous ces problèmes ?",
+      "speechRecognition": {
+        "title": "J'ai essayé d'utiliser un livre de phrases mais j'ai abandonné car il était plein de phrases que je n'utilise jamais"
+      },
+      "quiz": {
+        "title": "J'ai trouvé des phrases que je voulais connaître et les ai générées avec l'IA, mais je les ai laissées intactes sans les réviser"
+      },
+      "progress": {
+        "title": "Je pensais avoir mémorisé les phrases, mais je n'ai pas pu les utiliser dans de vraies conversations"
+      }
+    },
+    "solutions": {
+      "title": {
+        "mobile": "\\ Nous résolvons ces problèmes /",
+        "desktop": "\\ Solo Speak résout ces problèmes /"
+      },
+      "feature1": {
+        "number": "01",
+        "title": "Votre \"collection personnelle de phrases\"\nest pratique",
+        "description": "L'IA traduit les phrases que vous vouliez connaître en expressions naturelles. Comme c'est votre collection originale de phrases, vous pouvez immédiatement ressentir les bénéfices. Vous pouvez également choisir votre expression préférée parmi trois options générées.",
+        "demo": {
+          "input": "Depuis combien de temps vivez-vous au Japon ?",
+          "outputs": [
+            "How long have you been living in Japan?",
+            "How long have you lived in Japan?",
+            "How long is it since you moved to Japan?"
+          ]
+        }
+      },
+      "feature2": {
+        "number": "02",
+        "title": "Fonction de comptage de lecture\npour un soutien complet \"jusqu'à mémoriser\"",
+        "description": "Une langue ne peut pas être parlée juste en la \"connaissant\". Visez 10 lectures par jour par phrase, avec un total de 50 lectures, jusqu'à ce qu'elle sorte naturellement de votre bouche grâce à une répétition complète.",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "Depuis combien de temps vivez-vous au Japon ?",
+          "todayLabel": "Aujourd'hui :",
+          "totalLabel": "Total :",
+          "goalAchieved": "Objectif Atteint !",
+          "goalAchievedMessage": "10 lectures terminées"
+        }
+      },
+      "feature3": {
+        "number": "03",
+        "title": "Vérifiez votre \"réaction instantanée\"\navec les fonctions quiz",
+        "description": "Si les phrases mémorisées grâce à la pratique de lecture à voix haute peuvent être utilisées dans de vraies conversations. Si vous pouvez répondre instantanément aux phrases mémorisées en utilisant la fonction quiz, vous pourrez également parler couramment dans de vraies conversations.",
+        "demo": {
+          "input": "How long have you been living in Japan?",
+          "output": "Depuis combien de temps vivez-vous au Japon ?"
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions Fréquemment Posées",
+      "q1": {
+        "question": "Y a-t-il une limite aux générations de phrases ?",
+        "answer": "Vous pouvez l'utiliser jusqu'à 5 fois par jour.",
+        "answerDetail": "Construisons régulièrement 5 phrases chaque jour."
+      },
+      "q2": {
+        "question": "Quand le nombre de générations de phrases est-il réinitialisé ?",
+        "answer": "Il est réinitialisé à 0h00 UTC (Temps Universel Coordonné).",
+        "answerDetail": "À l'heure du Japon, il est réinitialisé à 9h00 (heure d'hiver) ou 8h00 (heure d'été). À l'heure de Vancouver, il est réinitialisé à 16h00 (heure d'hiver) ou 17h00 (heure d'été)."
+      },
+      "q3": {
+        "question": "Solo Speak est-il gratuit ?",
+        "answer": "Les fonctionnalités de base sont actuellement disponibles gratuitement.",
+        "answerDetail": "À l'avenir, nous pourrions introduire des fonctionnalités payantes à mesure que nous développons nos services, mais nous vous en informerons à l'avance."
+      }
+    },
+    "cta": {
+      "title": "Commencez votre entraînement\noral maintenant",
+      "subtitle": "Amenez votre apprentissage linguistique au niveau supérieur avec Solo Speak",
+      "button": "Commencer Maintenant →"
+    }
+  },
+  "subscription": {
+    "status": "Statut",
+    "nextBillingDate": "Prochaine Date de Facturation",
+    "expiresOn": "Expire le",
+    "plans": "Plans",
+    "subscriptionRequired": "Un abonnement au Plan Basique est requis pour utiliser la fonctionnalité de génération de phrases IA",
+    "subscribeToBasicPlan": "S'abonner au Plan Basique",
+    "manageSubscription": "Gérer l'abonnement dans les paramètres →",
+    "cancelConfirm": "Êtes-vous sûr de vouloir annuler votre abonnement ? Vous perdrez immédiatement l'accès à la fonctionnalité de génération de phrases IA.",
+    "cancelSuccess": "Abonnement annulé avec succès.",
+    "cancelError": "Erreur lors de l'annulation de l'abonnement",
+    "fetchError": "Erreur lors de la récupération du statut d'abonnement",
+    "checkoutError": "Erreur lors de la création de la session de paiement"
+  },
+  "ranking": {
+    "noData": "Aucune donnée disponible à afficher",
+    "shareStreak": {
+      "intro": "J'utilise Solo Speak⚡",
+      "phrase": {
+        "total": "J'ai généré {count} phrases jusqu'à présent !",
+        "streak": "J'ai généré des phrases pendant {count} jours consécutifs !"
+      },
+      "speak": {
+        "daily": "J'ai lu à voix haute {count} fois aujourd'hui !",
+        "weekly": "J'ai lu à voix haute {count} fois cette semaine !",
+        "total": "J'ai lu à voix haute {count} fois jusqu'à présent !",
+        "streak": "J'ai continué à lire à voix haute pendant {count} jours consécutifs !"
+      },
+      "quiz": {
+        "daily": "J'ai répondu correctement à {count} questions de quiz aujourd'hui !",
+        "weekly": "J'ai répondu correctement à {count} questions de quiz cette semaine !",
+        "total": "J'ai répondu correctement à {count} questions de quiz jusqu'à présent !",
+        "streak": "J'ai répondu correctement aux questions de quiz pendant {count} jours consécutifs !"
+      },
+      "url": "https://solo-speak.com",
+      "hashtag": "#SoloSpeak #ApprentissageLinguistique #ApprentissageMultilingue",
+      "error": {
+        "noCount": "Impossible de publier car le décompte est 0",
+        "failed": "Erreur lors de la génération du lien de publication"
+      }
+    }
+  },
+  "auth": {
+    "modal": {
+      "supportMessage": "Solo Speak soutient votre entraînement oral.",
+      "supportMessageShort": "Soutient votre entraînement oral.",
+      "browserNote": "Veuillez vous connecter avec Safari/Chrome",
+      "popupBlockedError": "L'écran d'authentification met du temps à apparaître. Veuillez vérifier que les pop-ups ne sont pas bloqués.",
+      "authFailedError": "Authentification échouée. Veuillez réessayer.",
+      "browserSwitchHelp": {
+        "title": "Comment Ouvrir dans le Navigateur",
+        "xApp": {
+          "title": "Quand ouvert depuis l'app X",
+          "step1": "Touchez l'\"icône Safari\" en bas à droite"
+        },
+        "lineApp": {
+          "title": "Quand ouvert depuis l'app LINE",
+          "step1": "Touchez le menu \"...\" en bas à droite",
+          "step2": "Sélectionnez \"Ouvrir dans le navigateur\""
+        },
+        "general": {
+          "title": "Pour les autres apps",
+          "description": "La plupart des apps ont un bouton de menu (..., ↗) en haut ou en bas à droite où vous pouvez trouver des options comme \"Ouvrir dans le navigateur\", \"Ouvrir dans Safari\", ou \"Ouvrir dans un navigateur externe\"."
+        }
+      }
+    }
+  },
+  "situation": {
+    "addSuccess": "Situation ajoutée avec succès",
+    "addError": "Erreur lors de l'ajout de la situation",
+    "deleteSuccess": "Situation supprimée avec succès",
+    "deleteError": "Erreur lors de la suppression de la situation",
+    "delete": {
+      "confirmMessage": "Êtes-vous sûr de vouloir supprimer cette situation ?",
+      "warningMessage": "Cette action ne peut pas être annulée."
+    }
+  },
+  "addToHomeScreen": {
+    "title": "Accès rapide depuis l'écran d'accueil !",
+    "description": "Vous pouvez ajouter ceci à l'écran d'accueil de votre smartphone et l'utiliser comme une application !",
+    "safari": {
+      "step1": "Ouvrez cette page dans Safari",
+      "step2": "Touchez le bouton de partage en bas",
+      "step3": "Touchez 'Ajouter à l'écran d'accueil'",
+      "step4": "Confirmez le nom de l'app et touchez 'Ajouter'"
+    },
+    "android": {
+      "step1": "Ouvrez cette page dans Chrome",
+      "step2": "Touchez le bouton de menu (trois points) en haut à droite",
+      "step3": "Touchez 'Ajouter à l'écran d'accueil' ou 'Installer l'application'",
+      "step4": "Confirmez le nom de l'app et touchez 'Ajouter'"
+    }
+  },
+  "footer": {
+    "description": "Soutient votre entraînement oral.",
+    "sections": {
+      "service": "Service",
+      "legal": "Légal",
+      "support": "Support"
+    },
+    "links": {
+      "about": "À Propos de Solo Speak",
+      "terms": "Conditions d'Utilisation",
+      "privacy": "Politique de Confidentialité",
+      "commercialTransaction": "Loi sur les Transactions Commerciales",
+      "contact": "Contact"
+    },
+    "copyright": "Tous droits réservés."
+  }
+}

@@ -24,6 +24,26 @@ export const DEMO_SAMPLES = {
   ['zh']: {
     text: "How long have you been living in Japan?",
     voiceLanguage: LANGUAGE_CODES.CHINESE
+  },
+  ['fr']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.FRENCH
+  },
+  ['es']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.SPANISH
+  },
+  ['pt']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.PORTUGUESE
+  },
+  ['de']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.GERMAN
+  },
+  ['th']: {
+    text: "How long have you been living in Japan?",
+    voiceLanguage: LANGUAGE_CODES.THAI
   }
 } as const
 
