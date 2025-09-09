@@ -154,26 +154,26 @@
   "home": {
     "hero": {
       "subtitle": "\\ Solo Practice Training /",
-      "title": "Create Your Own\nPhrase Collection!",
+      "title": "The Ultimate\nPhrase Memorization Tool",
       "cta": {
         "desktop": "Get Started →"
       },
       "features": {
-        "aiGeneration": "AI generates natural phrases",
-        "practiceSupport": "Comprehensive reading practice support",
-        "quizFunction": "Test your quick response with quiz features"
+        "aiGeneration": "AI generates natural phrases!",
+        "practiceSupport": "Create your own phrase collection!",
+        "quizFunction": "This will help you have daily conversations!"
       }
     },
     "features": {
       "title": "Are you facing these challenges?",
       "speechRecognition": {
-        "title": "Want to practice speaking using AI but don't know how to utilize it effectively"
+        "title": "I tried using a phrase book but gave up because it was full of phrases I never use"
       },
       "quiz": {
-        "title": "You've learned vocabulary and grammar, but nothing comes out when speaking"
+        "title": "I found phrases I wanted to know and generated them with AI, but I left them untouched without reviewing them"
       },
       "progress": {
-        "title": "Phrases you couldn't say - you think you should review them but end up leaving them untouched"
+        "title": "I thought I had memorized phrases, but I couldn't use them in actual conversations"
       }
     },
     "solutions": {
@@ -183,8 +183,8 @@
       },
       "feature1": {
         "number": "01",
-        "title": "AI instantly generates \"phrases you couldn't say\"",
-        "description": "AI translates phrases you couldn't express into natural expressions. Since it's based on phrases you actually couldn't say, more practical learning is possible.",
+        "title": "Your \"personal phrase collection\"\nis practical",
+        "description": "AI translates the phrases you wanted to know into natural expressions. Because it's your original phrase collection, you can immediately feel the benefits. You can also choose your preferred expression from three generated options.",
         "demo": {
           "input": "How long have you been living in Japan?",
           "outputs": [
@@ -196,8 +196,8 @@
       },
       "feature2": {
         "number": "02",
-        "title": "Reading count feature for\nthorough support \"until you can speak\"",
-        "description": "Simply \"knowing\" a language isn't enough to speak it. Aim for 10 readings per day and a total of 50 readings per phrase until it comes out naturally from your mouth.",
+        "title": "Reading count feature provides\nthorough support \"until you memorize\"",
+        "description": "Language can't be spoken just by \"knowing\" it. Aim for 10 readings per day per phrase, with a total of 50 readings, until it comes out naturally from your mouth through thorough repetition.",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
           "output": "How long have you been living in Japan?",
@@ -209,8 +209,8 @@
       },
       "feature3": {
         "number": "03",
-        "title": "Check your \"quick response\"\nwith quiz features",
-        "description": "Can phrases memorized through reading practice actually be used in real conversations? Use the quiz feature to instantly respond with memorized phrases, completing the memory → repetition → practice cycle.",
+        "title": "Check your \"instant response\"\nwith quiz features",
+        "description": "Whether phrases memorized through reading practice can be used in actual conversations. If you can instantly respond to memorized phrases using the quiz feature, you'll be able to speak fluently in actual conversations too.",
         "demo": {
           "input": "日本にはどのぐらい住んでいるの？",
           "output": "How long have you been living in Japan?"
@@ -276,7 +276,7 @@
         "streak": "Got quiz answers correct for {count} consecutive days!"
       },
       "url": "https://solo-speak.com",
-      "hashtag": "#SoloSpeak",
+      "hashtag": "#SoloSpeak #EnglishLearning #MultilingualLearning",
       "error": {
         "noCount": "Cannot post because count is 0",
         "failed": "Error occurred while generating post link"
