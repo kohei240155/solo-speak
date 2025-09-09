@@ -4,6 +4,10 @@ import { getJapanesePrompt } from './ja'
 import { getChinesePrompt } from './zh'
 import { LANGUAGE_CODES, LANGUAGE_NAMES, LanguageCode } from '@/constants/languages'
 import { getFrenchPrompt } from './fr'
+import { getThaiPrompt } from './th'
+import { getPortuguesePrompt } from './pt'
+import { getGermanPrompt } from './de'
+import { getSpanishPrompt } from './es'
 
 // 学習言語ごとのプロンプト取得関数（利用可能なもののみ）
 const learningLanguagePromptGetters = {
@@ -12,6 +16,10 @@ const learningLanguagePromptGetters = {
   [LANGUAGE_CODES.JAPANESE]: getJapanesePrompt,
   [LANGUAGE_CODES.CHINESE]: getChinesePrompt,
   [LANGUAGE_CODES.FRENCH]: getFrenchPrompt,
+  [LANGUAGE_CODES.SPANISH]: getSpanishPrompt,
+  [LANGUAGE_CODES.GERMAN]: getGermanPrompt,
+  [LANGUAGE_CODES.PORTUGUESE]: getPortuguesePrompt,
+  [LANGUAGE_CODES.THAI]: getThaiPrompt,
 } as const
 
 // デフォルトプロンプト（英語）
