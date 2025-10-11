@@ -72,6 +72,8 @@ export default function PhraseAdd({
   const [selectedMode, setSelectedMode] = useState<'ai-suggest' | 'csv-import'>(
     'ai-suggest'
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation();
@@ -127,6 +129,42 @@ export default function PhraseAdd({
 
   const handleCancelDelete = () => {
     setDeletingSituationId(null);
+  };
+
+  // CSV Import関連のハンドラー
+  const handleFileUpload = (file: File) => {
+    setSelectedFile(file);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type === 'text/csv') {
+      handleFileUpload(files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleImportCSV = () => {
+    if (selectedFile) {
+      // TODO: CSV Import の実装
+      console.log('Importing CSV:', selectedFile.name);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
   };
   return (
     <>
@@ -233,167 +271,270 @@ export default function PhraseAdd({
           </div>
         </div>
 
-        <div className='flex flex-col gap-2'>
-          <h3 className='text-lg font-semibold text-gray-900'>Situation</h3>
+        {/* AI Suggest モード時のみ表示 */}
+        {selectedMode === 'ai-suggest' && (
+          <div className='flex flex-col gap-2'>
+            <h3 className='text-lg font-semibold text-gray-900'>Situation</h3>
 
-          {/* シチュエーション表示エリア全体を囲む */}
-          <div className='flex items-center gap-2'>
-            <button
-              onClick={() => setIsAddContextModalOpen(true)}
-              disabled={generatedVariations.length > 0}
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                generatedVariations.length > 0
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-              }`}
-            >
-              <BsPlusSquare size={16} />
-            </button>
+            {/* シチュエーション表示エリア全体を囲む */}
+            <div className='flex items-center gap-2'>
+              <button
+                onClick={() => setIsAddContextModalOpen(true)}
+                disabled={generatedVariations.length > 0}
+                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                  generatedVariations.length > 0
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+              >
+                <BsPlusSquare size={16} />
+              </button>
 
-            <ScrollableContainer className='flex gap-1.5 overflow-x-auto min-w-0 flex-1'>
-              {situations.map((situation: SituationResponse) => (
-                <button
-                  key={situation.id}
-                  onClick={() => {
-                    if (generatedVariations.length === 0 && onContextChange) {
-                      onContextChange(
-                        selectedContext === situation.name
-                          ? null
-                          : situation.name
-                      );
-                    }
-                  }}
-                  disabled={generatedVariations.length > 0}
-                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
-                    selectedContext === situation.name
-                      ? 'text-white border-transparent shadow-sm'
-                      : generatedVariations.length > 0
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
-                  }`}
-                  style={{
-                    backgroundColor:
-                      selectedContext === situation.name
-                        ? '#616161'
-                        : undefined,
-                  }}
-                >
-                  <span className='whitespace-nowrap'>{situation.name}</span>
-                  <AiOutlineClose
-                    size={14}
-                    className={`flex-shrink-0 font-bold ${
-                      selectedContext === situation.name
-                        ? 'text-white'
-                        : 'text-gray-700'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (generatedVariations.length === 0) {
-                        handleDeleteSituation(situation.id);
+              <ScrollableContainer className='flex gap-1.5 overflow-x-auto min-w-0 flex-1'>
+                {situations.map((situation: SituationResponse) => (
+                  <button
+                    key={situation.id}
+                    onClick={() => {
+                      if (generatedVariations.length === 0 && onContextChange) {
+                        onContextChange(
+                          selectedContext === situation.name
+                            ? null
+                            : situation.name
+                        );
                       }
                     }}
-                  />
-                </button>
-              ))}
-            </ScrollableContainer>
+                    disabled={generatedVariations.length > 0}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+                      selectedContext === situation.name
+                        ? 'text-white border-transparent shadow-sm'
+                        : generatedVariations.length > 0
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                    }`}
+                    style={{
+                      backgroundColor:
+                        selectedContext === situation.name
+                          ? '#616161'
+                          : undefined,
+                    }}
+                  >
+                    <span className='whitespace-nowrap'>{situation.name}</span>
+                    <AiOutlineClose
+                      size={14}
+                      className={`flex-shrink-0 font-bold ${
+                        selectedContext === situation.name
+                          ? 'text-white'
+                          : 'text-gray-700'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (generatedVariations.length === 0) {
+                          handleDeleteSituation(situation.id);
+                        }
+                      }}
+                    />
+                  </button>
+                ))}
+              </ScrollableContainer>
+            </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* フレーズ入力エリア */}
-      <div className='mb-6'>
-        <div className='mb-2'>
-          <h3 className='text-lg font-semibold text-gray-900'>Phrase</h3>
-        </div>
-        <textarea
-          value={desiredPhrase}
-          onChange={(e) => onPhraseChange(e.target.value)}
-          onFocus={scrollPreservation.onFocus}
-          onBlur={scrollPreservation.onBlur}
-          placeholder={t('phrase.placeholders.phraseInput')}
-          className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
-            phraseValidationError && desiredPhrase.trim().length > 0
-              ? 'border-gray-400'
-              : 'border-gray-300'
-          }`}
-          rows={3}
-          disabled={isSaving}
-        />
+        {/* CSV Import モード時のみ表示 */}
+        {selectedMode === 'csv-import' && (
+          <div className='flex flex-col gap-4'>
+            <h3 className='text-lg font-semibold text-gray-900'>CSV File</h3>
 
-        {/* 100文字を超えた場合のバリデーションメッセージ */}
-        {desiredPhrase.length > 100 && (
-          <div className='mt-2 p-3 border border-gray-300 rounded-md bg-gray-50'>
-            <p className='text-sm text-gray-600'>
-              {t('phrase.validation.maxLength100', {
-                count: desiredPhrase.length,
-              })}
-            </p>
+            {/* ファイルドロップエリア */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
+                isDragOver
+                  ? 'border-gray-400 bg-gray-50'
+                  : 'border-gray-300 hover:border-gray-400'
+              }`}
+            >
+              {selectedFile ? (
+                <div className='flex flex-col items-center gap-3'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm font-medium text-gray-700'>
+                      {selectedFile.name}
+                    </span>
+                    <button
+                      onClick={handleRemoveFile}
+                      className='text-gray-500 hover:text-gray-700'
+                    >
+                      <AiOutlineClose size={16} />
+                    </button>
+                  </div>
+                  <p className='text-xs text-gray-500'>
+                    Size: {(selectedFile.size / 1024).toFixed(1)} KB
+                  </p>
+                </div>
+              ) : (
+                <div className='flex flex-col items-center gap-3'>
+                  <div className='text-gray-400'>
+                    <svg
+                      className='w-12 h-12 mx-auto'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className='text-gray-600 font-medium'>
+                      Drop your CSV file here
+                    </p>
+                    <p className='text-sm text-gray-500 mt-1'>
+                      or{' '}
+                      <label className='text-gray-600 hover:text-gray-800 cursor-pointer underline'>
+                        browse files
+                        <input
+                          type='file'
+                          accept='.csv'
+                          className='hidden'
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleFileUpload(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </p>
+                  </div>
+                  <p className='text-xs text-gray-400'>
+                    Supported format: CSV files only
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Import ボタン */}
+            <button
+              onClick={handleImportCSV}
+              disabled={!selectedFile}
+              className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all ${
+                !selectedFile ? 'bg-gray-400' : 'bg-gray-600 hover:bg-gray-700'
+              }`}
+            >
+              Import CSV
+            </button>
           </div>
         )}
       </div>
 
-      {/* AI Suggest ボタン */}
-      <button
-        disabled={
-          isLoading ||
-          isSaving ||
-          !desiredPhrase.trim() ||
-          remainingGenerations <= 0 ||
-          desiredPhrase.length > 100 ||
-          generatedVariations.length > 0
-        }
-        className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
-          isLoading ? 'animate-pulse' : ''
-        }`}
-        style={{
-          backgroundColor:
-            isLoading ||
-            isSaving ||
-            !desiredPhrase.trim() ||
-            remainingGenerations <= 0 ||
-            desiredPhrase.length > 100 ||
-            generatedVariations.length > 0
-              ? '#9CA3AF'
-              : '#616161',
-          boxShadow: isLoading ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined,
-        }}
-        onMouseEnter={(e) => {
-          if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = '#525252';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = '#616161';
-            e.currentTarget.style.boxShadow = 'none';
-          }
-        }}
-        onClick={(e) => {
-          if (!isGenerateButtonEnabled() || !e.currentTarget) {
-            return;
-          }
+      {/* AI Suggest モード時のみ表示 */}
+      {selectedMode === 'ai-suggest' && (
+        <>
+          {/* フレーズ入力エリア */}
+          <div className='mb-6'>
+            <div className='mb-2'>
+              <h3 className='text-lg font-semibold text-gray-900'>Phrase</h3>
+            </div>
+            <textarea
+              value={desiredPhrase}
+              onChange={(e) => onPhraseChange(e.target.value)}
+              onFocus={scrollPreservation.onFocus}
+              onBlur={scrollPreservation.onBlur}
+              placeholder={t('phrase.placeholders.phraseInput')}
+              className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
+                phraseValidationError && desiredPhrase.trim().length > 0
+                  ? 'border-gray-400'
+                  : 'border-gray-300'
+              }`}
+              rows={3}
+              disabled={isSaving}
+            />
 
-          // より控えめなクリック効果
-          e.currentTarget.style.transform = 'scale(0.98)';
-          setTimeout(() => {
-            if (e.currentTarget) {
-              e.currentTarget.style.transform = 'scale(1)';
+            {/* 100文字を超えた場合のバリデーションメッセージ */}
+            {desiredPhrase.length > 100 && (
+              <div className='mt-2 p-3 border border-gray-300 rounded-md bg-gray-50'>
+                <p className='text-sm text-gray-600'>
+                  {t('phrase.validation.maxLength100', {
+                    count: desiredPhrase.length,
+                  })}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* AI Suggest ボタン */}
+          <button
+            disabled={
+              isLoading ||
+              isSaving ||
+              !desiredPhrase.trim() ||
+              remainingGenerations <= 0 ||
+              desiredPhrase.length > 100 ||
+              generatedVariations.length > 0
             }
-          }, 150);
+            className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
+              isLoading ? 'animate-pulse' : ''
+            }`}
+            style={{
+              backgroundColor:
+                isLoading ||
+                isSaving ||
+                !desiredPhrase.trim() ||
+                remainingGenerations <= 0 ||
+                desiredPhrase.length > 100 ||
+                generatedVariations.length > 0
+                  ? '#9CA3AF'
+                  : '#616161',
+              boxShadow: isLoading
+                ? '0 0 15px rgba(97, 97, 97, 0.4)'
+                : undefined,
+            }}
+            onMouseEnter={(e) => {
+              if (isGenerateButtonEnabled() && e.currentTarget) {
+                e.currentTarget.style.backgroundColor = '#525252';
+                e.currentTarget.style.boxShadow =
+                  '0 6px 20px rgba(0, 0, 0, 0.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (isGenerateButtonEnabled() && e.currentTarget) {
+                e.currentTarget.style.backgroundColor = '#616161';
+                e.currentTarget.style.boxShadow = 'none';
+              }
+            }}
+            onClick={(e) => {
+              if (!isGenerateButtonEnabled() || !e.currentTarget) {
+                return;
+              }
 
-          onGeneratePhrase();
-        }}
-      >
-        {isLoading ? (
-          <div className='flex items-center justify-center'>
-            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3'></div>
-            AI Suggest
-          </div>
-        ) : (
-          'AI Suggest'
-        )}
-      </button>
+              // より控えめなクリック効果
+              e.currentTarget.style.transform = 'scale(0.98)';
+              setTimeout(() => {
+                if (e.currentTarget) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }, 150);
+
+              onGeneratePhrase();
+            }}
+          >
+            {isLoading ? (
+              <div className='flex items-center justify-center'>
+                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3'></div>
+                AI Suggest
+              </div>
+            ) : (
+              'AI Suggest'
+            )}
+          </button>
+        </>
+      )}
 
       {/* エラー表示 */}
       {error && !isLoading && (
