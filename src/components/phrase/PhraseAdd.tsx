@@ -1,18 +1,18 @@
-import { PhraseVariation } from "@/types/phrase";
-import { SituationResponse } from "@/types/situation";
-import dynamic from "next/dynamic";
-import { BsPlusSquare } from "react-icons/bs";
-import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai";
-import { useState } from "react";
-import AddContextModal from "@/components/modals/AddContextModal";
-import BaseModal from "@/components/common/BaseModal";
-import PhraseGenerationHelpModal from "@/components/modals/PhraseGenerationHelpModal";
-import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
-import ScrollableContainer from "@/components/common/ScrollableContainer";
-import { useTranslation } from "@/hooks/ui/useTranslation";
+import { PhraseVariation } from '@/types/phrase';
+import { SituationResponse } from '@/types/situation';
+import dynamic from 'next/dynamic';
+import { BsPlusSquare } from 'react-icons/bs';
+import { AiOutlineClose, AiOutlineQuestionCircle } from 'react-icons/ai';
+import { useState } from 'react';
+import AddContextModal from '@/components/modals/AddContextModal';
+import BaseModal from '@/components/common/BaseModal';
+import PhraseGenerationHelpModal from '@/components/modals/PhraseGenerationHelpModal';
+import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation';
+import ScrollableContainer from '@/components/common/ScrollableContainer';
+import { useTranslation } from '@/hooks/ui/useTranslation';
 
 // GeneratedVariationsコンポーネントを動的インポート
-const GeneratedVariations = dynamic(() => import("./GeneratedVariations"), {
+const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
   ssr: false,
 });
 
@@ -27,7 +27,7 @@ interface PhraseAddProps {
   editingVariations: { [key: number]: string };
   savingVariationIndex: number | null;
   error: string;
-  selectedContext: "friend" | "sns" | string | null;
+  selectedContext: 'friend' | 'sns' | string | null;
   situations: SituationResponse[];
   onPhraseChange: (value: string) => void;
   onGeneratePhrase: () => void;
@@ -60,15 +60,18 @@ export default function PhraseAdd({
   addSituation,
   deleteSituation,
 }: PhraseAddProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation('common');
 
   // モーダルの状態管理
   const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false);
   const [deletingSituationId, setDeletingSituationId] = useState<string | null>(
-    null,
+    null
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<'ai-suggest' | 'csv-import'>(
+    'ai-suggest'
+  );
 
   // スクロール位置保持機能
   const scrollPreservation = useScrollPreservation();
@@ -128,19 +131,19 @@ export default function PhraseAdd({
   return (
     <>
       {/* Add Phrase見出しとLeft情報 */}
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+      <div className='flex justify-between items-center mb-2'>
+        <div className='flex items-center gap-2'>
+          <h2 className='text-xl md:text-2xl font-bold text-gray-900'>
             Add Phrase
           </h2>
           <button
             onClick={() => setShowHelpModal(true)}
-            className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            className='flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all'
           >
             <AiOutlineQuestionCircle size={20} />
           </button>
         </div>
-        <div className="text-sm text-gray-600">
+        <div className='text-sm text-gray-600'>
           Left: {remainingGenerations} / 5
         </div>
       </div>
@@ -170,25 +173,84 @@ export default function PhraseAdd({
       </div> */}
 
       {/* Options section */}
-      <div className="mb-4">
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
+      <div className='mb-4'>
+        {/* Mode section */}
+        <div className='mb-4'>
+          <h3 className='text-lg font-semibold text-gray-900 mb-2'>Mode</h3>
+          <div className='flex gap-4'>
+            <label className='flex items-center cursor-pointer'>
+              <input
+                type='radio'
+                name='mode'
+                value='ai-suggest'
+                checked={selectedMode === 'ai-suggest'}
+                onChange={(e) =>
+                  setSelectedMode(e.target.value as 'ai-suggest' | 'csv-import')
+                }
+                disabled={generatedVariations.length > 0}
+                className={`mr-2 ${
+                  generatedVariations.length > 0
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  generatedVariations.length > 0
+                    ? 'text-gray-400'
+                    : 'text-gray-700'
+                }`}
+              >
+                AI Suggest
+              </span>
+            </label>
+            <label className='flex items-center cursor-pointer'>
+              <input
+                type='radio'
+                name='mode'
+                value='csv-import'
+                checked={selectedMode === 'csv-import'}
+                onChange={(e) =>
+                  setSelectedMode(e.target.value as 'ai-suggest' | 'csv-import')
+                }
+                disabled={generatedVariations.length > 0}
+                className={`mr-2 ${
+                  generatedVariations.length > 0
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  generatedVariations.length > 0
+                    ? 'text-gray-400'
+                    : 'text-gray-700'
+                }`}
+              >
+                CSV Import
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className='flex flex-col gap-2'>
+          <h3 className='text-lg font-semibold text-gray-900'>Situation</h3>
 
           {/* シチュエーション表示エリア全体を囲む */}
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <button
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
               className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                 generatedVariations.length > 0
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
               }`}
             >
               <BsPlusSquare size={16} />
             </button>
 
-            <ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1">
+            <ScrollableContainer className='flex gap-1.5 overflow-x-auto min-w-0 flex-1'>
               {situations.map((situation: SituationResponse) => (
                 <button
                   key={situation.id}
@@ -197,32 +259,32 @@ export default function PhraseAdd({
                       onContextChange(
                         selectedContext === situation.name
                           ? null
-                          : situation.name,
+                          : situation.name
                       );
                     }
                   }}
                   disabled={generatedVariations.length > 0}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
-                      ? "text-white border-transparent shadow-sm"
+                      ? 'text-white border-transparent shadow-sm'
                       : generatedVariations.length > 0
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-                        : "bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300"
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
                   }`}
                   style={{
                     backgroundColor:
                       selectedContext === situation.name
-                        ? "#616161"
+                        ? '#616161'
                         : undefined,
                   }}
                 >
-                  <span className="whitespace-nowrap">{situation.name}</span>
+                  <span className='whitespace-nowrap'>{situation.name}</span>
                   <AiOutlineClose
                     size={14}
                     className={`flex-shrink-0 font-bold ${
                       selectedContext === situation.name
-                        ? "text-white"
-                        : "text-gray-700"
+                        ? 'text-white'
+                        : 'text-gray-700'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -239,20 +301,20 @@ export default function PhraseAdd({
       </div>
 
       {/* フレーズ入力エリア */}
-      <div className="mb-6">
-        <div className="mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
+      <div className='mb-6'>
+        <div className='mb-2'>
+          <h3 className='text-lg font-semibold text-gray-900'>Phrase</h3>
         </div>
         <textarea
           value={desiredPhrase}
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder={t("phrase.placeholders.phraseInput")}
+          placeholder={t('phrase.placeholders.phraseInput')}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
-              ? "border-gray-400"
-              : "border-gray-300"
+              ? 'border-gray-400'
+              : 'border-gray-300'
           }`}
           rows={3}
           disabled={isSaving}
@@ -260,9 +322,9 @@ export default function PhraseAdd({
 
         {/* 100文字を超えた場合のバリデーションメッセージ */}
         {desiredPhrase.length > 100 && (
-          <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
-            <p className="text-sm text-gray-600">
-              {t("phrase.validation.maxLength100", {
+          <div className='mt-2 p-3 border border-gray-300 rounded-md bg-gray-50'>
+            <p className='text-sm text-gray-600'>
+              {t('phrase.validation.maxLength100', {
                 count: desiredPhrase.length,
               })}
             </p>
@@ -281,7 +343,7 @@ export default function PhraseAdd({
           generatedVariations.length > 0
         }
         className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
-          isLoading ? "animate-pulse" : ""
+          isLoading ? 'animate-pulse' : ''
         }`}
         style={{
           backgroundColor:
@@ -291,20 +353,20 @@ export default function PhraseAdd({
             remainingGenerations <= 0 ||
             desiredPhrase.length > 100 ||
             generatedVariations.length > 0
-              ? "#9CA3AF"
-              : "#616161",
-          boxShadow: isLoading ? "0 0 15px rgba(97, 97, 97, 0.4)" : undefined,
+              ? '#9CA3AF'
+              : '#616161',
+          boxShadow: isLoading ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined,
         }}
         onMouseEnter={(e) => {
           if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = "#525252";
-            e.currentTarget.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.1)";
+            e.currentTarget.style.backgroundColor = '#525252';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
           }
         }}
         onMouseLeave={(e) => {
           if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = "#616161";
-            e.currentTarget.style.boxShadow = "none";
+            e.currentTarget.style.backgroundColor = '#616161';
+            e.currentTarget.style.boxShadow = 'none';
           }
         }}
         onClick={(e) => {
@@ -313,10 +375,10 @@ export default function PhraseAdd({
           }
 
           // より控えめなクリック効果
-          e.currentTarget.style.transform = "scale(0.98)";
+          e.currentTarget.style.transform = 'scale(0.98)';
           setTimeout(() => {
             if (e.currentTarget) {
-              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.transform = 'scale(1)';
             }
           }, 150);
 
@@ -324,19 +386,19 @@ export default function PhraseAdd({
         }}
       >
         {isLoading ? (
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+          <div className='flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3'></div>
             AI Suggest
           </div>
         ) : (
-          "AI Suggest"
+          'AI Suggest'
         )}
       </button>
 
       {/* エラー表示 */}
       {error && !isLoading && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-md'>
+          <p className='text-sm text-red-600'>{error}</p>
           {/* SUBSCRIPTION_DISABLED: Basicプラン関連のエラーメッセージを一時的に無効化 */}
           {/* {error.includes('Basicプラン') && (
             <div className="mt-2">
@@ -374,26 +436,26 @@ export default function PhraseAdd({
       <BaseModal
         isOpen={!!deletingSituationId}
         onClose={handleCancelDelete}
-        title="Delete Situation"
+        title='Delete Situation'
       >
         {/* 確認メッセージ */}
-        <div className="mb-6">
-          <p className="text-gray-700">
-            {t("situation.delete.confirmMessage")}
+        <div className='mb-6'>
+          <p className='text-gray-700'>
+            {t('situation.delete.confirmMessage')}
             <br />
-            {t("situation.delete.warningMessage")}
+            {t('situation.delete.warningMessage')}
           </p>
         </div>
 
         {/* ボタン */}
-        <div className="flex gap-3">
+        <div className='flex gap-3'>
           <button
             onClick={handleCancelDelete}
             disabled={isDeleting}
-            className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            className='flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed'
             style={{
-              borderColor: "#616161",
-              color: "#616161",
+              borderColor: '#616161',
+              color: '#616161',
             }}
           >
             Cancel
@@ -401,18 +463,18 @@ export default function PhraseAdd({
           <button
             onClick={handleConfirmDelete}
             disabled={isDeleting}
-            className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            className='flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed'
             style={{
-              backgroundColor: isDeleting ? "#FCA5A5" : "#DC2626",
+              backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626',
             }}
           >
             {isDeleting ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <div className='flex items-center justify-center'>
+                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
                 Deleting...
               </div>
             ) : (
-              "Delete"
+              'Delete'
             )}
           </button>
         </div>
