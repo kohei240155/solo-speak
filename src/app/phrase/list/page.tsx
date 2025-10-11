@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { usePhraseList } from '@/hooks/phrase/usePhraseList'
-import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
-import { useQuizModal } from '@/hooks/quiz/useQuizModal'
-import LanguageSelector from '@/components/common/LanguageSelector'
-import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
-import PhraseList from '@/components/phrase/PhraseList'
-import SpeakModeModal from '@/components/modals/SpeakModeModal'
-import QuizModeModal from '@/components/modals/QuizModeModal'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { Toaster } from 'react-hot-toast'
+import { useEffect } from "react";
+import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { usePhraseList } from "@/hooks/phrase/usePhraseList";
+import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
+import { useQuizModal } from "@/hooks/quiz/useQuizModal";
+import LanguageSelector from "@/components/common/LanguageSelector";
+import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
+import PhraseList from "@/components/phrase/PhraseList";
+import SpeakModeModal from "@/components/modals/SpeakModeModal";
+import QuizModeModal from "@/components/modals/QuizModeModal";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { Toaster } from "react-hot-toast";
 
 export default function PhraseListPage() {
-  const { loading: authLoading } = useAuthGuard()
-  
+  const { loading: authLoading } = useAuthGuard();
+
   const {
     learningLanguage,
     languages,
@@ -27,45 +27,40 @@ export default function PhraseListPage() {
     handleLearningLanguageChange,
     loadMorePhrases,
     refreshPhrases,
-  } = usePhraseList()
+  } = usePhraseList();
 
   // Modal functionality
-  const {
-    showSpeakModal,
-    openSpeakModal,
-    closeSpeakModal,
-    handleSpeakStart
-  } = useSpeakModal()
+  const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
+    useSpeakModal();
 
-  const {
-    showQuizModal,
-    openQuizModal,
-    closeQuizModal,
-    handleQuizStart
-  } = useQuizModal()
+  const { showQuizModal, openQuizModal, closeQuizModal, handleQuizStart } =
+    useQuizModal();
 
   // 無限スクロール
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1000 &&
-        hasMorePhrases && !isLoadingPhrases && !isLoadingMore
+        window.innerHeight + window.scrollY >=
+          document.documentElement.offsetHeight - 1000 &&
+        hasMorePhrases &&
+        !isLoadingPhrases &&
+        !isLoadingMore
       ) {
-        loadMorePhrases()
+        loadMorePhrases();
       }
-    }
+    };
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [hasMorePhrases, isLoadingPhrases, isLoadingMore, loadMorePhrases])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMorePhrases, isLoadingPhrases, isLoadingMore, loadMorePhrases]);
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
     return (
       <div className="min-h-screen flex justify-center items-start pt-28">
-        <LoadingSpinner message='Loading...' />
+        <LoadingSpinner message="Loading..." />
       </div>
-    )
+    );
   }
 
   return (
@@ -76,7 +71,7 @@ export default function PhraseListPage() {
           <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
             Phrase
           </h1>
-          
+
           <LanguageSelector
             learningLanguage={learningLanguage}
             onLanguageChange={handleLearningLanguageChange}
@@ -84,10 +79,10 @@ export default function PhraseListPage() {
             nativeLanguage={nativeLanguage}
           />
         </div>
-        
+
         {/* タブメニュー */}
-        <PhraseTabNavigation 
-          activeTab="List" 
+        <PhraseTabNavigation
+          activeTab="List"
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={openQuizModal}
         />
@@ -103,15 +98,15 @@ export default function PhraseListPage() {
           showSpeakModal={showSpeakModal}
           onSpeakModalStateChange={(state: boolean) => {
             if (state) {
-              openSpeakModal()
+              openSpeakModal();
             } else {
-              closeSpeakModal()
+              closeSpeakModal();
             }
           }}
           onRefreshPhrases={refreshPhrases}
         />
       </div>
-      
+
       {/* Speak Mode モーダル */}
       <SpeakModeModal
         isOpen={showSpeakModal}
@@ -129,9 +124,9 @@ export default function PhraseListPage() {
         languages={languages}
         defaultLearningLanguage={learningLanguage}
       />
-      
+
       {/* Toaster for notifications */}
       <Toaster />
     </div>
-  )
+  );
 }

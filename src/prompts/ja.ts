@@ -1,9 +1,9 @@
 export const getJapanesePrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `「${situation}」` : '一般的な日常会話';
+  const situationText = situation ? `「${situation}」` : "一般的な日常会話";
 
   return `あなたは${nativeLanguageName}話者向けの日本語会話コーチです。
 

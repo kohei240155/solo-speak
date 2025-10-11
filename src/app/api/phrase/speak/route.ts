@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/utils/prisma'
-import { authenticateRequest } from '@/utils/api-helpers'
-import { SpeakPhraseResponse } from '@/types/phrase'
-import { ApiErrorResponse } from '@/types/api'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/utils/prisma";
+import { authenticateRequest } from "@/utils/api-helpers";
+import { SpeakPhraseResponse } from "@/types/phrase";
+import { ApiErrorResponse } from "@/types/api";
 
 /** * フレーズの音読練習用APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -12,105 +12,108 @@ import { ApiErrorResponse } from '@/types/api'
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
+    const authResult = await authenticateRequest(request);
+    if ("error" in authResult) {
+      return authResult.error;
     }
 
-    const { searchParams } = new URL(request.url)
-    const language = searchParams.get('language')
-    const excludeIfSpeakCountGTE = searchParams.get('excludeIfSpeakCountGTE')
-    const excludeTodayPracticed = searchParams.get('excludeTodayPracticed') === 'true'
+    const { searchParams } = new URL(request.url);
+    const language = searchParams.get("language");
+    const excludeIfSpeakCountGTE = searchParams.get("excludeIfSpeakCountGTE");
+    const excludeTodayPracticed =
+      searchParams.get("excludeTodayPracticed") === "true";
 
     if (!language) {
       const errorResponse: ApiErrorResponse = {
-        error: 'Language parameter is required'
-      }
-      return NextResponse.json(errorResponse, { status: 400 })
+        error: "Language parameter is required",
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     // モード設定をクエリパラメータから取得
     const config = {
-      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE ? parseInt(excludeIfSpeakCountGTE, 10) : undefined,
-      excludeTodayPracticed
-    }
+      excludeIfSpeakCountGTE: excludeIfSpeakCountGTE
+        ? parseInt(excludeIfSpeakCountGTE, 10)
+        : undefined,
+      excludeTodayPracticed,
+    };
 
     // フィルタリング条件を構築
     const whereClause = {
       userId: authResult.user.id, // 認証されたユーザーのフレーズのみ
       language: {
-        code: language
+        code: language,
       },
       deletedAt: null, // 削除されていないフレーズのみ
       sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
       ...(config.excludeTodayPracticed && {
-        dailySpeakCount: { equals: 0 } // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
+        dailySpeakCount: { equals: 0 }, // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
       }),
       ...(config.excludeIfSpeakCountGTE !== undefined && {
         totalSpeakCount: {
-          lt: config.excludeIfSpeakCountGTE // 指定された回数未満のフレーズのみ（指定回数以上を除外）
-        }
-      })
-    }
+          lt: config.excludeIfSpeakCountGTE, // 指定された回数未満のフレーズのみ（指定回数以上を除外）
+        },
+      }),
+    };
 
     // Promise.allを使用して並列処理でパフォーマンスを向上
     const [languageExists, phrases] = await Promise.all([
       // 指定された言語が存在するか確認
       prisma.language.findUnique({
-        where: { 
+        where: {
           code: language,
-          deletedAt: null // 削除されていない言語のみ
-        }
+          deletedAt: null, // 削除されていない言語のみ
+        },
       }),
-      
+
       // データベースからフレーズを取得（削除されていないもののみ）
       // 認証されたユーザーのフレーズのみを取得
       prisma.phrase.findMany({
         where: whereClause,
         include: {
-          language: true
-        }
-      })
-    ])
+          language: true,
+        },
+      }),
+    ]);
 
     if (!languageExists) {
       const errorResponse: SpeakPhraseResponse = {
         success: false,
-        message: `Language with code '${language}' not found`
-      }
-      return NextResponse.json(errorResponse, { status: 400 })
+        message: `Language with code '${language}' not found`,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     if (phrases.length === 0) {
       // フレーズがない場合はエラーとして返す
       const responseData: SpeakPhraseResponse = {
         success: false,
-        message: 'No phrases available for practice in this session'
-      }
-      return NextResponse.json(responseData)
+        message: "No phrases available for practice in this session",
+      };
+      return NextResponse.json(responseData);
     }
 
     // ソート処理
-    const sortedPhrases = [...phrases]
+    const sortedPhrases = [...phrases];
 
     // 常に音読回数の多い順を優先、音読回数が同じ場合は古い順
     sortedPhrases.sort((a, b) => {
-      const practiceA = a.totalSpeakCount || 0
-      const practiceB = b.totalSpeakCount || 0
-      
+      const practiceA = a.totalSpeakCount || 0;
+      const practiceB = b.totalSpeakCount || 0;
+
       // 音読回数が異なる場合は音読回数で優先
       if (practiceA !== practiceB) {
-        return practiceB - practiceA // 多い順
+        return practiceB - practiceA; // 多い順
       }
-      
+
       // 音読回数が同じ場合は古い順でソート
-      const dateA = new Date(a.createdAt).getTime()
-      const dateB = new Date(b.createdAt).getTime()
-      return dateA - dateB // 古い順（old-to-new）
-    })
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateA - dateB; // 古い順（old-to-new）
+    });
 
     // 最初のフレーズを返す
-    const firstPhrase = sortedPhrases[0]
+    const firstPhrase = sortedPhrases[0];
 
     const responseData: SpeakPhraseResponse = {
       success: true,
@@ -121,16 +124,15 @@ export async function GET(request: NextRequest) {
         explanation: firstPhrase.explanation || undefined,
         totalSpeakCount: firstPhrase.totalSpeakCount || 0,
         dailySpeakCount: firstPhrase.dailySpeakCount || 0,
-        languageCode: firstPhrase.language.code
-      }
-    }
+        languageCode: firstPhrase.language.code,
+      },
+    };
 
-    return NextResponse.json(responseData)
-
+    return NextResponse.json(responseData);
   } catch {
     const errorResponse: ApiErrorResponse = {
-      error: 'Internal server error'
-    }
-    return NextResponse.json(errorResponse, { status: 500 })
+      error: "Internal server error",
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

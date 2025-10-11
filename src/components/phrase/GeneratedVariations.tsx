@@ -1,17 +1,17 @@
-import { PhraseVariation } from '@/types/phrase'
-import { AiOutlineCaretRight } from 'react-icons/ai'
-import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
-import { useTranslation } from '@/hooks/ui/useTranslation'
+import { PhraseVariation } from "@/types/phrase";
+import { AiOutlineCaretRight } from "react-icons/ai";
+import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface GeneratedVariationsProps {
-  generatedVariations: PhraseVariation[]
-  editingVariations: {[key: number]: string}
-  isSaving: boolean
-  savingVariationIndex: number | null
-  desiredPhrase: string
-  onEditVariation: (index: number, newText: string) => void
-  onSelectVariation: (variation: PhraseVariation, index: number) => void
-  error: string
+  generatedVariations: PhraseVariation[];
+  editingVariations: { [key: number]: string };
+  isSaving: boolean;
+  savingVariationIndex: number | null;
+  desiredPhrase: string;
+  onEditVariation: (index: number, newText: string) => void;
+  onSelectVariation: (variation: PhraseVariation, index: number) => void;
+  error: string;
 }
 
 export default function GeneratedVariations({
@@ -22,14 +22,14 @@ export default function GeneratedVariations({
   desiredPhrase,
   onEditVariation,
   onSelectVariation,
-  error
+  error,
 }: GeneratedVariationsProps) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation("common");
   // スクロール位置保持機能
-  const scrollPreservation = useScrollPreservation()
-  
+  const scrollPreservation = useScrollPreservation();
+
   if (generatedVariations.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -39,7 +39,7 @@ export default function GeneratedVariations({
           AI Suggested Phrases
         </h3>
       </div>
-      
+
       {generatedVariations.map((variation, index) => (
         <div key={index} className="mb-8">
           <div className="mb-3">
@@ -53,7 +53,7 @@ export default function GeneratedVariations({
               </div>
             </div>
           </div>
-          
+
           {/* 編集可能なテキストエリア */}
           <textarea
             value={editingVariations[index] || variation.original}
@@ -62,19 +62,18 @@ export default function GeneratedVariations({
             onBlur={scrollPreservation.onBlur}
             className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 ${
               (editingVariations[index] || variation.original).length > 200
-                ? 'border-gray-400' 
-                : 'border-gray-300'
+                ? "border-gray-400"
+                : "border-gray-300"
             }`}
             rows={3}
             disabled={isSaving}
           />
 
-          
           {/* 200文字を超えた場合のバリデーションメッセージ */}
           {(editingVariations[index] || variation.original).length > 200 && (
             <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
               <p className="text-sm text-gray-600">
-                {t('phrase.validation.variationMaxLength')}
+                {t("phrase.validation.variationMaxLength")}
               </p>
             </div>
           )}
@@ -87,23 +86,44 @@ export default function GeneratedVariations({
               </p>
             </div>
           )}
-          
+
           <div className="mb-3"></div>
-          
+
           <button
-            disabled={isSaving || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200}
+            disabled={
+              isSaving ||
+              desiredPhrase.length > 100 ||
+              (editingVariations[index] || variation.original).length > 200
+            }
             className="w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            style={{ 
-              backgroundColor: (isSaving && savingVariationIndex === index) || desiredPhrase.length > 100 || (editingVariations[index] || variation.original).length > 200 ? '#9CA3AF' : '#616161'
+            style={{
+              backgroundColor:
+                (isSaving && savingVariationIndex === index) ||
+                desiredPhrase.length > 100 ||
+                (editingVariations[index] || variation.original).length > 200
+                  ? "#9CA3AF"
+                  : "#616161",
             }}
             onMouseEnter={(e) => {
-              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
-                e.currentTarget.style.backgroundColor = '#525252'
+              if (
+                !isSaving &&
+                desiredPhrase.length <= 100 &&
+                (editingVariations[index] || variation.original).length <=
+                  200 &&
+                e.currentTarget
+              ) {
+                e.currentTarget.style.backgroundColor = "#525252";
               }
             }}
             onMouseLeave={(e) => {
-              if (!isSaving && desiredPhrase.length <= 100 && (editingVariations[index] || variation.original).length <= 200 && e.currentTarget) {
-                e.currentTarget.style.backgroundColor = '#616161'
+              if (
+                !isSaving &&
+                desiredPhrase.length <= 100 &&
+                (editingVariations[index] || variation.original).length <=
+                  200 &&
+                e.currentTarget
+              ) {
+                e.currentTarget.style.backgroundColor = "#616161";
               }
             }}
             onClick={() => onSelectVariation(variation, index)}
@@ -114,7 +134,7 @@ export default function GeneratedVariations({
                 Saving...
               </div>
             ) : (
-              'Select'
+              "Select"
             )}
           </button>
         </div>
@@ -127,5 +147,5 @@ export default function GeneratedVariations({
         </div>
       )}
     </div>
-  )
+  );
 }

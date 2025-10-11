@@ -15,22 +15,22 @@ export function calculateStreak(dates: string[]): number {
 
   // 重複を除去してソート
   const uniqueDates = [...new Set(dates)].sort();
-  
+
   // 今日と昨日の日付を取得
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-  
+  const todayStr = today.toISOString().split("T")[0];
+
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  
+  const yesterdayStr = yesterday.toISOString().split("T")[0];
+
   // 昨日から遡って連続日数を計算（前日までのStreak）
   let baseStreak = 0;
   const checkDate = new Date(yesterdayStr);
-  
+
   while (true) {
-    const checkDateStr = checkDate.toISOString().split('T')[0];
-    
+    const checkDateStr = checkDate.toISOString().split("T")[0];
+
     if (uniqueDates.includes(checkDateStr)) {
       baseStreak++;
       // 前日をチェック
@@ -40,11 +40,11 @@ export function calculateStreak(dates: string[]): number {
       break;
     }
   }
-  
+
   // 当日のアクティビティがあるかチェックして加算
   const hasTodayActivity = uniqueDates.includes(todayStr);
   const currentStreak = baseStreak + (hasTodayActivity ? 1 : 0);
-  
+
   return currentStreak;
 }
 
@@ -54,8 +54,8 @@ export function calculateStreak(dates: string[]): number {
  * @returns YYYY-MM-DD形式の日付文字列配列
  */
 export function formatDatesToStrings(dateObjects: Date[]): string[] {
-  return dateObjects.map(date => {
+  return dateObjects.map((date) => {
     // UTC日付をそのまま使用
-    return new Date(date).toISOString().split('T')[0];
+    return new Date(date).toISOString().split("T")[0];
   });
 }

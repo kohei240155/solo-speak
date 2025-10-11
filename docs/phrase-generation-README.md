@@ -9,21 +9,25 @@ ChatGPT APIと連携して、ユーザーが話したいフレーズを3つの�
 ## ✨ 主な機能
 
 ### 🤖 AI によるフレーズ生成
+
 - ユーザーの入力フレーズを解析
 - 「一般的」「丁寧」「カジュアル」の3スタイルで翻訳
 - OpenAI GPT-4o-mini を使用した高品質な翻訳
 
 ### 📝 フレーズ管理
+
 - 生成されたフレーズの選択・登録
 - データベースへの永続化
 - ユーザーごとの個別管理
 
 ### 🎯 使いやすいUI
+
 - レスポンシブデザイン（モバイル・デスクトップ対応）
 - リアルタイムでの生成状況表示
 - 残り生成回数の表示
 
 ### 🔒 セキュリティ
+
 - ユーザー認証必須
 - 入力値検証とサニタイズ
 - レート制限（1日100回）
@@ -39,6 +43,7 @@ ChatGPT APIと連携して、ユーザーが話したいフレーズを3つの�
 ## 📁 実装されたファイル
 
 ### API エンドポイント
+
 ```
 src/app/api/
 ├── phrase/
@@ -48,6 +53,7 @@ src/app/api/
 ```
 
 ### ページコンポーネント
+
 ```
 src/app/
 ├── phrase/
@@ -60,6 +66,7 @@ src/app/
 ```
 
 ### ドキュメント
+
 ```
 docs/
 ├── phrase-generation-implementation.md      # 実装ドキュメント
@@ -72,22 +79,27 @@ docs/
 ### 1. セットアップ
 
 #### 環境変数の設定
+
 `.env.local` ファイルに以下を追加:
+
 ```env
 OPENAI_API_KEY=your_openai_api_key
 ```
 
 #### 依存関係のインストール
+
 ```bash
 npm install --legacy-peer-deps
 ```
 
 ### 2. 開発サーバーの起動
+
 ```bash
 npm run dev:local
 ```
 
 ### 3. 機能へのアクセス
+
 1. ログイン後、ダッシュボードに移動
 2. 「AI フレーズ生成」カードをクリック
 3. フレーズを入力して生成開始
@@ -97,6 +109,7 @@ npm run dev:local
 ## 📊 API 仕様
 
 ### フレーズ生成
+
 ```http
 POST /api/phrase/generate
 Content-Type: application/json
@@ -109,17 +122,22 @@ Content-Type: application/json
 ```
 
 **レスポンス:**
+
 ```json
 {
   "variations": [
     { "type": "common", "text": "Where is the restroom?" },
-    { "type": "polite", "text": "Excuse me, could you please tell me where the restroom is?" },
+    {
+      "type": "polite",
+      "text": "Excuse me, could you please tell me where the restroom is?"
+    },
     { "type": "casual", "text": "Where's the bathroom?" }
   ]
 }
 ```
 
 ### フレーズ登録
+
 ```http
 POST /api/phrase
 Content-Type: application/json
@@ -135,16 +153,19 @@ Content-Type: application/json
 ## 🎨 UI/UX の特徴
 
 ### デザインガイドライン
+
 - 添付画像のデザインに基づいた実装
 - Solo Speak のブランドカラーを使用
 - アクセシビリティを考慮したUIコンポーネント
 
 ### レスポンシブ対応
+
 - モバイルファーストアプローチ
 - Tailwind CSS による効率的なスタイリング
 - 画面サイズに応じた最適な表示
 
 ### ユーザビリティ
+
 - 直感的な操作フロー
 - 適切なフィードバック（ローディング、エラー、成功メッセージ）
 - アクセシビリティ対応
@@ -152,11 +173,13 @@ Content-Type: application/json
 ## 🔧 今後の改善点
 
 ### 短期的改善
+
 - [ ] 音声入力対応
 - [ ] フレーズの難易度自動判定
 - [ ] 学習進捗の可視化
 
 ### 中長期的改善
+
 - [ ] より多くの言語ペアのサポート
 - [ ] コンテキストを考慮した翻訳
 - [ ] オフライン対応

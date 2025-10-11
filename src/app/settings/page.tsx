@@ -1,32 +1,32 @@
-'use client'
+"use client";
 
 // SETTINGS_TABS_DISABLED: useState import を一時的に無効化
 // import { useState } from 'react'
-import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { userSetupSchema, UserSetupFormData } from '@/types/userSettings'
-import { useUserSettings } from '@/hooks/data/useUserSettings'
-import { useSettingsLanguage } from '@/hooks/ui/useSettingsLanguage'
-import UserSettingsForm from '@/components/settings/UserSettingsForm'
+import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userSetupSchema, UserSetupFormData } from "@/types/userSettings";
+import { useUserSettings } from "@/hooks/data/useUserSettings";
+import { useSettingsLanguage } from "@/hooks/ui/useSettingsLanguage";
+import UserSettingsForm from "@/components/settings/UserSettingsForm";
 // SUBSCRIPTION_DISABLED: SubscriptionTab import を一時的に無効化
 // import SubscriptionTab from '@/components/settings/SubscriptionTab'
 // SETTINGS_TABS_DISABLED: SettingsTabNavigation import を一時的に無効化
 // import SettingsTabNavigation from '@/components/navigation/SettingsTabNavigation'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 // SUBSCRIPTION_DISABLED: useSearchParams import を一時的に無効化
 // import { useSearchParams } from 'next/navigation'
 
 export default function UserSettingsPage() {
-  const { loading: authLoading } = useAuthGuard('/', false) // ユーザー設定完了チェックを無効化
-  
+  const { loading: authLoading } = useAuthGuard("/", false); // ユーザー設定完了チェックを無効化
+
   // Settingsページ専用の言語管理
-  useSettingsLanguage()
-  
+  useSettingsLanguage();
+
   // SUBSCRIPTION_DISABLED: URLパラメータによるタブ切り替えを一時的に無効化
   // const searchParams = useSearchParams()
   // const tabParam = searchParams.get('tab')
-  
+
   // URLパラメータからタブを決定
   // SUBSCRIPTION_DISABLED: subscriptionタブを一時的に無効化し、常にuserタブにリダイレクト
   // const initialTab = (tabParam === 'subscription' || tabParam === 'user') ? tabParam : 'user'
@@ -48,17 +48,17 @@ export default function UserSettingsPage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
   } = useForm<UserSetupFormData>({
     resolver: zodResolver(userSetupSchema),
     defaultValues: {
-      username: '',
-      iconUrl: '/images/user-icon/user-icon.png',
-      nativeLanguageId: '',
-      defaultLearningLanguageId: '',
-      email: ''
-    }
-  })
+      username: "",
+      iconUrl: "/images/user-icon/user-icon.png",
+      nativeLanguageId: "",
+      defaultLearningLanguageId: "",
+      email: "",
+    },
+  });
 
   const {
     languages,
@@ -67,15 +67,15 @@ export default function UserSettingsPage() {
     // SETTINGS_TABS_DISABLED: isUserSetupComplete を一時的に無効化
     // isUserSetupComplete,
     setIsUserSetupComplete,
-    dataLoading
-  } = useUserSettings(setValue)
+    dataLoading,
+  } = useUserSettings(setValue);
 
   if (authLoading || dataLoading) {
     return (
       <div className="min-h-screen flex justify-center items-start bg-gray-50 pt-28">
         <LoadingSpinner message="Loading..." />
       </div>
-    )
+    );
   }
 
   return (
@@ -85,7 +85,7 @@ export default function UserSettingsPage() {
         <h1 className="text-gray-900 mb-[18px] text-2xl md:text-3xl font-bold">
           Settings
         </h1>
-        
+
         {/* SETTINGS_TABS_DISABLED: タブメニューを一時的に非表示 */}
         {/* <SettingsTabNavigation
           activeTab={activeTab}
@@ -102,7 +102,7 @@ export default function UserSettingsPage() {
           )}
 
           {/* SETTINGS_TABS_DISABLED: 常にUserタブの内容を表示 */}
-          <UserSettingsForm 
+          <UserSettingsForm
             register={register}
             errors={errors}
             setValue={setValue}
@@ -138,5 +138,5 @@ export default function UserSettingsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

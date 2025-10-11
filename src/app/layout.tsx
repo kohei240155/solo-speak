@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from "react-hot-toast";
 import Header from "@/components/layout/Header";
 import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
 import ViewportFix from "@/components/common/ViewportFix";
@@ -30,11 +30,19 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
-      { url: '/images/logo/Solo Speak Icon.png', sizes: '32x32', type: 'image/png' },
+      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
+      {
+        url: "/images/logo/Solo Speak Icon.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
     ],
     apple: [
-      { url: '/images/logo/Solo Speak Icon.png', sizes: '180x180', type: 'image/png' },
+      {
+        url: "/images/logo/Solo Speak Icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
   },
   appleWebApp: {
@@ -66,9 +74,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-            <body
+      <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900 font-sans`}
-        style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+        style={{
+          fontFamily:
+            'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
       >
         <ViewportFix />
         <ServiceWorkerRegistration />
@@ -81,9 +92,7 @@ export default function RootLayout({
             <AuthApiConnection />
             <Header />
             <SecondaryNavigation />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <Toaster />
           </AuthProvider>
         </LanguageProvider>

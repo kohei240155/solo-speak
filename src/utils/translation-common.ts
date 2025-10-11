@@ -1,12 +1,12 @@
 // 翻訳関連の共通型定義とユーティリティ
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '@/constants/languages'
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/constants/languages";
 
 export interface TranslationData {
-  [key: string]: string | TranslationData
+  [key: string]: string | TranslationData;
 }
 
 export interface TranslationOptions {
-  [key: string]: string | number
+  [key: string]: string | number;
 }
 
 /**
@@ -17,40 +17,43 @@ export interface TranslationOptions {
  * @returns 翻訳されたテキスト
  */
 export function getNestedTranslation(
-  translations: TranslationData, 
-  key: string, 
-  options?: TranslationOptions
+  translations: TranslationData,
+  key: string,
+  options?: TranslationOptions,
 ): string {
-  const keys = key.split('.')
-  let value: string | TranslationData = translations
-  
+  const keys = key.split(".");
+  let value: string | TranslationData = translations;
+
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = value[k]
+    if (value && typeof value === "object" && k in value) {
+      value = value[k];
     } else {
       // キーが見つからない場合はキーをそのまま返す
-      return key
+      return key;
     }
   }
-  
-  if (typeof value !== 'string') {
-    return key
+
+  if (typeof value !== "string") {
+    return key;
   }
-  
+
   // シンプルな変数置換（{{variable}}形式と{variable}形式の両方をサポート）
   if (options) {
     // {{variable}}形式の置換
-    value = value.replace(/\{\{(\w+)\}\}/g, (match: string, varName: string) => {
-      return String(options[varName] || match)
-    })
-    
+    value = value.replace(
+      /\{\{(\w+)\}\}/g,
+      (match: string, varName: string) => {
+        return String(options[varName] || match);
+      },
+    );
+
     // {variable}形式の置換（i18next形式）
     value = value.replace(/\{(\w+)\}/g, (match: string, varName: string) => {
-      return String(options[varName] || match)
-    })
+      return String(options[varName] || match);
+    });
   }
-  
-  return value
+
+  return value;
 }
 
 /**
@@ -60,15 +63,15 @@ export function getNestedTranslation(
  */
 export function getLocaleFromAcceptLanguage(acceptLanguage: string): string {
   if (!acceptLanguage) {
-    return DEFAULT_LANGUAGE
+    return DEFAULT_LANGUAGE;
   }
 
   // 最初に出現するサポート言語を返す（シンプルな処理）
   for (const supportedLang of SUPPORTED_LANGUAGES) {
     if (acceptLanguage.includes(supportedLang)) {
-      return supportedLang
+      return supportedLang;
     }
   }
 
-  return DEFAULT_LANGUAGE
+  return DEFAULT_LANGUAGE;
 }

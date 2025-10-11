@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { usePhraseManager } from '@/hooks/phrase/usePhraseManager'
-import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
-import { useQuizModal } from '@/hooks/quiz/useQuizModal'
-import { useTranslation } from '@/hooks/ui/useTranslation'
-import LanguageSelector from '@/components/common/LanguageSelector'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
-import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
-import PhraseAdd from '@/components/phrase/PhraseAdd'
-import SpeakModeModal from '@/components/modals/SpeakModeModal'
-import QuizModeModal from '@/components/modals/QuizModeModal'
-import AddToHomeScreenModal from '@/components/modals/AddToHomeScreenModal'
+import { useEffect } from "react";
+import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { usePhraseManager } from "@/hooks/phrase/usePhraseManager";
+import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
+import { useQuizModal } from "@/hooks/quiz/useQuizModal";
+import { useTranslation } from "@/hooks/ui/useTranslation";
+import LanguageSelector from "@/components/common/LanguageSelector";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
+import PhraseAdd from "@/components/phrase/PhraseAdd";
+import SpeakModeModal from "@/components/modals/SpeakModeModal";
+import QuizModeModal from "@/components/modals/QuizModeModal";
+import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
 
 export default function PhraseAddPage() {
-  const { t } = useTranslation('common')
-  const { loading: authLoading } = useAuthGuard()
-  
+  const { t } = useTranslation("common");
+  const { loading: authLoading } = useAuthGuard();
+
   const {
     // State - ページレベルで使用
     nativeLanguage,
@@ -28,7 +28,7 @@ export default function PhraseAddPage() {
     showAddToHomeScreenModal,
     checkUnsavedChanges,
     closeAddToHomeScreenModal,
-    
+
     // State - PhraseAddコンポーネントで使用
     desiredPhrase,
     generatedVariations,
@@ -41,7 +41,7 @@ export default function PhraseAddPage() {
     editingVariations,
     phraseValidationError,
     selectedContext,
-    
+
     // Handlers - PhraseAddコンポーネントで使用
     handleEditVariation,
     handlePhraseChange,
@@ -50,43 +50,37 @@ export default function PhraseAddPage() {
     handleContextChange,
     addSituation,
     deleteSituation,
-    refetchPhraseList
-  } = usePhraseManager()
+    refetchPhraseList,
+  } = usePhraseManager();
 
   // Modal functionality
-  const {
-    showSpeakModal,
-    openSpeakModal,
-    closeSpeakModal,
-    handleSpeakStart
-  } = useSpeakModal()
+  const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
+    useSpeakModal();
 
-  const {
-    showQuizModal,
-    openQuizModal,
-    closeQuizModal,
-    handleQuizStart
-  } = useQuizModal()
+  const { showQuizModal, openQuizModal, closeQuizModal, handleQuizStart } =
+    useQuizModal();
 
   // ページ離脱時の警告処理をオーバーライド
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (generatedVariations.length > 0) {
-        e.preventDefault()
-        e.returnValue = t('confirm.unsavedPhrase')
-        return t('confirm.unsavedPhrase')
+        e.preventDefault();
+        e.returnValue = t("confirm.unsavedPhrase");
+        return t("confirm.unsavedPhrase");
       }
-    }
+    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [generatedVariations.length, t])
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [generatedVariations.length, t]);
 
   // 認証ローディング中は何も表示しない
   if (authLoading) {
-    return <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
+    return (
+      <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
+    );
   }
 
   return (
@@ -97,7 +91,7 @@ export default function PhraseAddPage() {
           <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
             Phrase
           </h1>
-          
+
           <LanguageSelector
             learningLanguage={learningLanguage}
             onLanguageChange={handleLearningLanguageChange}
@@ -105,10 +99,10 @@ export default function PhraseAddPage() {
             nativeLanguage={nativeLanguage}
           />
         </div>
-        
+
         {/* タブメニュー */}
-        <PhraseTabNavigation 
-          activeTab="Add" 
+        <PhraseTabNavigation
+          activeTab="Add"
           checkUnsavedChanges={checkUnsavedChanges}
           onSpeakModalOpen={openSpeakModal}
           onQuizModalOpen={openQuizModal}
@@ -118,10 +112,13 @@ export default function PhraseAddPage() {
         {/* コンテンツエリア */}
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {isInitializing ? (
-            <div className="flex items-center justify-center" style={{ minHeight: '240px' }}>
-              <LoadingSpinner 
-                size="md" 
-                message="Loading..." 
+            <div
+              className="flex items-center justify-center"
+              style={{ minHeight: "240px" }}
+            >
+              <LoadingSpinner
+                size="md"
+                message="Loading..."
                 className="text-center"
               />
             </div>
@@ -132,24 +129,24 @@ export default function PhraseAddPage() {
               phraseValidationError={phraseValidationError}
               isLoading={isLoading}
               isSaving={isSaving}
-                generatedVariations={generatedVariations}
-                editingVariations={editingVariations}
-                savingVariationIndex={savingVariationIndex}
-                error={error}
-                selectedContext={selectedContext}
-                situations={situations}
-                onPhraseChange={handlePhraseChange}
-                onGeneratePhrase={handleGeneratePhrase}
-                onEditVariation={handleEditVariation}
-                onSelectVariation={handleSelectVariation}
-                onContextChange={handleContextChange}
-                addSituation={addSituation}
-                deleteSituation={deleteSituation}
-              />
+              generatedVariations={generatedVariations}
+              editingVariations={editingVariations}
+              savingVariationIndex={savingVariationIndex}
+              error={error}
+              selectedContext={selectedContext}
+              situations={situations}
+              onPhraseChange={handlePhraseChange}
+              onGeneratePhrase={handleGeneratePhrase}
+              onEditVariation={handleEditVariation}
+              onSelectVariation={handleSelectVariation}
+              onContextChange={handleContextChange}
+              addSituation={addSituation}
+              deleteSituation={deleteSituation}
+            />
           )}
         </div>
       </div>
-      
+
       {/* Speak Mode モーダル */}
       <SpeakModeModal
         isOpen={showSpeakModal}
@@ -173,7 +170,6 @@ export default function PhraseAddPage() {
         isOpen={showAddToHomeScreenModal}
         onClose={closeAddToHomeScreenModal}
       />
-
     </div>
-  )
+  );
 }

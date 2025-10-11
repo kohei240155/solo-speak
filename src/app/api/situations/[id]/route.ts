@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
-import { authenticateRequest } from '@/utils/api-helpers'
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@/generated/prisma";
+import { authenticateRequest } from "@/utils/api-helpers";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 /** シチュエーションの更新APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -11,40 +11,42 @@ const prisma = new PrismaClient()
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
+    const authResult = await authenticateRequest(request);
+    if ("error" in authResult) {
+      return authResult.error;
     }
 
-    const { user } = authResult
-    const { id } = await params
+    const { user } = authResult;
+    const { id } = await params;
 
     // シチュエーションの存在確認とユーザー権限チェック
     const situation = await prisma.situation.findUnique({
       where: {
         id,
-        userId: user.id
-      }
-    })
+        userId: user.id,
+      },
+    });
 
     if (!situation) {
-      return NextResponse.json({ message: 'Situation not found' }, { status: 404 })
+      return NextResponse.json(
+        { message: "Situation not found" },
+        { status: 404 },
+      );
     }
 
     // シチュエーションを削除
     await prisma.situation.delete({
-      where: { id }
-    })
+      where: { id },
+    });
 
-    return NextResponse.json({ message: 'Situation deleted successfully' })
-
+    return NextResponse.json({ message: "Situation deleted successfully" });
   } catch {
     return NextResponse.json(
-      { success: false, error: 'Failed to delete situation' },
-      { status: 500 }
-    )
+      { success: false, error: "Failed to delete situation" },
+      { status: 500 },
+    );
   }
 }

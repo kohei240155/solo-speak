@@ -8,23 +8,30 @@
  * @param currentDate 現在の日時
  * @returns 日付が変わった場合はtrue
  */
-export function isDayChanged(lastSpeakDate: Date | null, currentDate: Date): boolean {
-  if (!lastSpeakDate) return false
-  
+export function isDayChanged(
+  lastSpeakDate: Date | null,
+  currentDate: Date,
+): boolean {
+  if (!lastSpeakDate) return false;
+
   // UTC基準でのdate比較
-  const lastDateUTC = new Date(Date.UTC(
-    lastSpeakDate.getUTCFullYear(),
-    lastSpeakDate.getUTCMonth(),
-    lastSpeakDate.getUTCDate()
-  ))
-  
-  const currentDateUTC = new Date(Date.UTC(
-    currentDate.getUTCFullYear(),
-    currentDate.getUTCMonth(),
-    currentDate.getUTCDate()
-  ))
-  
-  return lastDateUTC.getTime() !== currentDateUTC.getTime()
+  const lastDateUTC = new Date(
+    Date.UTC(
+      lastSpeakDate.getUTCFullYear(),
+      lastSpeakDate.getUTCMonth(),
+      lastSpeakDate.getUTCDate(),
+    ),
+  );
+
+  const currentDateUTC = new Date(
+    Date.UTC(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth(),
+      currentDate.getUTCDate(),
+    ),
+  );
+
+  return lastDateUTC.getTime() !== currentDateUTC.getTime();
 }
 
 /**
@@ -32,8 +39,8 @@ export function isDayChanged(lastSpeakDate: Date | null, currentDate: Date): boo
  * @returns UTC基準での今日の日付文字列 (YYYY-MM-DD)
  */
 export function getTodayUTC(): string {
-  const now = new Date()
-  return now.toISOString().split('T')[0]
+  const now = new Date();
+  return now.toISOString().split("T")[0];
 }
 
 /**
@@ -42,10 +49,10 @@ export function getTodayUTC(): string {
  * @returns 今日の場合はtrue
  */
 export function isToday(date: Date | null): boolean {
-  if (!date) return false
-  
-  const todayUTC = getTodayUTC()
-  const targetDateUTC = date.toISOString().split('T')[0]
-  
-  return targetDateUTC === todayUTC
+  if (!date) return false;
+
+  const todayUTC = getTodayUTC();
+  const targetDateUTC = date.toISOString().split("T")[0];
+
+  return targetDateUTC === todayUTC;
 }

@@ -1,9 +1,11 @@
 export const getGermanPrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `„${situation}“` : 'allgemeine Alltagskonversation';
+  const situationText = situation
+    ? `„${situation}“`
+    : "allgemeine Alltagskonversation";
 
   return `Du bist ein Deutsch-Konversationscoach für Lernende mit ${nativeLanguageName} als Muttersprache.
 

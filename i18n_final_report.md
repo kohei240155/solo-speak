@@ -4,7 +4,7 @@
 
 ### ✅ 修正完了項目
 
-1. **キーの統一** 
+1. **キーの統一**
    - 日本語版と英語版のキー不一致を完全に解決
    - 初期状態: 6個ずつの不一致 → 完全一致
 
@@ -21,6 +21,7 @@
 ### 🔧 実施した具体的な修正
 
 #### 1. 英語版ファイルのキー統一
+
 ```diff
 - "excludeHighPracticeCount": "Exclude phrases with high practice count"
 + "targetPhrases": "Target Phrases"
@@ -28,21 +29,25 @@
 - "exclude50": "50+ times"
 + "under50": "Under 50 times"
 
-- "exclude60": "60+ times"  
+- "exclude60": "60+ times"
 + "under60": "Under 60 times"
 
 （同様に70, 80, 90も修正）
 ```
 
 #### 2. 未使用キーの削除
+
 削除されたキー:
+
 - `speak.modal.startFrom` (練習順序)
 - `speak.modal.options.newest` (新しい順)
 - `speak.modal.options.oldest` (古い順)
 - `home.hero.cta.mobile` (モバイル版CTA)
 
 #### 3. 保持された未使用キー（3個）
+
 将来的に必要な可能性があるため保持:
+
 - `auth.sessionExpired` - セッション期限切れ
 - `auth.sessionInvalid` - セッション無効
 - `auth.serviceUnavailable` - 認証サービス利用不可
@@ -50,7 +55,7 @@
 ## 📁 作成されたファイル
 
 1. **`check_i18n_usage.py`** - 翻訳キー使用状況チェックツール
-2. **`remove_unused_i18n_keys.py`** - 未使用キー削除ツール  
+2. **`remove_unused_i18n_keys.py`** - 未使用キー削除ツール
 3. **`i18n_analysis_report.md`** - 初回分析レポート
 4. **`i18n_cleanup_guide.md`** - 削除ガイド
 5. **`i18n_final_report.md`** - この最終レポート
@@ -58,21 +63,25 @@
 ## 🔄 バックアップファイル
 
 安全のため以下のバックアップが作成されています:
+
 - `public/locales/ja/common.json.backup`
 - `public/locales/en/common.json.backup`
 
 ## 🚀 今後の推奨事項
 
 ### 1. 定期的なメンテナンス
+
 ```bash
 # 月1回実行推奨
 python check_i18n_usage.py
 ```
 
 ### 2. 認証エラーハンドリングの実装
+
 残り3個の未使用キーは認証機能の実装時に使用予定。
 
 ### 3. 新機能開発時のチェック
+
 - 新しい翻訳キーを追加時は必ず両言語に追加
 - 機能削除時は対応する翻訳キーも削除
 

@@ -1,7 +1,11 @@
-import { prisma } from '@/utils/prisma'
-import { User } from '@supabase/supabase-js'
-import { getInitialSituations } from '@/data/situations'
-import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequest } from '@/types/userSettings'
+import { prisma } from "@/utils/prisma";
+import { User } from "@supabase/supabase-js";
+import { getInitialSituations } from "@/data/situations";
+import {
+  UserSettingsResponse,
+  UserSettingsUpdateRequest,
+  UserSettingsCreateRequest,
+} from "@/types/userSettings";
 
 /**
  * ユーザーの存在チェック
@@ -11,15 +15,15 @@ import { UserSettingsResponse, UserSettingsUpdateRequest, UserSettingsCreateRequ
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
     const user = await prisma.user.findUnique({
-      where: { 
+      where: {
         id: userId,
-        deletedAt: null // 削除されていないユーザーのみ確認
-      }
-    })
-    const exists = !!user
-    return exists
+        deletedAt: null, // 削除されていないユーザーのみ確認
+      },
+    });
+    const exists = !!user;
+    return exists;
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
@@ -28,20 +32,22 @@ export async function checkUserExists(userId: string): Promise<boolean> {
  * @param userId ユーザーID
  * @returns ユーザー設定データ
  */
-export async function getUserSettings(userId: string): Promise<UserSettingsResponse | null> {
+export async function getUserSettings(
+  userId: string,
+): Promise<UserSettingsResponse | null> {
   const user = await prisma.user.findUnique({
-    where: { 
+    where: {
       id: userId,
-      deletedAt: null // 削除されていないユーザーのみ取得
+      deletedAt: null, // 削除されていないユーザーのみ取得
     },
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
-    }
-  })
+    },
+  });
 
   if (!user) {
-    return null
+    return null;
   }
 
   return {
@@ -50,20 +56,22 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
     nativeLanguageId: user.nativeLanguageId,
     defaultLearningLanguageId: user.defaultLearningLanguageId,
     email: user.email,
-    nativeLanguage: user.nativeLanguage ? {
-      id: user.nativeLanguage.id,
-      name: user.nativeLanguage.name,
-      code: user.nativeLanguage.code
-    } : null,
-    defaultLearningLanguage: user.defaultLearningLanguage ? {
-      id: user.defaultLearningLanguage.id,
-      name: user.defaultLearningLanguage.name,
-      code: user.defaultLearningLanguage.code
-    } : null
-  }
+    nativeLanguage: user.nativeLanguage
+      ? {
+          id: user.nativeLanguage.id,
+          name: user.nativeLanguage.name,
+          code: user.nativeLanguage.code,
+        }
+      : null,
+    defaultLearningLanguage: user.defaultLearningLanguage
+      ? {
+          id: user.defaultLearningLanguage.id,
+          name: user.defaultLearningLanguage.name,
+          code: user.defaultLearningLanguage.code,
+        }
+      : null,
+  };
 }
-
-
 
 /**
  * ユーザー設定の作成
@@ -72,17 +80,17 @@ export async function getUserSettings(userId: string): Promise<UserSettingsRespo
  * @returns 作成されたユーザー設定
  */
 export async function createUserSettings(
-  user: User, 
-  userData: UserSettingsCreateRequest
+  user: User,
+  userData: UserSettingsCreateRequest,
 ): Promise<UserSettingsResponse> {
   try {
     // iconUrlが空の場合はデフォルト画像を設定
-    const iconUrl = userData.iconUrl || '/images/user-icon/user-icon.png'
-    
+    const iconUrl = userData.iconUrl || "/images/user-icon/user-icon.png";
+
     const result = await prisma.user.create({
       data: {
         id: user.id,
-        email: user.email || userData.email || '',
+        email: user.email || userData.email || "",
         username: userData.username,
         iconUrl: iconUrl,
         nativeLanguageId: userData.nativeLanguageId,
@@ -91,13 +99,17 @@ export async function createUserSettings(
       include: {
         nativeLanguage: true,
         defaultLearningLanguage: true,
-      }
-    })
+      },
+    });
 
     // ユーザー作成後、ネイティブ言語に応じたデフォルトシチュエーションを作成
     try {
       if (result.nativeLanguage) {
-        await createDefaultSituationsForUser(prisma, result.id, result.nativeLanguage.code)
+        await createDefaultSituationsForUser(
+          prisma,
+          result.id,
+          result.nativeLanguage.code,
+        );
       }
     } catch {
       // シチュエーション作成に失敗してもユーザー作成自体は成功として扱う
@@ -109,19 +121,23 @@ export async function createUserSettings(
       nativeLanguageId: result.nativeLanguageId,
       defaultLearningLanguageId: result.defaultLearningLanguageId,
       email: result.email,
-      nativeLanguage: result.nativeLanguage ? {
-        id: result.nativeLanguage.id,
-        name: result.nativeLanguage.name,
-        code: result.nativeLanguage.code
-      } : null,
-      defaultLearningLanguage: result.defaultLearningLanguage ? {
-        id: result.defaultLearningLanguage.id,
-        name: result.defaultLearningLanguage.name,
-        code: result.defaultLearningLanguage.code
-      } : null
-    }
+      nativeLanguage: result.nativeLanguage
+        ? {
+            id: result.nativeLanguage.id,
+            name: result.nativeLanguage.name,
+            code: result.nativeLanguage.code,
+          }
+        : null,
+      defaultLearningLanguage: result.defaultLearningLanguage
+        ? {
+            id: result.defaultLearningLanguage.id,
+            name: result.defaultLearningLanguage.name,
+            code: result.defaultLearningLanguage.code,
+          }
+        : null,
+    };
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
@@ -134,10 +150,10 @@ export async function hasUserSituations(userId: string): Promise<boolean> {
   const count = await prisma.situation.count({
     where: {
       userId,
-      deletedAt: null
-    }
-  })
-  return count > 0
+      deletedAt: null,
+    },
+  });
+  return count > 0;
 }
 
 /**
@@ -148,12 +164,12 @@ export async function hasUserSituations(userId: string): Promise<boolean> {
  */
 export async function updateUserSettings(
   userId: string,
-  userData: UserSettingsUpdateRequest
+  userData: UserSettingsUpdateRequest,
 ): Promise<UserSettingsResponse> {
   const result = await prisma.user.update({
-    where: { 
+    where: {
       id: userId,
-      deletedAt: null // 削除されていないユーザーのみ更新
+      deletedAt: null, // 削除されていないユーザーのみ更新
     },
     data: {
       username: userData.username,
@@ -164,14 +180,18 @@ export async function updateUserSettings(
     include: {
       nativeLanguage: true,
       defaultLearningLanguage: true,
-    }
-  })
+    },
+  });
 
   // ユーザーにシチュエーションが存在しない場合、デフォルトシチュエーションを作成
   try {
-    const hasSituations = await hasUserSituations(userId)
+    const hasSituations = await hasUserSituations(userId);
     if (!hasSituations && result.nativeLanguage) {
-      await createDefaultSituationsForUser(prisma, userId, result.nativeLanguage.code)
+      await createDefaultSituationsForUser(
+        prisma,
+        userId,
+        result.nativeLanguage.code,
+      );
     }
   } catch {
     // シチュエーション作成に失敗してもユーザー更新自体は成功として扱う
@@ -183,17 +203,21 @@ export async function updateUserSettings(
     nativeLanguageId: result.nativeLanguageId,
     defaultLearningLanguageId: result.defaultLearningLanguageId,
     email: result.email,
-    nativeLanguage: result.nativeLanguage ? {
-      id: result.nativeLanguage.id,
-      name: result.nativeLanguage.name,
-      code: result.nativeLanguage.code
-    } : null,
-    defaultLearningLanguage: result.defaultLearningLanguage ? {
-      id: result.defaultLearningLanguage.id,
-      name: result.defaultLearningLanguage.name,
-      code: result.defaultLearningLanguage.code
-    } : null
-  }
+    nativeLanguage: result.nativeLanguage
+      ? {
+          id: result.nativeLanguage.id,
+          name: result.nativeLanguage.name,
+          code: result.nativeLanguage.code,
+        }
+      : null,
+    defaultLearningLanguage: result.defaultLearningLanguage
+      ? {
+          id: result.defaultLearningLanguage.id,
+          name: result.defaultLearningLanguage.name,
+          code: result.defaultLearningLanguage.code,
+        }
+      : null,
+  };
 }
 
 /**
@@ -203,32 +227,34 @@ export async function updateUserSettings(
  * @param languageCode ユーザーのネイティブ言語コード
  */
 async function createDefaultSituationsForUser(
-  prisma: typeof import('@/utils/prisma').prisma,
+  prisma: typeof import("@/utils/prisma").prisma,
   userId: string,
-  languageCode: string
+  languageCode: string,
 ): Promise<void> {
-  const defaultSituations = getInitialSituations(languageCode)
-  
+  const defaultSituations = getInitialSituations(languageCode);
+
   // 既存のシチュエーションをチェック（重複作成を防ぐ）
   const existingSituations = await prisma.situation.findMany({
     where: {
       userId,
-      deletedAt: null
-    }
-  })
-  
+      deletedAt: null,
+    },
+  });
+
   // 既存のシチュエーション名を取得
-  const existingNames = existingSituations.map(s => s.name)
-  
+  const existingNames = existingSituations.map((s) => s.name);
+
   // 重複しないシチュエーションのみを作成
-  const situationsToCreate = defaultSituations.filter(name => !existingNames.includes(name))
-  
+  const situationsToCreate = defaultSituations.filter(
+    (name) => !existingNames.includes(name),
+  );
+
   if (situationsToCreate.length > 0) {
     await prisma.situation.createMany({
-      data: situationsToCreate.map(name => ({
+      data: situationsToCreate.map((name) => ({
         userId,
-        name
-      }))
-    })
+        name,
+      })),
+    });
   }
 }

@@ -13,12 +13,12 @@
 ## 基本的な使用例
 
 ```tsx
-import DropdownMenu from '@/components/DropdownMenu'
-import { BsPencil } from 'react-icons/bs'
-import { RiDeleteBin6Line } from 'react-icons/ri'
+import DropdownMenu from "@/components/DropdownMenu";
+import { BsPencil } from "react-icons/bs";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 function MyComponent() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <DropdownMenu
@@ -27,21 +27,21 @@ function MyComponent() {
       onClose={() => setIsMenuOpen(false)}
       items={[
         {
-          id: 'edit',
-          label: 'Edit',
+          id: "edit",
+          label: "Edit",
           icon: BsPencil,
-          onClick: handleEdit
+          onClick: handleEdit,
         },
         {
-          id: 'delete',
-          label: 'Delete',
+          id: "delete",
+          label: "Delete",
           icon: RiDeleteBin6Line,
           onClick: handleDelete,
-          variant: 'danger'
-        }
+          variant: "danger",
+        },
       ]}
     />
-  )
+  );
 }
 ```
 
@@ -69,18 +69,19 @@ function MyComponent() {
 
 ```tsx
 interface DropdownMenuItem {
-  id: string
-  label: string
-  icon?: React.ComponentType<{ className?: string }>
-  onClick: () => void
-  variant?: 'default' | 'danger'
-  disabled?: boolean
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+  variant?: "default" | "danger";
+  disabled?: boolean;
 }
 ```
 
 ## バリアント
 
 ### danger
+
 赤色のテキストで表示され、削除などの危険なアクションに使用します。
 
 ```tsx
@@ -94,6 +95,7 @@ interface DropdownMenuItem {
 ```
 
 ### disabled
+
 非活性状態で表示され、クリックできなくなります。
 
 ```tsx
@@ -126,12 +128,12 @@ interface DropdownMenuItem {
 ## カスタムアイコンの使用
 
 ```tsx
-import { AiOutlineMore } from 'react-icons/ai'
+import { AiOutlineMore } from "react-icons/ai";
 
 <DropdownMenu
   triggerIcon={AiOutlineMore}
   // ... other props
-/>
+/>;
 ```
 
 ## 位置の調整

@@ -1,35 +1,35 @@
-import { SavedPhrase, PhraseData } from '@/types/phrase'
-import { LanguageInfo } from '@/types/common'
-import { SpeakConfig } from '@/types/speak'
-import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTranslation } from '@/hooks/ui/useTranslation'
-import LoadingSpinner from '../common/LoadingSpinner'
-import PhraseItem from './PhraseItem'
-import EditPhraseModal from './EditPhraseModal'
-import DeleteConfirmationModal from './DeleteConfirmationModal'
-import ExplanationModal from './ExplanationModal'
-import SpeakModeModal from '../modals/SpeakModeModal'
+import { SavedPhrase, PhraseData } from "@/types/phrase";
+import { LanguageInfo } from "@/types/common";
+import { SpeakConfig } from "@/types/speak";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "@/hooks/ui/useTranslation";
+import LoadingSpinner from "../common/LoadingSpinner";
+import PhraseItem from "./PhraseItem";
+import EditPhraseModal from "./EditPhraseModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import ExplanationModal from "./ExplanationModal";
+import SpeakModeModal from "../modals/SpeakModeModal";
 
-import { DEFAULT_LANGUAGE } from '@/constants/languages'
+import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
 interface PhraseListProps {
-  isModalContext?: boolean
-  nativeLanguage?: string
-  learningLanguage?: string
-  targetUserId?: string | null
-  savedPhrases?: PhraseData[]
-  isLoadingPhrases?: boolean
-  isLoadingMore?: boolean
-  languages?: LanguageInfo[]
-  showSpeakModal?: boolean
-  onSpeakModalStateChange?: (state: boolean) => void
-  onRefreshPhrases?: () => void
-  onUpdatePhrase?: (phrase: PhraseData) => void
+  isModalContext?: boolean;
+  nativeLanguage?: string;
+  learningLanguage?: string;
+  targetUserId?: string | null;
+  savedPhrases?: PhraseData[];
+  isLoadingPhrases?: boolean;
+  isLoadingMore?: boolean;
+  languages?: LanguageInfo[];
+  showSpeakModal?: boolean;
+  onSpeakModalStateChange?: (state: boolean) => void;
+  onRefreshPhrases?: () => void;
+  onUpdatePhrase?: (phrase: PhraseData) => void;
 }
 
 export default function PhraseList({
-  nativeLanguage = '',
+  nativeLanguage = "",
   learningLanguage = DEFAULT_LANGUAGE,
   onUpdatePhrase,
   onRefreshPhrases,
@@ -38,100 +38,114 @@ export default function PhraseList({
   savedPhrases = [],
   isLoadingPhrases = false,
   isLoadingMore = false,
-  languages = []
+  languages = [],
 }: PhraseListProps) {
-  const { t } = useTranslation('common')
-  const router = useRouter()
-  
-  // ローカル状態管理
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-  const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null)
-  const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null)
-  const [explanationPhrase, setExplanationPhrase] = useState<SavedPhrase | null>(null)
-  const [showLocalSpeakModal, setShowLocalSpeakModal] = useState(false)
+  const { t } = useTranslation("common");
+  const router = useRouter();
 
-  const handleMenuToggle = useCallback((phraseId: string) => {
-    if (phraseId === '') {
-      setOpenMenuId(null)
-    } else {
-      setOpenMenuId(openMenuId === phraseId ? null : phraseId)
-    }
-  }, [openMenuId])
+  // ローカル状態管理
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editingPhrase, setEditingPhrase] = useState<SavedPhrase | null>(null);
+  const [deletingPhraseId, setDeletingPhraseId] = useState<string | null>(null);
+  const [explanationPhrase, setExplanationPhrase] =
+    useState<SavedPhrase | null>(null);
+  const [showLocalSpeakModal, setShowLocalSpeakModal] = useState(false);
+
+  const handleMenuToggle = useCallback(
+    (phraseId: string) => {
+      if (phraseId === "") {
+        setOpenMenuId(null);
+      } else {
+        setOpenMenuId(openMenuId === phraseId ? null : phraseId);
+      }
+    },
+    [openMenuId],
+  );
 
   const handleEdit = useCallback((phrase: SavedPhrase) => {
-    setEditingPhrase(phrase)
-    setOpenMenuId(null)
-  }, [])
+    setEditingPhrase(phrase);
+    setOpenMenuId(null);
+  }, []);
 
-  const handleSpeak = useCallback((phraseId: string) => {
-    // 特定のフレーズを練習するために、そのフレーズIDをパラメータとして遷移
-    router.push(`/phrase/speak?phraseId=${phraseId}`)
-    setOpenMenuId(null)
-  }, [router])
+  const handleSpeak = useCallback(
+    (phraseId: string) => {
+      // 特定のフレーズを練習するために、そのフレーズIDをパラメータとして遷移
+      router.push(`/phrase/speak?phraseId=${phraseId}`);
+      setOpenMenuId(null);
+    },
+    [router],
+  );
 
   const handleDelete = useCallback((phraseId: string) => {
-    setDeletingPhraseId(phraseId)
-    setOpenMenuId(null)
-  }, [])
+    setDeletingPhraseId(phraseId);
+    setOpenMenuId(null);
+  }, []);
 
   const handleExplanation = useCallback((phrase: SavedPhrase) => {
-    setExplanationPhrase(phrase)
-    setOpenMenuId(null)
-  }, [])
+    setExplanationPhrase(phrase);
+    setOpenMenuId(null);
+  }, []);
 
   const handleSpeakStart = (config: SpeakConfig) => {
     // 設定に基づいてSpeak画面に遷移
     const queryParams = new URLSearchParams({
       language: config.language,
-      excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString()
-    })
-    
+      excludeTodayPracticed: (config.excludeTodayPracticed ?? true).toString(),
+    });
+
     // excludeIfSpeakCountGTEパラメータを追加（undefinedでない場合のみ）
     if (config.excludeIfSpeakCountGTE !== undefined) {
-      queryParams.set('excludeIfSpeakCountGTE', config.excludeIfSpeakCountGTE.toString())
+      queryParams.set(
+        "excludeIfSpeakCountGTE",
+        config.excludeIfSpeakCountGTE.toString(),
+      );
     }
-    
-    router.push(`/phrase/speak?${queryParams.toString()}`)
-  }
+
+    router.push(`/phrase/speak?${queryParams.toString()}`);
+  };
 
   const handleSpeakModalClose = () => {
-    setShowLocalSpeakModal(false)
+    setShowLocalSpeakModal(false);
     if (onSpeakModalStateChange) {
-      onSpeakModalStateChange(false)
+      onSpeakModalStateChange(false);
     }
-  }
+  };
 
   const handleEditClose = () => {
-    setEditingPhrase(null)
-  }
+    setEditingPhrase(null);
+  };
 
   const handleDeleteClose = () => {
-    setDeletingPhraseId(null)
-  }
+    setDeletingPhraseId(null);
+  };
 
   const handleExplanationClose = () => {
-    setExplanationPhrase(null)
-  }
+    setExplanationPhrase(null);
+  };
 
-  const handlePhraseUpdate = useCallback((updatedPhrase: SavedPhrase) => {
-    if (onUpdatePhrase) {
-      onUpdatePhrase(updatedPhrase)
-    }
-  }, [onUpdatePhrase])
+  const handlePhraseUpdate = useCallback(
+    (updatedPhrase: SavedPhrase) => {
+      if (onUpdatePhrase) {
+        onUpdatePhrase(updatedPhrase);
+      }
+    },
+    [onUpdatePhrase],
+  );
 
   if (isLoadingPhrases && savedPhrases.length === 0) {
     return (
-    <div className='pt-20'>
-      <LoadingSpinner message="Loading phrases..." />
-    </div>
-  )}
+      <div className="pt-20">
+        <LoadingSpinner message="Loading phrases..." />
+      </div>
+    );
+  }
 
   if (savedPhrases.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600">{t('phrase.noPhrasesYet')}</p>
+        <p className="text-gray-600">{t("phrase.noPhrasesYet")}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -149,7 +163,7 @@ export default function PhraseList({
             onExplanation={handleExplanation}
           />
         ))}
-        
+
         {/* 無限スクロール用のローディング */}
         {isLoadingMore && (
           <div className="flex justify-center py-4">
@@ -200,11 +214,11 @@ export default function PhraseList({
 
       {/* メニューが開いている時のオーバーレイ */}
       {openMenuId && (
-        <div 
+        <div
           className="fixed inset-0 z-0"
           onClick={() => setOpenMenuId(null)}
         />
       )}
     </>
-  )
+  );
 }

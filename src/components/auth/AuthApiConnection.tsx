@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import { setShowLoginModalRef } from '@/utils/api'
+import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { setShowLoginModalRef } from "@/utils/api";
 
 /**
  * AuthContextとAPIクライアントを接続するコンポーネント
  * APIクライアントからログインモーダルを表示できるようにします
  */
 export default function AuthApiConnection() {
-  const { showLoginModal } = useAuth()
+  const { showLoginModal } = useAuth();
 
   useEffect(() => {
     // APIクライアントにログインモーダル表示関数を登録
-    setShowLoginModalRef(showLoginModal)
-    
+    setShowLoginModalRef(showLoginModal);
+
     // クリーンアップ関数で登録を解除
     return () => {
-      setShowLoginModalRef(() => {})
-    }
-  }, [showLoginModal])
+      setShowLoginModalRef(() => {});
+    };
+  }, [showLoginModal]);
 
-  return null
+  return null;
 }
