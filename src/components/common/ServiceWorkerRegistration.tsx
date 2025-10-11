@@ -1,33 +1,37 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
     // 即座にキャッシュをクリア（アプリ起動時）
-    if ('caches' in window) {
-      caches.keys().then((cacheNames) => {
-        // すべてのキャッシュを削除（デプロイ後の不整合を防ぐ）
-        const deletePromises = cacheNames.map((cacheName) => {
-          return caches.delete(cacheName);
+    if ("caches" in window) {
+      caches
+        .keys()
+        .then((cacheNames) => {
+          // すべてのキャッシュを削除（デプロイ後の不整合を防ぐ）
+          const deletePromises = cacheNames.map((cacheName) => {
+            return caches.delete(cacheName);
+          });
+
+          return Promise.all(deletePromises);
+        })
+        .then(() => {
+          // All caches cleared on startup
+        })
+        .catch(() => {
+          // Cache clearing failed - silently handle error
         });
-        
-        return Promise.all(deletePromises);
-      }).then(() => {
-        // All caches cleared on startup
-      }).catch(() => {
-        // Cache clearing failed - silently handle error
-      });
     }
 
     if (
-      typeof window !== 'undefined' &&
-      'serviceWorker' in navigator &&
-      process.env.NODE_ENV === 'production'
+      typeof window !== "undefined" &&
+      "serviceWorker" in navigator &&
+      process.env.NODE_ENV === "production"
     ) {
       // サービスワーカーからのメッセージをリッスン
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'FORCE_UPDATE') {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.type === "FORCE_UPDATE") {
           // 少し遅延を入れてからリロードを実行
           setTimeout(() => {
             window.location.reload();
@@ -35,16 +39,20 @@ export default function ServiceWorkerRegistration() {
         }
       });
 
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker
+        .register("/sw.js")
         .then((registration) => {
           // Service worker registered successfully
-          
+
           // 新しいサービスワーカーが利用可能になったらリロードを実行
-          registration.addEventListener('updatefound', () => {
+          registration.addEventListener("updatefound", () => {
             const newWorker = registration.installing;
             if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              newWorker.addEventListener("statechange", () => {
+                if (
+                  newWorker.state === "installed" &&
+                  navigator.serviceWorker.controller
+                ) {
                   // 新しいバージョンが利用可能 - リロードを実行
                   setTimeout(() => {
                     window.location.reload();

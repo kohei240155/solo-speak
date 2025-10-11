@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
-import { authenticateRequest } from '@/utils/api-helpers'
-import { CreateSituationRequest, SituationsListResponse } from '@/types/situation'
-import { ApiErrorResponse } from '@/types/api'
+import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@/generated/prisma";
+import { authenticateRequest } from "@/utils/api-helpers";
+import {
+  CreateSituationRequest,
+  SituationsListResponse,
+} from "@/types/situation";
+import { ApiErrorResponse } from "@/types/api";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 /** シチュエーションの一覧取得と新規作成APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -13,78 +16,77 @@ const prisma = new PrismaClient()
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
+    const authResult = await authenticateRequest(request);
+    if ("error" in authResult) {
+      return authResult.error;
     }
 
-    const { user } = authResult
+    const { user } = authResult;
 
     // ユーザーのシチュエーション一覧を取得
     const situations = await prisma.situation.findMany({
       where: {
         userId: user.id,
-        deletedAt: null
+        deletedAt: null,
       },
       select: {
         id: true,
         name: true,
         createdAt: true,
-        updatedAt: true
+        updatedAt: true,
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: "desc",
+      },
+    });
 
     const response: SituationsListResponse = {
-      situations: situations.map(situation => ({
+      situations: situations.map((situation) => ({
         id: situation.id,
         name: situation.name,
         createdAt: situation.createdAt.toISOString(),
-        updatedAt: situation.updatedAt.toISOString()
-      }))
-    }
+        updatedAt: situation.updatedAt.toISOString(),
+      })),
+    };
 
-    return NextResponse.json(response)
-
+    return NextResponse.json(response);
   } catch {
     const errorResponse: ApiErrorResponse = {
-      error: 'Internal server error'
-    }
-    return NextResponse.json(errorResponse, { status: 500 })
+      error: "Internal server error",
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
 
- /** シチュエーションの新規作成APIエンドポイント
+/** シチュエーションの新規作成APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
  * @returns CreateSituationResponseData - 作成されたシチュエーションデータ
  */
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
+    const authResult = await authenticateRequest(request);
+    if ("error" in authResult) {
+      return authResult.error;
     }
 
-    const { user } = authResult
+    const { user } = authResult;
 
-    const body: CreateSituationRequest = await request.json()
-    
+    const body: CreateSituationRequest = await request.json();
+
     // バリデーション
     if (!body.name || body.name.trim().length === 0) {
       const errorResponse: ApiErrorResponse = {
-        error: 'Situation name is required'
-      }
-      return NextResponse.json(errorResponse, { status: 400 })
+        error: "Situation name is required",
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     if (body.name.length > 20) {
       const errorResponse: ApiErrorResponse = {
-        error: 'Situation name must be 20 characters or less'
-      }
-      return NextResponse.json(errorResponse, { status: 400 })
+        error: "Situation name must be 20 characters or less",
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     // 同じ名前のシチュエーションが既に存在するかチェック
@@ -92,36 +94,38 @@ export async function POST(request: NextRequest) {
       where: {
         userId: user.id,
         name: body.name.trim(),
-        deletedAt: null
-      }
-    })
+        deletedAt: null,
+      },
+    });
 
     if (existingSituation) {
       const errorResponse: ApiErrorResponse = {
-        error: 'Situation with this name already exists'
-      }
-      return NextResponse.json(errorResponse, { status: 409 })
+        error: "Situation with this name already exists",
+      };
+      return NextResponse.json(errorResponse, { status: 409 });
     }
 
     // 新しいシチュエーションを作成
     const newSituation = await prisma.situation.create({
       data: {
         userId: user.id,
-        name: body.name.trim()
-      }
-    })
+        name: body.name.trim(),
+      },
+    });
 
-    return NextResponse.json({
-      id: newSituation.id,
-      name: newSituation.name,
-      createdAt: newSituation.createdAt.toISOString(),
-      updatedAt: newSituation.updatedAt.toISOString()
-    }, { status: 201 })
-
+    return NextResponse.json(
+      {
+        id: newSituation.id,
+        name: newSituation.name,
+        createdAt: newSituation.createdAt.toISOString(),
+        updatedAt: newSituation.updatedAt.toISOString(),
+      },
+      { status: 201 },
+    );
   } catch {
     const errorResponse: ApiErrorResponse = {
-      error: 'Internal server error'
-    }
-    return NextResponse.json(errorResponse, { status: 500 })
+      error: "Internal server error",
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

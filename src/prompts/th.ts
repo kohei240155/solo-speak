@@ -1,9 +1,11 @@
 export const getThaiPrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `«${situation}»` : 'การสนทนาทั่วไปในชีวิตประจำวัน';
+  const situationText = situation
+    ? `«${situation}»`
+    : "การสนทนาทั่วไปในชีวิตประจำวัน";
 
   return `คุณเป็นโค้ชการสนทนาภาษาไทยสำหรับผู้เรียนที่ใช้ภาษา${nativeLanguageName}เป็นภาษาแม่
 

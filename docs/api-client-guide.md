@@ -13,24 +13,24 @@
 ### 1. 汎用APIクライアント
 
 ```typescript
-import { api } from '@/utils/api'
+import { api } from "@/utils/api";
 
 // GET リクエスト
-const data = await api.get('/api/user/settings')
+const data = await api.get("/api/user/settings");
 
 // POST リクエスト
-const result = await api.post('/api/phrase', {
-  japanese: 'こんにちは',
-  english: 'Hello'
-})
+const result = await api.post("/api/phrase", {
+  japanese: "こんにちは",
+  english: "Hello",
+});
 
 // PUT リクエスト
-const updated = await api.put('/api/phrase/123', {
-  japanese: '更新されたテキスト'
-})
+const updated = await api.put("/api/phrase/123", {
+  japanese: "更新されたテキスト",
+});
 
 // DELETE リクエスト
-await api.delete('/api/phrase/123')
+await api.delete("/api/phrase/123");
 ```
 
 ### 2. SWRを使ったデータ取得とキャッシュ
@@ -65,29 +65,33 @@ function MyComponent() {
 ### 3. 一回限りのAPI呼び出し
 
 ```typescript
-import { getSpeakPhrase, updatePhraseCount, deletePhrase } from '@/hooks/useApi'
+import {
+  getSpeakPhrase,
+  updatePhraseCount,
+  deletePhrase,
+} from "@/hooks/useApi";
 
 async function handleSpeakStart() {
   try {
     // Speakフレーズを取得
     const data = await getSpeakPhrase({
-      language: 'en',
-      order: 'new_to_old',
-      prioritizeLowPractice: 'true'
-    })
-    
+      language: "en",
+      order: "new_to_old",
+      prioritizeLowPractice: "true",
+    });
+
     if (data.success && data.phrase) {
-      console.log('フレーズ取得成功:', data.phrase)
+      console.log("フレーズ取得成功:", data.phrase);
     }
   } catch (error) {
     // エラーは自動でトースト表示される
-    console.error('API呼び出しエラー:', error)
+    console.error("API呼び出しエラー:", error);
   }
 }
 
 async function handlePhraseComplete(phraseId: string) {
   // 練習カウントを更新
-  await updatePhraseCount(phraseId)
+  await updatePhraseCount(phraseId);
 }
 ```
 
@@ -96,26 +100,30 @@ async function handlePhraseComplete(phraseId: string) {
 ### 1. コードの簡潔化
 
 **Before:**
+
 ```typescript
 // 毎回認証トークンを取得する必要があった
-const { data: { session } } = await supabase.auth.getSession()
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 if (!session) {
-  toast.error('認証情報が見つかりません')
-  return
+  toast.error("認証情報が見つかりません");
+  return;
 }
 
-const response = await fetch('/api/phrase/speak', {
+const response = await fetch("/api/phrase/speak", {
   headers: {
-    'Authorization': `Bearer ${session.access_token}`
-  }
-})
-const data = await response.json()
+    Authorization: `Bearer ${session.access_token}`,
+  },
+});
+const data = await response.json();
 ```
 
 **After:**
+
 ```typescript
 // 認証は自動で処理される
-const data = await api.get('/api/phrase/speak')
+const data = await api.get("/api/phrase/speak");
 ```
 
 ### 2. 自動エラーハンドリング
@@ -138,33 +146,33 @@ const data = await api.get('/api/phrase/speak')
 
 ```typescript
 // 認証を使用しない場合
-const data = await api.get('/api/public-data', { 
-  useAuth: false 
-})
+const data = await api.get("/api/public-data", {
+  useAuth: false,
+});
 
 // エラートーストを無効化
-const data = await api.post('/api/data', body, { 
-  showErrorToast: false 
-})
+const data = await api.post("/api/data", body, {
+  showErrorToast: false,
+});
 
 // タイムアウトを設定
-const data = await api.get('/api/slow-endpoint', { 
-  timeout: 60000 // 60秒
-})
+const data = await api.get("/api/slow-endpoint", {
+  timeout: 60000, // 60秒
+});
 ```
 
 ### SWRのキャッシュ設定
 
 ```typescript
 // カスタムキャッシュ設定
-const { data } = useSWR('/api/data', fetcher, {
+const { data } = useSWR("/api/data", fetcher, {
   // 5分間キャッシュ
   dedupingInterval: 5 * 60 * 1000,
   // フォーカス時の再検証を無効化
   revalidateOnFocus: false,
   // 10秒間隔で自動更新
   refreshInterval: 10000,
-})
+});
 ```
 
 ## 移行ガイド

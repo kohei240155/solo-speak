@@ -3,6 +3,7 @@
 ## 1. 機能要件
 
 ### 1.1 基本機能
+
 - [ ] ユーザーが言えなかったフレーズを80文字まで入力できること（母国語：日本語）
 - [ ] ユーザーが日本語で話したいフレーズを200文字まで入力できること（母国語：英語）
 - [ ] フレーズ生成ボタンが配置されていること
@@ -19,6 +20,7 @@
 ### 1.2 API仕様
 
 #### フレーズ生成API
+
 ```
 POST /api/phrase/generate
 Content-Type: application/json
@@ -26,7 +28,7 @@ Content-Type: application/json
 Request Body:
 {
   "nativeLanguage": "ja" | "en",
-  "learningLanguage": "en" | "ja", 
+  "learningLanguage": "en" | "ja",
   "desiredPhrase": string (max: 200文字)
 }
 
@@ -43,6 +45,7 @@ Response:
 ```
 
 #### フレーズ登録API
+
 ```
 POST /api/phrase
 Content-Type: application/json
@@ -77,15 +80,18 @@ Response:
 ## 2. 非機能要件
 
 ### 2.1 パフォーマンス
+
 - フレーズ生成の応答時間: 10秒以内
 - API応答時間: 3秒以内（ChatGPT API除く）
 - 同時アクセス: 100ユーザー
 
 ### 2.2 可用性
+
 - システム稼働率: 99.5%
 - メンテナンス時間: 月4時間以内
 
 ### 2.3 セキュリティ
+
 - ユーザー認証必須
 - APIキーの適切な管理
 - 入力値検証とサニタイズ
@@ -94,6 +100,7 @@ Response:
 ## 3. システム構成
 
 ### 3.1 技術スタック
+
 - **フロントエンド**: Next.js 15, React 19, TypeScript, Tailwind CSS
 - **バックエンド**: Next.js API Routes
 - **データベース**: PostgreSQL + Prisma
@@ -102,6 +109,7 @@ Response:
 - **ホスティング**: Vercel
 
 ### 3.2 アーキテクチャ図
+
 ```
 [ユーザー] → [Next.js Frontend] → [API Routes] → [OpenAI API]
                     ↓                    ↓
@@ -113,6 +121,7 @@ Response:
 ### 4.1 テーブル定義
 
 #### users テーブル
+
 ```sql
 CREATE TABLE users (
   id VARCHAR PRIMARY KEY,
@@ -127,6 +136,7 @@ CREATE TABLE users (
 ```
 
 #### phrases テーブル
+
 ```sql
 CREATE TABLE phrases (
   id VARCHAR PRIMARY KEY,
@@ -148,26 +158,30 @@ CREATE TABLE phrases (
 ## 5. セキュリティ仕様
 
 ### 5.1 認証・認可
+
 - Supabase Auth による OAuth認証
 - JWTトークンによるセッション管理
 - API アクセス時のユーザー認証チェック
 
 ### 5.2 入力検証
+
 ```typescript
 const generatePhraseSchema = z.object({
   nativeLanguage: z.string().min(1),
   learningLanguage: z.string().min(1),
   desiredPhrase: z.string().min(1).max(200),
-})
+});
 ```
 
 ### 5.3 レート制限
+
 - ユーザーあたり1日100回の生成制限
 - IPアドレスベースの短期制限（1分間10回）
 
 ## 6. エラーハンドリング
 
 ### 6.1 APIエラー
+
 ```typescript
 // 400 Bad Request
 {
@@ -192,6 +206,7 @@ const generatePhraseSchema = z.object({
 ```
 
 ### 6.2 フロントエンドエラー
+
 - ネットワークエラー時の再試行機能
 - エラーメッセージの多言語対応
 - ユーザーフレンドリーなエラー表示
@@ -199,6 +214,7 @@ const generatePhraseSchema = z.object({
 ## 7. ログ設計
 
 ### 7.1 アプリケーションログ
+
 ```typescript
 // フレーズ生成ログ
 {
@@ -215,7 +231,7 @@ const generatePhraseSchema = z.object({
 // エラーログ
 {
   timestamp: "2025-07-18T08:00:00Z",
-  level: "ERROR", 
+  level: "ERROR",
   event: "openai_api_error",
   userId: "user_123",
   error: "Rate limit exceeded",
@@ -226,40 +242,46 @@ const generatePhraseSchema = z.object({
 ## 8. テスト仕様
 
 ### 8.1 ユニットテスト
+
 - API関数のテスト
 - バリデーション関数のテスト
 - ユーティリティ関数のテスト
 
 ### 8.2 統合テスト
+
 - API エンドポイントのテスト
 - データベース操作のテスト
 - 外部API連携のテスト
 
 ### 8.3 E2Eテスト
+
 ```typescript
-describe('フレーズ生成機能', () => {
-  it('ユーザーがフレーズを入力して生成できる', async () => {
+describe("フレーズ生成機能", () => {
+  it("ユーザーがフレーズを入力して生成できる", async () => {
     // 1. ログイン
-    await login()
-    
+    await login();
+
     // 2. フレーズ生成ページに移動
-    await page.goto('/phrase-generator')
-    
+    await page.goto("/phrase-generator");
+
     // 3. フレーズを入力
-    await page.fill('[data-testid="phrase-input"]', 'こんにちは')
-    
+    await page.fill('[data-testid="phrase-input"]', "こんにちは");
+
     // 4. 生成ボタンをクリック
-    await page.click('[data-testid="generate-button"]')
-    
+    await page.click('[data-testid="generate-button"]');
+
     // 5. 結果が表示されることを確認
-    await expect(page.locator('[data-testid="phrase-variations"]')).toBeVisible()
-  })
-})
+    await expect(
+      page.locator('[data-testid="phrase-variations"]'),
+    ).toBeVisible();
+  });
+});
 ```
 
 ## 9. 運用・保守
 
 ### 9.1 監視項目
+
 - API応答時間
 - エラー率
 - OpenAI API使用量
@@ -267,12 +289,14 @@ describe('フレーズ生成機能', () => {
 - ユーザー利用状況
 
 ### 9.2 アラート設定
+
 - API エラー率 > 5%
 - 応答時間 > 10秒
 - データベース接続エラー
 - OpenAI APIクォータ超過
 
 ### 9.3 バックアップ
+
 - データベースの日次バックアップ
 - 設定ファイルのバージョン管理
 - ログファイルの定期アーカイブ
@@ -280,6 +304,7 @@ describe('フレーズ生成機能', () => {
 ## 10. デプロイメント
 
 ### 10.1 環境設定
+
 ```env
 # 本番環境
 OPENAI_API_KEY=sk-...
@@ -291,6 +316,7 @@ SUPABASE_ANON_KEY=...
 ```
 
 ### 10.2 CI/CD パイプライン
+
 1. コードプッシュ
 2. 自動テスト実行
 3. ビルド作成
@@ -298,6 +324,7 @@ SUPABASE_ANON_KEY=...
 5. 本番環境デプロイ
 
 ### 10.3 リリース手順
+
 1. 機能開発・テスト
 2. プルリクエスト作成
 3. コードレビュー
@@ -308,18 +335,21 @@ SUPABASE_ANON_KEY=...
 ## 11. パフォーマンス最適化
 
 ### 11.1 フロントエンド
+
 - コードスプリッティング
 - 画像最適化
 - CDN活用
 - キャッシュ戦略
 
 ### 11.2 バックエンド
+
 - データベースインデックス最適化
 - N+1クエリ対策
 - API応答のキャッシュ
 - 不要な処理の削減
 
 ### 11.3 外部API
+
 - OpenAI APIの効率的な利用
 - プロンプト最適化
 - レスポンスキャッシュ（適切な場合）
@@ -327,11 +357,13 @@ SUPABASE_ANON_KEY=...
 ## 12. 今後の課題・改善点
 
 ### 12.1 短期的改善
+
 - レスポンス速度の向上
 - エラーハンドリングの強化
 - UIの改善
 
 ### 12.2 中長期的改善
+
 - 多言語対応の拡張
 - AI機能の強化
 - オフライン対応

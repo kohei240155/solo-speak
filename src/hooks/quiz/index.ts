@@ -1,3 +1,3 @@
 // クイズ関連のhooksをエクスポート
-export * from './useQuizModal'
-export * from './useQuizPhrase'
+export * from "./useQuizModal";
+export * from "./useQuizPhrase";

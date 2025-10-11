@@ -62,9 +62,9 @@ stripe trigger customer.subscription.created
 Stripe Dashboard → Developers → Webhooks → Add endpoint
 
 - **URL**: `https://yourdomain.com/api/stripe/webhook`
-- **Events**: 
+- **Events**:
   - `checkout.session.completed`
-  - `customer.subscription.created`  
+  - `customer.subscription.created`
   - `customer.subscription.updated`
   - `customer.subscription.deleted`
   - `invoice.payment_succeeded`
@@ -85,6 +85,7 @@ Webhook signature verification failed
 ```
 
 **対処法**:
+
 1. STRIPE_WEBHOOK_SECRETが正しく設定されているか確認
 2. Stripe CLIが実行中か確認
 3. エンドポイントURLが正しいか確認

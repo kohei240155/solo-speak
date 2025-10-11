@@ -1,9 +1,11 @@
 export const getFrenchPrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `« ${situation} »` : 'conversation quotidienne générale';
+  const situationText = situation
+    ? `« ${situation} »`
+    : "conversation quotidienne générale";
 
   return `Vous êtes un coach de conversation en français pour les apprenants ${nativeLanguageName}.
 

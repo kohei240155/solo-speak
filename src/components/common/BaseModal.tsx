@@ -1,30 +1,30 @@
-'use client'
+"use client";
 
-import Modal from 'react-modal'
-import { ReactNode, useEffect, useRef } from 'react'
-import { MdClose } from 'react-icons/md'
+import Modal from "react-modal";
+import { ReactNode, useEffect, useRef } from "react";
+import { MdClose } from "react-icons/md";
 
 // React Modalのアプリルート要素を設定
-if (typeof window !== 'undefined') {
-  Modal.setAppElement('body')
+if (typeof window !== "undefined") {
+  Modal.setAppElement("body");
 }
 
 // モーダルの開数を管理するカウンター
-let modalCounter = 0
-let originalBodyStyle: { overflow: string; paddingRight: string } | null = null
+let modalCounter = 0;
+let originalBodyStyle: { overflow: string; paddingRight: string } | null = null;
 
 export interface BaseModalProps {
-  isOpen: boolean
-  onClose: () => void
-  children: ReactNode
-  title?: string
-  width?: string
-  showCloseButton?: boolean
-  closeOnOverlayClick?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  title?: string;
+  width?: string;
+  showCloseButton?: boolean;
+  closeOnOverlayClick?: boolean;
   titleButton?: {
-    icon: React.ComponentType<{ className?: string }>
-    onClick: () => void
-  }
+    icon: React.ComponentType<{ className?: string }>;
+    onClick: () => void;
+  };
 }
 
 export default function BaseModal({
@@ -32,123 +32,128 @@ export default function BaseModal({
   onClose,
   children,
   title,
-  width = '500px',
+  width = "500px",
   showCloseButton = true,
   closeOnOverlayClick = true,
-  titleButton
+  titleButton,
 }: BaseModalProps) {
-  const prevIsOpenRef = useRef(false)
+  const prevIsOpenRef = useRef(false);
 
   // Escキーでモーダルを閉じる
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose()
+      if (e.key === "Escape" && isOpen) {
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
 
   // モーダル表示時に背景のスクロールを無効化（複数モーダル対応）
   useEffect(() => {
-    const prevIsOpen = prevIsOpenRef.current
-    
+    const prevIsOpen = prevIsOpenRef.current;
+
     if (isOpen && !prevIsOpen) {
       // モーダルが開いた
-      modalCounter++
-      
+      modalCounter++;
+
       if (modalCounter === 1) {
         // 最初のモーダルが開いたときのみ背景スクロールを無効化
-        const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
+        const scrollBarWidth =
+          window.innerWidth - document.documentElement.clientWidth;
         originalBodyStyle = {
           overflow: document.body.style.overflow,
-          paddingRight: document.body.style.paddingRight
-        }
-        document.body.style.overflow = 'hidden'
-        document.body.style.paddingRight = `${scrollBarWidth}px`
+          paddingRight: document.body.style.paddingRight,
+        };
+        document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
       }
     } else if (!isOpen && prevIsOpen) {
       // モーダルが閉じた
-      modalCounter = Math.max(0, modalCounter - 1)
-      
+      modalCounter = Math.max(0, modalCounter - 1);
+
       if (modalCounter === 0 && originalBodyStyle) {
         // 最後のモーダルが閉じたときのみ背景スクロールを復元
-        document.body.style.overflow = originalBodyStyle.overflow
-        document.body.style.paddingRight = originalBodyStyle.paddingRight
-        originalBodyStyle = null
+        document.body.style.overflow = originalBodyStyle.overflow;
+        document.body.style.paddingRight = originalBodyStyle.paddingRight;
+        originalBodyStyle = null;
       }
     }
-    
-    prevIsOpenRef.current = isOpen
-    
+
+    prevIsOpenRef.current = isOpen;
+
     // クリーンアップ関数
     return () => {
       if (isOpen) {
-        modalCounter = Math.max(0, modalCounter - 1)
+        modalCounter = Math.max(0, modalCounter - 1);
         if (modalCounter === 0 && originalBodyStyle) {
-          document.body.style.overflow = originalBodyStyle.overflow
-          document.body.style.paddingRight = originalBodyStyle.paddingRight
-          originalBodyStyle = null
+          document.body.style.overflow = originalBodyStyle.overflow;
+          document.body.style.paddingRight = originalBodyStyle.paddingRight;
+          originalBodyStyle = null;
         }
       }
-    }
-  }, [isOpen])
+    };
+  }, [isOpen]);
 
   const customStyles = {
     overlay: {
-      backgroundColor: 'rgba(97, 97, 97, 0.5)',
+      backgroundColor: "rgba(97, 97, 97, 0.5)",
       zIndex: 50,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem',
-      position: 'fixed' as const,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "1rem",
+      position: "fixed" as const,
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      overflow: 'hidden',
+      overflow: "hidden",
       opacity: isOpen ? 1 : 0,
-      transition: 'opacity 400ms ease-out'
+      transition: "opacity 400ms ease-out",
     },
     content: {
-      position: 'relative' as const,
-      top: 'auto',
-      left: 'auto',
-      right: 'auto',
-      bottom: 'auto',
-      border: 'none',
-      borderRadius: '0.5rem',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      position: "relative" as const,
+      top: "auto",
+      left: "auto",
+      right: "auto",
+      bottom: "auto",
+      border: "none",
+      borderRadius: "0.5rem",
+      boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
       padding: 0,
       margin: 0,
-      maxHeight: '90vh',
-      overflow: 'auto',
-      backgroundColor: 'white'
-    }
-  }
+      maxHeight: "90vh",
+      overflow: "auto",
+      backgroundColor: "white",
+    },
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={closeOnOverlayClick ? onClose : undefined}
       style={customStyles}
-      contentLabel={title || 'Modal'}
+      contentLabel={title || "Modal"}
       shouldCloseOnEsc={true}
       shouldCloseOnOverlayClick={closeOnOverlayClick}
     >
-      <div 
+      <div
         className={`relative bg-white rounded-lg w-[90vw] sm:w-auto transition-all duration-500 ease-out transform ${
-          isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'
+          isOpen
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-4"
         }`}
-        style={{ 
+        style={{
           maxWidth: `min(90vw, ${width})`,
           width: `min(90vw, ${width})`,
-          overflowX: 'hidden',
-          transform: isOpen ? 'translateY(0px) scale(1)' : 'translateY(20px) scale(0.98)',
-          transitionDelay: '100ms'
+          overflowX: "hidden",
+          transform: isOpen
+            ? "translateY(0px) scale(1)"
+            : "translateY(20px) scale(0.98)",
+          transitionDelay: "100ms",
         }}
       >
         {/* 閉じるボタン */}
@@ -181,10 +186,8 @@ export default function BaseModal({
         )}
 
         {/* コンテンツ */}
-        <div className={title ? 'p-6 pt-4' : 'p-6'}>
-          {children}
-        </div>
+        <div className={title ? "p-6 pt-4" : "p-6"}>{children}</div>
       </div>
     </Modal>
-  )
+  );
 }

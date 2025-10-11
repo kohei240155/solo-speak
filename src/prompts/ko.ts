@@ -1,9 +1,9 @@
 export const getKoreanPrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `「${situation}」` : '일반적인 일상 대화';
+  const situationText = situation ? `「${situation}」` : "일반적인 일상 대화";
 
   return `당신은 ${nativeLanguageName} 사용자를 위한 한국어 회화 코치입니다.
 

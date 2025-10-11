@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/utils/prisma'
-import { authenticateRequest } from '@/utils/api-helpers'
-import { QuizAnswerResponse } from '@/types/quiz'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/utils/prisma";
+import { authenticateRequest } from "@/utils/api-helpers";
+import { QuizAnswerResponse } from "@/types/quiz";
 
 /** * クイズ回答APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -10,19 +10,19 @@ import { QuizAnswerResponse } from '@/types/quiz'
 export async function POST(request: NextRequest) {
   try {
     // 認証チェック
-    const authResult = await authenticateRequest(request)
-    if ('error' in authResult) {
-      return authResult.error
+    const authResult = await authenticateRequest(request);
+    if ("error" in authResult) {
+      return authResult.error;
     }
 
-    const body = await request.json()
-    const { phraseId, isCorrect } = body
+    const body = await request.json();
+    const { phraseId, isCorrect } = body;
 
-    if (!phraseId || typeof isCorrect !== 'boolean') {
+    if (!phraseId || typeof isCorrect !== "boolean") {
       return NextResponse.json(
-        { error: 'phraseId and isCorrect are required' },
-        { status: 400 }
-      )
+        { error: "phraseId and isCorrect are required" },
+        { status: 400 },
+      );
     }
 
     // トランザクションで実行
@@ -31,41 +31,40 @@ export async function POST(request: NextRequest) {
       const updatedPhrase = await tx.phrase.update({
         where: {
           id: phraseId,
-          userId: authResult.user.id // セキュリティチェック
+          userId: authResult.user.id, // セキュリティチェック
         },
         data: {
           ...(isCorrect
             ? { correctQuizCount: { increment: 1 } }
             : { incorrectQuizCount: { increment: 1 } }),
-          lastQuizDate: new Date() // クイズ実行日時を更新
-        }
-      })
+          lastQuizDate: new Date(), // クイズ実行日時を更新
+        },
+      });
 
       // クイズ結果を記録
       await tx.quizResult.create({
         data: {
           phraseId,
           correct: isCorrect,
-          date: new Date()
-        }
-      })
+          date: new Date(),
+        },
+      });
 
-      return updatedPhrase
-    })
+      return updatedPhrase;
+    });
 
     return NextResponse.json({
       success: true,
       phrase: {
         id: result.id,
         correctQuizCount: result.correctQuizCount,
-        incorrectQuizCount: result.incorrectQuizCount
-      }
-    } satisfies QuizAnswerResponse)
-
+        incorrectQuizCount: result.incorrectQuizCount,
+      },
+    } satisfies QuizAnswerResponse);
   } catch {
     return NextResponse.json(
-      { success: false, error: 'Failed to update quiz result' },
-      { status: 500 }
-    )
+      { success: false, error: "Failed to update quiz result" },
+      { status: 500 },
+    );
   }
 }

@@ -1,41 +1,41 @@
-import { PhraseVariation } from '@/types/phrase'
-import { SituationResponse } from '@/types/situation'
-import dynamic from 'next/dynamic'
-import { BsPlusSquare } from 'react-icons/bs'
-import { AiOutlineClose, AiOutlineQuestionCircle } from 'react-icons/ai'
-import { useState } from 'react'
-import AddContextModal from '@/components/modals/AddContextModal'
-import BaseModal from '@/components/common/BaseModal'
-import PhraseGenerationHelpModal from '@/components/modals/PhraseGenerationHelpModal'
-import { useScrollPreservation } from '@/hooks/ui/useScrollPreservation'
-import ScrollableContainer from '@/components/common/ScrollableContainer'
-import { useTranslation } from '@/hooks/ui/useTranslation'
+import { PhraseVariation } from "@/types/phrase";
+import { SituationResponse } from "@/types/situation";
+import dynamic from "next/dynamic";
+import { BsPlusSquare } from "react-icons/bs";
+import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai";
+import { useState } from "react";
+import AddContextModal from "@/components/modals/AddContextModal";
+import BaseModal from "@/components/common/BaseModal";
+import PhraseGenerationHelpModal from "@/components/modals/PhraseGenerationHelpModal";
+import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
+import ScrollableContainer from "@/components/common/ScrollableContainer";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 
 // GeneratedVariationsコンポーネントを動的インポート
-const GeneratedVariations = dynamic(() => import('./GeneratedVariations'), {
-  ssr: false
-})
+const GeneratedVariations = dynamic(() => import("./GeneratedVariations"), {
+  ssr: false,
+});
 
 interface PhraseAddProps {
-  remainingGenerations: number
-  hasActiveSubscription?: boolean
-  desiredPhrase: string
-  phraseValidationError: string
-  isLoading: boolean
-  isSaving: boolean
-  generatedVariations: PhraseVariation[]
-  editingVariations: {[key: number]: string}
-  savingVariationIndex: number | null
-  error: string
-  selectedContext: 'friend' | 'sns' | string | null
-  situations: SituationResponse[]
-  onPhraseChange: (value: string) => void
-  onGeneratePhrase: () => void
-  onEditVariation: (index: number, newText: string) => void
-  onSelectVariation: (variation: PhraseVariation, index: number) => void
-  onContextChange?: (context: string | null) => void
-  addSituation: (name: string) => Promise<void>
-  deleteSituation: (id: string) => Promise<void>
+  remainingGenerations: number;
+  hasActiveSubscription?: boolean;
+  desiredPhrase: string;
+  phraseValidationError: string;
+  isLoading: boolean;
+  isSaving: boolean;
+  generatedVariations: PhraseVariation[];
+  editingVariations: { [key: number]: string };
+  savingVariationIndex: number | null;
+  error: string;
+  selectedContext: "friend" | "sns" | string | null;
+  situations: SituationResponse[];
+  onPhraseChange: (value: string) => void;
+  onGeneratePhrase: () => void;
+  onEditVariation: (index: number, newText: string) => void;
+  onSelectVariation: (variation: PhraseVariation, index: number) => void;
+  onContextChange?: (context: string | null) => void;
+  addSituation: (name: string) => Promise<void>;
+  deleteSituation: (id: string) => Promise<void>;
 }
 
 export default function PhraseAdd({
@@ -58,65 +58,73 @@ export default function PhraseAdd({
   onSelectVariation,
   onContextChange,
   addSituation,
-  deleteSituation
+  deleteSituation,
 }: PhraseAddProps) {
-  const { t } = useTranslation('common')
-  
+  const { t } = useTranslation("common");
+
   // モーダルの状態管理
-  const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false)
-  const [deletingSituationId, setDeletingSituationId] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showHelpModal, setShowHelpModal] = useState(false)
-  
+  const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false);
+  const [deletingSituationId, setDeletingSituationId] = useState<string | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+
   // スクロール位置保持機能
-  const scrollPreservation = useScrollPreservation()
-  
+  const scrollPreservation = useScrollPreservation();
+
   // ボタンが有効かどうかを判定する関数
   const isGenerateButtonEnabled = () => {
-    return !isLoading && 
-           !isSaving && 
-           desiredPhrase.trim() && 
-           remainingGenerations > 0 && 
-           desiredPhrase.length <= 100 && 
-           generatedVariations.length === 0
-  }
+    return (
+      !isLoading &&
+      !isSaving &&
+      desiredPhrase.trim() &&
+      remainingGenerations > 0 &&
+      desiredPhrase.length <= 100 &&
+      generatedVariations.length === 0
+    );
+  };
 
   // シチュエーション追加のハンドラー
   const handleAddContext = async (contextName: string) => {
     try {
-      await addSituation(contextName)
+      await addSituation(contextName);
     } catch {
       // エラーは addSituation 内で適切に処理される
     }
-  }
+  };
 
   // シチュエーション削除のハンドラー
   const handleDeleteSituation = (situationId: string) => {
-    setDeletingSituationId(situationId)
-  }
+    setDeletingSituationId(situationId);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deletingSituationId) return
+    if (!deletingSituationId) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await deleteSituation(deletingSituationId)
-      setDeletingSituationId(null)
-      
+      await deleteSituation(deletingSituationId);
+      setDeletingSituationId(null);
+
       // 削除したシチュエーションが選択されていた場合、選択を解除
-      if (selectedContext && situations.find((s: SituationResponse) => s.id === deletingSituationId)?.name === selectedContext) {
-        onContextChange?.(null)
+      if (
+        selectedContext &&
+        situations.find((s: SituationResponse) => s.id === deletingSituationId)
+          ?.name === selectedContext
+      ) {
+        onContextChange?.(null);
       }
     } catch {
       // エラーは deleteSituation 内で適切に処理される
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const handleCancelDelete = () => {
-    setDeletingSituationId(null)
-  }
+    setDeletingSituationId(null);
+  };
   return (
     <>
       {/* Add Phrase見出しとLeft情報 */}
@@ -165,54 +173,61 @@ export default function PhraseAdd({
       <div className="mb-4">
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-semibold text-gray-900">Situation</h3>
-          
+
           {/* シチュエーション表示エリア全体を囲む */}
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setIsAddContextModalOpen(true)}
               disabled={generatedVariations.length > 0}
               className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                 generatedVariations.length > 0
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
               }`}
             >
               <BsPlusSquare size={16} />
             </button>
-            
+
             <ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1">
               {situations.map((situation: SituationResponse) => (
-                <button 
+                <button
                   key={situation.id}
                   onClick={() => {
                     if (generatedVariations.length === 0 && onContextChange) {
-                      onContextChange(selectedContext === situation.name ? null : situation.name)
+                      onContextChange(
+                        selectedContext === situation.name
+                          ? null
+                          : situation.name,
+                      );
                     }
                   }}
                   disabled={generatedVariations.length > 0}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
                     selectedContext === situation.name
-                      ? 'text-white border-transparent shadow-sm' 
+                      ? "text-white border-transparent shadow-sm"
                       : generatedVariations.length > 0
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300'
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
+                        : "bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300"
                   }`}
-                  style={{ 
-                    backgroundColor: selectedContext === situation.name ? '#616161' : undefined
+                  style={{
+                    backgroundColor:
+                      selectedContext === situation.name
+                        ? "#616161"
+                        : undefined,
                   }}
                 >
                   <span className="whitespace-nowrap">{situation.name}</span>
-                  <AiOutlineClose 
-                    size={14} 
+                  <AiOutlineClose
+                    size={14}
                     className={`flex-shrink-0 font-bold ${
                       selectedContext === situation.name
-                        ? 'text-white'
-                        : 'text-gray-700'
+                        ? "text-white"
+                        : "text-gray-700"
                     }`}
                     onClick={(e) => {
-                      e.stopPropagation()
+                      e.stopPropagation();
                       if (generatedVariations.length === 0) {
-                        handleDeleteSituation(situation.id)
+                        handleDeleteSituation(situation.id);
                       }
                     }}
                   />
@@ -233,21 +248,23 @@ export default function PhraseAdd({
           onChange={(e) => onPhraseChange(e.target.value)}
           onFocus={scrollPreservation.onFocus}
           onBlur={scrollPreservation.onBlur}
-          placeholder={t('phrase.placeholders.phraseInput')}
+          placeholder={t("phrase.placeholders.phraseInput")}
           className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
             phraseValidationError && desiredPhrase.trim().length > 0
-              ? 'border-gray-400' 
-              : 'border-gray-300'
+              ? "border-gray-400"
+              : "border-gray-300"
           }`}
           rows={3}
           disabled={isSaving}
         />
-        
+
         {/* 100文字を超えた場合のバリデーションメッセージ */}
         {desiredPhrase.length > 100 && (
           <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
             <p className="text-sm text-gray-600">
-              {t('phrase.validation.maxLength100', { count: desiredPhrase.length })}
+              {t("phrase.validation.maxLength100", {
+                count: desiredPhrase.length,
+              })}
             </p>
           </div>
         )}
@@ -255,40 +272,55 @@ export default function PhraseAdd({
 
       {/* AI Suggest ボタン */}
       <button
-        disabled={isLoading || isSaving || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0}
+        disabled={
+          isLoading ||
+          isSaving ||
+          !desiredPhrase.trim() ||
+          remainingGenerations <= 0 ||
+          desiredPhrase.length > 100 ||
+          generatedVariations.length > 0
+        }
         className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
-          isLoading ? 'animate-pulse' : ''
+          isLoading ? "animate-pulse" : ""
         }`}
-        style={{ 
-          backgroundColor: (isLoading || isSaving || !desiredPhrase.trim() || remainingGenerations <= 0 || desiredPhrase.length > 100 || generatedVariations.length > 0) ? '#9CA3AF' : '#616161',
-          boxShadow: isLoading ? '0 0 15px rgba(97, 97, 97, 0.4)' : undefined
+        style={{
+          backgroundColor:
+            isLoading ||
+            isSaving ||
+            !desiredPhrase.trim() ||
+            remainingGenerations <= 0 ||
+            desiredPhrase.length > 100 ||
+            generatedVariations.length > 0
+              ? "#9CA3AF"
+              : "#616161",
+          boxShadow: isLoading ? "0 0 15px rgba(97, 97, 97, 0.4)" : undefined,
         }}
         onMouseEnter={(e) => {
           if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = '#525252'
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)'
+            e.currentTarget.style.backgroundColor = "#525252";
+            e.currentTarget.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.1)";
           }
         }}
         onMouseLeave={(e) => {
           if (isGenerateButtonEnabled() && e.currentTarget) {
-            e.currentTarget.style.backgroundColor = '#616161'
-            e.currentTarget.style.boxShadow = 'none'
+            e.currentTarget.style.backgroundColor = "#616161";
+            e.currentTarget.style.boxShadow = "none";
           }
         }}
         onClick={(e) => {
           if (!isGenerateButtonEnabled() || !e.currentTarget) {
-            return
+            return;
           }
-          
+
           // より控えめなクリック効果
-          e.currentTarget.style.transform = 'scale(0.98)'
+          e.currentTarget.style.transform = "scale(0.98)";
           setTimeout(() => {
             if (e.currentTarget) {
-              e.currentTarget.style.transform = 'scale(1)'
+              e.currentTarget.style.transform = "scale(1)";
             }
-          }, 150)
-          
-          onGeneratePhrase()
+          }, 150);
+
+          onGeneratePhrase();
         }}
       >
         {isLoading ? (
@@ -297,7 +329,7 @@ export default function PhraseAdd({
             AI Suggest
           </div>
         ) : (
-          'AI Suggest'
+          "AI Suggest"
         )}
       </button>
 
@@ -339,12 +371,17 @@ export default function PhraseAdd({
       />
 
       {/* シチュエーション削除確認モーダル */}
-      <BaseModal isOpen={!!deletingSituationId} onClose={handleCancelDelete} title="Delete Situation">
+      <BaseModal
+        isOpen={!!deletingSituationId}
+        onClose={handleCancelDelete}
+        title="Delete Situation"
+      >
         {/* 確認メッセージ */}
         <div className="mb-6">
           <p className="text-gray-700">
-            {t('situation.delete.confirmMessage')}<br />
-            {t('situation.delete.warningMessage')}
+            {t("situation.delete.confirmMessage")}
+            <br />
+            {t("situation.delete.warningMessage")}
           </p>
         </div>
 
@@ -354,9 +391,9 @@ export default function PhraseAdd({
             onClick={handleCancelDelete}
             disabled={isDeleting}
             className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-            style={{ 
-              borderColor: '#616161',
-              color: '#616161'
+            style={{
+              borderColor: "#616161",
+              color: "#616161",
             }}
           >
             Cancel
@@ -365,8 +402,8 @@ export default function PhraseAdd({
             onClick={handleConfirmDelete}
             disabled={isDeleting}
             className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-            style={{ 
-              backgroundColor: isDeleting ? '#FCA5A5' : '#DC2626'
+            style={{
+              backgroundColor: isDeleting ? "#FCA5A5" : "#DC2626",
             }}
           >
             {isDeleting ? (
@@ -375,7 +412,7 @@ export default function PhraseAdd({
                 Deleting...
               </div>
             ) : (
-              'Delete'
+              "Delete"
             )}
           </button>
         </div>
@@ -387,5 +424,5 @@ export default function PhraseAdd({
         onClose={() => setShowHelpModal(false)}
       />
     </>
-  )
+  );
 }

@@ -1,165 +1,165 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import PhraseTabNavigation from '@/components/navigation/PhraseTabNavigation'
-import SpeakModeModal from '@/components/modals/SpeakModeModal'
-import { useAuthGuard } from '@/hooks/auth/useAuthGuard'
-import { useAuth } from '@/contexts/AuthContext'
-import { api } from '@/utils/api'
-import { CiCirclePlus } from 'react-icons/ci'
-import { HiMiniSpeakerWave } from 'react-icons/hi2'
-import { useSpeakModal } from '@/hooks/speak/useSpeakModal'
-import { Toaster } from 'react-hot-toast'
-import toast from 'react-hot-toast'
-import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { useLanguages } from '@/hooks/api/useSWRApi'
-import { useTranslation } from '@/hooks/ui/useTranslation'
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
+import SpeakModeModal from "@/components/modals/SpeakModeModal";
+import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/utils/api";
+import { CiCirclePlus } from "react-icons/ci";
+import { HiMiniSpeakerWave } from "react-icons/hi2";
+import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { useLanguages } from "@/hooks/api/useSWRApi";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface SpeakPhrase {
-  id: string
-  text: string
-  translation: string
-  totalSpeakCount: number
-  dailySpeakCount: number
+  id: string;
+  text: string;
+  translation: string;
+  totalSpeakCount: number;
+  dailySpeakCount: number;
 }
 
 export default function SpeakPage() {
-  const { user, loading: authLoading } = useAuthGuard()
-  const { t } = useTranslation()
-  const params = useParams()
-  const router = useRouter()
-  const [phrase, setPhrase] = useState<SpeakPhrase | null>(null)
-  const [pendingCount, setPendingCount] = useState(0) // ペンディング中のカウント数
-  const [learningLanguage, setLearningLanguage] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { user, loading: authLoading } = useAuthGuard();
+  const { t } = useTranslation();
+  const params = useParams();
+  const router = useRouter();
+  const [phrase, setPhrase] = useState<SpeakPhrase | null>(null);
+  const [pendingCount, setPendingCount] = useState(0); // ペンディング中のカウント数
+  const [learningLanguage, setLearningLanguage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // SWRフックを使用してデータを取得
-  const { languages } = useLanguages()
-  const { userSettings } = useAuth() // AuthContextから直接ユーザー設定を取得
+  const { languages } = useLanguages();
+  const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
 
   // URLパラメータから取得
-  const languageId = params.id as string
+  const languageId = params.id as string;
 
   // 認証チェック: ログインしていない場合はホームページにリダイレクト
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/')
+      router.push("/");
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]);
 
   // Speak modal functionality
-  const {
-    showSpeakModal,
-    openSpeakModal,
-    closeSpeakModal,
-    handleSpeakStart
-  } = useSpeakModal()
+  const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
+    useSpeakModal();
 
   useEffect(() => {
-    setLearningLanguage(languageId)
-  }, [languageId])
+    setLearningLanguage(languageId);
+  }, [languageId]);
 
   useEffect(() => {
-    if (!user) return // ユーザーがログインしていない場合は何もしない
+    if (!user) return; // ユーザーがログインしていない場合は何もしない
 
     // URLパラメータからphraseIdを取得
-    const searchParams = new URLSearchParams(window.location.search)
-    const phraseId = searchParams.get('phraseId')
+    const searchParams = new URLSearchParams(window.location.search);
+    const phraseId = searchParams.get("phraseId");
 
     // フレーズを取得
     const fetchPhrase = async () => {
       try {
         if (phraseId) {
           // phraseIdが指定されている場合は特定のフレーズを取得（Speak専用API使用）
-          const data = await api.get(`/api/phrase/${phraseId}/speak`) as {
-            success: boolean
+          const data = (await api.get(`/api/phrase/${phraseId}/speak`)) as {
+            success: boolean;
             phrase?: {
-              id: string
-              original: string
-              translation: string
-              totalSpeakCount: number
-              dailySpeakCount: number
-            }
-            message?: string
-          }
+              id: string;
+              original: string;
+              translation: string;
+              totalSpeakCount: number;
+              dailySpeakCount: number;
+            };
+            message?: string;
+          };
           if (data.success && data.phrase) {
             setPhrase({
               id: data.phrase.id,
               text: data.phrase.original,
               translation: data.phrase.translation,
               totalSpeakCount: data.phrase.totalSpeakCount || 0,
-              dailySpeakCount: data.phrase.dailySpeakCount || 0
-            })
+              dailySpeakCount: data.phrase.dailySpeakCount || 0,
+            });
           } else {
-            setError(data.message || t('phrase.messages.notFound'))
+            setError(data.message || t("phrase.messages.notFound"));
           }
         } else {
           // phraseIdがない場合は従来通りのAPIを呼び出し
-          const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
-            success: boolean
-            phrase?: SpeakPhrase
-            message?: string
-          }
+          const data = (await api.get(
+            `/api/phrase/speak?language=${languageId}`,
+          )) as {
+            success: boolean;
+            phrase?: SpeakPhrase;
+            message?: string;
+          };
           if (data.success) {
-            setPhrase(data.phrase!)
+            setPhrase(data.phrase!);
           } else {
-            setError(data.message || t('phrase.messages.notFound'))
+            setError(data.message || t("phrase.messages.notFound"));
           }
         }
       } catch {
         if (phraseId) {
-          setError(t('phrase.messages.notFound'))
+          setError(t("phrase.messages.notFound"));
         } else {
-          setError(t('phrase.messages.fetchFailed'))
+          setError(t("phrase.messages.fetchFailed"));
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchPhrase()
-  }, [languageId, user, t])
+    fetchPhrase();
+  }, [languageId, user, t]);
 
   const handleCount = () => {
-    if (!phrase) return
+    if (!phrase) return;
 
     // 現在のカウントを計算
-    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount
-    
+    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount;
+
     // 既に100回に達している場合は何もしない
     if (currentDailyCount >= 100) {
-      return
+      return;
     }
 
     // ローカル状態のみを更新（APIは呼ばない）
-    setPendingCount(prev => prev + 1)
+    setPendingCount((prev) => prev + 1);
     // フレーズの表示カウントは実際のAPIレスポンスベースで管理するため、ここでは更新しない
-    
+
     // ちょうど100回に達した時にトーストを表示
-    const newDailyCount = currentDailyCount + 1
+    const newDailyCount = currentDailyCount + 1;
     if (newDailyCount === 100) {
-      toast.error(t('speak.messages.dailyLimitReached'), {
-        duration: 4000
-      })
+      toast.error(t("speak.messages.dailyLimitReached"), {
+        duration: 4000,
+      });
     }
-  }
+  };
 
   const handleNext = async () => {
     // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
     if (pendingCount > 0 && phrase) {
       try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
-        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+        await api.post(`/api/phrase/${phrase.id}/count`, {
+          count: pendingCount,
+        });
+        setPendingCount(0); // 送信成功時はペンディングカウントをリセット
       } catch {
-        toast.error(t('phrase.messages.countError'))
-        return // エラーの場合は次のフレーズ取得を中止
+        toast.error(t("phrase.messages.countError"));
+        return; // エラーの場合は次のフレーズ取得を中止
       }
     } else if (phrase) {
       // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
       } catch {
         // session_spoken設定エラーは次のフレーズ取得を阻害しない
       }
@@ -167,62 +167,66 @@ export default function SpeakPage() {
 
     // 次のフレーズを取得
     try {
-      const data = await api.get(`/api/phrase/speak?language=${languageId}`) as {
-        success: boolean
-        phrase?: SpeakPhrase
-      }
-      
+      const data = (await api.get(
+        `/api/phrase/speak?language=${languageId}`,
+      )) as {
+        success: boolean;
+        phrase?: SpeakPhrase;
+      };
+
       if (data.success) {
-        setPhrase(data.phrase!)
+        setPhrase(data.phrase!);
       } else {
-        toast.error(t('phrase.messages.nextPhraseNotFound'))
+        toast.error(t("phrase.messages.nextPhraseNotFound"));
       }
     } catch {
-      toast.error(t('phrase.messages.nextPhraseError'))
+      toast.error(t("phrase.messages.nextPhraseError"));
     }
-  }
+  };
 
   const handleFinish = async () => {
     // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
     if (pendingCount > 0 && phrase) {
       try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: pendingCount })
-        setPendingCount(0) // 送信成功時はペンディングカウントをリセット
+        await api.post(`/api/phrase/${phrase.id}/count`, {
+          count: pendingCount,
+        });
+        setPendingCount(0); // 送信成功時はペンディングカウントをリセット
       } catch {
-        toast.error(t('phrase.messages.countError'))
+        toast.error(t("phrase.messages.countError"));
         // Finishの場合はエラーがあってもページ遷移を実行
       }
     } else if (phrase) {
       // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
       try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 })
+        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
       } catch {
         // session_spoken設定エラーはページ遷移を阻害しない
       }
     }
 
-    router.push('/phrase/list')
-  }
+    router.push("/phrase/list");
+  };
 
   // 認証チェック
   if (authLoading) {
-    return <LoadingSpinner fullScreen message="Authenticating..." />
+    return <LoadingSpinner fullScreen message="Authenticating..." />;
   }
 
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">{t('common.loginRequired')}</p>
+          <p className="text-gray-600 mb-4">{t("common.loginRequired")}</p>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
           >
-            {t('common.backToHome')}
+            {t("common.backToHome")}
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   if (loading) {
@@ -235,20 +239,24 @@ export default function SpeakPage() {
               Phrase
             </h1>
           </div>
-          
+
           {/* タブメニュー */}
-          <PhraseTabNavigation 
-            activeTab="Speak" 
+          <PhraseTabNavigation
+            activeTab="Speak"
             onSpeakModalOpen={openSpeakModal}
           />
 
           {/* ローディング表示エリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
+            <LoadingSpinner
+              message="Loading..."
+              className="py-8"
+              minHeight="280px"
+            />
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !phrase) {
@@ -261,19 +269,21 @@ export default function SpeakPage() {
               Phrase
             </h1>
           </div>
-          
+
           {/* タブメニュー */}
-          <PhraseTabNavigation 
-            activeTab="Speak" 
+          <PhraseTabNavigation
+            activeTab="Speak"
             onSpeakModalOpen={openSpeakModal}
           />
 
           {/* エラー表示エリア */}
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">{error || t('phrase.messages.notFound')}</p>
+              <p className="text-gray-600 mb-4">
+                {error || t("phrase.messages.notFound")}
+              </p>
               <button
-                onClick={() => router.push('/phrase/list')}
+                onClick={() => router.push("/phrase/list")}
                 className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
               >
                 Back
@@ -282,7 +292,7 @@ export default function SpeakPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -294,10 +304,10 @@ export default function SpeakPage() {
             Phrase
           </h1>
         </div>
-        
+
         {/* タブメニュー */}
-        <PhraseTabNavigation 
-          activeTab="Speak" 
+        <PhraseTabNavigation
+          activeTab="Speak"
           onSpeakModalOpen={openSpeakModal}
         />
 
@@ -305,22 +315,22 @@ export default function SpeakPage() {
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
           {/* フレーズ表示 */}
           <div className="mb-6">
-            <div 
+            <div
               className="text-base font-medium text-gray-900 mb-2 break-words"
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
+              style={{
+                wordWrap: "break-word",
+                overflowWrap: "anywhere",
+                wordBreak: "break-word",
               }}
             >
               {phrase.text}
             </div>
-            <div 
+            <div
               className="text-sm text-gray-600 break-words"
-              style={{ 
-                wordWrap: 'break-word',
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
+              style={{
+                wordWrap: "break-word",
+                overflowWrap: "anywhere",
+                wordBreak: "break-word",
               }}
             >
               {phrase.translation}
@@ -330,7 +340,7 @@ export default function SpeakPage() {
           {/* 音読回数表示 */}
           <div className="mb-4 flex items-center text-sm text-gray-600 md:mb-6 md:text-base">
             <HiMiniSpeakerWave className="w-4 h-4 mr-1 md:w-5 md:h-5 md:mr-2" />
-            Today: {phrase.dailySpeakCount}  Total: {phrase.totalSpeakCount}
+            Today: {phrase.dailySpeakCount} Total: {phrase.totalSpeakCount}
           </div>
 
           {/* Count と Sound ボタン */}
@@ -340,20 +350,30 @@ export default function SpeakPage() {
               <div className="flex-1 flex flex-col items-center">
                 <button
                   onClick={handleCount}
-                  disabled={(phrase.dailySpeakCount + pendingCount) >= 100}
+                  disabled={phrase.dailySpeakCount + pendingCount >= 100}
                   className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors md:w-24 md:h-24 ${
-                    (phrase.dailySpeakCount + pendingCount) >= 100 
-                      ? 'opacity-50 cursor-not-allowed bg-gray-100' 
-                      : 'hover:bg-gray-50'
+                    phrase.dailySpeakCount + pendingCount >= 100
+                      ? "opacity-50 cursor-not-allowed bg-gray-100"
+                      : "hover:bg-gray-50"
                   }`}
                 >
-                  <CiCirclePlus className={`w-12 h-12 md:w-16 md:h-16 ${
-                    (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-600'
-                  }`} />
+                  <CiCirclePlus
+                    className={`w-12 h-12 md:w-16 md:h-16 ${
+                      phrase.dailySpeakCount + pendingCount >= 100
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                    }`}
+                  />
                 </button>
-                <span className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
-                  (phrase.dailySpeakCount + pendingCount) >= 100 ? 'text-gray-400' : 'text-gray-900'
-                }`}>Count</span>
+                <span
+                  className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
+                    phrase.dailySpeakCount + pendingCount >= 100
+                      ? "text-gray-400"
+                      : "text-gray-900"
+                  }`}
+                >
+                  Count
+                </span>
               </div>
 
               {/* 中央の区切り線 */}
@@ -361,12 +381,12 @@ export default function SpeakPage() {
 
               {/* Sound ボタンエリア */}
               <div className="flex-1 flex flex-col items-center">
-                <button
-                  className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24"
-                >
+                <button className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24">
                   <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />
                 </button>
-                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">Sound</span>
+                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">
+                  Sound
+                </span>
               </div>
             </div>
           </div>
@@ -376,9 +396,9 @@ export default function SpeakPage() {
             <button
               onClick={handleFinish}
               className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              style={{ 
-                borderColor: '#616161',
-                color: '#616161'
+              style={{
+                borderColor: "#616161",
+                color: "#616161",
               }}
             >
               Finish
@@ -386,8 +406,8 @@ export default function SpeakPage() {
             <button
               onClick={handleNext}
               className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              style={{ 
-                backgroundColor: '#616161'
+              style={{
+                backgroundColor: "#616161",
               }}
             >
               Next
@@ -395,18 +415,20 @@ export default function SpeakPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Speak Mode モーダル */}
       <SpeakModeModal
         isOpen={showSpeakModal}
         onClose={closeSpeakModal}
         onStart={handleSpeakStart}
         languages={languages || []}
-        defaultLearningLanguage={userSettings?.defaultLearningLanguage?.code || learningLanguage}
+        defaultLearningLanguage={
+          userSettings?.defaultLearningLanguage?.code || learningLanguage
+        }
       />
-      
+
       {/* Toaster for notifications */}
       <Toaster />
     </div>
-  )
+  );
 }

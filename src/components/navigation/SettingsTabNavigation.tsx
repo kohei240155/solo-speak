@@ -1,23 +1,23 @@
 interface TabNavigationProps {
-  activeTab: 'user' | 'subscription'
-  setActiveTab: (tab: 'user' | 'subscription') => void
-  isUserSetupComplete: boolean
+  activeTab: "user" | "subscription";
+  setActiveTab: (tab: "user" | "subscription") => void;
+  isUserSetupComplete: boolean;
 }
 
-export default function SettingsTabNavigation({ 
-  activeTab, 
-  setActiveTab, 
+export default function SettingsTabNavigation({
+  activeTab,
+  setActiveTab,
   // SUBSCRIPTION_DISABLED: isUserSetupComplete パラメータを一時的に無効化（未使用）
-  // isUserSetupComplete 
+  // isUserSetupComplete
 }: TabNavigationProps) {
   return (
     <div className="flex mb-[18px]">
-      <button 
-        onClick={() => setActiveTab('user')}
+      <button
+        onClick={() => setActiveTab("user")}
         className={`flex-1 py-2 text-sm md:text-base rounded-[20px] ${
-          activeTab === 'user' 
-            ? 'bg-gray-200 text-gray-700 font-bold' 
-            : 'bg-white text-gray-700 border border-gray-300 font-normal'
+          activeTab === "user"
+            ? "bg-gray-200 text-gray-700 font-bold"
+            : "bg-white text-gray-700 border border-gray-300 font-normal"
         }`}
       >
         User
@@ -39,5 +39,5 @@ export default function SettingsTabNavigation({
         Subscription
       </button> */}
     </div>
-  )
+  );
 }

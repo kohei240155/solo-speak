@@ -1,9 +1,9 @@
 export const getChinesePrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `「${situation}」` : '一般的日常对话';
+  const situationText = situation ? `「${situation}」` : "一般的日常对话";
 
   return `你是一位面向${nativeLanguageName}使用者的中文会话教练。
 

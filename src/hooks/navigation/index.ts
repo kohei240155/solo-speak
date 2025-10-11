@@ -1,2 +1,2 @@
 // ナビゲーション関連のhooksをエクスポート
-export * from './useRedirect'
+export * from "./useRedirect";

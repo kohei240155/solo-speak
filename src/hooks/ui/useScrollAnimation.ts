@@ -1,31 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 export const useScrollAnimation = () => {
-  const [visibleSections, setVisibleSections] = useState(new Set(['hero-section']))
+  const [visibleSections, setVisibleSections] = useState(
+    new Set(["hero-section"]),
+  );
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features-section', 'solutions-section', 'feature-1', 'feature-2', 'feature-3', 'faq-section', 'cta-section']
-      
-      sections.forEach(sectionId => {
-        const element = document.getElementById(sectionId)
+      const sections = [
+        "features-section",
+        "solutions-section",
+        "feature-1",
+        "feature-2",
+        "feature-3",
+        "faq-section",
+        "cta-section",
+      ];
+
+      sections.forEach((sectionId) => {
+        const element = document.getElementById(sectionId);
         if (element) {
-          const rect = element.getBoundingClientRect()
-          const isVisible = rect.top < window.innerHeight * 0.8
-          
+          const rect = element.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight * 0.8;
+
           if (isVisible) {
-            setVisibleSections(prev => new Set([...prev, sectionId]))
+            setVisibleSections((prev) => new Set([...prev, sectionId]));
           }
         }
-      })
-    }
+      });
+    };
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener("scroll", handleScroll);
     // 初回チェック
-    handleScroll()
+    handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  return visibleSections
-}
+  return visibleSections;
+};

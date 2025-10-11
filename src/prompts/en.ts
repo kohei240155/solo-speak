@@ -1,10 +1,12 @@
 export const getEnglishPrompt = (
   nativeLanguageName: string,
   input: string,
-  situation: string | undefined
+  situation: string | undefined,
 ): string => {
-  const situationText = situation ? `「${situation}」` : 'general daily conversation';
-  
+  const situationText = situation
+    ? `「${situation}」`
+    : "general daily conversation";
+
   return `You are an English conversation coach for ${nativeLanguageName} learners.
 
 # Task Overview

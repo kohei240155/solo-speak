@@ -46,6 +46,7 @@ model User {
 **目的**: ユーザーの現在のサブスクリプション状態を取得
 
 **レスポンス例**:
+
 ```json
 {
   "hasStripeCustomer": true,
@@ -61,6 +62,7 @@ model User {
 ```
 
 **処理フロー**:
+
 1. 認証チェック
 2. ユーザーのstripeCustomerIdを取得
 3. Stripe APIでサブスクリプション情報を取得
@@ -72,6 +74,7 @@ model User {
 **目的**: StripeチェックアウトページのURLを生成
 
 **レスポンス例**:
+
 ```json
 {
   "checkoutUrl": "https://checkout.stripe.com/c/pay/xxx"
@@ -79,6 +82,7 @@ model User {
 ```
 
 **処理フロー**:
+
 1. 認証チェック
 2. Stripe顧客が存在しない場合は作成
 3. チェックアウトセッションを作成
@@ -89,6 +93,7 @@ model User {
 **目的**: サブスクリプションを即座に解約
 
 **レスポンス例**:
+
 ```json
 {
   "success": true,
@@ -97,6 +102,7 @@ model User {
 ```
 
 **処理フロー**:
+
 1. 認証チェック
 2. アクティブなサブスクリプションを取得
 3. Stripe APIで即座に解約実行
@@ -107,6 +113,7 @@ model User {
 #### GET: 残り生成回数取得
 
 **レスポンス例**:
+
 ```json
 {
   "remainingGenerations": 5,
@@ -116,6 +123,7 @@ model User {
 ```
 
 **処理フロー**:
+
 1. 認証チェック
 2. サブスクリプション状態確認
 3. 日次リセットロジック実行
@@ -125,6 +133,7 @@ model User {
 #### POST: 生成回数減算
 
 **処理フロー**:
+
 1. 認証チェック
 2. 残り回数チェック
 3. 回数を1減算
@@ -135,6 +144,7 @@ model User {
 **目的**: Stripeイベントの処理
 
 **処理イベント**:
+
 - `checkout.session.completed`: チェックアウト完了
 - `customer.subscription.created`: サブスクリプション作成
 - `customer.subscription.updated`: サブスクリプション更新
@@ -162,16 +172,16 @@ model User {
 
 ```typescript
 // 日次リセットロジック
-const today = new Date()
-today.setHours(0, 0, 0, 0)
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 
 if (!lastGenerationDate || lastGenerationDay.getTime() < today.getTime()) {
   if (hasActiveSubscription) {
-    remainingGenerations = 5
-    await updateUser({ remainingPhraseGenerations: 5 })
+    remainingGenerations = 5;
+    await updateUser({ remainingPhraseGenerations: 5 });
   } else {
-    remainingGenerations = 0
-    await updateUser({ remainingPhraseGenerations: 0 })
+    remainingGenerations = 0;
+    await updateUser({ remainingPhraseGenerations: 0 });
   }
 }
 ```
@@ -183,6 +193,7 @@ if (!lastGenerationDate || lastGenerationDay.getTime() < today.getTime()) {
 **場所**: `src/components/settings/SubscriptionTab.tsx`
 
 **主要機能**:
+
 1. サブスクリプション状態表示
 2. 次回請求日/期限日表示
 3. プラン詳細表示
@@ -190,14 +201,15 @@ if (!lastGenerationDate || lastGenerationDay.getTime() < today.getTime()) {
 5. 解約確認モーダル
 
 **状態管理**:
+
 ```typescript
 interface SubscriptionStatus {
-  hasStripeCustomer: boolean
+  hasStripeCustomer: boolean;
   subscription: {
-    isActive: boolean
-    status?: string
-    currentPeriodEnd?: string
-  }
+    isActive: boolean;
+    status?: string;
+    currentPeriodEnd?: string;
+  };
 }
 ```
 
@@ -205,10 +217,10 @@ interface SubscriptionStatus {
 
 ```typescript
 const getStatusDisplayText = () => {
-  if (!isSubscribed) return "No Subscribe"
-  if (status === 'canceled') return "Basic Plan (Canceled)"
-  return "Basic Plan"
-}
+  if (!isSubscribed) return "No Subscribe";
+  if (status === "canceled") return "Basic Plan (Canceled)";
+  return "Basic Plan";
+};
 ```
 
 ### PhraseAdd コンポーネント統合
@@ -216,6 +228,7 @@ const getStatusDisplayText = () => {
 **場所**: `src/components/phrase/PhraseAdd.tsx`
 
 **統合ポイント**:
+
 1. 残り生成回数表示
 2. サブスクリプション促進メッセージ（非登録者のみ）
 3. 生成ボタンの有効/無効制御
@@ -275,8 +288,11 @@ sequenceDiagram
 **主要関数**:
 
 #### getUserSubscriptionStatus
+
 ```typescript
-export async function getUserSubscriptionStatus(customerId: string): Promise<SubscriptionInfo> {
+export async function getUserSubscriptionStatus(
+  customerId: string,
+): Promise<SubscriptionInfo> {
   // Stripeからサブスクリプション情報を取得
   // billing_cycle_anchorから次回請求日を計算
   // SubscriptionInfo形式で返却
@@ -284,12 +300,13 @@ export async function getUserSubscriptionStatus(customerId: string): Promise<Sub
 ```
 
 #### createCheckoutSession
+
 ```typescript
 export async function createCheckoutSession(
   customerId: string,
   priceId: string,
   successUrl: string,
-  cancelUrl: string
+  cancelUrl: string,
 ): Promise<string> {
   // Stripeチェックアウトセッションを作成
   // セッションURLを返却
@@ -297,8 +314,11 @@ export async function createCheckoutSession(
 ```
 
 #### cancelSubscription
+
 ```typescript
-export async function cancelSubscription(subscriptionId: string): Promise<boolean> {
+export async function cancelSubscription(
+  subscriptionId: string,
+): Promise<boolean> {
   // サブスクリプションを即座に解約
   // 成功/失敗を返却
 }
@@ -323,8 +343,8 @@ export async function cancelSubscription(subscriptionId: string): Promise<boolea
 ### 1. Webhook検証
 
 ```typescript
-const sig = headers.get('stripe-signature')
-const event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
+const sig = headers.get("stripe-signature");
+const event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
 ```
 
 ### 2. 認証チェック
@@ -358,12 +378,14 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 #### 1. 生成回数がリセットされない
 
-**原因**: 
+**原因**:
+
 - Webhookが届いていない
 - サブスクリプション状態の判定エラー
 - 日次リセットロジックのバグ
 
 **対処法**:
+
 1. Webhook配信状況確認
 2. `/api/stripe/subscription`レスポンス確認
 3. データベースの`lastPhraseGenerationDate`確認
@@ -371,10 +393,12 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 #### 2. 決済後に状態が更新されない
 
 **原因**:
+
 - SWRキャッシュが更新されていない
 - Webhookの遅延
 
 **対処法**:
+
 1. `mutate()`でキャッシュクリア
 2. ページリロード
 3. Webhook配信ログ確認
@@ -382,10 +406,12 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 #### 3. 解約後も機能が使える
 
 **原因**:
+
 - 即座解約の設定ミス
 - 期間終了までのアクセス権
 
 **対処法**:
+
 1. Stripe Dashboardで解約状態確認
 2. `cancel_at_period_end`フラグ確認
 
@@ -446,6 +472,7 @@ npx prisma migrate deploy
 ### 3. Webhook設定
 
 Stripeダッシュボードで以下のイベントを設定:
+
 - `checkout.session.completed`
 - `customer.subscription.created`
 - `customer.subscription.updated`
