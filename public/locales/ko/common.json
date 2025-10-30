@@ -1,353 +1,353 @@
 {
-  "settings": {
-    "userIcon": "사용자 아이콘",
-    "displayName": "랭킹 표시명",
-    "nativeLanguage": "모국어",
-    "defaultLearningLanguage": "기본 학습 언어",
-    "contactEmail": "연락처 이메일",
-    "selectLanguage": "언어를 선택하세요",
-    "validation": {
-      "sameLanguageError": "모국어와 기본 학습 언어는 서로 다르게 선택해야 합니다."
-    },
-    "withdrawal": {
-      "button": "계정 삭제",
-      "title": "계정 삭제 확인",
-      "message": "정말로 계정을 삭제하시겠습니까?\n\n이 작업으로 다음 데이터가 모두 삭제됩니다:\n• 사용자 정보\n• 생성한 문장\n• 말하기 기록\n• 퀴즈 결과\n• 상황\n\n이 작업은 되돌릴 수 없습니다.",
-      "emailConfirmLabel": "확인을 위해 등록된 이메일 주소를 입력해주세요",
-      "emailPlaceholder": "example@email.com",
-      "confirmButton": "삭제",
-      "cancelButton": "취소",
-      "success": "계정이 삭제되었습니다. 로그인 화면으로 돌아갑니다.",
-      "error": "계정 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.",
-      "emailNotFound": "등록된 이메일 주소를 찾을 수 없습니다",
-      "emailMismatch": "입력한 이메일 주소가 등록된 이메일 주소와 일치하지 않습니다"
-    }
-  },
-  "confirm": {
-    "unsavedPhrase": "생성된 문장이 저장되지 않았습니다. 이 페이지를 떠나시겠습니까?",
-    "unsavedCount": "음독 횟수가 저장되지 않았습니다. 이 페이지를 떠나시겠습니까?"
-  },
-  "common": {
-    "backToHome": "홈으로 돌아가기",
-    "loginRequired": "이 기능을 사용하려면 로그인해야 합니다."
-  },
-  "phrase": {
-    "noPhrasesYet": "아직 등록된 문장이 없습니다.",
-    "placeholders": {
-      "phraseInput": "예: 최근에 어디에 갔나요?",
-      "situationInput": "예: 식당에서 주문할 때"
-    },
-    "validation": {
-      "required": "문장을 입력하세요.",
-      "phraseMaxLength": "문장은 100자 이내로 입력하세요.",
-      "situationMaxLength": "50자 이내로 입력하세요.",
-      "variationMaxLength": "200자 이내로 입력하세요."
-    },
-    "messages": {
-      "updateSuccess": "문장이 성공적으로 업데이트되었습니다!",
-      "updateError": "문장 업데이트에 실패했습니다.",
-      "saveSuccess": "문장이 저장되었습니다.",
-      "saveError": "문장을 저장하는 중 오류가 발생했습니다.",
-      "fetchError": "문장을 불러오는 중 오류가 발생했습니다.",
-      "fetchFailed": "문장 불러오기에 실패했습니다.",
-      "countError": "횟수 전송에 실패했습니다.",
-      "notFound": "문장을 찾을 수 없습니다.",
-      "noPhrasesForQuiz": "지정된 조건에 해당하는 문장을 찾을 수 없습니다.",
-      "nextPhraseNotFound": "다음 문장을 찾을 수 없습니다.",
-      "nextPhraseError": "다음 문장을 불러오는 데 실패했습니다.",
-      "dailyLimitExceeded": "오늘의 생성 횟수를 초과했습니다. 내일 다시 시도해 주세요.",
-      "generationFailed": "문장 생성에 실패했습니다.",
-      "generationError": "문장을 생성하는 중 오류가 발생했습니다."
-    },
-    "delete": {
-      "confirmMessage": "이 문장을 삭제하시겠습니까?",
-      "warningMessage": "이 작업은 취소할 수 없습니다."
-    }
-  },
-  "phraseGeneration": {
-    "help": {
-      "title": "문장 생성 안내",
-      "resetTime": {
-        "title": "리셋 시간",
-        "description": "매일 UTC 0시에 리셋됩니다.\n• 일본: 오전 9시\n• 미국 동부: 오후 8시/7시\n• 미국 서부: 오후 5시/4시\n※ 서머타임/표준시 적용"
-      },
-      "dailyLimit": {
-        "title": "1일 이용 제한",
-        "description": "문장 생성 기능은 하루 최대 5회까지 사용할 수 있습니다. 매일 5개의 문장을 꾸준히 쌓아가세요."
-      }
-    }
-  },
-  "speak": {
-    "modal": {
-      "language": "언어",
-      "targetPhrases": "출제 대상",
-      "optionsTitle": "옵션",
-      "excludeTodayPracticedLabel": "오늘 이미 연습한 문장은 제외하기",
-      "options": {
-        "noLimit": "제한 없음",
-        "under50": "50회 이하",
-        "under60": "60회 이하",
-        "under70": "70회 이하",
-        "under80": "80회 이하",
-        "under90": "90회 이하",
-        "under100": "100회 이하"
-      }
-    },
-    "messages": {
-      "dailyLimitReached": "하루 100회 Speak 제한에 도달했습니다. 내일 다시 도전해 보세요!",
-      "endError": "종료 처리 중 오류가 발생했습니다.",
-      "countError": "읽기 횟수를 업데이트하는 중 오류가 발생했습니다.",
-      "sessionResetFailed": "세션 상태 리셋에 실패했습니다.",
-      "dailyCountResetFailed": "일일 횟수 리셋에 실패했습니다.",
-      "phraseCountFetchFailedEmpty": "문장 수를 불러오지 못했습니다(응답이 비어 있음).",
-      "phraseCountFetchFailed": "문장 수를 불러오는 데 실패했습니다.",
-      "noPracticeablePhrases": "이 모드에서 연습할 수 있는 문장이 없습니다.",
-      "phraseCountCheckError": "문장 수 확인 중 오류가 발생했습니다.",
-      "noPhraseFound": "문장을 찾을 수 없습니다."
-    },
-    "explanation": {
-      "title": "Speak 모드 가이드",
-      "howToUse": {
-        "title": "사용 방법",
-        "description": "표시된 문장을 소리 내어 읽고, 읽을 때마다 카운트 버튼을 눌러 연습 횟수를 기록하세요."
-      },
-      "goals": {
-        "title": "목표와 연습 횟수",
-        "description": "하루 10회를 목표로 낭독하세요. 각 문장은 최소 50회 이상 낭독하는 것을 권장합니다. 꾸준한 반복 연습을 통해 자연스럽게 말할 수 있게 됩니다."
-      },
-      "effectiveMethods": {
-        "title": "효과적인 연습 방법",
-        "naturalSpeed": "자연스러운 속도로 읽을 수 있을 때까지 반복하기",
-        "understanding": "문장의 의미를 이해하면서 연습하기",
-        "pronunciation": "실제 상황에서 사용하는 것을 상상하기"
-      }
-    }
-  },
-  "quiz": {
-    "modal": {
-      "mode": "모드",
-      "quizLength": "문항 수",
-      "speakCountFilter": "읽기 횟수",
-      "optionsTitle": "옵션",
-      "excludeTodayQuizzedLabel": "오늘 이미 출제된 문장은 제외하기",
-      "options": {
-        "normal": "일반",
-        "random": "랜덤"
-      },
-      "speakCountOptions": {
-        "noLimit": "제한 없음",
-        "over50": "50회 이상",
-        "over60": "60회 이상",
-        "over70": "70회 이상",
-        "over80": "80회 이상",
-        "over90": "90회 이상",
-        "over100": "100회 이상"
-      },
-      "questions": "문항"
-    },
-    "messages": {
-      "startError": "퀴즈 시작에 실패했습니다.",
-      "fetchError": "문장을 불러오는 중 오류가 발생했습니다.",
-      "submitError": "답안을 제출하는 중 오류가 발생했습니다."
-    }
-  },
-  "home": {
-    "hero": {
-      "subtitle": "\\ 혼잣말 트레이닝 /",
-      "title": "문장 암기의\n결정판",
-      "cta": {
-        "desktop": "지금 시작하기 →"
-      },
-      "features": {
-        "aiGeneration": "AI가 자연스러운 문장을 생성!",
-        "practiceSupport": "나만의 문장집을 만들 수 있어요!",
-        "quizFunction": "이제 일상 대화도 할 수 있게 됩니다!"
-      }
-    },
-    "features": {
-      "title": "혹시 이런 고민 있으신가요?",
-      "speechRecognition": {
-        "title": "문장집을 사용해봤지만, 쓰지 않는 문장만 많아 포기했다."
-      },
-      "quiz": {
-        "title": "원하는 문장을 AI로 생성했지만 복습하지 않고 방치했다."
-      },
-      "progress": {
-        "title": "문장을 외웠다고 생각했지만 실제 대화에서는 사용하지 못했다."
-      }
-    },
-    "solutions": {
-      "title": {
-        "mobile": "\\ 이런 고민을 해결합니다 /",
-        "desktop": "\\ Solo Speak가 이런 고민을 해결합니다 /"
-      },
-      "feature1": {
-        "number": "01",
-        "title": "“나만의 문장집”\n이라서 실용적",
-        "description": "원하는 문장을 AI가 자연스러운 표현으로 번역합니다. 오직 나만의 문장집이기에 즉시 효과를 느낄 수 있습니다. 생성된 3가지 표현 중 원하는 것을 선택하세요.",
-        "demo": {
-          "input": "일본에는 얼마나 살고 있어요?",
-          "outputs": [
-            "How long have you been living in Japan?",
-            "How long have you lived in Japan?",
-            "How long is it since you moved to Japan?"
-          ]
-        }
-      },
-      "feature2": {
-        "number": "02",
-        "title": "읽기 횟수 카운트 기능으로\n“외울 때까지” 철저 지원",
-        "description": "언어는 알기만 해서는 말할 수 없습니다. 한 문장을 하루 10번, 총 50번 읽으며 자연스럽게 나올 때까지 연습하세요.",
-        "demo": {
-          "input": "How long have you been living in Japan?",
-          "output": "일본에는 얼마나 살고 있어요?",
-          "todayLabel": "오늘:",
-          "totalLabel": "총합:",
-          "goalAchieved": "목표 달성!",
-          "goalAchievedMessage": "10회 읽기를 완료했습니다."
-        }
-      },
-      "feature3": {
-        "number": "03",
-        "title": "퀴즈 기능으로\n“순발력” 점검",
-        "description": "낭독으로 외운 문장이 실제 대화에서 바로 나오는지 확인하세요. 퀴즈에서 즉답할 수 있다면 실제 대화에서도 술술 말할 수 있습니다.",
-        "demo": {
-          "input": "How long have you been living in Japan?",
-          "output": "일본에는 얼마나 살고 있어요?"
-        }
-      }
-    },
-    "faq": {
-      "title": "자주 묻는 질문",
-      "q1": {
-        "question": "문장 생성 횟수에 제한이 있나요?",
-        "answer": "하루 5회까지 이용 가능합니다.",
-        "answerDetail": "매일 5개의 문장을 꾸준히 쌓아가세요."
-      },
-      "q2": {
-        "question": "문장 생성 횟수는 언제 리셋되나요?",
-        "answer": "협정 세계시(UTC) 0시에 리셋됩니다.",
-        "answerDetail": "일본 시간으로는 오전 9시(표준시) 또는 오전 8시(서머타임)에 리셋됩니다."
-      },
-      "q3": {
-        "question": "Solo Speak는 무료로 이용할 수 있나요?",
-        "answer": "현재 기본 기능은 무료로 제공됩니다.",
-        "answerDetail": "향후 서비스 확장 시 유료화될 수 있으며, 사전에 안내해 드립니다."
-      }
-    },
-    "cta": {
-      "title": "지금 바로 스피킹 학습을\n시작하세요",
-      "subtitle": "Solo Speak와 함께 언어 학습을 한 단계 업그레이드하세요.",
-      "button": "지금 시작하기 →"
-    }
-  },
-  "subscription": {
-    "status": "상태",
-    "nextBillingDate": "다음 결제일",
-    "expiresOn": "만료일",
-    "plans": "플랜",
-    "subscriptionRequired": "AI 문장 생성 기능을 사용하려면 Basic 플랜에 가입해야 합니다.",
-    "subscribeToBasicPlan": "Basic 플랜 가입",
-    "manageSubscription": "설정 화면에서 구독 관리 →",
-    "cancelConfirm": "정말 구독을 취소하시겠습니까? AI 문장 생성 기능에 즉시 접근할 수 없게 됩니다.",
-    "cancelSuccess": "구독이 성공적으로 취소되었습니다.",
-    "cancelError": "구독 취소에 실패했습니다.",
-    "fetchError": "구독 상태를 불러오는 데 실패했습니다.",
-    "checkoutError": "결제 세션 생성에 실패했습니다."
-  },
-  "ranking": {
-    "noData": "표시할 데이터가 없습니다.",
-    "shareStreak": {
-      "intro": "Solo Speak을 사용하고 있습니다⚡",
-      "phrase": {
-        "total": "지금까지 {count}개의 문장을 생성했습니다!",
-        "streak": "{count}일 연속으로 문장을 생성했습니다!"
-      },
-      "speak": {
-        "daily": "오늘 {count}번 음독했습니다!",
-        "weekly": "이번 주 {count}번 음독했습니다!",
-        "total": "지금까지 {count}번 음독했습니다!",
-        "streak": "{count}일 연속으로 음독을 계속했습니다!"
-      },
-      "quiz": {
-        "daily": "오늘 퀴즈에 {count}번 정답했습니다!",
-        "weekly": "이번 주 퀴즈에 {count}번 정답했습니다!",
-        "total": "지금까지 퀴즈에 {count}번 정답했습니다!",
-        "streak": "{count}일 연속으로 퀴즈에 정답했습니다!"
-      },
-      "url": "https://solo-speak.com",
-      "hashtag": "#SoloSpeak",
-      "error": {
-        "noCount": "카운트가 0이므로 게시할 수 없습니다",
-        "failed": "게시 링크 생성 중 오류가 발생했습니다"
-      }
-    }
-  },
-  "auth": {
-    "modal": {
-      "supportMessage": "Solo Speak가 당신의 스피킹 학습을 지원합니다.",
-      "supportMessageShort": "당신의 스피킹 학습을 지원합니다.",
-      "browserNote": "Safari/Chrome으로 로그인하세요",
-      "popupBlockedError": "인증 화면이 표시되는 데 시간이 걸리고 있습니다. 팝업 차단 여부를 확인하세요.",
-      "authFailedError": "인증에 실패했습니다. 다시 시도해 주세요.",
-      "browserSwitchHelp": {
-        "title": "브라우저에서 열기 방법",
-        "xApp": {
-          "title": "X 앱에서 열었을 때",
-          "step1": "화면 우하단의 \"Safari 아이콘\"을 탭하세요"
-        },
-        "lineApp": {
-          "title": "LINE 앱에서 열었을 때",
-          "step1": "화면 우하단의 \"...\" 메뉴를 탭하세요",
-          "step2": "\"브라우저에서 열기\"를 선택하세요"
-        },
-        "general": {
-          "title": "기타 앱의 경우",
-          "description": "대부분의 앱은 화면 상단이나 우하단에 메뉴 버튼(..., ↗)이 있으며, 거기서 \"브라우저에서 열기\", \"Safari에서 열기\", \"외부 브라우저에서 열기\" 등의 옵션을 선택할 수 있습니다."
-        }
-      }
-    }
-  },
-  "situation": {
-    "addSuccess": "상황이 추가되었습니다.",
-    "addError": "상황 추가 중 오류가 발생했습니다.",
-    "deleteSuccess": "상황이 삭제되었습니다.",
-    "deleteError": "상황 삭제 중 오류가 발생했습니다.",
-    "delete": {
-      "confirmMessage": "이 상황을 삭제하시겠습니까?",
-      "warningMessage": "이 작업은 취소할 수 없습니다."
-    }
-  },
-  "addToHomeScreen": {
-    "title": "홈 화면에서 바로 열 수 있습니다!",
-    "description": "스마트폰에서는 홈 화면에 추가하여 앱처럼 사용할 수 있습니다.",
-    "safari": {
-      "step1": "Safari에서 이 페이지 열기",
-      "step2": "화면 하단의 '공유' 버튼 누르기",
-      "step3": "'홈 화면에 추가' 선택하기",
-      "step4": "앱 이름 확인 후 '추가' 누르기"
-    },
-    "android": {
-      "step1": "Chrome에서 이 페이지 열기",
-      "step2": "오른쪽 상단 메뉴(세 점) 누르기",
-      "step3": "'홈 화면에 추가' 또는 '앱 설치' 선택하기",
-      "step4": "앱 이름 확인 후 '추가' 누르기"
-    }
-  },
-  "footer": {
-    "description": "당신의 스피킹 학습을 지원합니다.",
-    "sections": {
-      "service": "서비스",
-      "legal": "법적 고지",
-      "support": "지원"
-    },
-    "links": {
-      "about": "Solo Speak 소개",
-      "terms": "이용 약관",
-      "privacy": "개인정보 처리방침",
-      "commercialTransaction": "전자상거래법 표기",
-      "contact": "문의하기"
-    },
-    "copyright": "All rights reserved."
-  }
+	"settings": {
+		"userIcon": "사용자 아이콘",
+		"displayName": "랭킹 표시명",
+		"nativeLanguage": "모국어",
+		"defaultLearningLanguage": "기본 학습 언어",
+		"contactEmail": "연락처 이메일",
+		"selectLanguage": "언어를 선택하세요",
+		"validation": {
+			"sameLanguageError": "모국어와 기본 학습 언어는 서로 다르게 선택해야 합니다."
+		},
+		"withdrawal": {
+			"button": "계정 삭제",
+			"title": "계정 삭제 확인",
+			"message": "정말로 계정을 삭제하시겠습니까?\n\n이 작업으로 다음 데이터가 모두 삭제됩니다:\n• 사용자 정보\n• 생성한 문장\n• 말하기 기록\n• 퀴즈 결과\n• 상황\n\n이 작업은 되돌릴 수 없습니다.",
+			"emailConfirmLabel": "확인을 위해 등록된 이메일 주소를 입력해주세요",
+			"emailPlaceholder": "example@email.com",
+			"confirmButton": "삭제",
+			"cancelButton": "취소",
+			"success": "계정이 삭제되었습니다. 로그인 화면으로 돌아갑니다.",
+			"error": "계정 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.",
+			"emailNotFound": "등록된 이메일 주소를 찾을 수 없습니다",
+			"emailMismatch": "입력한 이메일 주소가 등록된 이메일 주소와 일치하지 않습니다"
+		}
+	},
+	"confirm": {
+		"unsavedPhrase": "생성된 문장이 저장되지 않았습니다. 이 페이지를 떠나시겠습니까?",
+		"unsavedCount": "음독 횟수가 저장되지 않았습니다. 이 페이지를 떠나시겠습니까?"
+	},
+	"common": {
+		"backToHome": "홈으로 돌아가기",
+		"loginRequired": "이 기능을 사용하려면 로그인해야 합니다."
+	},
+	"phrase": {
+		"noPhrasesYet": "아직 등록된 문장이 없습니다.",
+		"placeholders": {
+			"phraseInput": "예: 최근에 어디에 갔나요?",
+			"situationInput": "예: 식당에서 주문할 때"
+		},
+		"validation": {
+			"required": "문장을 입력하세요.",
+			"phraseMaxLength": "문장은 100자 이내로 입력하세요.",
+			"situationMaxLength": "50자 이내로 입력하세요.",
+			"variationMaxLength": "200자 이내로 입력하세요."
+		},
+		"messages": {
+			"updateSuccess": "문장이 성공적으로 업데이트되었습니다!",
+			"updateError": "문장 업데이트에 실패했습니다.",
+			"saveSuccess": "문장이 저장되었습니다.",
+			"saveError": "문장을 저장하는 중 오류가 발생했습니다.",
+			"fetchError": "문장을 불러오는 중 오류가 발생했습니다.",
+			"fetchFailed": "문장 불러오기에 실패했습니다.",
+			"countError": "횟수 전송에 실패했습니다.",
+			"notFound": "문장을 찾을 수 없습니다.",
+			"noPhrasesForQuiz": "지정된 조건에 해당하는 문장을 찾을 수 없습니다.",
+			"nextPhraseNotFound": "다음 문장을 찾을 수 없습니다.",
+			"nextPhraseError": "다음 문장을 불러오는 데 실패했습니다.",
+			"dailyLimitExceeded": "오늘의 생성 횟수를 초과했습니다. 내일 다시 시도해 주세요.",
+			"generationFailed": "문장 생성에 실패했습니다.",
+			"generationError": "문장을 생성하는 중 오류가 발생했습니다."
+		},
+		"delete": {
+			"confirmMessage": "이 문장을 삭제하시겠습니까?",
+			"warningMessage": "이 작업은 취소할 수 없습니다."
+		}
+	},
+	"phraseGeneration": {
+		"help": {
+			"title": "문장 생성 안내",
+			"resetTime": {
+				"title": "리셋 시간",
+				"description": "매일 UTC 0시에 리셋됩니다.\n• 일본: 오전 9시\n• 미국 동부: 오후 8시/7시\n• 미국 서부: 오후 5시/4시\n※ 서머타임/표준시 적용"
+			},
+			"dailyLimit": {
+				"title": "1일 이용 제한",
+				"description": "문장 생성 기능은 하루 최대 5회까지 사용할 수 있습니다. 매일 5개의 문장을 꾸준히 쌓아가세요."
+			}
+		}
+	},
+	"speak": {
+		"modal": {
+			"language": "언어",
+			"targetPhrases": "출제 대상",
+			"optionsTitle": "옵션",
+			"excludeTodayPracticedLabel": "오늘 이미 연습한 문장은 제외하기",
+			"options": {
+				"noLimit": "제한 없음",
+				"under50": "50회 이하",
+				"under60": "60회 이하",
+				"under70": "70회 이하",
+				"under80": "80회 이하",
+				"under90": "90회 이하",
+				"under100": "100회 이하"
+			}
+		},
+		"messages": {
+			"dailyLimitReached": "하루 100회 Speak 제한에 도달했습니다. 내일 다시 도전해 보세요!",
+			"endError": "종료 처리 중 오류가 발생했습니다.",
+			"countError": "읽기 횟수를 업데이트하는 중 오류가 발생했습니다.",
+			"sessionResetFailed": "세션 상태 리셋에 실패했습니다.",
+			"dailyCountResetFailed": "일일 횟수 리셋에 실패했습니다.",
+			"phraseCountFetchFailedEmpty": "문장 수를 불러오지 못했습니다(응답이 비어 있음).",
+			"phraseCountFetchFailed": "문장 수를 불러오는 데 실패했습니다.",
+			"noPracticeablePhrases": "이 모드에서 연습할 수 있는 문장이 없습니다.",
+			"phraseCountCheckError": "문장 수 확인 중 오류가 발생했습니다.",
+			"noPhraseFound": "문장을 찾을 수 없습니다."
+		},
+		"explanation": {
+			"title": "Speak 모드 가이드",
+			"howToUse": {
+				"title": "사용 방법",
+				"description": "표시된 문장을 소리 내어 읽고, 읽을 때마다 카운트 버튼을 눌러 연습 횟수를 기록하세요."
+			},
+			"goals": {
+				"title": "목표와 연습 횟수",
+				"description": "하루 10회를 목표로 낭독하세요. 각 문장은 최소 50회 이상 낭독하는 것을 권장합니다. 꾸준한 반복 연습을 통해 자연스럽게 말할 수 있게 됩니다."
+			},
+			"effectiveMethods": {
+				"title": "효과적인 연습 방법",
+				"naturalSpeed": "자연스러운 속도로 읽을 수 있을 때까지 반복하기",
+				"understanding": "문장의 의미를 이해하면서 연습하기",
+				"pronunciation": "실제 상황에서 사용하는 것을 상상하기"
+			}
+		}
+	},
+	"quiz": {
+		"modal": {
+			"mode": "모드",
+			"quizLength": "문항 수",
+			"speakCountFilter": "읽기 횟수",
+			"optionsTitle": "옵션",
+			"excludeTodayQuizzedLabel": "오늘 이미 출제된 문장은 제외하기",
+			"options": {
+				"normal": "일반",
+				"random": "랜덤"
+			},
+			"speakCountOptions": {
+				"noLimit": "제한 없음",
+				"over50": "50회 이상",
+				"over60": "60회 이상",
+				"over70": "70회 이상",
+				"over80": "80회 이상",
+				"over90": "90회 이상",
+				"over100": "100회 이상"
+			},
+			"questions": "문항"
+		},
+		"messages": {
+			"startError": "퀴즈 시작에 실패했습니다.",
+			"fetchError": "문장을 불러오는 중 오류가 발생했습니다.",
+			"submitError": "답안을 제출하는 중 오류가 발생했습니다."
+		}
+	},
+	"home": {
+		"hero": {
+			"subtitle": "\\ 혼잣말 트레이닝 /",
+			"title": "문장 암기의\n결정판",
+			"cta": {
+				"desktop": "지금 시작하기 →"
+			},
+			"features": {
+				"aiGeneration": "AI가 자연스러운 문장을 생성!",
+				"practiceSupport": "나만의 문장집을 만들 수 있어요!",
+				"quizFunction": "이제 일상 대화도 할 수 있게 됩니다!"
+			}
+		},
+		"features": {
+			"title": "혹시 이런 고민 있으신가요?",
+			"speechRecognition": {
+				"title": "문장집을 사용해봤지만, 쓰지 않는 문장만 많아 포기했다."
+			},
+			"quiz": {
+				"title": "원하는 문장을 AI로 생성했지만 복습하지 않고 방치했다."
+			},
+			"progress": {
+				"title": "문장을 외웠다고 생각했지만 실제 대화에서는 사용하지 못했다."
+			}
+		},
+		"solutions": {
+			"title": {
+				"mobile": "\\ 이런 고민을 해결합니다 /",
+				"desktop": "\\ Solo Speak가 이런 고민을 해결합니다 /"
+			},
+			"feature1": {
+				"number": "01",
+				"title": "“나만의 문장집”\n이라서 실용적",
+				"description": "원하는 문장을 AI가 자연스러운 표현으로 번역합니다. 오직 나만의 문장집이기에 즉시 효과를 느낄 수 있습니다. 생성된 3가지 표현 중 원하는 것을 선택하세요.",
+				"demo": {
+					"input": "일본에는 얼마나 살고 있어요?",
+					"outputs": [
+						"How long have you been living in Japan?",
+						"How long have you lived in Japan?",
+						"How long is it since you moved to Japan?"
+					]
+				}
+			},
+			"feature2": {
+				"number": "02",
+				"title": "읽기 횟수 카운트 기능으로\n“외울 때까지” 철저 지원",
+				"description": "언어는 알기만 해서는 말할 수 없습니다. 한 문장을 하루 10번, 총 50번 읽으며 자연스럽게 나올 때까지 연습하세요.",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "일본에는 얼마나 살고 있어요?",
+					"todayLabel": "오늘:",
+					"totalLabel": "총합:",
+					"goalAchieved": "목표 달성!",
+					"goalAchievedMessage": "10회 읽기를 완료했습니다."
+				}
+			},
+			"feature3": {
+				"number": "03",
+				"title": "퀴즈 기능으로\n“순발력” 점검",
+				"description": "낭독으로 외운 문장이 실제 대화에서 바로 나오는지 확인하세요. 퀴즈에서 즉답할 수 있다면 실제 대화에서도 술술 말할 수 있습니다.",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "일본에는 얼마나 살고 있어요?"
+				}
+			}
+		},
+		"faq": {
+			"title": "자주 묻는 질문",
+			"q1": {
+				"question": "문장 생성 횟수에 제한이 있나요?",
+				"answer": "하루 5회까지 이용 가능합니다.",
+				"answerDetail": "매일 5개의 문장을 꾸준히 쌓아가세요."
+			},
+			"q2": {
+				"question": "문장 생성 횟수는 언제 리셋되나요?",
+				"answer": "협정 세계시(UTC) 0시에 리셋됩니다.",
+				"answerDetail": "일본 시간으로는 오전 9시(표준시) 또는 오전 8시(서머타임)에 리셋됩니다."
+			},
+			"q3": {
+				"question": "Solo Speak는 무료로 이용할 수 있나요?",
+				"answer": "현재 기본 기능은 무료로 제공됩니다.",
+				"answerDetail": "향후 서비스 확장 시 유료화될 수 있으며, 사전에 안내해 드립니다."
+			}
+		},
+		"cta": {
+			"title": "지금 바로 스피킹 학습을\n시작하세요",
+			"subtitle": "Solo Speak와 함께 언어 학습을 한 단계 업그레이드하세요.",
+			"button": "지금 시작하기 →"
+		}
+	},
+	"subscription": {
+		"status": "상태",
+		"nextBillingDate": "다음 결제일",
+		"expiresOn": "만료일",
+		"plans": "플랜",
+		"subscriptionRequired": "AI 문장 생성 기능을 사용하려면 Basic 플랜에 가입해야 합니다.",
+		"subscribeToBasicPlan": "Basic 플랜 가입",
+		"manageSubscription": "설정 화면에서 구독 관리 →",
+		"cancelConfirm": "정말 구독을 취소하시겠습니까? AI 문장 생성 기능에 즉시 접근할 수 없게 됩니다.",
+		"cancelSuccess": "구독이 성공적으로 취소되었습니다.",
+		"cancelError": "구독 취소에 실패했습니다.",
+		"fetchError": "구독 상태를 불러오는 데 실패했습니다.",
+		"checkoutError": "결제 세션 생성에 실패했습니다."
+	},
+	"ranking": {
+		"noData": "표시할 데이터가 없습니다.",
+		"shareStreak": {
+			"intro": "Solo Speak을 사용하고 있습니다⚡",
+			"phrase": {
+				"total": "지금까지 {count}개의 문장을 생성했습니다!",
+				"streak": "{count}일 연속으로 문장을 생성했습니다!"
+			},
+			"speak": {
+				"daily": "오늘 {count}번 음독했습니다!",
+				"weekly": "이번 주 {count}번 음독했습니다!",
+				"total": "지금까지 {count}번 음독했습니다!",
+				"streak": "{count}일 연속으로 음독을 계속했습니다!"
+			},
+			"quiz": {
+				"daily": "오늘 퀴즈에 {count}번 정답했습니다!",
+				"weekly": "이번 주 퀴즈에 {count}번 정답했습니다!",
+				"total": "지금까지 퀴즈에 {count}번 정답했습니다!",
+				"streak": "{count}일 연속으로 퀴즈에 정답했습니다!"
+			},
+			"url": "https://solo-speak.com",
+			"hashtag": "#SoloSpeak",
+			"error": {
+				"noCount": "카운트가 0이므로 게시할 수 없습니다",
+				"failed": "게시 링크 생성 중 오류가 발생했습니다"
+			}
+		}
+	},
+	"auth": {
+		"modal": {
+			"supportMessage": "Solo Speak가 당신의 스피킹 학습을 지원합니다.",
+			"supportMessageShort": "당신의 스피킹 학습을 지원합니다.",
+			"browserNote": "Safari/Chrome으로 로그인하세요",
+			"popupBlockedError": "인증 화면이 표시되는 데 시간이 걸리고 있습니다. 팝업 차단 여부를 확인하세요.",
+			"authFailedError": "인증에 실패했습니다. 다시 시도해 주세요.",
+			"browserSwitchHelp": {
+				"title": "브라우저에서 열기 방법",
+				"xApp": {
+					"title": "X 앱에서 열었을 때",
+					"step1": "화면 우하단의 \"Safari 아이콘\"을 탭하세요"
+				},
+				"lineApp": {
+					"title": "LINE 앱에서 열었을 때",
+					"step1": "화면 우하단의 \"...\" 메뉴를 탭하세요",
+					"step2": "\"브라우저에서 열기\"를 선택하세요"
+				},
+				"general": {
+					"title": "기타 앱의 경우",
+					"description": "대부분의 앱은 화면 상단이나 우하단에 메뉴 버튼(..., ↗)이 있으며, 거기서 \"브라우저에서 열기\", \"Safari에서 열기\", \"외부 브라우저에서 열기\" 등의 옵션을 선택할 수 있습니다."
+				}
+			}
+		}
+	},
+	"situation": {
+		"addSuccess": "상황이 추가되었습니다.",
+		"addError": "상황 추가 중 오류가 발생했습니다.",
+		"deleteSuccess": "상황이 삭제되었습니다.",
+		"deleteError": "상황 삭제 중 오류가 발생했습니다.",
+		"delete": {
+			"confirmMessage": "이 상황을 삭제하시겠습니까?",
+			"warningMessage": "이 작업은 취소할 수 없습니다."
+		}
+	},
+	"addToHomeScreen": {
+		"title": "홈 화면에서 바로 열 수 있습니다!",
+		"description": "스마트폰에서는 홈 화면에 추가하여 앱처럼 사용할 수 있습니다.",
+		"safari": {
+			"step1": "Safari에서 이 페이지 열기",
+			"step2": "화면 하단의 '공유' 버튼 누르기",
+			"step3": "'홈 화면에 추가' 선택하기",
+			"step4": "앱 이름 확인 후 '추가' 누르기"
+		},
+		"android": {
+			"step1": "Chrome에서 이 페이지 열기",
+			"step2": "오른쪽 상단 메뉴(세 점) 누르기",
+			"step3": "'홈 화면에 추가' 또는 '앱 설치' 선택하기",
+			"step4": "앱 이름 확인 후 '추가' 누르기"
+		}
+	},
+	"footer": {
+		"description": "당신의 스피킹 학습을 지원합니다.",
+		"sections": {
+			"service": "서비스",
+			"legal": "법적 고지",
+			"support": "지원"
+		},
+		"links": {
+			"about": "Solo Speak 소개",
+			"terms": "이용 약관",
+			"privacy": "개인정보 처리방침",
+			"commercialTransaction": "전자상거래법 표기",
+			"contact": "문의하기"
+		},
+		"copyright": "All rights reserved."
+	}
 }

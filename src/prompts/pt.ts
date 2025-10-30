@@ -1,13 +1,13 @@
 export const getPortuguesePrompt = (
-  nativeLanguageName: string,
-  input: string,
-  situation: string | undefined,
+	nativeLanguageName: string,
+	input: string,
+	situation: string | undefined,
 ): string => {
-  const situationText = situation
-    ? `«${situation}»`
-    : "conversa cotidiana geral";
+	const situationText = situation
+		? `«${situation}»`
+		: "conversa cotidiana geral";
 
-  return `Você é um treinador de conversação em português para estudantes de ${nativeLanguageName}.
+	return `Você é um treinador de conversação em português para estudantes de ${nativeLanguageName}.
 
 # Visão geral da tarefa
 O usuário vai inserir uma frase em ${nativeLanguageName} e, opcionalmente, uma situação.  

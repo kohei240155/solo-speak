@@ -1,353 +1,353 @@
 {
-  "settings": {
-    "userIcon": "ユーザーアイコン",
-    "displayName": "ランキング表示名",
-    "nativeLanguage": "母国語",
-    "defaultLearningLanguage": "デフォルト学習言語",
-    "contactEmail": "連絡先メールアドレス",
-    "selectLanguage": "言語を選択してください",
-    "validation": {
-      "sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
-    },
-    "withdrawal": {
-      "button": "退会する",
-      "title": "アカウント削除の確認",
-      "message": "本当にアカウントを削除しますか？\n\nこの操作により、以下のデータがすべて削除されます：\n• ユーザー情報\n• 作成したフレーズ\n• スピーキング履歴\n• クイズ結果\n• シチュエーション\n\nこの操作は取り消すことができません。",
-      "emailConfirmLabel": "確認のため、登録されているメールアドレスを入力してください",
-      "emailPlaceholder": "example@email.com",
-      "confirmButton": "削除する",
-      "cancelButton": "キャンセル",
-      "success": "アカウントを削除しました。ログイン画面に戻ります。",
-      "error": "アカウントの削除に失敗しました。しばらくしてから再度お試しください。",
-      "emailNotFound": "登録されたメールアドレスが見つかりません",
-      "emailMismatch": "入力されたメールアドレスが登録されたメールアドレスと一致しません"
-    }
-  },
-  "confirm": {
-    "unsavedPhrase": "生成されたフレーズが保存されていません。このページを離れますか？",
-    "unsavedCount": "音読回数が保存されていません。このページを離れますか？"
-  },
-  "common": {
-    "backToHome": "ホームに戻る",
-    "loginRequired": "この機能を利用するにはログインが必要です"
-  },
-  "phrase": {
-    "noPhrasesYet": "まだフレーズが登録されていません",
-    "placeholders": {
-      "phraseInput": "例：最近どこに行きましたか？",
-      "situationInput": "例：レストランの注文で"
-    },
-    "validation": {
-      "required": "フレーズを入力してください",
-      "phraseMaxLength": "フレーズは100文字以内で入力してください",
-      "situationMaxLength": "50文字以内で入力してください",
-      "variationMaxLength": "200文字以内で入力してください"
-    },
-    "messages": {
-      "updateSuccess": "フレーズが正常に更新されました！",
-      "updateError": "フレーズの更新に失敗しました",
-      "saveSuccess": "フレーズを保存しました",
-      "saveError": "フレーズの保存中にエラーが発生しました",
-      "fetchError": "フレーズの取得中にエラーが発生しました",
-      "fetchFailed": "フレーズの取得に失敗しました",
-      "countError": "カウントの送信に失敗しました",
-      "notFound": "フレーズが見つかりませんでした",
-      "noPhrasesForQuiz": "指定された条件のフレーズが見つかりませんでした",
-      "nextPhraseNotFound": "次のフレーズが見つかりませんでした",
-      "nextPhraseError": "次のフレーズの取得に失敗しました",
-      "dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
-      "generationFailed": "フレーズの生成に失敗しました",
-      "generationError": "フレーズの生成中にエラーが発生しました"
-    },
-    "delete": {
-      "confirmMessage": "このフレーズを削除してもよろしいですか？",
-      "warningMessage": "この操作は取り消すことができません。"
-    }
-  },
-  "phraseGeneration": {
-    "help": {
-      "title": "フレーズ生成について",
-      "resetTime": {
-        "title": "リセット時間",
-        "description": "毎日UTC 0時にリセットされます。\n• 日本： 午前9時\n• アメリカ東海岸： 午後8時/7時\n• アメリカ西海岸： 午後5時/4時\n※ 夏時間/冬時間"
-      },
-      "dailyLimit": {
-        "title": "1日の利用制限",
-        "description": "フレーズ生成機能は1日5回までご利用いただけます。毎日5フレーズを確実に積み上げていきましょう。"
-      }
-    }
-  },
-  "speak": {
-    "modal": {
-      "language": "言語",
-      "targetPhrases": "出題対象",
-      "optionsTitle": "オプション",
-      "excludeTodayPracticedLabel": "今日既に練習したフレーズを除外する",
-      "options": {
-        "noLimit": "制限なし",
-        "under50": "50回以下",
-        "under60": "60回以下",
-        "under70": "70回以下",
-        "under80": "80回以下",
-        "under90": "90回以下",
-        "under100": "100回以下"
-      }
-    },
-    "messages": {
-      "dailyLimitReached": "1日100回のSpeak制限に到達しました。明日また挑戦してください！",
-      "endError": "終了処理中にエラーが発生しました",
-      "countError": "音読回数の更新中にエラーが発生しました",
-      "sessionResetFailed": "セッション状態のリセットに失敗しました",
-      "dailyCountResetFailed": "日次カウントのリセットに失敗しました",
-      "phraseCountFetchFailedEmpty": "フレーズ数の取得に失敗しました（レスポンスが空です）",
-      "phraseCountFetchFailed": "フレーズ数の取得に失敗しました",
-      "noPracticeablePhrases": "このモードでは練習できるフレーズがありません",
-      "phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました",
-      "noPhraseFound": "フレーズが見つかりませんでした"
-    },
-    "explanation": {
-      "title": "Speak Mode ガイド",
-      "howToUse": {
-        "title": "使い方",
-        "description": "表示されたフレーズを音読し、音読するごとにカウントボタンを押して練習回数を記録します。"
-      },
-      "goals": {
-        "title": "目標と練習回数",
-        "description": "1日10回を目標に音読しましょう。各フレーズは最低50回は音読することを推奨します。継続的な練習と反復練習により、自然に口から出るようになります。"
-      },
-      "effectiveMethods": {
-        "title": "効果的な練習方法",
-        "naturalSpeed": "自然なスピードで読めるようになるまで繰り返す",
-        "understanding": "フレーズの意味を理解しながら練習する",
-        "pronunciation": "実際の場面で使うことをイメージする"
-      }
-    }
-  },
-  "quiz": {
-    "modal": {
-      "mode": "モード",
-      "quizLength": "問題数",
-      "speakCountFilter": "音読回数",
-      "optionsTitle": "オプション",
-      "excludeTodayQuizzedLabel": "今日既に出題したフレーズを除外する",
-      "options": {
-        "normal": "通常",
-        "random": "ランダム"
-      },
-      "speakCountOptions": {
-        "noLimit": "指定なし",
-        "over50": "50回以上",
-        "over60": "60回以上",
-        "over70": "70回以上",
-        "over80": "80回以上",
-        "over90": "90回以上",
-        "over100": "100回以上"
-      },
-      "questions": "問"
-    },
-    "messages": {
-      "startError": "クイズの開始に失敗しました",
-      "fetchError": "フレーズの取得中にエラーが発生しました",
-      "submitError": "回答の送信中にエラーが発生しました"
-    }
-  },
-  "home": {
-    "hero": {
-      "subtitle": "\\ 独り言トレーニング /",
-      "title": "フレーズ暗記の\n決定版",
-      "cta": {
-        "desktop": "今すぐはじめる →"
-      },
-      "features": {
-        "aiGeneration": "AIが自然なフレーズを生成！",
-        "practiceSupport": "自分だけのフレーズ集を作れる！",
-        "quizFunction": "これで日常会話ができるようになる！"
-      }
-    },
-    "features": {
-      "title": "こんなお悩みありませんか？",
-      "speechRecognition": {
-        "title": "フレーズ集を使ってみたけど、使わないフレーズばかりで挫折してしまった"
-      },
-      "quiz": {
-        "title": "知りたかったフレーズ、AIで生成しても復習せずに放置してしまった"
-      },
-      "progress": {
-        "title": "フレーズを丸暗記したつもりだったけど、実際の会話で使うことができなかった"
-      }
-    },
-    "solutions": {
-      "title": {
-        "mobile": "\\ これらの悩みを解決します /",
-        "desktop": "\\ これらの悩みをSolo Speakが解決します /"
-      },
-      "feature1": {
-        "number": "01",
-        "title": "「自分だけのフレーズ集」\nだから実用的",
-        "description": "知りたかったフレーズを、AIが自然な表現で翻訳。オリジナルのフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
-        "demo": {
-          "input": "日本にはどのぐらい住んでいるの？",
-          "outputs": [
-            "How long have you been living in Japan?",
-            "How long have you lived in Japan?",
-            "How long is it since you moved to Japan?"
-          ]
-        }
-      },
-      "feature2": {
-        "number": "02",
-        "title": "音読回数カウント機能で\n\"覚えるまで\"徹底サポート",
-        "description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
-        "demo": {
-          "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？",
-          "todayLabel": "Today:",
-          "totalLabel": "Total:",
-          "goalAchieved": "目標達成！",
-          "goalAchievedMessage": "10回の音読が完了しました"
-        }
-      },
-      "feature3": {
-        "number": "03",
-        "title": "クイズ機能で「瞬発力」を\nチェック",
-        "description": "音読で暗記したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答できれば、実際の会話でもスラスラ話せます。",
-        "demo": {
-          "input": "How long have you been living in Japan?",
-          "output": "日本にはどのぐらい住んでいるの？"
-        }
-      }
-    },
-    "faq": {
-      "title": "よくある質問",
-      "q1": {
-        "question": "フレーズ生成回数に制限はありますか？",
-        "answer": "1日5回までご利用いただけます。",
-        "answerDetail": "毎日5フレーズを確実に積み上げていきましょう。"
-      },
-      "q2": {
-        "question": "フレーズ生成回数はいつリセットされますか？",
-        "answer": "協定世界時（UTC）の0時にリセットされます。",
-        "answerDetail": "日本時間では午前9時（冬時間）または午前8時（夏時間）、バンクーバー時間では午後4時（冬時間）または午後5時（夏時間）にリセットされます。"
-      },
-      "q3": {
-        "question": "Solo Speakは無料で使えますか？",
-        "answer": "現在は基本機能を無料でご利用いただけます。",
-        "answerDetail": "今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。"
-      }
-    },
-    "cta": {
-      "title": "今すぐスピーキング学習を\n始めましょう",
-      "subtitle": "Solo Speakで、あなたの語学学習を次のレベルへ",
-      "button": "今すぐはじめる →"
-    }
-  },
-  "subscription": {
-    "status": "ステータス",
-    "nextBillingDate": "次回請求日",
-    "expiresOn": "有効期限",
-    "plans": "プラン",
-    "subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
-    "subscribeToBasicPlan": "Basicプランに登録",
-    "manageSubscription": "設定画面でサブスクリプションを管理 →",
-    "cancelConfirm": "本当にサブスクリプションをキャンセルしますか？AIフレーズ生成機能へのアクセスが即座に無効になります。",
-    "cancelSuccess": "サブスクリプションが正常にキャンセルされました。",
-    "cancelError": "サブスクリプションのキャンセルに失敗しました",
-    "fetchError": "サブスクリプション状態の取得に失敗しました",
-    "checkoutError": "チェックアウトセッションの作成に失敗しました"
-  },
-  "ranking": {
-    "noData": "表示対象のデータがありません",
-    "shareStreak": {
-      "intro": "Solo Speakを使っています⚡",
-      "phrase": {
-        "total": "これまでに {count}フレーズ 生成しました！",
-        "streak": "{count}日連続でフレーズを生成しました！"
-      },
-      "speak": {
-        "daily": "今日は {count}回 音読しました！",
-        "weekly": "今週は {count}回 音読しました！",
-        "total": "これまでに {count}回 音読しました！",
-        "streak": "{count}日連続で音読を継続しています！"
-      },
-      "quiz": {
-        "daily": "今日はクイズに {count}回 正解しました！",
-        "weekly": "今週はクイズに {count}回 正解しました！",
-        "total": "これまでにクイズに {count}回 正解しました！",
-        "streak": "{count}日連続でクイズに正解しました！"
-      },
-      "url": "https://solo-speak.com",
-      "hashtag": "#SoloSpeak #英語学習 #多言語学習",
-      "error": {
-        "noCount": "カウントが0のため投稿できません",
-        "failed": "投稿リンクの生成中にエラーが発生しました"
-      }
-    }
-  },
-  "auth": {
-    "modal": {
-      "supportMessage": "Solo Speakはあなたのスピーキング学習をサポートします。",
-      "supportMessageShort": "あなたのスピーキング学習をサポートします。",
-      "browserNote": "Safari/Chromeでログインしてください",
-      "popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
-      "authFailedError": "認証に失敗しました。再度お試しください。",
-      "browserSwitchHelp": {
-        "title": "ブラウザでの開き方",
-        "xApp": {
-          "title": "Xアプリから開いた場合",
-          "step1": "画面右下の「Safariアイコン」をタップ"
-        },
-        "lineApp": {
-          "title": "LINEアプリから開いた場合",
-          "step1": "画面右下の「・・・」メニューをタップ",
-          "step2": "「ブラウザで開く」を選択"
-        },
-        "general": {
-          "title": "その他のアプリの場合",
-          "description": "多くのアプリでは画面上部や右下にメニューボタン（・・・や↗）があり、そこから「ブラウザで開く」「Safariで開く」「外部ブラウザで開く」などの選択肢を選ぶことができます。"
-        }
-      }
-    }
-  },
-  "situation": {
-    "addSuccess": "シチュエーションを追加しました",
-    "addError": "シチュエーションの追加中にエラーが発生しました",
-    "deleteSuccess": "シチュエーションを削除しました",
-    "deleteError": "シチュエーションの削除中にエラーが発生しました",
-    "delete": {
-      "confirmMessage": "このシチュエーションを削除してもよろしいですか？",
-      "warningMessage": "この操作は取り消すことができません。"
-    }
-  },
-  "addToHomeScreen": {
-    "title": "ホーム画面からすぐ開けます！",
-    "description": "スマートフォンならホーム画面に登録すればアプリのように使えます！",
-    "safari": {
-      "step1": "Safariでこのページを開く",
-      "step2": "画面下部の「共有」ボタンをタップ",
-      "step3": "「ホーム画面に追加」をタップ",
-      "step4": "アプリ名を確認して「追加」をタップ"
-    },
-    "android": {
-      "step1": "Chromeでこのページを開く",
-      "step2": "画面右上のメニュー（三点リーダー）をタップ",
-      "step3": "「ホーム画面に追加」または「アプリをインストール」をタップ",
-      "step4": "アプリ名を確認して「追加」をタップ"
-    }
-  },
-  "footer": {
-    "description": "あなたのスピーキング学習をサポートします。",
-    "sections": {
-      "service": "サービス",
-      "legal": "法的事項",
-      "support": "サポート"
-    },
-    "links": {
-      "about": "Solo Speakについて",
-      "terms": "利用規約",
-      "privacy": "プライバシーポリシー",
-      "commercialTransaction": "特定商取引法表記",
-      "contact": "お問い合わせ"
-    },
-    "copyright": "All rights reserved."
-  }
+	"settings": {
+		"userIcon": "ユーザーアイコン",
+		"displayName": "ランキング表示名",
+		"nativeLanguage": "母国語",
+		"defaultLearningLanguage": "デフォルト学習言語",
+		"contactEmail": "連絡先メールアドレス",
+		"selectLanguage": "言語を選択してください",
+		"validation": {
+			"sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
+		},
+		"withdrawal": {
+			"button": "退会する",
+			"title": "アカウント削除の確認",
+			"message": "本当にアカウントを削除しますか？\n\nこの操作により、以下のデータがすべて削除されます：\n• ユーザー情報\n• 作成したフレーズ\n• スピーキング履歴\n• クイズ結果\n• シチュエーション\n\nこの操作は取り消すことができません。",
+			"emailConfirmLabel": "確認のため、登録されているメールアドレスを入力してください",
+			"emailPlaceholder": "example@email.com",
+			"confirmButton": "削除する",
+			"cancelButton": "キャンセル",
+			"success": "アカウントを削除しました。ログイン画面に戻ります。",
+			"error": "アカウントの削除に失敗しました。しばらくしてから再度お試しください。",
+			"emailNotFound": "登録されたメールアドレスが見つかりません",
+			"emailMismatch": "入力されたメールアドレスが登録されたメールアドレスと一致しません"
+		}
+	},
+	"confirm": {
+		"unsavedPhrase": "生成されたフレーズが保存されていません。このページを離れますか？",
+		"unsavedCount": "音読回数が保存されていません。このページを離れますか？"
+	},
+	"common": {
+		"backToHome": "ホームに戻る",
+		"loginRequired": "この機能を利用するにはログインが必要です"
+	},
+	"phrase": {
+		"noPhrasesYet": "まだフレーズが登録されていません",
+		"placeholders": {
+			"phraseInput": "例：最近どこに行きましたか？",
+			"situationInput": "例：レストランの注文で"
+		},
+		"validation": {
+			"required": "フレーズを入力してください",
+			"phraseMaxLength": "フレーズは100文字以内で入力してください",
+			"situationMaxLength": "50文字以内で入力してください",
+			"variationMaxLength": "200文字以内で入力してください"
+		},
+		"messages": {
+			"updateSuccess": "フレーズが正常に更新されました！",
+			"updateError": "フレーズの更新に失敗しました",
+			"saveSuccess": "フレーズを保存しました",
+			"saveError": "フレーズの保存中にエラーが発生しました",
+			"fetchError": "フレーズの取得中にエラーが発生しました",
+			"fetchFailed": "フレーズの取得に失敗しました",
+			"countError": "カウントの送信に失敗しました",
+			"notFound": "フレーズが見つかりませんでした",
+			"noPhrasesForQuiz": "指定された条件のフレーズが見つかりませんでした",
+			"nextPhraseNotFound": "次のフレーズが見つかりませんでした",
+			"nextPhraseError": "次のフレーズの取得に失敗しました",
+			"dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
+			"generationFailed": "フレーズの生成に失敗しました",
+			"generationError": "フレーズの生成中にエラーが発生しました"
+		},
+		"delete": {
+			"confirmMessage": "このフレーズを削除してもよろしいですか？",
+			"warningMessage": "この操作は取り消すことができません。"
+		}
+	},
+	"phraseGeneration": {
+		"help": {
+			"title": "フレーズ生成について",
+			"resetTime": {
+				"title": "リセット時間",
+				"description": "毎日UTC 0時にリセットされます。\n• 日本： 午前9時\n• アメリカ東海岸： 午後8時/7時\n• アメリカ西海岸： 午後5時/4時\n※ 夏時間/冬時間"
+			},
+			"dailyLimit": {
+				"title": "1日の利用制限",
+				"description": "フレーズ生成機能は1日5回までご利用いただけます。毎日5フレーズを確実に積み上げていきましょう。"
+			}
+		}
+	},
+	"speak": {
+		"modal": {
+			"language": "言語",
+			"targetPhrases": "出題対象",
+			"optionsTitle": "オプション",
+			"excludeTodayPracticedLabel": "今日既に練習したフレーズを除外する",
+			"options": {
+				"noLimit": "制限なし",
+				"under50": "50回以下",
+				"under60": "60回以下",
+				"under70": "70回以下",
+				"under80": "80回以下",
+				"under90": "90回以下",
+				"under100": "100回以下"
+			}
+		},
+		"messages": {
+			"dailyLimitReached": "1日100回のSpeak制限に到達しました。明日また挑戦してください！",
+			"endError": "終了処理中にエラーが発生しました",
+			"countError": "音読回数の更新中にエラーが発生しました",
+			"sessionResetFailed": "セッション状態のリセットに失敗しました",
+			"dailyCountResetFailed": "日次カウントのリセットに失敗しました",
+			"phraseCountFetchFailedEmpty": "フレーズ数の取得に失敗しました（レスポンスが空です）",
+			"phraseCountFetchFailed": "フレーズ数の取得に失敗しました",
+			"noPracticeablePhrases": "このモードでは練習できるフレーズがありません",
+			"phraseCountCheckError": "フレーズ数の確認中にエラーが発生しました",
+			"noPhraseFound": "フレーズが見つかりませんでした"
+		},
+		"explanation": {
+			"title": "Speak Mode ガイド",
+			"howToUse": {
+				"title": "使い方",
+				"description": "表示されたフレーズを音読し、音読するごとにカウントボタンを押して練習回数を記録します。"
+			},
+			"goals": {
+				"title": "目標と練習回数",
+				"description": "1日10回を目標に音読しましょう。各フレーズは最低50回は音読することを推奨します。継続的な練習と反復練習により、自然に口から出るようになります。"
+			},
+			"effectiveMethods": {
+				"title": "効果的な練習方法",
+				"naturalSpeed": "自然なスピードで読めるようになるまで繰り返す",
+				"understanding": "フレーズの意味を理解しながら練習する",
+				"pronunciation": "実際の場面で使うことをイメージする"
+			}
+		}
+	},
+	"quiz": {
+		"modal": {
+			"mode": "モード",
+			"quizLength": "問題数",
+			"speakCountFilter": "音読回数",
+			"optionsTitle": "オプション",
+			"excludeTodayQuizzedLabel": "今日既に出題したフレーズを除外する",
+			"options": {
+				"normal": "通常",
+				"random": "ランダム"
+			},
+			"speakCountOptions": {
+				"noLimit": "指定なし",
+				"over50": "50回以上",
+				"over60": "60回以上",
+				"over70": "70回以上",
+				"over80": "80回以上",
+				"over90": "90回以上",
+				"over100": "100回以上"
+			},
+			"questions": "問"
+		},
+		"messages": {
+			"startError": "クイズの開始に失敗しました",
+			"fetchError": "フレーズの取得中にエラーが発生しました",
+			"submitError": "回答の送信中にエラーが発生しました"
+		}
+	},
+	"home": {
+		"hero": {
+			"subtitle": "\\ 独り言トレーニング /",
+			"title": "フレーズ暗記の\n決定版",
+			"cta": {
+				"desktop": "今すぐはじめる →"
+			},
+			"features": {
+				"aiGeneration": "AIが自然なフレーズを生成！",
+				"practiceSupport": "自分だけのフレーズ集を作れる！",
+				"quizFunction": "これで日常会話ができるようになる！"
+			}
+		},
+		"features": {
+			"title": "こんなお悩みありませんか？",
+			"speechRecognition": {
+				"title": "フレーズ集を使ってみたけど、使わないフレーズばかりで挫折してしまった"
+			},
+			"quiz": {
+				"title": "知りたかったフレーズ、AIで生成しても復習せずに放置してしまった"
+			},
+			"progress": {
+				"title": "フレーズを丸暗記したつもりだったけど、実際の会話で使うことができなかった"
+			}
+		},
+		"solutions": {
+			"title": {
+				"mobile": "\\ これらの悩みを解決します /",
+				"desktop": "\\ これらの悩みをSolo Speakが解決します /"
+			},
+			"feature1": {
+				"number": "01",
+				"title": "「自分だけのフレーズ集」\nだから実用的",
+				"description": "知りたかったフレーズを、AIが自然な表現で翻訳。オリジナルのフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
+				"demo": {
+					"input": "日本にはどのぐらい住んでいるの？",
+					"outputs": [
+						"How long have you been living in Japan?",
+						"How long have you lived in Japan?",
+						"How long is it since you moved to Japan?"
+					]
+				}
+			},
+			"feature2": {
+				"number": "02",
+				"title": "音読回数カウント機能で\n\"覚えるまで\"徹底サポート",
+				"description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "日本にはどのぐらい住んでいるの？",
+					"todayLabel": "Today:",
+					"totalLabel": "Total:",
+					"goalAchieved": "目標達成！",
+					"goalAchievedMessage": "10回の音読が完了しました"
+				}
+			},
+			"feature3": {
+				"number": "03",
+				"title": "クイズ機能で「瞬発力」を\nチェック",
+				"description": "音読で暗記したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答できれば、実際の会話でもスラスラ話せます。",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "日本にはどのぐらい住んでいるの？"
+				}
+			}
+		},
+		"faq": {
+			"title": "よくある質問",
+			"q1": {
+				"question": "フレーズ生成回数に制限はありますか？",
+				"answer": "1日5回までご利用いただけます。",
+				"answerDetail": "毎日5フレーズを確実に積み上げていきましょう。"
+			},
+			"q2": {
+				"question": "フレーズ生成回数はいつリセットされますか？",
+				"answer": "協定世界時（UTC）の0時にリセットされます。",
+				"answerDetail": "日本時間では午前9時（冬時間）または午前8時（夏時間）、バンクーバー時間では午後4時（冬時間）または午後5時（夏時間）にリセットされます。"
+			},
+			"q3": {
+				"question": "Solo Speakは無料で使えますか？",
+				"answer": "現在は基本機能を無料でご利用いただけます。",
+				"answerDetail": "今後、サービスの拡充に伴い有料化する可能性がございますが、事前にお知らせいたします。"
+			}
+		},
+		"cta": {
+			"title": "今すぐスピーキング学習を\n始めましょう",
+			"subtitle": "Solo Speakで、あなたの語学学習を次のレベルへ",
+			"button": "今すぐはじめる →"
+		}
+	},
+	"subscription": {
+		"status": "ステータス",
+		"nextBillingDate": "次回請求日",
+		"expiresOn": "有効期限",
+		"plans": "プラン",
+		"subscriptionRequired": "AIフレーズ生成機能を使用するにはBasicプランへの登録が必要です",
+		"subscribeToBasicPlan": "Basicプランに登録",
+		"manageSubscription": "設定画面でサブスクリプションを管理 →",
+		"cancelConfirm": "本当にサブスクリプションをキャンセルしますか？AIフレーズ生成機能へのアクセスが即座に無効になります。",
+		"cancelSuccess": "サブスクリプションが正常にキャンセルされました。",
+		"cancelError": "サブスクリプションのキャンセルに失敗しました",
+		"fetchError": "サブスクリプション状態の取得に失敗しました",
+		"checkoutError": "チェックアウトセッションの作成に失敗しました"
+	},
+	"ranking": {
+		"noData": "表示対象のデータがありません",
+		"shareStreak": {
+			"intro": "Solo Speakを使っています⚡",
+			"phrase": {
+				"total": "これまでに {count}フレーズ 生成しました！",
+				"streak": "{count}日連続でフレーズを生成しました！"
+			},
+			"speak": {
+				"daily": "今日は {count}回 音読しました！",
+				"weekly": "今週は {count}回 音読しました！",
+				"total": "これまでに {count}回 音読しました！",
+				"streak": "{count}日連続で音読を継続しています！"
+			},
+			"quiz": {
+				"daily": "今日はクイズに {count}回 正解しました！",
+				"weekly": "今週はクイズに {count}回 正解しました！",
+				"total": "これまでにクイズに {count}回 正解しました！",
+				"streak": "{count}日連続でクイズに正解しました！"
+			},
+			"url": "https://solo-speak.com",
+			"hashtag": "#SoloSpeak #英語学習 #多言語学習",
+			"error": {
+				"noCount": "カウントが0のため投稿できません",
+				"failed": "投稿リンクの生成中にエラーが発生しました"
+			}
+		}
+	},
+	"auth": {
+		"modal": {
+			"supportMessage": "Solo Speakはあなたのスピーキング学習をサポートします。",
+			"supportMessageShort": "あなたのスピーキング学習をサポートします。",
+			"browserNote": "Safari/Chromeでログインしてください",
+			"popupBlockedError": "認証画面の表示に時間がかかっています。ポップアップがブロックされていないか確認してください。",
+			"authFailedError": "認証に失敗しました。再度お試しください。",
+			"browserSwitchHelp": {
+				"title": "ブラウザでの開き方",
+				"xApp": {
+					"title": "Xアプリから開いた場合",
+					"step1": "画面右下の「Safariアイコン」をタップ"
+				},
+				"lineApp": {
+					"title": "LINEアプリから開いた場合",
+					"step1": "画面右下の「・・・」メニューをタップ",
+					"step2": "「ブラウザで開く」を選択"
+				},
+				"general": {
+					"title": "その他のアプリの場合",
+					"description": "多くのアプリでは画面上部や右下にメニューボタン（・・・や↗）があり、そこから「ブラウザで開く」「Safariで開く」「外部ブラウザで開く」などの選択肢を選ぶことができます。"
+				}
+			}
+		}
+	},
+	"situation": {
+		"addSuccess": "シチュエーションを追加しました",
+		"addError": "シチュエーションの追加中にエラーが発生しました",
+		"deleteSuccess": "シチュエーションを削除しました",
+		"deleteError": "シチュエーションの削除中にエラーが発生しました",
+		"delete": {
+			"confirmMessage": "このシチュエーションを削除してもよろしいですか？",
+			"warningMessage": "この操作は取り消すことができません。"
+		}
+	},
+	"addToHomeScreen": {
+		"title": "ホーム画面からすぐ開けます！",
+		"description": "スマートフォンならホーム画面に登録すればアプリのように使えます！",
+		"safari": {
+			"step1": "Safariでこのページを開く",
+			"step2": "画面下部の「共有」ボタンをタップ",
+			"step3": "「ホーム画面に追加」をタップ",
+			"step4": "アプリ名を確認して「追加」をタップ"
+		},
+		"android": {
+			"step1": "Chromeでこのページを開く",
+			"step2": "画面右上のメニュー（三点リーダー）をタップ",
+			"step3": "「ホーム画面に追加」または「アプリをインストール」をタップ",
+			"step4": "アプリ名を確認して「追加」をタップ"
+		}
+	},
+	"footer": {
+		"description": "あなたのスピーキング学習をサポートします。",
+		"sections": {
+			"service": "サービス",
+			"legal": "法的事項",
+			"support": "サポート"
+		},
+		"links": {
+			"about": "Solo Speakについて",
+			"terms": "利用規約",
+			"privacy": "プライバシーポリシー",
+			"commercialTransaction": "特定商取引法表記",
+			"contact": "お問い合わせ"
+		},
+		"copyright": "All rights reserved."
+	}
 }

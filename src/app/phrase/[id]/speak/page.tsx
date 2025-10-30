@@ -17,418 +17,418 @@ import { useLanguages } from "@/hooks/api/useSWRApi";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface SpeakPhrase {
-  id: string;
-  text: string;
-  translation: string;
-  totalSpeakCount: number;
-  dailySpeakCount: number;
+	id: string;
+	text: string;
+	translation: string;
+	totalSpeakCount: number;
+	dailySpeakCount: number;
 }
 
 export default function SpeakPage() {
-  const { user, loading: authLoading } = useAuthGuard();
-  const { t } = useTranslation();
-  const params = useParams();
-  const router = useRouter();
-  const [phrase, setPhrase] = useState<SpeakPhrase | null>(null);
-  const [pendingCount, setPendingCount] = useState(0); // ペンディング中のカウント数
-  const [learningLanguage, setLearningLanguage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	const { user, loading: authLoading } = useAuthGuard();
+	const { t } = useTranslation();
+	const params = useParams();
+	const router = useRouter();
+	const [phrase, setPhrase] = useState<SpeakPhrase | null>(null);
+	const [pendingCount, setPendingCount] = useState(0); // ペンディング中のカウント数
+	const [learningLanguage, setLearningLanguage] = useState("");
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-  // SWRフックを使用してデータを取得
-  const { languages } = useLanguages();
-  const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
+	// SWRフックを使用してデータを取得
+	const { languages } = useLanguages();
+	const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
 
-  // URLパラメータから取得
-  const languageId = params.id as string;
+	// URLパラメータから取得
+	const languageId = params.id as string;
 
-  // 認証チェック: ログインしていない場合はホームページにリダイレクト
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/");
-    }
-  }, [user, authLoading, router]);
+	// 認証チェック: ログインしていない場合はホームページにリダイレクト
+	useEffect(() => {
+		if (!authLoading && !user) {
+			router.push("/");
+		}
+	}, [user, authLoading, router]);
 
-  // Speak modal functionality
-  const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
-    useSpeakModal();
+	// Speak modal functionality
+	const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
+		useSpeakModal();
 
-  useEffect(() => {
-    setLearningLanguage(languageId);
-  }, [languageId]);
+	useEffect(() => {
+		setLearningLanguage(languageId);
+	}, [languageId]);
 
-  useEffect(() => {
-    if (!user) return; // ユーザーがログインしていない場合は何もしない
+	useEffect(() => {
+		if (!user) return; // ユーザーがログインしていない場合は何もしない
 
-    // URLパラメータからphraseIdを取得
-    const searchParams = new URLSearchParams(window.location.search);
-    const phraseId = searchParams.get("phraseId");
+		// URLパラメータからphraseIdを取得
+		const searchParams = new URLSearchParams(window.location.search);
+		const phraseId = searchParams.get("phraseId");
 
-    // フレーズを取得
-    const fetchPhrase = async () => {
-      try {
-        if (phraseId) {
-          // phraseIdが指定されている場合は特定のフレーズを取得（Speak専用API使用）
-          const data = (await api.get(`/api/phrase/${phraseId}/speak`)) as {
-            success: boolean;
-            phrase?: {
-              id: string;
-              original: string;
-              translation: string;
-              totalSpeakCount: number;
-              dailySpeakCount: number;
-            };
-            message?: string;
-          };
-          if (data.success && data.phrase) {
-            setPhrase({
-              id: data.phrase.id,
-              text: data.phrase.original,
-              translation: data.phrase.translation,
-              totalSpeakCount: data.phrase.totalSpeakCount || 0,
-              dailySpeakCount: data.phrase.dailySpeakCount || 0,
-            });
-          } else {
-            setError(data.message || t("phrase.messages.notFound"));
-          }
-        } else {
-          // phraseIdがない場合は従来通りのAPIを呼び出し
-          const data = (await api.get(
-            `/api/phrase/speak?language=${languageId}`,
-          )) as {
-            success: boolean;
-            phrase?: SpeakPhrase;
-            message?: string;
-          };
-          if (data.success) {
-            setPhrase(data.phrase!);
-          } else {
-            setError(data.message || t("phrase.messages.notFound"));
-          }
-        }
-      } catch {
-        if (phraseId) {
-          setError(t("phrase.messages.notFound"));
-        } else {
-          setError(t("phrase.messages.fetchFailed"));
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+		// フレーズを取得
+		const fetchPhrase = async () => {
+			try {
+				if (phraseId) {
+					// phraseIdが指定されている場合は特定のフレーズを取得（Speak専用API使用）
+					const data = (await api.get(`/api/phrase/${phraseId}/speak`)) as {
+						success: boolean;
+						phrase?: {
+							id: string;
+							original: string;
+							translation: string;
+							totalSpeakCount: number;
+							dailySpeakCount: number;
+						};
+						message?: string;
+					};
+					if (data.success && data.phrase) {
+						setPhrase({
+							id: data.phrase.id,
+							text: data.phrase.original,
+							translation: data.phrase.translation,
+							totalSpeakCount: data.phrase.totalSpeakCount || 0,
+							dailySpeakCount: data.phrase.dailySpeakCount || 0,
+						});
+					} else {
+						setError(data.message || t("phrase.messages.notFound"));
+					}
+				} else {
+					// phraseIdがない場合は従来通りのAPIを呼び出し
+					const data = (await api.get(
+						`/api/phrase/speak?language=${languageId}`,
+					)) as {
+						success: boolean;
+						phrase?: SpeakPhrase;
+						message?: string;
+					};
+					if (data.success) {
+						setPhrase(data.phrase!);
+					} else {
+						setError(data.message || t("phrase.messages.notFound"));
+					}
+				}
+			} catch {
+				if (phraseId) {
+					setError(t("phrase.messages.notFound"));
+				} else {
+					setError(t("phrase.messages.fetchFailed"));
+				}
+			} finally {
+				setLoading(false);
+			}
+		};
 
-    fetchPhrase();
-  }, [languageId, user, t]);
+		fetchPhrase();
+	}, [languageId, user, t]);
 
-  const handleCount = () => {
-    if (!phrase) return;
+	const handleCount = () => {
+		if (!phrase) return;
 
-    // 現在のカウントを計算
-    const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount;
+		// 現在のカウントを計算
+		const currentDailyCount = (phrase.dailySpeakCount || 0) + pendingCount;
 
-    // 既に100回に達している場合は何もしない
-    if (currentDailyCount >= 100) {
-      return;
-    }
+		// 既に100回に達している場合は何もしない
+		if (currentDailyCount >= 100) {
+			return;
+		}
 
-    // ローカル状態のみを更新（APIは呼ばない）
-    setPendingCount((prev) => prev + 1);
-    // フレーズの表示カウントは実際のAPIレスポンスベースで管理するため、ここでは更新しない
+		// ローカル状態のみを更新（APIは呼ばない）
+		setPendingCount((prev) => prev + 1);
+		// フレーズの表示カウントは実際のAPIレスポンスベースで管理するため、ここでは更新しない
 
-    // ちょうど100回に達した時にトーストを表示
-    const newDailyCount = currentDailyCount + 1;
-    if (newDailyCount === 100) {
-      toast.error(t("speak.messages.dailyLimitReached"), {
-        duration: 4000,
-      });
-    }
-  };
+		// ちょうど100回に達した時にトーストを表示
+		const newDailyCount = currentDailyCount + 1;
+		if (newDailyCount === 100) {
+			toast.error(t("speak.messages.dailyLimitReached"), {
+				duration: 4000,
+			});
+		}
+	};
 
-  const handleNext = async () => {
-    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
-    if (pendingCount > 0 && phrase) {
-      try {
-        await api.post(`/api/phrase/${phrase.id}/count`, {
-          count: pendingCount,
-        });
-        setPendingCount(0); // 送信成功時はペンディングカウントをリセット
-      } catch {
-        toast.error(t("phrase.messages.countError"));
-        return; // エラーの場合は次のフレーズ取得を中止
-      }
-    } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
-      try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
-      } catch {
-        // session_spoken設定エラーは次のフレーズ取得を阻害しない
-      }
-    }
+	const handleNext = async () => {
+		// ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+		if (pendingCount > 0 && phrase) {
+			try {
+				await api.post(`/api/phrase/${phrase.id}/count`, {
+					count: pendingCount,
+				});
+				setPendingCount(0); // 送信成功時はペンディングカウントをリセット
+			} catch {
+				toast.error(t("phrase.messages.countError"));
+				return; // エラーの場合は次のフレーズ取得を中止
+			}
+		} else if (phrase) {
+			// カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
+			try {
+				await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
+			} catch {
+				// session_spoken設定エラーは次のフレーズ取得を阻害しない
+			}
+		}
 
-    // 次のフレーズを取得
-    try {
-      const data = (await api.get(
-        `/api/phrase/speak?language=${languageId}`,
-      )) as {
-        success: boolean;
-        phrase?: SpeakPhrase;
-      };
+		// 次のフレーズを取得
+		try {
+			const data = (await api.get(
+				`/api/phrase/speak?language=${languageId}`,
+			)) as {
+				success: boolean;
+				phrase?: SpeakPhrase;
+			};
 
-      if (data.success) {
-        setPhrase(data.phrase!);
-      } else {
-        toast.error(t("phrase.messages.nextPhraseNotFound"));
-      }
-    } catch {
-      toast.error(t("phrase.messages.nextPhraseError"));
-    }
-  };
+			if (data.success) {
+				setPhrase(data.phrase!);
+			} else {
+				toast.error(t("phrase.messages.nextPhraseNotFound"));
+			}
+		} catch {
+			toast.error(t("phrase.messages.nextPhraseError"));
+		}
+	};
 
-  const handleFinish = async () => {
-    // ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
-    if (pendingCount > 0 && phrase) {
-      try {
-        await api.post(`/api/phrase/${phrase.id}/count`, {
-          count: pendingCount,
-        });
-        setPendingCount(0); // 送信成功時はペンディングカウントをリセット
-      } catch {
-        toast.error(t("phrase.messages.countError"));
-        // Finishの場合はエラーがあってもページ遷移を実行
-      }
-    } else if (phrase) {
-      // カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
-      try {
-        await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
-      } catch {
-        // session_spoken設定エラーはページ遷移を阻害しない
-      }
-    }
+	const handleFinish = async () => {
+		// ペンディングカウントがある場合は送信（session_spokenも自動的にtrueに設定される）
+		if (pendingCount > 0 && phrase) {
+			try {
+				await api.post(`/api/phrase/${phrase.id}/count`, {
+					count: pendingCount,
+				});
+				setPendingCount(0); // 送信成功時はペンディングカウントをリセット
+			} catch {
+				toast.error(t("phrase.messages.countError"));
+				// Finishの場合はエラーがあってもページ遷移を実行
+			}
+		} else if (phrase) {
+			// カウントが0でもsession_spokenをtrueに設定（統一されたcount APIを使用）
+			try {
+				await api.post(`/api/phrase/${phrase.id}/count`, { count: 0 });
+			} catch {
+				// session_spoken設定エラーはページ遷移を阻害しない
+			}
+		}
 
-    router.push("/phrase/list");
-  };
+		router.push("/phrase/list");
+	};
 
-  // 認証チェック
-  if (authLoading) {
-    return <LoadingSpinner fullScreen message="Authenticating..." />;
-  }
+	// 認証チェック
+	if (authLoading) {
+		return <LoadingSpinner fullScreen message="Authenticating..." />;
+	}
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">{t("common.loginRequired")}</p>
-          <button
-            onClick={() => router.push("/")}
-            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            {t("common.backToHome")}
-          </button>
-        </div>
-      </div>
-    );
-  }
+	if (!user) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center">
+					<p className="text-gray-600 mb-4">{t("common.loginRequired")}</p>
+					<button
+						onClick={() => router.push("/")}
+						className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+					>
+						{t("common.backToHome")}
+					</button>
+				</div>
+			</div>
+		);
+	}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen">
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-          {/* Phrase タイトル（言語選択なし） */}
-          <div className="flex justify-between items-center mb-[18px]">
-            <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
-              Phrase
-            </h1>
-          </div>
+	if (loading) {
+		return (
+			<div className="min-h-screen">
+				<div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+					{/* Phrase タイトル（言語選択なし） */}
+					<div className="flex justify-between items-center mb-[18px]">
+						<h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+							Phrase
+						</h1>
+					</div>
 
-          {/* タブメニュー */}
-          <PhraseTabNavigation
-            activeTab="Speak"
-            onSpeakModalOpen={openSpeakModal}
-          />
+					{/* タブメニュー */}
+					<PhraseTabNavigation
+						activeTab="Speak"
+						onSpeakModalOpen={openSpeakModal}
+					/>
 
-          {/* ローディング表示エリア */}
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <LoadingSpinner
-              message="Loading..."
-              className="py-8"
-              minHeight="280px"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+					{/* ローディング表示エリア */}
+					<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+						<LoadingSpinner
+							message="Loading..."
+							className="py-8"
+							minHeight="280px"
+						/>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
-  if (error || !phrase) {
-    return (
-      <div className="min-h-screen">
-        <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-          {/* Phrase タイトル（言語選択なし） */}
-          <div className="flex justify-between items-center mb-[18px]">
-            <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
-              Phrase
-            </h1>
-          </div>
+	if (error || !phrase) {
+		return (
+			<div className="min-h-screen">
+				<div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+					{/* Phrase タイトル（言語選択なし） */}
+					<div className="flex justify-between items-center mb-[18px]">
+						<h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+							Phrase
+						</h1>
+					</div>
 
-          {/* タブメニュー */}
-          <PhraseTabNavigation
-            activeTab="Speak"
-            onSpeakModalOpen={openSpeakModal}
-          />
+					{/* タブメニュー */}
+					<PhraseTabNavigation
+						activeTab="Speak"
+						onSpeakModalOpen={openSpeakModal}
+					/>
 
-          {/* エラー表示エリア */}
-          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-            <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">
-                {error || t("phrase.messages.notFound")}
-              </p>
-              <button
-                onClick={() => router.push("/phrase/list")}
-                className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+					{/* エラー表示エリア */}
+					<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+						<div className="text-center py-8">
+							<p className="text-gray-600 mb-4">
+								{error || t("phrase.messages.notFound")}
+							</p>
+							<button
+								onClick={() => router.push("/phrase/list")}
+								className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+							>
+								Back
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
-  return (
-    <div className="min-h-screen">
-      <div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-        {/* Phrase タイトル（言語選択なし） */}
-        <div className="flex justify-between items-center mb-[18px]">
-          <h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
-            Phrase
-          </h1>
-        </div>
+	return (
+		<div className="min-h-screen">
+			<div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
+				{/* Phrase タイトル（言語選択なし） */}
+				<div className="flex justify-between items-center mb-[18px]">
+					<h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
+						Phrase
+					</h1>
+				</div>
 
-        {/* タブメニュー */}
-        <PhraseTabNavigation
-          activeTab="Speak"
-          onSpeakModalOpen={openSpeakModal}
-        />
+				{/* タブメニュー */}
+				<PhraseTabNavigation
+					activeTab="Speak"
+					onSpeakModalOpen={openSpeakModal}
+				/>
 
-        {/* コンテンツエリア */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          {/* フレーズ表示 */}
-          <div className="mb-6">
-            <div
-              className="text-base font-medium text-gray-900 mb-2 break-words"
-              style={{
-                wordWrap: "break-word",
-                overflowWrap: "anywhere",
-                wordBreak: "break-word",
-              }}
-            >
-              {phrase.text}
-            </div>
-            <div
-              className="text-sm text-gray-600 break-words"
-              style={{
-                wordWrap: "break-word",
-                overflowWrap: "anywhere",
-                wordBreak: "break-word",
-              }}
-            >
-              {phrase.translation}
-            </div>
-          </div>
+				{/* コンテンツエリア */}
+				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+					{/* フレーズ表示 */}
+					<div className="mb-6">
+						<div
+							className="text-base font-medium text-gray-900 mb-2 break-words"
+							style={{
+								wordWrap: "break-word",
+								overflowWrap: "anywhere",
+								wordBreak: "break-word",
+							}}
+						>
+							{phrase.text}
+						</div>
+						<div
+							className="text-sm text-gray-600 break-words"
+							style={{
+								wordWrap: "break-word",
+								overflowWrap: "anywhere",
+								wordBreak: "break-word",
+							}}
+						>
+							{phrase.translation}
+						</div>
+					</div>
 
-          {/* 音読回数表示 */}
-          <div className="mb-4 flex items-center text-sm text-gray-600 md:mb-6 md:text-base">
-            <HiMiniSpeakerWave className="w-4 h-4 mr-1 md:w-5 md:h-5 md:mr-2" />
-            Today: {phrase.dailySpeakCount} Total: {phrase.totalSpeakCount}
-          </div>
+					{/* 音読回数表示 */}
+					<div className="mb-4 flex items-center text-sm text-gray-600 md:mb-6 md:text-base">
+						<HiMiniSpeakerWave className="w-4 h-4 mr-1 md:w-5 md:h-5 md:mr-2" />
+						Today: {phrase.dailySpeakCount} Total: {phrase.totalSpeakCount}
+					</div>
 
-          {/* Count と Sound ボタン */}
-          <div className="mb-3 md:mb-4">
-            <div className="flex gap-3 relative md:gap-6 items-start">
-              {/* Count ボタンエリア */}
-              <div className="flex-1 flex flex-col items-center">
-                <button
-                  onClick={handleCount}
-                  disabled={phrase.dailySpeakCount + pendingCount >= 100}
-                  className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors md:w-24 md:h-24 ${
-                    phrase.dailySpeakCount + pendingCount >= 100
-                      ? "opacity-50 cursor-not-allowed bg-gray-100"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  <CiCirclePlus
-                    className={`w-12 h-12 md:w-16 md:h-16 ${
-                      phrase.dailySpeakCount + pendingCount >= 100
-                        ? "text-gray-400"
-                        : "text-gray-600"
-                    }`}
-                  />
-                </button>
-                <span
-                  className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
-                    phrase.dailySpeakCount + pendingCount >= 100
-                      ? "text-gray-400"
-                      : "text-gray-900"
-                  }`}
-                >
-                  Count
-                </span>
-              </div>
+					{/* Count と Sound ボタン */}
+					<div className="mb-3 md:mb-4">
+						<div className="flex gap-3 relative md:gap-6 items-start">
+							{/* Count ボタンエリア */}
+							<div className="flex-1 flex flex-col items-center">
+								<button
+									onClick={handleCount}
+									disabled={phrase.dailySpeakCount + pendingCount >= 100}
+									className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors md:w-24 md:h-24 ${
+										phrase.dailySpeakCount + pendingCount >= 100
+											? "opacity-50 cursor-not-allowed bg-gray-100"
+											: "hover:bg-gray-50"
+									}`}
+								>
+									<CiCirclePlus
+										className={`w-12 h-12 md:w-16 md:h-16 ${
+											phrase.dailySpeakCount + pendingCount >= 100
+												? "text-gray-400"
+												: "text-gray-600"
+										}`}
+									/>
+								</button>
+								<span
+									className={`font-medium text-base mt-1 md:text-lg md:mt-2 text-center ${
+										phrase.dailySpeakCount + pendingCount >= 100
+											? "text-gray-400"
+											: "text-gray-900"
+									}`}
+								>
+									Count
+								</span>
+							</div>
 
-              {/* 中央の区切り線 */}
-              <div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-px h-18 bg-gray-300 md:h-24"></div>
+							{/* 中央の区切り線 */}
+							<div className="absolute left-1/2 top-0 transform -translate-x-1/2 w-px h-18 bg-gray-300 md:h-24"></div>
 
-              {/* Sound ボタンエリア */}
-              <div className="flex-1 flex flex-col items-center">
-                <button className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24">
-                  <HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />
-                </button>
-                <span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">
-                  Sound
-                </span>
-              </div>
-            </div>
-          </div>
+							{/* Sound ボタンエリア */}
+							<div className="flex-1 flex flex-col items-center">
+								<button className="w-16 h-16 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors md:w-24 md:h-24">
+									<HiMiniSpeakerWave className="w-12 h-12 text-gray-900 md:w-16 md:h-16" />
+								</button>
+								<span className="text-gray-900 font-medium text-base mt-1 md:text-lg md:mt-2 text-center">
+									Sound
+								</span>
+							</div>
+						</div>
+					</div>
 
-          {/* Finish と Next ボタン */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleFinish}
-              className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              style={{
-                borderColor: "#616161",
-                color: "#616161",
-              }}
-            >
-              Finish
-            </button>
-            <button
-              onClick={handleNext}
-              className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              style={{
-                backgroundColor: "#616161",
-              }}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
+					{/* Finish と Next ボタン */}
+					<div className="flex gap-3">
+						<button
+							onClick={handleFinish}
+							className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+							style={{
+								borderColor: "#616161",
+								color: "#616161",
+							}}
+						>
+							Finish
+						</button>
+						<button
+							onClick={handleNext}
+							className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+							style={{
+								backgroundColor: "#616161",
+							}}
+						>
+							Next
+						</button>
+					</div>
+				</div>
+			</div>
 
-      {/* Speak Mode モーダル */}
-      <SpeakModeModal
-        isOpen={showSpeakModal}
-        onClose={closeSpeakModal}
-        onStart={handleSpeakStart}
-        languages={languages || []}
-        defaultLearningLanguage={
-          userSettings?.defaultLearningLanguage?.code || learningLanguage
-        }
-      />
+			{/* Speak Mode モーダル */}
+			<SpeakModeModal
+				isOpen={showSpeakModal}
+				onClose={closeSpeakModal}
+				onStart={handleSpeakStart}
+				languages={languages || []}
+				defaultLearningLanguage={
+					userSettings?.defaultLearningLanguage?.code || learningLanguage
+				}
+			/>
 
-      {/* Toaster for notifications */}
-      <Toaster />
-    </div>
-  );
+			{/* Toaster for notifications */}
+			<Toaster />
+		</div>
+	);
 }

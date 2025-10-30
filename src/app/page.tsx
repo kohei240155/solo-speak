@@ -14,62 +14,62 @@ import CTASection from "@/components/layout/CTASection";
 import { useState, useEffect } from "react";
 
 export default function Home() {
-  const { isLoading: isLoadingTranslation } = useTranslation("common");
-  const { showLoginModal } = useAuth();
-  const visibleSections = useScrollAnimation();
-  const [showSplash, setShowSplash] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+	const { isLoading: isLoadingTranslation } = useTranslation("common");
+	const { showLoginModal } = useAuth();
+	const visibleSections = useScrollAnimation();
+	const [showSplash, setShowSplash] = useState(true);
+	const [fadeOut, setFadeOut] = useState(false);
+	const [showContent, setShowContent] = useState(false);
 
-  useEffect(() => {
-    const fadeTimer = setTimeout(() => {
-      setFadeOut(true);
-    }, 1500); // 1.5秒後にフェードアウト開始
+	useEffect(() => {
+		const fadeTimer = setTimeout(() => {
+			setFadeOut(true);
+		}, 1500); // 1.5秒後にフェードアウト開始
 
-    const hideTimer = setTimeout(() => {
-      setShowSplash(false);
-      setShowContent(true);
-    }, 1500); // 1.5秒後にスプラッシュ画面を非表示、コンテンツ表示
+		const hideTimer = setTimeout(() => {
+			setShowSplash(false);
+			setShowContent(true);
+		}, 1500); // 1.5秒後にスプラッシュ画面を非表示、コンテンツ表示
 
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(hideTimer);
-    };
-  }, []);
+		return () => {
+			clearTimeout(fadeTimer);
+			clearTimeout(hideTimer);
+		};
+	}, []);
 
-  const handleGetStartedClick = () => {
-    showLoginModal();
-  };
+	const handleGetStartedClick = () => {
+		showLoginModal();
+	};
 
-  // スプラッシュ画面を最優先で表示
-  if (showSplash) {
-    return <SplashScreen showSplash={showSplash} fadeOut={fadeOut} />;
-  }
+	// スプラッシュ画面を最優先で表示
+	if (showSplash) {
+		return <SplashScreen showSplash={showSplash} fadeOut={fadeOut} />;
+	}
 
-  if (isLoadingTranslation) {
-    return <LoadingSpinner fullScreen message="Loading..." />;
-  }
+	if (isLoadingTranslation) {
+		return <LoadingSpinner fullScreen message="Loading..." />;
+	}
 
-  return (
-    <div
-      className={`min-h-screen transition-opacity duration-700 ease-in-out ${
-        showContent ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <HeroSection onGetStartedClick={handleGetStartedClick} />
+	return (
+		<div
+			className={`min-h-screen transition-opacity duration-700 ease-in-out ${
+				showContent ? "opacity-100" : "opacity-0"
+			}`}
+		>
+			<HeroSection onGetStartedClick={handleGetStartedClick} />
 
-      <FeaturesSection visibleSections={visibleSections} />
+			<FeaturesSection visibleSections={visibleSections} />
 
-      <SolutionsSection visibleSections={visibleSections} />
+			<SolutionsSection visibleSections={visibleSections} />
 
-      <FAQSection visibleSections={visibleSections} />
+			<FAQSection visibleSections={visibleSections} />
 
-      <CTASection
-        visibleSections={visibleSections}
-        onGetStartedClick={handleGetStartedClick}
-      />
+			<CTASection
+				visibleSections={visibleSections}
+				onGetStartedClick={handleGetStartedClick}
+			/>
 
-      <Footer />
-    </div>
-  );
+			<Footer />
+		</div>
+	);
 }
