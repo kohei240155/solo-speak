@@ -3,46 +3,46 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  TranslationData,
-  TranslationOptions,
-  getNestedTranslation,
+	TranslationData,
+	TranslationOptions,
+	getNestedTranslation,
 } from "@/utils/translation-common";
 import { loadTranslation } from "@/utils/translation-loader";
 
 export const useTranslation = (namespace = "common") => {
-  const { locale, isLoadingLocale } = useLanguage();
-  const [translations, setTranslations] = useState<TranslationData>({});
-  const [isLoading, setIsLoading] = useState(true);
+	const { locale, isLoadingLocale } = useLanguage();
+	const [translations, setTranslations] = useState<TranslationData>({});
+	const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (isLoadingLocale) return;
+	useEffect(() => {
+		if (isLoadingLocale) return;
 
-    const loadTranslations = async () => {
-      try {
-        setIsLoading(true);
-        const data = await loadTranslation(locale, namespace);
-        setTranslations(data);
-      } catch {
-        // エラーは無視（loadTranslation内でフォールバック処理済み）
-      } finally {
-        setIsLoading(false);
-      }
-    };
+		const loadTranslations = async () => {
+			try {
+				setIsLoading(true);
+				const data = await loadTranslation(locale, namespace);
+				setTranslations(data);
+			} catch {
+				// エラーは無視（loadTranslation内でフォールバック処理済み）
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-    loadTranslations();
-  }, [locale, namespace, isLoadingLocale]);
+		loadTranslations();
+	}, [locale, namespace, isLoadingLocale]);
 
-  // 翻訳関数をuseCallbackでメモ化
-  const t = useCallback(
-    (key: string, options?: TranslationOptions): string => {
-      return getNestedTranslation(translations, key, options);
-    },
-    [translations],
-  );
+	// 翻訳関数をuseCallbackでメモ化
+	const t = useCallback(
+		(key: string, options?: TranslationOptions): string => {
+			return getNestedTranslation(translations, key, options);
+		},
+		[translations],
+	);
 
-  return {
-    t,
-    locale,
-    isLoading,
-  };
+	return {
+		t,
+		locale,
+		isLoading,
+	};
 };

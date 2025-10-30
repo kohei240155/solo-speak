@@ -10,43 +10,43 @@ const prisma = new PrismaClient();
  * @returns 更新されたシチュエーションデータ
  */
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const authResult = await authenticateRequest(request);
-    if ("error" in authResult) {
-      return authResult.error;
-    }
+	try {
+		const authResult = await authenticateRequest(request);
+		if ("error" in authResult) {
+			return authResult.error;
+		}
 
-    const { user } = authResult;
-    const { id } = await params;
+		const { user } = authResult;
+		const { id } = await params;
 
-    // シチュエーションの存在確認とユーザー権限チェック
-    const situation = await prisma.situation.findUnique({
-      where: {
-        id,
-        userId: user.id,
-      },
-    });
+		// シチュエーションの存在確認とユーザー権限チェック
+		const situation = await prisma.situation.findUnique({
+			where: {
+				id,
+				userId: user.id,
+			},
+		});
 
-    if (!situation) {
-      return NextResponse.json(
-        { message: "Situation not found" },
-        { status: 404 },
-      );
-    }
+		if (!situation) {
+			return NextResponse.json(
+				{ message: "Situation not found" },
+				{ status: 404 },
+			);
+		}
 
-    // シチュエーションを削除
-    await prisma.situation.delete({
-      where: { id },
-    });
+		// シチュエーションを削除
+		await prisma.situation.delete({
+			where: { id },
+		});
 
-    return NextResponse.json({ message: "Situation deleted successfully" });
-  } catch {
-    return NextResponse.json(
-      { success: false, error: "Failed to delete situation" },
-      { status: 500 },
-    );
-  }
+		return NextResponse.json({ message: "Situation deleted successfully" });
+	} catch {
+		return NextResponse.json(
+			{ success: false, error: "Failed to delete situation" },
+			{ status: 500 },
+		);
+	}
 }

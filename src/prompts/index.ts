@@ -3,9 +3,9 @@ import { getKoreanPrompt } from "./ko";
 import { getJapanesePrompt } from "./ja";
 import { getChinesePrompt } from "./zh";
 import {
-  LANGUAGE_CODES,
-  LANGUAGE_NAMES,
-  LanguageCode,
+	LANGUAGE_CODES,
+	LANGUAGE_NAMES,
+	LanguageCode,
 } from "@/constants/languages";
 import { getFrenchPrompt } from "./fr";
 import { getThaiPrompt } from "./th";
@@ -15,15 +15,15 @@ import { getSpanishPrompt } from "./es";
 
 // 学習言語ごとのプロンプト取得関数（利用可能なもののみ）
 const learningLanguagePromptGetters = {
-  [LANGUAGE_CODES.ENGLISH]: getEnglishPrompt,
-  [LANGUAGE_CODES.KOREAN]: getKoreanPrompt,
-  [LANGUAGE_CODES.JAPANESE]: getJapanesePrompt,
-  [LANGUAGE_CODES.CHINESE]: getChinesePrompt,
-  [LANGUAGE_CODES.FRENCH]: getFrenchPrompt,
-  [LANGUAGE_CODES.SPANISH]: getSpanishPrompt,
-  [LANGUAGE_CODES.GERMAN]: getGermanPrompt,
-  [LANGUAGE_CODES.PORTUGUESE]: getPortuguesePrompt,
-  [LANGUAGE_CODES.THAI]: getThaiPrompt,
+	[LANGUAGE_CODES.ENGLISH]: getEnglishPrompt,
+	[LANGUAGE_CODES.KOREAN]: getKoreanPrompt,
+	[LANGUAGE_CODES.JAPANESE]: getJapanesePrompt,
+	[LANGUAGE_CODES.CHINESE]: getChinesePrompt,
+	[LANGUAGE_CODES.FRENCH]: getFrenchPrompt,
+	[LANGUAGE_CODES.SPANISH]: getSpanishPrompt,
+	[LANGUAGE_CODES.GERMAN]: getGermanPrompt,
+	[LANGUAGE_CODES.PORTUGUESE]: getPortuguesePrompt,
+	[LANGUAGE_CODES.THAI]: getThaiPrompt,
 } as const;
 
 // デフォルトプロンプト（英語）
@@ -38,21 +38,21 @@ const DEFAULT_PROMPT_GETTER = getEnglishPrompt;
  * @returns 完成したプロンプト文字列
  */
 export const getPromptTemplate = (
-  learningLanguage: string,
-  nativeLanguage: string,
-  input: string,
-  situation: string | undefined,
+	learningLanguage: string,
+	nativeLanguage: string,
+	input: string,
+	situation: string | undefined,
 ): string => {
-  const nativeLanguageName =
-    LANGUAGE_NAMES[nativeLanguage as LanguageCode] || nativeLanguage;
+	const nativeLanguageName =
+		LANGUAGE_NAMES[nativeLanguage as LanguageCode] || nativeLanguage;
 
-  // 学習言語に対応するプロンプト取得関数を取得
-  const promptGetter =
-    learningLanguagePromptGetters[
-      learningLanguage as keyof typeof learningLanguagePromptGetters
-    ] || DEFAULT_PROMPT_GETTER;
+	// 学習言語に対応するプロンプト取得関数を取得
+	const promptGetter =
+		learningLanguagePromptGetters[
+			learningLanguage as keyof typeof learningLanguagePromptGetters
+		] || DEFAULT_PROMPT_GETTER;
 
-  return promptGetter(nativeLanguageName, input, situation);
+	return promptGetter(nativeLanguageName, input, situation);
 };
 
 // 名前のマッピングをエクスポート（他でも利用するため）

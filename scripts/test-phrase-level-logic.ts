@@ -1,7 +1,7 @@
 import {
-  getPhraseLevelScoreByCorrectAnswers,
-  getPhraseLevelColorByCorrectAnswers,
-  getPhraseLevelNameByCorrectAnswers,
+	getPhraseLevelScoreByCorrectAnswers,
+	getPhraseLevelColorByCorrectAnswers,
+	getPhraseLevelNameByCorrectAnswers,
 } from "../src/utils/phrase-level-utils";
 
 // テスト用の正解数配列
@@ -12,13 +12,13 @@ console.log("正解数 | レベル | スコア | 色");
 console.log("-------|--------|--------|----------");
 
 testCases.forEach((correctAnswers) => {
-  const score = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
-  const levelName = getPhraseLevelNameByCorrectAnswers(correctAnswers);
-  const color = getPhraseLevelColorByCorrectAnswers(correctAnswers);
+	const score = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
+	const levelName = getPhraseLevelNameByCorrectAnswers(correctAnswers);
+	const color = getPhraseLevelColorByCorrectAnswers(correctAnswers);
 
-  console.log(
-    `${correctAnswers.toString().padStart(6)} | ${levelName.padEnd(6)} | ${score.toString().padStart(6)} | ${color}`,
-  );
+	console.log(
+		`${correctAnswers.toString().padStart(6)} | ${levelName.padEnd(6)} | ${score.toString().padStart(6)} | ${color}`,
+	);
 });
 
 console.log("\n📋 レベル判定ロジック:");
