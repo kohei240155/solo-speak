@@ -141,11 +141,11 @@ export default function RankingPage() {
 									))}
 								</div>
 
-								{/* X投稿ボタン */}
+								{/* X投稿ボタン（非表示） */}
 								<button
 									onClick={handleShareStreak}
 									disabled={isShareLoading}
-									className="flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+									className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
 									title="ランキング結果を投稿"
 								>
 									<AiOutlineX className="w-4 h-4" />
@@ -171,11 +171,11 @@ export default function RankingPage() {
 									))}
 								</div>
 
-								{/* X投稿ボタン */}
+								{/* X投稿ボタン（非表示） */}
 								<button
 									onClick={handleShareStreak}
 									disabled={isShareLoading}
-									className="flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+									className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
 									title="ランキング結果を投稿"
 								>
 									<AiOutlineX className="w-4 h-4" />
