@@ -11,7 +11,6 @@ import PhraseList from "@/components/phrase/PhraseList";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { Toaster } from "react-hot-toast";
 
 export default function PhraseListPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -124,9 +123,6 @@ export default function PhraseListPage() {
 				languages={languages}
 				defaultLearningLanguage={learningLanguage}
 			/>
-
-			{/* Toaster for notifications */}
-			<Toaster />
 		</div>
 	);
 }
