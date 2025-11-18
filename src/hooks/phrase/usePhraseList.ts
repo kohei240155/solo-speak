@@ -8,9 +8,7 @@ export const usePhraseList = () => {
 	const { userSettings } = useAuth();
 
 	// ユーザーのデフォルト学習言語を初期値として設定
-	const [learningLanguage, setLearningLanguage] = useState<string>(() => {
-		return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE;
-	});
+	const [learningLanguage, setLearningLanguage] = useState<string>(userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE);
 
 	// 無限スクロール対応のフレーズリスト取得
 	const {
