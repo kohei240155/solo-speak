@@ -77,26 +77,3 @@ export async function loadTranslation(
 		loadingPromises.delete(cacheKey);
 	}
 }
-
-/**
- * キャッシュをクリアする関数（テスト用など）
- */
-export function clearTranslationCache(): void {
-	translationCache.clear();
-	loadingPromises.clear();
-}
-
-/**
- * 特定のロケールのキャッシュをクリアする関数
- */
-export function clearLocaleCache(locale: string): void {
-	const keysToDelete = Array.from(translationCache.keys()).filter((key) =>
-		key.startsWith(`${locale}-`),
-	);
-	keysToDelete.forEach((key) => translationCache.delete(key));
-
-	const promiseKeysToDelete = Array.from(loadingPromises.keys()).filter((key) =>
-		key.startsWith(`${locale}-`),
-	);
-	promiseKeysToDelete.forEach((key) => loadingPromises.delete(key));
-}

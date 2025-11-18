@@ -88,18 +88,6 @@ export async function uploadUserIcon(
 	}
 }
 
-export async function testStoragePermissions(): Promise<void> {
-	try {
-		// サーバーサイドクライアントを使用してストレージの基本テストを実行
-		const serverSupabase = createServerSupabaseClient();
-
-		// 基本的な接続テスト
-		await serverSupabase.storage.listBuckets();
-	} catch (error) {
-		throw error;
-	}
-}
-
 export async function deleteUserIcon(iconUrl: string): Promise<void> {
 	try {
 		// ローカルのBlob URLの場合は削除処理をスキップ
@@ -159,42 +147,6 @@ export async function deleteUserIcon(iconUrl: string): Promise<void> {
 	}
 }
 
-export async function createStorageBucket(): Promise<void> {
-	try {
-		const serverSupabase = createServerSupabaseClient();
-
-		// まず既存のバケットをリスト
-		const { data: buckets, error: listError } =
-			await serverSupabase.storage.listBuckets();
-
-		if (listError) {
-			return;
-		}
-
-		// imagesバケットが存在するかチェック
-		const imagesBucketExists = buckets?.some(
-			(bucket) => bucket.name === "images",
-		);
-		if (imagesBucketExists) {
-			return;
-		}
-
-		// バケットが存在しない場合は作成
-		const { error } = await serverSupabase.storage.createBucket("images", {
-			public: true,
-			allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
-			fileSizeLimit: 5242880, // 5MB
-		});
-
-		if (error && error.message !== "Bucket already exists") {
-			throw error;
-		}
-	} catch {
-		// エラーをログに記録し、処理を続行
-	}
-}
-
-// バケットの存在を確認し、なければ作成
 /**
  * Storage bucketの存在確認・作成
  */
