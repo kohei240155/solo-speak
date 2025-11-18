@@ -234,14 +234,14 @@ export function useSpeakPhraseById(phraseId?: string) {
 	const { user } = useAuth();
 
 	// ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
-	const speakByIdKey =
+	const speakByIdKey: readonly [string, string] | null =
 		user && phraseId
 			? ([`/api/phrase/${phraseId}/speak`, user.id] as const)
 			: null;
 
 	const { data, error, isLoading, mutate } = useSWR(
 		speakByIdKey,
-		([url]) => fetcher<UpdatePhraseCountResponseData>(url),
+		([url]: readonly [string, string]) => fetcher<UpdatePhraseCountResponseData>(url),
 		SWR_CONFIGS.REALTIME,
 	);
 
