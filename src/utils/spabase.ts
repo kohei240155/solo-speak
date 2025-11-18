@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { getEnvironmentConfig } from "./environment";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 // 新しいAPI Keys方式に対応
@@ -17,9 +16,6 @@ if (!supabasePublishableKey) {
 	);
 }
 
-// 環境設定を取得
-const envConfig = getEnvironmentConfig();
-
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
 	auth: {
 		autoRefreshToken: true,
@@ -28,8 +24,3 @@ export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
 		flowType: "pkce",
 	},
 });
-
-// リダイレクトURL設定関数を提供
-export const getAuthRedirectUrl = () => {
-	return envConfig.callbackUrl;
-};

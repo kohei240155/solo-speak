@@ -24,11 +24,3 @@ export const prisma = (() => {
 		return global.prisma;
 	}
 })();
-
-/**
- * Prisma接続のクリーンアップ
- * アプリケーション終了時に呼び出す
- */
-export async function disconnectPrisma(): Promise<void> {
-	await prisma.$disconnect();
-}
