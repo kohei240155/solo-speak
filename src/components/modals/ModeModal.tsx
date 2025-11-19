@@ -35,7 +35,7 @@ interface ModeModalProps {
 	onClose: () => void;
 	config: ModeModalConfig;
 	languages: Language[];
-	defaultLearningLanguage: string;
+	defaultLearningLanguage: string | undefined;
 	isLoading?: boolean;
 }
 

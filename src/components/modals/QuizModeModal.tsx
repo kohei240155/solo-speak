@@ -11,7 +11,7 @@ interface QuizModeModalProps {
 	onClose: () => void;
 	onStart: (config: QuizConfig) => Promise<void>;
 	languages: Language[];
-	defaultLearningLanguage: string;
+	defaultLearningLanguage: string | undefined;
 }
 
 export type { QuizConfig } from "@/types/quiz";

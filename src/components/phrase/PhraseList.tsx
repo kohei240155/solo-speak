@@ -11,8 +11,6 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import ExplanationModal from "./ExplanationModal";
 import SpeakModeModal from "../modals/SpeakModeModal";
 
-import { DEFAULT_LANGUAGE } from "@/constants/languages";
-
 interface PhraseListProps {
 	isModalContext?: boolean;
 	nativeLanguage?: string;
@@ -30,7 +28,7 @@ interface PhraseListProps {
 
 export default function PhraseList({
 	nativeLanguage = "",
-	learningLanguage = DEFAULT_LANGUAGE,
+	learningLanguage,
 	onUpdatePhrase,
 	onRefreshPhrases,
 	showSpeakModal: externalShowSpeakModal = false,

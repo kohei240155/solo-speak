@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguages, useInfinitePhrases } from "@/hooks/api/useSWRApi";
-import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
 export const usePhraseList = () => {
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
 
 	// ユーザーのデフォルト学習言語を初期値として設定
-	const [learningLanguage, setLearningLanguage] = useState<string>(userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE);
+	const [learningLanguage, setLearningLanguage] = useState<string | undefined>(userSettings?.defaultLearningLanguage?.code);
 
 	// 無限スクロール対応のフレーズリスト取得
 	const {
@@ -22,10 +21,7 @@ export const usePhraseList = () => {
 
 	// ユーザー設定が読み込まれた時に言語を初期化（初回のみ）
 	useEffect(() => {
-		if (
-			userSettings?.defaultLearningLanguage?.code &&
-			(learningLanguage === DEFAULT_LANGUAGE || !learningLanguage)
-		) {
+		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
 			setLearningLanguage(userSettings.defaultLearningLanguage.code);
 		}
 	}, [userSettings?.defaultLearningLanguage?.code, learningLanguage]);
