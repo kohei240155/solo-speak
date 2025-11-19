@@ -93,15 +93,6 @@ export default function PhraseListPage() {
 					isLoadingMore={isLoadingMore}
 					languages={languages}
 					nativeLanguage={nativeLanguage}
-					learningLanguage={learningLanguage}
-					showSpeakModal={showSpeakModal}
-					onSpeakModalStateChange={(state: boolean) => {
-						if (state) {
-							openSpeakModal();
-						} else {
-							closeSpeakModal();
-						}
-					}}
 					onRefreshPhrases={refreshPhrases}
 				/>
 			</div>
