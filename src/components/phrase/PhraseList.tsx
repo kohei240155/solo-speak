@@ -164,11 +164,8 @@ export default function PhraseList({
 
 				{/* 無限スクロール用のローディング */}
 				{isLoadingMore && (
-					<div className="flex justify-center py-4">
-						<div className="flex items-center text-gray-500">
-							<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-2"></div>
-							<span className="text-sm">Loading more...</span>
-						</div>
+					<div className="py-4">
+						<LoadingSpinner />
 					</div>
 				)}
 			</div>
