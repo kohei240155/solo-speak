@@ -4,7 +4,6 @@ import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface PhraseTabNavigationProps {
 	activeTab: TabType;
-	onTabChange?: (tab: TabType) => void; // Optional for backward compatibility
 	checkUnsavedChanges?: () => boolean; // Optional function to check for unsaved changes
 	onSpeakModalOpen?: () => void; // Speak modal open handler
 	onQuizModalOpen?: () => void; // Quiz modal open handler
@@ -13,7 +12,6 @@ interface PhraseTabNavigationProps {
 
 export default function PhraseTabNavigation({
 	activeTab,
-	onTabChange,
 	checkUnsavedChanges,
 	onSpeakModalOpen,
 	onQuizModalOpen,
@@ -81,13 +79,8 @@ export default function PhraseTabNavigation({
 			return;
 		}
 
-		// カスタムのonTabChangeがある場合は優先（backward compatibility）
-		if (onTabChange) {
-			onTabChange(tab.key);
-		} else {
-			// ルーターナビゲーション
-			router.push(tab.path);
-		}
+		// ListタブとAddタブの場合はページ遷移
+		router.push(tab.path);
 	};
 
 	return (
