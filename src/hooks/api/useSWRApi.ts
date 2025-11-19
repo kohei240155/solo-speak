@@ -19,6 +19,7 @@ import {
 } from "@/types/ranking";
 import { UserSettingsResponse } from "@/types/userSettings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCallback } from "react";
 
 // SWR用の統一fetcher関数
 const fetcher = async <T = unknown>(
@@ -241,7 +242,8 @@ export function useSpeakPhraseById(phraseId?: string) {
 
 	const { data, error, isLoading, mutate } = useSWR(
 		speakByIdKey,
-		([url]: readonly [string, string]) => fetcher<UpdatePhraseCountResponseData>(url),
+		([url]: readonly [string, string]) =>
+			fetcher<UpdatePhraseCountResponseData>(url),
 		SWR_CONFIGS.REALTIME,
 	);
 
@@ -258,28 +260,33 @@ export function useSpeakPhraseById(phraseId?: string) {
 export function useInfinitePhrases(language?: string) {
 	const { user } = useAuth();
 
-	const getKey = (
-		pageIndex: number,
-		previousPageData: { pagination?: { hasMore: boolean } } | null,
-	) => {
-		// 最後のページに到達した場合
-		if (previousPageData && !previousPageData.pagination?.hasMore) return null;
+	const getKey = useCallback(
+		(
+			pageIndex: number,
+			previousPageData: { pagination?: { hasMore: boolean } } | null,
+		) => {
+			if (!user?.id || !language) return null;
 
-		// ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
-		return user && language
-			? ([
-					`/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true`,
-					user.id,
-				] as const)
-			: null;
-	};
+			// 最後のページに到達した場合
+			if (previousPageData && !previousPageData.pagination?.hasMore)
+				return null;
+
+			// ユーザー切り替え時のキャッシュ衝突を避けるためにuser.idをキーに含める
+			return user?.id && language
+				? ([
+						`/api/phrase?languageCode=${language}&page=${pageIndex + 1}&limit=10&minimal=true`,
+						user.id,
+					] as const)
+				: null;
+		},
+		[user?.id, language],
+	);
 
 	const { data, error, isLoading, isValidating, size, setSize, mutate } =
-		useSWRInfinite(
-			user && language ? getKey : () => null,
-			([url]) => fetcher<PhrasesListResponseData>(url),
-			SWR_CONFIGS.SHORT_CACHE,
-		);
+		useSWRInfinite(getKey, ([url]) => fetcher<PhrasesListResponseData>(url), {
+			...SWR_CONFIGS.SHORT_CACHE,
+			revalidateFirstPage: false,
+		});
 
 	// 全ページのフレーズを平坦化
 	const phrases = data ? data.flatMap((page) => page.phrases || []) : [];
