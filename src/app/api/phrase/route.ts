@@ -121,14 +121,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			},
 		});
 
-		// 最新のユーザー情報を取得（残り回数は /api/user/phrase-generations で既に減らされている）
-		const finalUser = await prisma.user.findUnique({
-			where: { id: userId },
-			select: {
-				remainingPhraseGenerations: true,
-			},
-		});
-
 		// ユーザーの総フレーズ数を取得
 		const totalPhraseCount = await prisma.phrase.count({
 			where: {
@@ -136,16 +128,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				deletedAt: null,
 			},
 		});
-
-		// 翌日のリセット時間を計算（レスポンス用）
-		const currentTime = new Date();
-		const todayStart = new Date(
-			currentTime.getFullYear(),
-			currentTime.getMonth(),
-			currentTime.getDate(),
-		);
-		const tomorrowStart = new Date(todayStart);
-		tomorrowStart.setDate(tomorrowStart.getDate() + 1);
 
 		// フロントエンドの期待する形式に変換
 		const transformedPhrase: PhraseData = {
@@ -165,9 +147,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		const responseData: CreatePhraseResponseData = {
 			success: true,
 			phrase: transformedPhrase,
-			remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
-			dailyLimit: 5,
-			nextResetTime: tomorrowStart.toISOString(),
 			totalPhraseCount,
 		};
 
