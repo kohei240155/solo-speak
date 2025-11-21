@@ -246,8 +246,7 @@ export const usePhraseManager = () => {
 
 			try {
 				const requestBody: CreatePhraseRequestBody = {
-					languageId:
-						languages?.find((lang) => lang.code === learningLanguage)?.id || "",
+					languageCode: learningLanguage,
 					original: textToSave,
 					translation: desiredPhrase,
 					explanation: variation.explanation || "",
@@ -288,7 +287,6 @@ export const usePhraseManager = () => {
 			editingVariations,
 			desiredPhrase,
 			learningLanguage,
-			languages,
 			validateVariation,
 			refetchPhraseList,
 			t,

@@ -12,7 +12,7 @@ import { ApiErrorResponse } from "@/types/api";
 import { prisma } from "@/utils/prisma";
 
 const createPhraseSchema = z.object({
-	languageId: z.string().min(1),
+	languageCode: z.string().min(1),
 	original: z.string().min(1).max(200),
 	translation: z.string().min(1).max(200),
 	explanation: z.string().optional(),
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 		const body: unknown = await request.json();
 		const {
-			languageId,
+			languageCode,
 			original,
 			translation,
 			explanation,
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 			prisma.language.findUnique({
 				where: {
-					id: languageId,
+					code: languageCode,
 					deletedAt: null, // 削除されていない言語のみ
 				},
 			}),
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		const phrase = await prisma.phrase.create({
 			data: {
 				userId,
-				languageId,
+				languageId: language.id,
 				original,
 				translation,
 				explanation,

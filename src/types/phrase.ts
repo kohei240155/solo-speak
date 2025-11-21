@@ -48,7 +48,7 @@ export interface GeneratePhraseResponseData {
 
 // フレーズ作成リクエストボディの型
 export interface CreatePhraseRequestBody {
-	languageId: string;
+	languageCode: string;
 	original: string;
 	translation: string;
 	explanation?: string;
