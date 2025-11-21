@@ -24,11 +24,8 @@ export const usePhraseManager = () => {
 
 	// SWRフックを使用してデータを取得
 	const { languages } = useLanguages();
-	const {
-		remainingGenerations,
-		generationsData,
-		refetch: mutateGenerations,
-	} = useRemainingGenerations();
+	const { remainingGenerations, refetch: mutateGenerations } =
+		useRemainingGenerations();
 	const {
 		situations,
 		situationsData,
@@ -119,7 +116,6 @@ export const usePhraseManager = () => {
 		!languages ||
 		userSettingsLoading ||
 		!userSettings ||
-		!generationsData ||
 		!situationsData;
 
 	// バリデーション関数

@@ -425,7 +425,6 @@ export function useRemainingGenerations() {
 
 	return {
 		remainingGenerations: data?.remainingGenerations || 0,
-		generationsData: data,
 		isLoading,
 		error,
 		refetch: mutate,
