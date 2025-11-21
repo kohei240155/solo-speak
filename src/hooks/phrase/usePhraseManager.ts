@@ -250,9 +250,7 @@ export const usePhraseManager = () => {
 					original: textToSave,
 					translation: desiredPhrase,
 					explanation: variation.explanation || "",
-					level: "common",
 				};
-
 				const response = await api.post<CreatePhraseResponseData>(
 					"/api/phrase",
 					requestBody,

@@ -16,8 +16,6 @@ const createPhraseSchema = z.object({
 	original: z.string().min(1).max(200),
 	translation: z.string().min(1).max(200),
 	explanation: z.string().optional(),
-	level: z.enum(["common", "polite", "casual"]).optional(),
-	phraseLevelId: z.string().optional(),
 	context: z.string().nullable().optional(),
 });
 
@@ -39,12 +37,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			original,
 			translation,
 			explanation,
-			level,
-			phraseLevelId,
 		}: Omit<CreatePhraseRequestBody, "context"> =
-			createPhraseSchema.parse(body);
-
-		// contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
+			createPhraseSchema.parse(body); // contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
 
 		// 認証されたユーザーIDを使用
 		const userId = authResult.user.id;
@@ -77,45 +71,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
-		// フレーズレベルIDを決定
-		let finalPhraseLevelId = phraseLevelId;
+		// 新規フレーズの初期レベルを設定（score=0のLv1）
+		const correctAnswers = 0; // 新規フレーズの初期正解数
+		const levelScore = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
 
-		if (!finalPhraseLevelId && level) {
-			// levelが指定されている場合、対応するphraseLevelIdを取得
-			const phraseLevel = await prisma.phraseLevel.findFirst({
-				where: { name: level },
+		let phraseLevel = await prisma.phraseLevel.findFirst({
+			where: { score: levelScore },
+		});
+
+		// フォールバック: 最低レベルを取得
+		if (!phraseLevel) {
+			phraseLevel = await prisma.phraseLevel.findFirst({
+				orderBy: { score: "asc" },
 			});
 
-			if (phraseLevel) {
-				finalPhraseLevelId = phraseLevel.id;
-			}
-		}
-
-		// それでもphraseLevelIdが決まらない場合、正解数（初期値0）に基づいてフレーズレベルを設定
-		if (!finalPhraseLevelId) {
-			const correctAnswers = 0; // 新規フレーズの初期正解数
-			const levelScore = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
-
-			const phraseLevel = await prisma.phraseLevel.findFirst({
-				where: { score: levelScore },
-			});
-
-			if (phraseLevel) {
-				finalPhraseLevelId = phraseLevel.id;
-			} else {
-				// フォールバック: 最低レベルを取得
-				const defaultLevel = await prisma.phraseLevel.findFirst({
-					orderBy: { score: "asc" },
-				});
-
-				if (!defaultLevel) {
-					const errorResponse: ApiErrorResponse = {
-						error: "No phrase level found",
-					};
-					return NextResponse.json(errorResponse, { status: 500 });
-				}
-
-				finalPhraseLevelId = defaultLevel.id;
+			if (!phraseLevel) {
+				const errorResponse: ApiErrorResponse = {
+					error: "No phrase level found",
+				};
+				return NextResponse.json(errorResponse, { status: 500 });
 			}
 		}
 
@@ -127,7 +101,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				original,
 				translation,
 				explanation,
-				phraseLevelId: finalPhraseLevelId,
+				phraseLevelId: phraseLevel.id,
 			},
 			include: {
 				language: {

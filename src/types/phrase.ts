@@ -52,8 +52,6 @@ export interface CreatePhraseRequestBody {
 	original: string;
 	translation: string;
 	explanation?: string;
-	level?: "common" | "polite" | "casual";
-	phraseLevelId?: string;
 	context?: string;
 }
 
