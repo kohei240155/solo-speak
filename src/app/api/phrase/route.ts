@@ -6,6 +6,7 @@ import {
 	CreatePhraseRequestBody,
 	CreatePhraseResponseData,
 	PhrasesListResponseData,
+	PhraseData,
 } from "@/types/phrase";
 import { ApiErrorResponse } from "@/types/api";
 import { prisma } from "@/utils/prisma";
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		tomorrowStart.setDate(tomorrowStart.getDate() + 1);
 
 		// フロントエンドの期待する形式に変換
-		const transformedPhrase = {
+		const transformedPhrase: PhraseData = {
 			id: phrase.id,
 			original: phrase.original,
 			translation: phrase.translation,
@@ -302,7 +303,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		]);
 
 		// フロントエンドの期待する形式に変換
-		const transformedPhrases = phrases.map((phrase) => ({
+		const transformedPhrases: PhraseData[] = phrases.map((phrase) => ({
 			id: phrase.id,
 			original: phrase.original,
 			translation: phrase.translation,

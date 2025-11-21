@@ -1,7 +1,7 @@
 import { Language } from "@/types/phrase";
 
 interface LanguageSelectorProps {
-	learningLanguage: string;
+	learningLanguage: string | undefined;
 	onLanguageChange: (language: string) => void;
 	languages: Language[];
 	nativeLanguage: string;

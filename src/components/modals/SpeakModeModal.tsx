@@ -14,7 +14,7 @@ interface SpeakModeModalProps {
 	onClose: () => void;
 	onStart: (config: SpeakConfig) => void;
 	languages: Language[];
-	defaultLearningLanguage: string;
+	defaultLearningLanguage: string | undefined;
 }
 
 export type { SpeakConfig } from "@/types/speak";
