@@ -445,7 +445,6 @@ export function useSituations() {
 
 	return {
 		situations: data?.situations || [],
-		situationsData: data,
 		isLoading,
 		error,
 		refetch: mutate,
