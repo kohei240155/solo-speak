@@ -29,12 +29,12 @@ export const usePhraseManager = () => {
 	const { situations, refetch: mutateSituations } = useSituations();
 
 	// ローカル状態
-	const [nativeLanguage, setNativeLanguage] = useState<string>(() => {
-		return userSettings?.nativeLanguage?.code || "";
-	});
-	const [learningLanguage, setLearningLanguage] = useState<string>(() => {
-		return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE;
-	});
+	const [nativeLanguage, setNativeLanguage] = useState<string>(
+		userSettings?.nativeLanguage?.code || "",
+	);
+	const [learningLanguage, setLearningLanguage] = useState<string>(
+		userSettings?.defaultLearningLanguage?.code || "",
+	);
 
 	// フレーズ数をSWRで取得（学習言語変更に対応）
 	const { totalCount: availablePhraseCount, refetch: refetchPhraseList } =
