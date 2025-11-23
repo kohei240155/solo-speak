@@ -3,8 +3,11 @@ import ModeModal, { ModeModalConfig } from "./ModeModal";
 import SpeakModeExplanationModal from "./SpeakModeExplanationModal";
 import { Language } from "@/types/phrase";
 import { SpeakConfig } from "@/types/speak";
-import { getSpeakPhraseCount } from "@/utils/api-client";
-import { resetSessionSpoken, resetDailySpeakCount } from "@/hooks/api/useApi";
+import {
+	getSpeakPhraseCount,
+	resetSessionSpoken,
+	resetDailySpeakCount,
+} from "@/hooks/api/useApi";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
