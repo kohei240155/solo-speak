@@ -12,12 +12,10 @@ import { ApiErrorResponse } from "@/types/api";
 import { prisma } from "@/utils/prisma";
 
 const createPhraseSchema = z.object({
-	languageId: z.string().min(1),
+	languageCode: z.string().min(1),
 	original: z.string().min(1).max(200),
 	translation: z.string().min(1).max(200),
 	explanation: z.string().optional(),
-	level: z.enum(["common", "polite", "casual"]).optional(),
-	phraseLevelId: z.string().optional(),
 	context: z.string().nullable().optional(),
 });
 
@@ -35,16 +33,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 		const body: unknown = await request.json();
 		const {
-			languageId,
+			languageCode,
 			original,
 			translation,
 			explanation,
-			level,
-			phraseLevelId,
 		}: Omit<CreatePhraseRequestBody, "context"> =
-			createPhraseSchema.parse(body);
-
-		// contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
+			createPhraseSchema.parse(body); // contextは現在保存されませんが、将来の拡張用としてスキーマには残しています
 
 		// 認証されたユーザーIDを使用
 		const userId = authResult.user.id;
@@ -57,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 			prisma.language.findUnique({
 				where: {
-					id: languageId,
+					code: languageCode,
 					deletedAt: null, // 削除されていない言語のみ
 				},
 			}),
@@ -77,45 +71,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
-		// フレーズレベルIDを決定
-		let finalPhraseLevelId = phraseLevelId;
+		// 新規フレーズの初期レベルを設定（score=0のLv1）
+		const correctAnswers = 0; // 新規フレーズの初期正解数
+		const levelScore = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
 
-		if (!finalPhraseLevelId && level) {
-			// levelが指定されている場合、対応するphraseLevelIdを取得
-			const phraseLevel = await prisma.phraseLevel.findFirst({
-				where: { name: level },
+		let phraseLevel = await prisma.phraseLevel.findFirst({
+			where: { score: levelScore },
+		});
+
+		// フォールバック: 最低レベルを取得
+		if (!phraseLevel) {
+			phraseLevel = await prisma.phraseLevel.findFirst({
+				orderBy: { score: "asc" },
 			});
 
-			if (phraseLevel) {
-				finalPhraseLevelId = phraseLevel.id;
-			}
-		}
-
-		// それでもphraseLevelIdが決まらない場合、正解数（初期値0）に基づいてフレーズレベルを設定
-		if (!finalPhraseLevelId) {
-			const correctAnswers = 0; // 新規フレーズの初期正解数
-			const levelScore = getPhraseLevelScoreByCorrectAnswers(correctAnswers);
-
-			const phraseLevel = await prisma.phraseLevel.findFirst({
-				where: { score: levelScore },
-			});
-
-			if (phraseLevel) {
-				finalPhraseLevelId = phraseLevel.id;
-			} else {
-				// フォールバック: 最低レベルを取得
-				const defaultLevel = await prisma.phraseLevel.findFirst({
-					orderBy: { score: "asc" },
-				});
-
-				if (!defaultLevel) {
-					const errorResponse: ApiErrorResponse = {
-						error: "No phrase level found",
-					};
-					return NextResponse.json(errorResponse, { status: 500 });
-				}
-
-				finalPhraseLevelId = defaultLevel.id;
+			if (!phraseLevel) {
+				const errorResponse: ApiErrorResponse = {
+					error: "No phrase level found",
+				};
+				return NextResponse.json(errorResponse, { status: 500 });
 			}
 		}
 
@@ -123,11 +97,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		const phrase = await prisma.phrase.create({
 			data: {
 				userId,
-				languageId,
+				languageId: language.id,
 				original,
 				translation,
 				explanation,
-				phraseLevelId: finalPhraseLevelId,
+				phraseLevelId: phraseLevel.id,
 			},
 			include: {
 				language: {
@@ -147,14 +121,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			},
 		});
 
-		// 最新のユーザー情報を取得（残り回数は /api/user/phrase-generations で既に減らされている）
-		const finalUser = await prisma.user.findUnique({
-			where: { id: userId },
-			select: {
-				remainingPhraseGenerations: true,
-			},
-		});
-
 		// ユーザーの総フレーズ数を取得
 		const totalPhraseCount = await prisma.phrase.count({
 			where: {
@@ -162,16 +128,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				deletedAt: null,
 			},
 		});
-
-		// 翌日のリセット時間を計算（レスポンス用）
-		const currentTime = new Date();
-		const todayStart = new Date(
-			currentTime.getFullYear(),
-			currentTime.getMonth(),
-			currentTime.getDate(),
-		);
-		const tomorrowStart = new Date(todayStart);
-		tomorrowStart.setDate(tomorrowStart.getDate() + 1);
 
 		// フロントエンドの期待する形式に変換
 		const transformedPhrase: PhraseData = {
@@ -191,9 +147,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		const responseData: CreatePhraseResponseData = {
 			success: true,
 			phrase: transformedPhrase,
-			remainingGenerations: finalUser?.remainingPhraseGenerations ?? 0,
-			dailyLimit: 5,
-			nextResetTime: tomorrowStart.toISOString(),
 			totalPhraseCount,
 		};
 

@@ -24,24 +24,17 @@ export const usePhraseManager = () => {
 
 	// SWRフックを使用してデータを取得
 	const { languages } = useLanguages();
-	const {
-		remainingGenerations,
-		generationsData,
-		refetch: mutateGenerations,
-	} = useRemainingGenerations();
-	const {
-		situations,
-		situationsData,
-		refetch: mutateSituations,
-	} = useSituations();
+	const { remainingGenerations, refetch: mutateGenerations } =
+		useRemainingGenerations();
+	const { situations, refetch: mutateSituations } = useSituations();
 
 	// ローカル状態
-	const [nativeLanguage, setNativeLanguage] = useState<string>(() => {
-		return userSettings?.nativeLanguage?.code || "";
-	});
-	const [learningLanguage, setLearningLanguage] = useState<string>(() => {
-		return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE;
-	});
+	const [nativeLanguage, setNativeLanguage] = useState<string>(
+		userSettings?.nativeLanguage?.code || "",
+	);
+	const [learningLanguage, setLearningLanguage] = useState<string>(
+		userSettings?.defaultLearningLanguage?.code || "",
+	);
 
 	// フレーズ数をSWRで取得（学習言語変更に対応）
 	const { totalCount: availablePhraseCount, refetch: refetchPhraseList } =
@@ -115,12 +108,7 @@ export const usePhraseManager = () => {
 
 	// データ取得状態の計算
 	const isInitializing =
-		!user ||
-		!languages ||
-		userSettingsLoading ||
-		!userSettings ||
-		!generationsData ||
-		!situationsData;
+		!user || !languages || userSettingsLoading || !userSettings;
 
 	// バリデーション関数
 	const validatePhrase = useCallback(
@@ -258,14 +246,11 @@ export const usePhraseManager = () => {
 
 			try {
 				const requestBody: CreatePhraseRequestBody = {
-					languageId:
-						languages?.find((lang) => lang.code === learningLanguage)?.id || "",
+					languageCode: learningLanguage,
 					original: textToSave,
 					translation: desiredPhrase,
 					explanation: variation.explanation || "",
-					level: "common",
 				};
-
 				const response = await api.post<CreatePhraseResponseData>(
 					"/api/phrase",
 					requestBody,
@@ -300,7 +285,6 @@ export const usePhraseManager = () => {
 			editingVariations,
 			desiredPhrase,
 			learningLanguage,
-			languages,
 			validateVariation,
 			refetchPhraseList,
 			t,

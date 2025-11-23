@@ -48,12 +48,10 @@ export interface GeneratePhraseResponseData {
 
 // フレーズ作成リクエストボディの型
 export interface CreatePhraseRequestBody {
-	languageId: string;
+	languageCode: string;
 	original: string;
 	translation: string;
 	explanation?: string;
-	level?: "common" | "polite" | "casual";
-	phraseLevelId?: string;
 	context?: string;
 }
 
@@ -82,9 +80,6 @@ export interface PhraseData {
 export interface CreatePhraseResponseData {
 	success: true;
 	phrase: PhraseData;
-	remainingGenerations: number;
-	dailyLimit: number;
-	nextResetTime: string;
 	totalPhraseCount: number;
 }
 
