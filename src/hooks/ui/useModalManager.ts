@@ -5,13 +5,9 @@ import { QuizConfig } from "@/types/quiz";
 
 interface UseModalManagerProps {
 	handleSpeakStart: (config: SpeakConfig) => Promise<boolean>;
-	setIsSpeakCompleted: (completed: boolean) => void;
 }
 
-export function useModalManager({
-	handleSpeakStart,
-	setIsSpeakCompleted,
-}: UseModalManagerProps) {
+export function useModalManager({ handleSpeakStart }: UseModalManagerProps) {
 	const router = useRouter();
 
 	const [showSpeakModal, setShowSpeakModal] = useState(false);
@@ -21,17 +17,14 @@ export function useModalManager({
 	const handleSpeakStartWithModal = async (
 		config: SpeakConfig | (SpeakConfig & { allDone: boolean }),
 	) => {
-		// All Done状態をチェック
+		// All Done状態の場合は何もしない
 		if ("allDone" in config && config.allDone) {
-			setIsSpeakCompleted(true);
 			return;
 		}
 
 		const success = await handleSpeakStart(config as SpeakConfig);
 		if (success) {
 			setShowSpeakModal(false);
-			// 練習が正常に開始された場合、All Done状態を解除
-			setIsSpeakCompleted(false);
 		}
 	};
 

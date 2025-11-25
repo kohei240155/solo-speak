@@ -26,6 +26,7 @@ export function useMultiPhraseSpeak({
 	const router = useRouter();
 	const [isFinishing, setIsFinishing] = useState(false);
 	const [isNextLoading, setIsNextLoading] = useState(false);
+	const [isAllDone, setIsAllDone] = useState(false);
 
 	// 次のフレーズを取得（設定付き）
 	const handleNextWithConfig = useCallback(async () => {
@@ -45,6 +46,9 @@ export function useMultiPhraseSpeak({
 			setIsNextLoading(true);
 			try {
 				const result = await handleNext(currentConfig);
+				if (result === "allDone") {
+					setIsAllDone(true);
+				}
 				return result;
 			} finally {
 				setIsNextLoading(false);
@@ -69,6 +73,7 @@ export function useMultiPhraseSpeak({
 	return {
 		isFinishing,
 		isNextLoading,
+		isAllDone,
 		handleNextWithConfig,
 		handleSpeakFinishComplete,
 		handleCount,
