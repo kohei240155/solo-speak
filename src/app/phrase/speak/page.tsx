@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
@@ -43,15 +43,8 @@ function PhraseSpeakPage() {
 		resetSession,
 		sendPendingCount,
 		refetchPhraseList,
-		// fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
 	} = useSpeakSession(learningLanguage);
 
-	// 後方互換性のためのaliases
-	const speakMode = sessionState;
-	const handleSpeakStart = handleStart;
-	const resetSavedConfig = resetSession;
-
-	const [isSpeakCompleted, setIsSpeakCompleted] = useState(false);
 	const [showExplanation, setShowExplanation] = useState(false);
 
 	// Explanationモーダルのハンドラー
@@ -84,31 +77,24 @@ function PhraseSpeakPage() {
 
 	// 複数フレーズ練習用のフック
 	const multiPhraseSpeak = useMultiPhraseSpeak({
-		speakMode,
+		speakMode: sessionState,
 		handleCount,
-		handleNext: useCallback(
-			async (config: import("@/types/speak").SpeakConfig) => {
-				const result = await handleNext(config);
-				if (result === "allDone") {
-					setIsSpeakCompleted(true);
-				}
-				return result;
-			},
-			[handleNext],
-		),
+		handleNext,
 		handleFinish,
 	});
 
+	const isSpeakCompleted = multiPhraseSpeak.isAllDone;
+
 	// モーダル管理
 	const modalManager = useModalManager({
-		handleSpeakStart,
-		setIsSpeakCompleted,
+		handleSpeakStart: handleStart,
 	});
 
 	// All Done画面管理
 	const allDoneScreen = useAllDoneScreen({
 		openSpeakModal: modalManager.openSpeakModal,
-		resetSavedConfig,
+		resetSavedConfig: resetSession,
+		resetAllDone: multiPhraseSpeak.resetAllDone,
 	});
 
 	// ページ離脱警告（カウントボタンが1回以上押された状態の場合のみ）
@@ -133,13 +119,6 @@ function PhraseSpeakPage() {
 			}
 		}
 	}, [learningLanguage, router]);
-
-	// All Done状態になったときにPhrase Listのキャッシュを無効化
-	useEffect(() => {
-		if (isSpeakCompleted) {
-			refetchPhraseList();
-		}
-	}, [isSpeakCompleted, refetchPhraseList]);
 
 	// 未保存の変更チェック関数
 	const checkUnsavedChanges = () => {
@@ -170,7 +149,7 @@ function PhraseSpeakPage() {
 					activeTab="Speak"
 					checkUnsavedChanges={checkUnsavedChanges}
 					onSpeakModalOpen={
-						speakMode.active ? undefined : modalManager.openSpeakModal
+						sessionState.active ? undefined : modalManager.openSpeakModal
 					}
 					onQuizModalOpen={modalManager.openQuizModal}
 					onCacheInvalidate={refetchPhraseList}

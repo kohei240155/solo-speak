@@ -32,11 +32,9 @@
 
 ### 3. 型安全なAPIクライアント作成
 
-- `src/utils/api-client.ts` - 型安全なAPI呼び出し関数
+- `src/hooks/api/useApi.ts` - 型安全なAPI呼び出し関数
 - 主要な機能:
-  - `updatePhraseCount()` - 型安全なフレーズカウント更新
-  - `getSpeakPhrase()` - 型安全なSpeakフレーズ取得
-  - `getPhraseDetail()` - 型安全なフレーズ詳細取得
+  - `getSpeakPhraseCount()` - 型安全なSpeakフレーズ数取得
   - `isApiError()` / `isApiSuccess()` - 型ガード関数
 
 ### 4. 使用例とベストプラクティス
@@ -50,13 +48,13 @@
 ```typescript
 // バックエンド
 return NextResponse.json(
-  {
-    success: true,
-    phrase: {
-      /* ... */
-    },
-  },
-  { status: 200 },
+	{
+		success: true,
+		phrase: {
+			/* ... */
+		},
+	},
+	{ status: 200 },
 );
 
 // フロントエンド
@@ -68,18 +66,16 @@ const result = response.data; // any型
 
 ```typescript
 // バックエンド
-const responseData: PhraseCountResponse = {
-  success: true,
-  phrase: {
-    /* ... */
-  },
+const responseData: SpeakPhraseCountResponse = {
+	success: true,
+	count: 42,
 };
 return NextResponse.json(responseData);
 
 // フロントエンド
-const result = await updatePhraseCount(phraseId, count);
+const result = await getSpeakPhraseCount(languageCode, options);
 if (isApiSuccess(result)) {
-  console.log(result.phrase.totalSpeakCount); // 完全に型安全
+	console.log(result.count); // 完全に型安全
 }
 ```
 

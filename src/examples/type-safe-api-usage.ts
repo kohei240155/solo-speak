@@ -1,51 +1,31 @@
 // 型安全なAPI呼び出しの使用例
 
-import {
-	updatePhraseCount,
-	getSpeakPhrase,
-	isApiError,
-	isApiSuccess,
-} from "@/utils/api-client";
+import { getSpeakPhraseCount, isApiError, isApiSuccess } from "@/hooks/api";
 
-// 使用例1: フレーズカウント更新
-export async function handlePhraseCount(phraseId: string, count: number) {
-	const result = await updatePhraseCount(phraseId, count);
-
-	if (isApiError(result)) {
-		// エラーハンドリング - 型安全にerrorプロパティにアクセス可能
-		return null;
-	}
-
-	// 成功時 - 型安全にphraseプロパティにアクセス可能
-	return result.phrase;
-}
-
-// 使用例2: Speakフレーズ取得
-export async function handleGetSpeakPhrase(languageCode: string) {
-	const result = await getSpeakPhrase(languageCode, {
-		excludeIfSpeakCountGTE: 5,
-		excludeTodayPracticed: false,
+// 使用例1: Speakフレーズ数を取得
+export async function handleGetSpeakPhraseCount(languageCode: string) {
+	const result = await getSpeakPhraseCount(languageCode, {
+		excludeIfSpeakCountGTE: 50,
+		excludeTodayPracticed: true,
 	});
 
 	if (isApiSuccess(result)) {
-		if (result.allDone) {
-			return null;
-		}
-
-		if (result.phrase) {
-			return result.phrase;
-		}
+		return result.count;
 	} else {
-		// Failed to get phrase - silently handle error
+		// エラーハンドリング - 型安全にerrorプロパティにアクセス可能
+		console.error(result.error);
 	}
 
-	return null;
+	return 0;
 }
 
-// 使用例3: React Hook での使用
-export function useTypeSafePhraseCount() {
-	const handleCount = async (phraseId: string, count: number) => {
-		const result = await updatePhraseCount(phraseId, count);
+// 使用例2: React Hook での使用
+export function useTypeSafeSpeakPhraseCount() {
+	const fetchCount = async (languageCode: string) => {
+		const result = await getSpeakPhraseCount(languageCode, {
+			excludeIfSpeakCountGTE: 50,
+			excludeTodayPracticed: true,
+		});
 
 		if (isApiError(result)) {
 			// エラートーストなどの処理
@@ -53,12 +33,8 @@ export function useTypeSafePhraseCount() {
 		}
 
 		// 成功時のレスポンスは完全に型安全
-		return {
-			id: result.phrase.id,
-			totalSpeakCount: result.phrase.totalSpeakCount,
-			dailySpeakCount: result.phrase.dailySpeakCount,
-		};
+		return result.count;
 	};
 
-	return { handleCount };
+	return { fetchCount };
 }

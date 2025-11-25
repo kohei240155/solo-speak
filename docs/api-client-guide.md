@@ -65,33 +65,23 @@ function MyComponent() {
 ### 3. 一回限りのAPI呼び出し
 
 ```typescript
-import {
-  getSpeakPhrase,
-  updatePhraseCount,
-  deletePhrase,
-} from "@/hooks/useApi";
+import { getSpeakPhraseCount, deletePhrase } from "@/hooks/api";
 
-async function handleSpeakStart() {
+async function handleCheckPhraseCount(languageCode: string) {
   try {
-    // Speakフレーズを取得
-    const data = await getSpeakPhrase({
-      language: "en",
-      order: "new_to_old",
-      prioritizeLowPractice: "true",
+    // Speakフレーズ数を取得（型安全）
+    const result = await getSpeakPhraseCount(languageCode, {
+      excludeIfSpeakCountGTE: 50,
+      excludeTodayPracticed: true,
     });
 
-    if (data.success && data.phrase) {
-      console.log("フレーズ取得成功:", data.phrase);
+    if (result.success) {
+      console.log("利用可能フレーズ数:", result.count);
     }
   } catch (error) {
     // エラーは自動でトースト表示される
     console.error("API呼び出しエラー:", error);
   }
-}
-
-async function handlePhraseComplete(phraseId: string) {
-  // 練習カウントを更新
-  await updatePhraseCount(phraseId);
 }
 ```
 

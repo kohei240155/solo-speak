@@ -26,7 +26,11 @@ export const usePhraseManager = () => {
 	const { languages } = useLanguages();
 	const { remainingGenerations, refetch: mutateGenerations } =
 		useRemainingGenerations();
-	const { situations, refetch: mutateSituations } = useSituations();
+	const {
+		situations,
+		isLoading: situationsLoading,
+		refetch: mutateSituations,
+	} = useSituations();
 
 	// ローカル状態
 	const [nativeLanguage, setNativeLanguage] = useState<string>(
@@ -108,7 +112,11 @@ export const usePhraseManager = () => {
 
 	// データ取得状態の計算
 	const isInitializing =
-		!user || !languages || userSettingsLoading || !userSettings;
+		!user ||
+		!languages ||
+		userSettingsLoading ||
+		!userSettings ||
+		situationsLoading;
 
 	// バリデーション関数
 	const validatePhrase = useCallback(

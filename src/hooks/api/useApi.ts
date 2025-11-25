@@ -1,15 +1,6 @@
 import { api } from "@/utils/api";
-
-/**
- * フレーズの練習カウントを更新する関数
- */
-export async function updatePhraseCount(phraseId: string) {
-	try {
-		return await api.post(`/api/phrase/${phraseId}/count`);
-	} catch (error) {
-		throw error;
-	}
-}
+import { SpeakPhraseCountResponse } from "@/types/phrase";
+import { ApiErrorResponse, ApiResult } from "@/types/api";
 
 /**
  * フレーズを削除する関数
@@ -59,23 +50,51 @@ export async function resetDailySpeakCount() {
 }
 
 /**
- * Speak用のフレーズを取得する関数
+ * Speak用フレーズの数を取得（型安全版）
  */
-export async function getSpeakPhrase(options?: {
-	languageCode?: string;
-	order?: string;
-	prioritizeLowPractice?: string;
-}) {
+export async function getSpeakPhraseCount(
+	languageCode: string,
+	options?: {
+		excludeIfSpeakCountGTE?: number;
+		excludeTodayPracticed?: boolean;
+	},
+): Promise<ApiResult<SpeakPhraseCountResponse>> {
 	try {
-		const params = new URLSearchParams();
-		if (options?.languageCode) params.append("language", options.languageCode);
-		if (options?.order) params.append("order", options.order);
-		if (options?.prioritizeLowPractice)
-			params.append("prioritizeLowPractice", options.prioritizeLowPractice);
+		const params = new URLSearchParams({ language: languageCode });
 
-		return await api.get(`/api/phrase/speak?${params.toString()}`);
-	} catch (error) {
-		throw error;
+		if (options?.excludeIfSpeakCountGTE !== undefined) {
+			params.append(
+				"excludeIfSpeakCountGTE",
+				options.excludeIfSpeakCountGTE.toString(),
+			);
+		}
+		if (options?.excludeTodayPracticed) {
+			params.append("excludeTodayPracticed", "true");
+		}
+
+		const response = await api.get(
+			`/api/phrase/speak/count?${params.toString()}`,
+		);
+		// レスポンスが直接SpeakPhraseCountResponseの形式の場合
+		if (response && typeof response === "object" && "success" in response) {
+			return response as SpeakPhraseCountResponse;
+		}
+		// レスポンスがdata プロパティにラップされている場合
+		if (response && typeof response === "object" && "data" in response) {
+			return (response as { data: SpeakPhraseCountResponse }).data;
+		}
+		// 予期しない形式の場合
+		return { error: "Invalid response format" } as ApiErrorResponse;
+	} catch (error: unknown) {
+		if (
+			error &&
+			typeof error === "object" &&
+			"response" in error &&
+			error.response
+		) {
+			return (error.response as { data: ApiErrorResponse }).data;
+		}
+		return { error: "Network error" } as ApiErrorResponse;
 	}
 }
 
@@ -99,4 +118,22 @@ export async function getLanguages() {
 	} catch (error) {
 		throw error;
 	}
+}
+
+/**
+ * レスポンスがエラーかどうかをチェックする型ガード
+ */
+export function isApiError<T>(
+	response: ApiResult<T>,
+): response is ApiErrorResponse {
+	return (
+		typeof response === "object" && response !== null && "error" in response
+	);
+}
+
+/**
+ * レスポンスが成功かどうかをチェックする型ガード
+ */
+export function isApiSuccess<T>(response: ApiResult<T>): response is T {
+	return !isApiError(response);
 }
