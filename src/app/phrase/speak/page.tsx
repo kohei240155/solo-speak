@@ -60,7 +60,7 @@ function PhraseSpeakPage() {
 	// 現在のフレーズを取得
 	const getCurrentPhrase = () => {
 		if (isSinglePhraseMode) {
-			return singlePhraseSpeak.singlePhrase;
+			return singlePhrase;
 		}
 		return currentPhrase;
 	};
@@ -70,21 +70,36 @@ function PhraseSpeakPage() {
 	const isSinglePhraseMode = !!phraseId;
 
 	// 単一フレーズ練習用のフック
-	const singlePhraseSpeak = useSinglePhraseSpeak({
+	const {
+		singlePhrase,
+		isLoadingSinglePhrase,
+		singlePhraseTodayCount,
+		singlePhraseTotalCount,
+		singlePhrasePendingCount,
+		singlePhraseCountDisabled,
+		isFinishing: isSinglePhraseFinishing,
+		handleCount: handleSinglePhraseCount,
+		handleFinish: handleSinglePhraseFinish,
+	} = useSinglePhraseSpeak({
 		phraseId,
 		learningLanguage,
 		sendPendingCount,
 	});
 
 	// 複数フレーズ練習用のフック
-	const multiPhraseSpeak = useMultiPhraseSpeak({
+	const {
+		isFinishing: isMultiPhraseFinishing,
+		isNextLoading,
+		isAllDone,
+		handleNextWithConfig,
+		handleSpeakFinishComplete,
+		handleCount: handleMultiPhraseCount,
+	} = useMultiPhraseSpeak({
 		speakMode: sessionState,
 		handleCount,
 		handleNext,
 		handleFinish,
 	});
-
-	const isSpeakCompleted = multiPhraseSpeak.isAllDone;
 
 	// モーダル管理
 	const modalManager = useModalManager({
@@ -99,12 +114,12 @@ function PhraseSpeakPage() {
 
 	// ページ離脱警告（カウントボタンが1回以上押された状態の場合のみ）
 	const hasPendingCount = isSinglePhraseMode
-		? singlePhraseSpeak.singlePhrasePendingCount > 0 // 単一フレーズモードでペンディングカウントがある場合
+		? singlePhrasePendingCount > 0 // 単一フレーズモードでペンディングカウントがある場合
 		: pendingCount > 0; // 複数フレーズモードでペンディングカウントがある場合
 
 	// All Done状態では離脱警告を表示しない
 	usePageLeaveWarning({
-		hasPendingChanges: hasPendingCount && !isSpeakCompleted,
+		hasPendingChanges: hasPendingCount && !isAllDone,
 		warningMessage: hasPendingCount ? t("confirm.unsavedCount") : undefined,
 	});
 
@@ -122,15 +137,15 @@ function PhraseSpeakPage() {
 
 	// All Done状態になったときにPhrase Listのキャッシュを無効化
 	useEffect(() => {
-		if (isSpeakCompleted) {
+		if (isAllDone) {
 			refetchPhraseList();
 		}
-	}, [isSpeakCompleted, refetchPhraseList]);
+	}, [isAllDone, refetchPhraseList]);
 
 	// 未保存の変更チェック関数
 	const checkUnsavedChanges = () => {
 		// All Done状態では離脱警告を表示しない
-		if (isSpeakCompleted) {
+		if (isAllDone) {
 			return false;
 		}
 		return hasPendingCount;
@@ -164,7 +179,7 @@ function PhraseSpeakPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					{isSpeakCompleted ? (
+					{isAllDone ? (
 						// All Done画面
 						<AllDoneScreen
 							onFinish={allDoneScreen.handleAllDoneFinish}
@@ -172,19 +187,19 @@ function PhraseSpeakPage() {
 						/>
 					) : isSinglePhraseMode ? (
 						// 単一フレーズ練習モード
-						singlePhraseSpeak.singlePhrase ? (
+						singlePhrase ? (
 							<SpeakPractice
-								phrase={singlePhraseSpeak.singlePhrase}
-								onCount={singlePhraseSpeak.handleCount}
+								phrase={singlePhrase}
+								onCount={handleSinglePhraseCount}
 								onNext={() => {}} // 単一フレーズモードでは何もしない
-								onFinish={singlePhraseSpeak.handleFinish}
-								todayCount={singlePhraseSpeak.singlePhraseTodayCount}
-								totalCount={singlePhraseSpeak.singlePhraseTotalCount}
-								isLoading={singlePhraseSpeak.isLoadingSinglePhrase}
+								onFinish={handleSinglePhraseFinish}
+								todayCount={singlePhraseTodayCount}
+								totalCount={singlePhraseTotalCount}
+								isLoading={isLoadingSinglePhrase}
 								isNextLoading={false}
 								isHideNext={true}
-								isFinishing={singlePhraseSpeak.isFinishing}
-								isCountDisabled={singlePhraseSpeak.singlePhraseCountDisabled}
+								isFinishing={isSinglePhraseFinishing}
+								isCountDisabled={singlePhraseCountDisabled}
 								learningLanguage={learningLanguage}
 								onExplanation={handleExplanation}
 							/>
@@ -202,18 +217,18 @@ function PhraseSpeakPage() {
 						)
 					) : // 通常の複数フレーズ練習モード
 					// Finish処理中またはフレーズがある場合は練習画面を表示
-					currentPhrase || multiPhraseSpeak.isFinishing ? (
+					currentPhrase || isMultiPhraseFinishing ? (
 						<SpeakPractice
 							phrase={currentPhrase}
-							onCount={multiPhraseSpeak.handleCount}
-							onNext={multiPhraseSpeak.handleNextWithConfig}
-							onFinish={multiPhraseSpeak.handleSpeakFinishComplete}
+							onCount={handleMultiPhraseCount}
+							onNext={handleNextWithConfig}
+							onFinish={handleSpeakFinishComplete}
 							todayCount={todayCount}
 							totalCount={totalCount}
 							isLoading={isLoadingPhrase}
-							isNextLoading={multiPhraseSpeak.isNextLoading}
+							isNextLoading={isNextLoading}
 							isHideNext={false}
-							isFinishing={multiPhraseSpeak.isFinishing}
+							isFinishing={isMultiPhraseFinishing}
 							isCountDisabled={isCountDisabled}
 							learningLanguage={learningLanguage}
 							onExplanation={handleExplanation}
