@@ -43,7 +43,6 @@ function PhraseSpeakPage() {
 		resetSession,
 		sendPendingCount,
 		refetchPhraseList,
-		// fetchSpeakPhrase // 他のフックで使用される場合があるのでコメントアウト
 	} = useSpeakSession(learningLanguage);
 
 	const [showExplanation, setShowExplanation] = useState(false);

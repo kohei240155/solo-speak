@@ -336,8 +336,5 @@ export const useSpeakSession = (learningLanguage: string) => {
 		resetSession,
 		sendPendingCount,
 		refetchPhraseList,
-
-		// 内部関数（後方互換性のため）
-		fetchSpeakPhrase,
 	};
 };
