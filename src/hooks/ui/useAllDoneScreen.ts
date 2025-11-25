@@ -3,11 +3,13 @@ import { useRouter } from "next/navigation";
 interface UseAllDoneScreenProps {
 	openSpeakModal: () => void;
 	resetSavedConfig: () => void;
+	resetAllDone: () => void;
 }
 
 export function useAllDoneScreen({
 	openSpeakModal,
 	resetSavedConfig,
+	resetAllDone,
 }: UseAllDoneScreenProps) {
 	const router = useRouter();
 
@@ -20,6 +22,8 @@ export function useAllDoneScreen({
 	const handleAllDoneRetry = () => {
 		// 保存された設定をリセットして、新しい設定を選択できるようにする
 		resetSavedConfig();
+		// All Done状態をリセット
+		resetAllDone();
 		// All Done画面はそのままにして、モーダルだけ開く
 		openSpeakModal();
 	};

@@ -70,6 +70,11 @@ export function useMultiPhraseSpeak({
 		}
 	}, [handleFinish, router, t]);
 
+	// All Done状態をリセット
+	const resetAllDone = useCallback(() => {
+		setIsAllDone(false);
+	}, []);
+
 	return {
 		isFinishing,
 		isNextLoading,
@@ -77,5 +82,6 @@ export function useMultiPhraseSpeak({
 		handleNextWithConfig,
 		handleSpeakFinishComplete,
 		handleCount,
+		resetAllDone,
 	};
 }

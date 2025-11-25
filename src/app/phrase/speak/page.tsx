@@ -94,6 +94,7 @@ function PhraseSpeakPage() {
 	const allDoneScreen = useAllDoneScreen({
 		openSpeakModal: modalManager.openSpeakModal,
 		resetSavedConfig: resetSession,
+		resetAllDone: multiPhraseSpeak.resetAllDone,
 	});
 
 	// ページ離脱警告（カウントボタンが1回以上押された状態の場合のみ）
@@ -118,13 +119,6 @@ function PhraseSpeakPage() {
 			}
 		}
 	}, [learningLanguage, router]);
-
-	// All Done状態になったときにPhrase Listのキャッシュを無効化
-	useEffect(() => {
-		if (isSpeakCompleted) {
-			refetchPhraseList();
-		}
-	}, [isSpeakCompleted, refetchPhraseList]);
 
 	// 未保存の変更チェック関数
 	const checkUnsavedChanges = () => {

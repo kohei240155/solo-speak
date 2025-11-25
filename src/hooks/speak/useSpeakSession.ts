@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "@/utils/api";
 import toast from "react-hot-toast";
 import { SpeakPhrase, SpeakConfig } from "@/types/speak";
@@ -30,6 +30,9 @@ export const useSpeakSession = (learningLanguage: string) => {
 	// Phrase Listのキャッシュを取得（キャッシュ無効化用）
 	const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage);
 
+	// 初回レンダリングフラグ
+	const hasInitialized = useRef(false);
+
 	// URL管理: URLパラメータから設定を読み取る
 	const readConfigFromURL = useCallback((): SpeakConfig | null => {
 		const params = new URLSearchParams(window.location.search);
@@ -42,10 +45,9 @@ export const useSpeakSession = (learningLanguage: string) => {
 
 		return {
 			language: urlLanguage,
-			excludeIfSpeakCountGTE:
-				excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== ""
-					? parseInt(excludeIfSpeakCountGTE, 10)
-					: undefined,
+			excludeIfSpeakCountGTE: excludeIfSpeakCountGTE
+				? parseInt(excludeIfSpeakCountGTE, 10)
+				: undefined,
 			excludeTodayPracticed: excludeTodayPracticed === "true",
 		};
 	}, []);
@@ -150,6 +152,7 @@ export const useSpeakSession = (learningLanguage: string) => {
 
 	// ページ読み込み時にURLパラメータから設定を復元
 	useEffect(() => {
+		if (hasInitialized.current) return;
 		if (!learningLanguage) return;
 
 		const config = readConfigFromURL();
@@ -157,6 +160,8 @@ export const useSpeakSession = (learningLanguage: string) => {
 			setSessionState({ active: true, config });
 			fetchSpeakPhrase(config);
 		}
+
+		hasInitialized.current = true;
 	}, [learningLanguage, readConfigFromURL, fetchSpeakPhrase]);
 
 	// ページ離脱時に保留中のカウントを送信
@@ -314,6 +319,8 @@ export const useSpeakSession = (learningLanguage: string) => {
 	const resetSession = useCallback(() => {
 		setSessionState({ active: false, config: null });
 		clearURL();
+		// 初回レンダリングフラグもリセットして、次回のモーダル開始時に設定を復元できるようにする
+		hasInitialized.current = false;
 	}, [clearURL]);
 
 	return {
