@@ -13,7 +13,7 @@ import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { useLanguages } from "@/hooks/api/useSWRApi";
+import { useLanguages } from "@/hooks/api";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface SpeakPhrase {

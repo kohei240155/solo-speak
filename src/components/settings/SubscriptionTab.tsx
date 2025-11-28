@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
-import { mutate } from "swr";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/hooks/api";
+import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import BaseModal from "@/components/common/BaseModal";
@@ -24,6 +26,8 @@ interface SubscriptionStatus {
 
 export default function SubscriptionTab() {
 	const { t } = useTranslation("common");
+	const { user } = useAuth();
+	const queryClient = useQueryClient();
 	const [subscriptionStatus, setSubscriptionStatus] =
 		useState<SubscriptionStatus | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -53,9 +57,12 @@ export default function SubscriptionTab() {
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.get("success") === "true") {
-			// SWRキャッシュをクリアして最新データを取得
-			mutate("/api/user/phrase-generations");
-			mutate("/api/stripe/subscription");
+			// React Queryキャッシュを無効化して最新データを取得
+			if (user?.id) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.remainingGenerations(user.id),
+				});
+			}
 
 			// URLパラメータをクリア
 			const newUrl =
@@ -63,7 +70,7 @@ export default function SubscriptionTab() {
 				window.location.search.replace(/[?&]success=true/, "");
 			window.history.replaceState({}, "", newUrl);
 		}
-	}, []);
+	}, [user?.id, queryClient]);
 
 	// サブスクリプション開始
 	const handleSubscribe = async () => {
@@ -109,8 +116,12 @@ export default function SubscriptionTab() {
 				);
 				setSubscriptionStatus(statusResponse);
 
-				// SWRキャッシュをクリアして生成回数データを更新
-				await mutate("/api/user/phrase-generations");
+				// React Queryキャッシュを無効化して生成回数データを更新
+				if (user?.id) {
+					await queryClient.invalidateQueries({
+						queryKey: queryKeys.remainingGenerations(user.id),
+					});
+				}
 
 				// カスタムイベントを発火してページ全体に通知
 				window.dispatchEvent(new CustomEvent("subscriptionCanceled"));

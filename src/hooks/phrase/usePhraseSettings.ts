@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguages } from "@/hooks/api/useSWRApi";
+import { useLanguages } from "@/hooks/api";
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from "@/constants/languages";
 
 export const usePhraseSettings = () => {

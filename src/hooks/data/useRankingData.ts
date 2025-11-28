@@ -6,7 +6,7 @@ import {
 	usePhraseStreakRanking,
 	useSpeakStreakRanking,
 	useQuizStreakRanking,
-} from "@/hooks/api/useSWRApi";
+} from "@/hooks/api";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
 export const useRankingData = () => {

@@ -13,7 +13,7 @@ import {
 	useInfinitePhrases,
 	useRemainingGenerations,
 	useSituations,
-} from "@/hooks/api/useSWRApi";
+} from "@/hooks/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";

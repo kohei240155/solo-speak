@@ -3,7 +3,7 @@
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDashboardData, useLanguages } from "@/hooks/api/useSWRApi";
+import { useDashboardData, useLanguages } from "@/hooks/api";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
@@ -73,11 +73,15 @@ export default function DashboardPage() {
 							/>
 						)}
 					</div>
-
 					{/* ダッシュボードエラー */}
 					{dashboardError && (
 						<div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-							<p className="text-red-800">Error: {dashboardError}</p>
+							<p className="text-red-800">
+								Error:{" "}
+								{dashboardError instanceof Error
+									? dashboardError.message
+									: String(dashboardError)}
+							</p>
 						</div>
 					)}
 

@@ -4,17 +4,20 @@ interface UseAllDoneScreenProps {
 	openSpeakModal: () => void;
 	resetSavedConfig: () => void;
 	resetAllDone: () => void;
+	refetchPhraseList: () => void;
 }
 
 export function useAllDoneScreen({
 	openSpeakModal,
 	resetSavedConfig,
 	resetAllDone,
+	refetchPhraseList,
 }: UseAllDoneScreenProps) {
 	const router = useRouter();
 
 	// All Done完了処理
 	const handleAllDoneFinish = () => {
+		refetchPhraseList();
 		router.push("/phrase/list");
 	};
 

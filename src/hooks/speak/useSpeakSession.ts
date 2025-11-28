@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { api } from "@/utils/api";
 import toast from "react-hot-toast";
 import { SpeakPhrase, SpeakConfig } from "@/types/speak";
-import { useInfinitePhrases } from "@/hooks/api/useSWRApi";
+import { useInfinitePhrases } from "@/hooks/api";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface SpeakSessionState {

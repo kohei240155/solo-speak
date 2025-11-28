@@ -13,7 +13,7 @@ import {
 import { isUILanguage } from "@/constants/languages";
 import LoginModal from "@/components/auth/LoginModal";
 import { userSetupCache } from "@/utils/userSetupCache";
-import { useUserSettingsData, useLanguages } from "@/hooks/api/useSWRApi";
+import { useUserSettingsData, useLanguages } from "@/hooks/api";
 
 type AuthContextType = {
 	user: User | null;
