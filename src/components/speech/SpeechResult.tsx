@@ -13,10 +13,10 @@ interface SpeechResultProps {
 	sentences: SentenceData[];
 	feedback: FeedbackData[];
 	audioBlob?: Blob | null;
-	onSave?: () => void;
-	isSaving?: boolean;
 	note?: string;
 	onNoteChange?: (note: string) => void;
+	onSave?: () => void | Promise<void>;
+	isSaving?: boolean;
 }
 
 export default function SpeechResult({
@@ -103,6 +103,13 @@ export default function SpeechResult({
 	useEffect(() => {
 		setEditableSentences(sentences);
 	}, [sentences]);
+
+	// 保存ボタンのハンドラー
+	const handleSaveClick = async () => {
+		if (onSave) {
+			await onSave();
+		}
+	};
 
 	return (
 		<div className="max-w-4xl mx-auto">
@@ -290,7 +297,7 @@ export default function SpeechResult({
 
 			{/* Save Button */}
 			<AnimatedButton
-				onClick={onSave || (() => {})}
+				onClick={handleSaveClick}
 				variant="primary"
 				disabled={isSaving}
 			>

@@ -4,12 +4,14 @@ import { LuSendHorizontal } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { BsPauseFill } from "react-icons/bs";
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/utils/spabase";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import SpeechResult from "./SpeechResult";
+import PracticeConfirmModal from "../modals/PracticeConfirmModal";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
 import { SentenceData, FeedbackData } from "@/types/speech";
@@ -39,6 +41,7 @@ export default function SpeechAdd({
 	nativeLanguage,
 	onHasUnsavedChanges,
 }: SpeechAddProps) {
+	const router = useRouter();
 	const { userSettings } = useAuth();
 	const {
 		remainingSpeechCount,
@@ -57,6 +60,7 @@ export default function SpeechAdd({
 	const [showResult, setShowResult] = useState(false);
 	const [useMockData, setUseMockData] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
 	const {
@@ -495,12 +499,8 @@ export default function SpeechAdd({
 			toast.success("Speech saved successfully!");
 			console.log("Saved speech:", result);
 
-			// 保存成功後、フォームをリセット
-			setShowResult(false);
-			setTranscribedText("");
-			setSentences([]);
-			setFeedback([]);
-			setAudioBlob(null);
+			// 保存成功後、モーダルを表示
+			setShowPracticeModal(true);
 		} catch (error) {
 			console.error("Failed to save speech:", error);
 			// エラーはapi.tsで自動的にトースト表示される
@@ -521,6 +521,30 @@ export default function SpeechAdd({
 		if (fields.length > 1) {
 			remove(index);
 		}
+	};
+
+	// 練習するを選択
+	const handlePracticeConfirm = () => {
+		setShowPracticeModal(false);
+		// フォームをリセット
+		setShowResult(false);
+		setTranscribedText("");
+		setSentences([]);
+		setFeedback([]);
+		setAudioBlob(null);
+		router.push("/speech/review");
+	};
+
+	// 練習しないを選択
+	const handlePracticeCancel = () => {
+		setShowPracticeModal(false);
+		// フォームをリセット
+		setShowResult(false);
+		setTranscribedText("");
+		setSentences([]);
+		setFeedback([]);
+		setAudioBlob(null);
+		router.push("/speech/list");
 	};
 
 	return (
@@ -787,6 +811,13 @@ export default function SpeechAdd({
 					</div>
 				</>
 			)}
+
+			{/* Practice Confirm Modal */}
+			<PracticeConfirmModal
+				isOpen={showPracticeModal}
+				onConfirm={handlePracticeConfirm}
+				onCancel={handlePracticeCancel}
+			/>
 		</>
 	);
 }
