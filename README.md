@@ -223,8 +223,37 @@ npm run setup:phrase-levels:local
 # フレーズレベル更新
 npm run update:phrase-levels:local
 
+# スピーチステータス設定
+npm run seed:speech-statuses:local      # ローカル環境
+npm run seed:speech-statuses:production # 本番環境
+
 # データベース診断
 npm run diagnose:db
+```
+
+### スピーチステータスのシード値について
+
+このプロジェクトでは、スピーチの習熟度を表すSpeechStatusが定義されています：
+
+| ステータス | 説明                                         |
+| ---------- | -------------------------------------------- |
+| A          | スクリプトを見なくても流暢に話すことができる |
+| B          | スクリプトの一部を見なくても話すことができる |
+| C          | スクリプトを見ないと話すことができない       |
+| D          | スピーチをしただけで練習していない           |
+
+これらのステータスは以下のコマンドで投入できます：
+
+```bash
+# 開発環境
+npm run seed:speech-statuses:local
+
+# 本番環境
+npm run seed:speech-statuses:production
+
+# 全シードデータ（言語、フレーズレベル、スピーチステータス含む）
+npm run db:seed:local          # ローカル環境
+npm run db:seed:production     # 本番環境
 ```
 
 ## 📱 MacでNext.jsローカル環境をスマホで確認する手順

@@ -39,13 +39,32 @@ const languages = [
 ];
 
 const phraseLevels = [
-	{ id: "cm2d9i0000001abc123def000", name: "Lv1", score: 0, color: "#D9D9D9" },
-	{ id: "cm2d9i0000002abc123def000", name: "Lv2", score: 1, color: "#BFBFBF" },
-	{ id: "cm2d9i0000003abc123def000", name: "Lv3", score: 3, color: "#A6A6A6" },
-	{ id: "cm2d9i0000004abc123def000", name: "Lv4", score: 6, color: "#8C8C8C" },
-	{ id: "cm2d9i0000005abc123def000", name: "Lv5", score: 10, color: "#737373" },
-	{ id: "cm2d9i0000006abc123def000", name: "Lv6", score: 15, color: "#595959" },
-	{ id: "cm2d9i0000007abc123def000", name: "Lv7", score: 21, color: "#404040" },
+	{ name: "Lv1", score: 0, color: "#D9D9D9" },
+	{ name: "Lv2", score: 1, color: "#BFBFBF" },
+	{ name: "Lv3", score: 3, color: "#A6A6A6" },
+	{ name: "Lv4", score: 6, color: "#8C8C8C" },
+	{ name: "Lv5", score: 10, color: "#737373" },
+	{ name: "Lv6", score: 15, color: "#595959" },
+	{ name: "Lv7", score: 21, color: "#404040" },
+];
+
+const speechStatuses = [
+	{
+		name: "A",
+		description: "スクリプトを見なくても流暢に話すことができる",
+	},
+	{
+		name: "B",
+		description: "スクリプトの一部を見なくても話すことができる",
+	},
+	{
+		name: "C",
+		description: "スクリプトを見ないと話すことができない",
+	},
+	{
+		name: "D",
+		description: "スピーチをしただけで練習していない",
+	},
 ];
 
 async function main() {
@@ -66,13 +85,42 @@ async function main() {
 		// フレーズレベルデータの投入
 		console.log("📝 Seeding phrase levels...");
 		for (const level of phraseLevels) {
-			await prisma.phraseLevel.upsert({
-				where: { id: level.id },
-				update: {},
-				create: level,
+			const existing = await prisma.phraseLevel.findFirst({
+				where: { name: level.name },
 			});
+
+			if (existing) {
+				await prisma.phraseLevel.update({
+					where: { id: existing.id },
+					data: { score: level.score, color: level.color },
+				});
+			} else {
+				await prisma.phraseLevel.create({
+					data: level,
+				});
+			}
 		}
 		console.log(`✅ ${phraseLevels.length} phrase levels seeded`);
+
+		// スピーチステータスデータの投入
+		console.log("📝 Seeding speech statuses...");
+		for (const status of speechStatuses) {
+			const existing = await prisma.speechStatus.findFirst({
+				where: { name: status.name },
+			});
+
+			if (existing) {
+				await prisma.speechStatus.update({
+					where: { id: existing.id },
+					data: { description: status.description },
+				});
+			} else {
+				await prisma.speechStatus.create({
+					data: status,
+				});
+			}
+		}
+		console.log(`✅ ${speechStatuses.length} speech statuses seeded`);
 
 		console.log("🎉 Database seeding completed successfully!");
 	} catch (error) {
