@@ -78,6 +78,12 @@ export default function SpeechResult({
 		setEditableSentences(sentences);
 	};
 
+	// テキストエリアの高さを自動調整
+	const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
+		element.style.height = "auto";
+		element.style.height = `${element.scrollHeight}px`;
+	};
+
 	// クリーンアップ
 	useEffect(() => {
 		return () => {
@@ -189,29 +195,33 @@ export default function SpeechResult({
 								{/* Learning Language */}
 								<textarea
 									value={sentence.learningLanguage}
-									onChange={(e) =>
+									onChange={(e) => {
 										handleSentenceChange(
 											index,
 											"learningLanguage",
 											e.target.value,
-										)
-									}
-									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 mb-2"
-									rows={3}
+										);
+										adjustTextareaHeight(e.target);
+									}}
+									onInput={(e) => adjustTextareaHeight(e.currentTarget)}
+									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 mb-2 overflow-hidden"
+									rows={1}
 								/>
 
 								{/* Native Language */}
 								<textarea
 									value={sentence.nativeLanguage}
-									onChange={(e) =>
+									onChange={(e) => {
 										handleSentenceChange(
 											index,
 											"nativeLanguage",
 											e.target.value,
-										)
-									}
-									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-50"
-									rows={2}
+										);
+										adjustTextareaHeight(e.target);
+									}}
+									onInput={(e) => adjustTextareaHeight(e.currentTarget)}
+									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-50 overflow-hidden"
+									rows={1}
 								/>
 							</div>
 						))}
