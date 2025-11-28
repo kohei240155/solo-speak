@@ -4,10 +4,12 @@ type SpeechTabType = "List" | "Add" | "Review";
 
 interface SpeechTabNavigationProps {
 	activeTab: SpeechTabType;
+	checkUnsavedChanges?: () => boolean;
 }
 
 export default function SpeechTabNavigation({
 	activeTab,
+	checkUnsavedChanges,
 }: SpeechTabNavigationProps) {
 	const router = useRouter();
 
@@ -25,6 +27,18 @@ export default function SpeechTabNavigation({
 		// アクティブなタブがクリックされた場合は何もしない
 		if (activeTab === tab.key) {
 			return;
+		}
+
+		// 未保存の変更チェック（Addタブから離脱する場合）
+		if (activeTab === "Add" && tab.key !== activeTab && checkUnsavedChanges) {
+			if (checkUnsavedChanges()) {
+				const confirmLeave = window.confirm(
+					"入力した内容が削除されます。このまま移動しますか？",
+				);
+				if (!confirmLeave) {
+					return;
+				}
+			}
 		}
 
 		// ページ遷移

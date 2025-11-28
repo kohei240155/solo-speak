@@ -136,7 +136,7 @@ export default function SpeechResult({
 
 			{/* Speech Result Section */}
 			<div className="mb-6">
-				<h2 className="text-xl font-semibold text-gray-900 mb-4">
+				<h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
 					Speech Result
 				</h2>
 
@@ -240,7 +240,9 @@ export default function SpeechResult({
 
 				{/* Feedback */}
 				<div className="mb-6">
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">Feedback</h3>
+					<h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">
+						Feedback
+					</h3>
 					<div className="space-y-6">
 						{feedback.map((item, index) => (
 							<div key={index}>

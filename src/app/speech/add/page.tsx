@@ -21,6 +21,14 @@ export default function SpeechAddPage() {
 		userSettings?.defaultLearningLanguage?.code || "",
 	);
 
+	// 未保存の変更を追跡
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+	// 未保存の変更をチェックする関数
+	const checkUnsavedChanges = () => {
+		return hasUnsavedChanges;
+	};
+
 	// userSettingsが更新されたら学習言語を同期
 	useEffect(() => {
 		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
@@ -59,13 +67,17 @@ export default function SpeechAddPage() {
 				</div>
 
 				{/* タブメニュー */}
-				<SpeechTabNavigation activeTab="Add" />
+				<SpeechTabNavigation
+					activeTab="Add"
+					checkUnsavedChanges={checkUnsavedChanges}
+				/>
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					<SpeechAdd
 						learningLanguage={learningLanguage}
 						nativeLanguage={nativeLanguage}
+						onHasUnsavedChanges={setHasUnsavedChanges}
 					/>
 				</div>
 			</div>

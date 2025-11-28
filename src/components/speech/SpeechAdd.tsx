@@ -19,6 +19,7 @@ import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
 interface SpeechAddProps {
 	learningLanguage?: string;
 	nativeLanguage?: string;
+	onHasUnsavedChanges?: (hasChanges: boolean) => void;
 }
 
 const speechFormSchema = z.object({
@@ -35,6 +36,7 @@ type SpeechFormData = z.infer<typeof speechFormSchema>;
 export default function SpeechAdd({
 	learningLanguage,
 	nativeLanguage,
+	onHasUnsavedChanges,
 }: SpeechAddProps) {
 	const { userSettings } = useAuth();
 	const {
@@ -271,6 +273,26 @@ export default function SpeechAdd({
 			}
 		};
 	}, []);
+
+	// 未保存の変更を親コンポーネントに通知
+	useEffect(() => {
+		if (onHasUnsavedChanges) {
+			const hasChanges =
+				!showResult &&
+				(titleValue?.trim().length > 0 ||
+					speechPlanItemsValue?.some((item) => item.value?.trim().length > 0) ||
+					audioBlob !== null ||
+					transcribedText.length > 0);
+			onHasUnsavedChanges(hasChanges);
+		}
+	}, [
+		titleValue,
+		speechPlanItemsValue,
+		audioBlob,
+		transcribedText,
+		showResult,
+		onHasUnsavedChanges,
+	]);
 
 	// 録音/停止/再生ボタンのハンドラー
 	const handleRecordButtonClick = () => {
