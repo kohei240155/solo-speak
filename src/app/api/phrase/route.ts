@@ -190,9 +190,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			userId: string;
 			languageId?: string;
 			deletedAt?: null;
+			speechId?: null;
 		} = {
 			userId, // 認証されたユーザーのフレーズのみを取得
 			deletedAt: null, // 削除されていないフレーズのみを取得
+			speechId: null, // SpeechIDがNULLのフレーズのみを取得
 		};
 
 		if (languageId) {
