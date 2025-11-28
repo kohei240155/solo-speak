@@ -571,11 +571,11 @@ export default function SpeechAdd({
 				<div className="space-y-2">
 					{fields.map((field, index) => (
 						<div key={field.id}>
-							<div className="flex items-start gap-2 border border-gray-300 rounded-md px-3 py-3">
+							<div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-3">
 								<textarea
 									{...register(`speechPlanItems.${index}.value`)}
 									placeholder={placeholders[index]}
-									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 [&]:h-[2.5rem] md:[&]:h-auto"
 									rows={1}
 									onChange={(e) => {
 										register(`speechPlanItems.${index}.value`).onChange(e);
@@ -587,7 +587,7 @@ export default function SpeechAdd({
 								/>
 								<button
 									type="button"
-									className={`flex-shrink-0 mt-1 ${fields.length === 1 || isTranscribing || isCorrecting || remainingSpeechCount === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800"}`}
+									className={`flex-shrink-0 ${fields.length === 1 || isTranscribing || isCorrecting || remainingSpeechCount === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800"}`}
 									onClick={() => handleDeleteItem(index)}
 									disabled={
 										fields.length === 1 ||
