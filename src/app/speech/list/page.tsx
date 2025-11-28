@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
+import SpeechList from "@/components/speech/SpeechList";
 
 export default function SpeechListPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -54,13 +55,12 @@ export default function SpeechListPage() {
 				<SpeechTabNavigation activeTab="List" />
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					<div className="text-center py-8">
-						<p className="text-gray-600 text-lg">
-							Speech List content will be implemented here.
-						</p>
-					</div>
-				</div>
+				<SpeechList
+					speeches={[]}
+					isLoadingSpeeches={false}
+					isLoadingMore={false}
+					learningLanguage={learningLanguage}
+				/>
 			</div>
 		</div>
 	);

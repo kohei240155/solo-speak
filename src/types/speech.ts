@@ -71,3 +71,18 @@ export interface SaveSpeechResponseData {
 export interface RemainingSpeechCountResponse {
 	remainingSpeechCount: number;
 }
+
+// Speech List Types
+export interface SpeechStatus {
+	id: string;
+	name: string;
+	description?: string;
+}
+
+export interface SpeechListItem {
+	id: string;
+	title: string;
+	practiceCount: number;
+	status: SpeechStatus;
+	createdAt: string;
+}
