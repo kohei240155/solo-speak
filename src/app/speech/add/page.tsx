@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,12 +14,19 @@ export default function SpeechAddPage() {
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
 
+	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
+
 	// 言語選択の状態管理
 	const [learningLanguage, setLearningLanguage] = useState<string>(
 		userSettings?.defaultLearningLanguage?.code || "",
 	);
 
-	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
+	// userSettingsが更新されたら学習言語を同期
+	useEffect(() => {
+		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
+			setLearningLanguage(userSettings.defaultLearningLanguage.code);
+		}
+	}, [userSettings, learningLanguage]);
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
