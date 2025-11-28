@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill } from "react-icons/bs";
+import { GrPowerReset } from "react-icons/gr";
 
 interface Sentence {
 	learningLanguage: string;
@@ -70,6 +71,11 @@ export default function SpeechResult({
 			[field]: value,
 		};
 		setEditableSentences(newSentences);
+	};
+
+	// センテンスをリセット
+	const handleResetSentences = () => {
+		setEditableSentences(sentences);
 	};
 
 	// クリーンアップ
@@ -153,9 +159,19 @@ export default function SpeechResult({
 
 				{/* AI Suggested Sentences */}
 				<div className="mb-4">
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
-						AI Suggested Sentences
-					</h3>
+					<div className="flex justify-between items-center mb-2">
+						<h3 className="text-lg font-semibold text-gray-900">
+							AI Suggested Sentences
+						</h3>
+						<button
+							type="button"
+							onClick={handleResetSentences}
+							className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+							title="Reset to original sentences"
+						>
+							<GrPowerReset size={20} className="text-gray-600" />
+						</button>
+					</div>
 					<div className="space-y-6">
 						{editableSentences.map((sentence, index) => (
 							<div key={index}>
