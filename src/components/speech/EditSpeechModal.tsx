@@ -167,7 +167,11 @@ export default function EditSpeechModal({
 			width="600px"
 		>
 			{isLoading ? (
-				<LoadingSpinner size="md" className="py-8" />
+				<LoadingSpinner
+					size="md"
+					message="Loading speech..."
+					className="py-8"
+				/>
 			) : (
 				<>
 					{/* Title */}
