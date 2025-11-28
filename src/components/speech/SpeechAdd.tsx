@@ -37,8 +37,11 @@ export default function SpeechAdd({
 	nativeLanguage,
 }: SpeechAddProps) {
 	const { userSettings } = useAuth();
-	const { remainingSpeechCount, isLoading: isLoadingRemaining } =
-		useRemainingSpeechCount();
+	const {
+		remainingSpeechCount,
+		isLoading: isLoadingRemaining,
+		refetch: refetchRemainingSpeechCount,
+	} = useRemainingSpeechCount();
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -419,6 +422,9 @@ export default function SpeechAdd({
 			setSentences(data.sentences);
 			setFeedback(data.feedback);
 			setShowResult(true);
+
+			// 添削成功後、残回数を再取得
+			await refetchRemainingSpeechCount();
 		} catch (error) {
 			console.error("添削エラー:", error);
 			alert(error instanceof Error ? error.message : "添削に失敗しました");
@@ -512,11 +518,21 @@ export default function SpeechAdd({
 						<h2 className="text-xl md:text-2xl font-bold text-gray-900">
 							Add Speech
 						</h2>
-						<div className="text-sm text-gray-600">
+						<div>
 							{isLoadingRemaining ? (
-								"Loading..."
+								<span className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-200 rounded-full">
+									Loading...
+								</span>
 							) : (
-								<>Left: {remainingSpeechCount} / 1</>
+								<span
+									className={`px-3 py-1 text-sm font-medium rounded-full ${
+										remainingSpeechCount === 0
+											? "bg-red-100 text-red-700"
+											: "bg-green-100 text-green-700"
+									}`}
+								>
+									{remainingSpeechCount === 0 ? "Unavailable" : "Available"}
+								</span>
 							)}
 						</div>
 					</div>

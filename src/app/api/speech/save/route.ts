@@ -73,12 +73,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json(errorResponse, { status: 400 });
 		}
 
-		// ユーザーの存在確認とスピーチ回数チェック
+		// ユーザーの存在確認
 		const user = await prisma.user.findUnique({
 			where: { id: userId },
 			select: {
 				id: true,
-				remainingSpeechCount: true,
 			},
 		});
 
@@ -87,13 +86,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				error: "User not found",
 			};
 			return NextResponse.json(errorResponse, { status: 404 });
-		}
-
-		if (user.remainingSpeechCount <= 0) {
-			const errorResponse: ApiErrorResponse = {
-				error: "No remaining speech count",
-			};
-			return NextResponse.json(errorResponse, { status: 400 });
 		}
 
 		// 言語の存在確認
@@ -233,19 +225,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				),
 			);
 
-			// 6. ユーザーの残りスピーチ回数を減算
-			const updatedUser = await tx.user.update({
-				where: { id: userId },
-				data: {
-					remainingSpeechCount: {
-						decrement: 1,
-					},
-				},
-				select: {
-					remainingSpeechCount: true,
-				},
-			});
-
 			return {
 				speech: {
 					...speech,
@@ -254,7 +233,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				speechPlans,
 				phrases,
 				feedbacks,
-				remainingSpeechCount: updatedUser.remainingSpeechCount,
 			};
 		});
 
@@ -304,7 +282,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				content: feedback.content,
 				createdAt: feedback.createdAt.toISOString(),
 			})),
-			remainingSpeechCount: result.remainingSpeechCount,
 		};
 
 		return NextResponse.json(response, { status: 201 });

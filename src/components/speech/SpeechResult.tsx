@@ -103,11 +103,10 @@ export default function SpeechResult({
 	return (
 		<div className="max-w-4xl mx-auto">
 			{/* Header */}
-			<div className="flex justify-between items-center mb-6">
+			<div className="mb-6">
 				<h2 className="text-xl md:text-2xl font-bold text-gray-900">
 					Add Speech
 				</h2>
-				<div className="text-sm text-gray-600">Left: 1 / 1</div>
 			</div>
 
 			{/* Title */}

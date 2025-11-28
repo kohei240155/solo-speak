@@ -66,7 +66,6 @@ export interface SaveSpeechResponseData {
 		content: string;
 		createdAt: string;
 	}>;
-	remainingSpeechCount: number;
 }
 
 export interface RemainingSpeechCountResponse {

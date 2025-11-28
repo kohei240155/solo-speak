@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { getSpeechCorrectionPrompt } from "@/prompts/speechCorrection";
 import { zodResponseFormat } from "openai/helpers/zod";
+import { prisma } from "@/utils/prisma";
 
 const correctSpeechSchema = z.object({
 	title: z.string().min(1).max(50),
@@ -50,6 +51,28 @@ export async function POST(request: NextRequest) {
 		const authResult = await authenticateRequest(request);
 		if ("error" in authResult) {
 			return authResult.error;
+		}
+
+		const userId = authResult.user.id;
+
+		// ユーザー情報を取得して残回数を確認
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+			select: {
+				remainingSpeechCount: true,
+			},
+		});
+
+		if (!user) {
+			return NextResponse.json({ error: "User not found" }, { status: 404 });
+		}
+
+		// 残回数チェック
+		if (user.remainingSpeechCount <= 0) {
+			return NextResponse.json(
+				{ error: "No remaining speech count available" },
+				{ status: 403 },
+			);
 		}
 
 		// リクエストボディのバリデーション
@@ -127,6 +150,16 @@ export async function POST(request: NextRequest) {
 		const result = speechCorrectionResponseSchema.parse(
 			JSON.parse(generatedContent),
 		);
+
+		// 添削成功時に残回数を減らす
+		await prisma.user.update({
+			where: { id: userId },
+			data: {
+				remainingSpeechCount: {
+					decrement: 1,
+				},
+			},
+		});
 
 		return NextResponse.json(result);
 	} catch (error) {
