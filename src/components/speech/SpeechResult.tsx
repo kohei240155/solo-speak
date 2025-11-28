@@ -15,8 +15,8 @@ interface SpeechResultProps {
 	audioBlob?: Blob | null;
 	onSave?: () => void;
 	isSaving?: boolean;
-	memo?: string;
-	onMemoChange?: (memo: string) => void;
+	note?: string;
+	onNoteChange?: (note: string) => void;
 }
 
 export default function SpeechResult({
@@ -28,8 +28,8 @@ export default function SpeechResult({
 	audioBlob,
 	onSave,
 	isSaving = false,
-	memo = "",
-	onMemoChange,
+	note = "",
+	onNoteChange,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
@@ -199,7 +199,8 @@ export default function SpeechResult({
 									<button
 										type="button"
 										onClick={() => handleDeleteSentence(index)}
-										className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+										disabled={editableSentences.length === 1}
+										className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
 										title="Delete this sentence"
 									>
 										<RiDeleteBin6Line size={20} className="text-gray-600" />
@@ -273,14 +274,14 @@ export default function SpeechResult({
 				</div>
 			</div>
 
-			{/* Memo */}
+			{/* Note */}
 			<div className="mb-6">
 				<h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">
-					Memo
+					Note
 				</h3>
 				<textarea
-					value={memo}
-					onChange={(e) => onMemoChange?.(e.target.value)}
+					value={note}
+					onChange={(e) => onNoteChange?.(e.target.value)}
 					placeholder="気づいたことを自由にメモしましょう。"
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
 					rows={4}

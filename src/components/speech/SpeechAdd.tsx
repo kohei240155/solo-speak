@@ -29,7 +29,7 @@ const speechFormSchema = z.object({
 			value: z.string().max(100),
 		}),
 	),
-	memo: z.string().max(500).optional(),
+	note: z.string().max(500).optional(),
 });
 
 type SpeechFormData = z.infer<typeof speechFormSchema>;
@@ -75,7 +75,7 @@ export default function SpeechAdd({
 				{ value: "既に完成しているけど新しい機能を追加したいと思っている" },
 				{ value: "英語を話して文字起こしされた文章をAIが添削してくれる" },
 			],
-			memo: "",
+			note: "",
 		},
 	});
 
@@ -86,7 +86,7 @@ export default function SpeechAdd({
 
 	const titleValue = watch("title");
 	const speechPlanItemsValue = watch("speechPlanItems");
-	const memoValue = watch("memo");
+	const noteValue = watch("note");
 
 	// バリデーションエラーがあるかチェック
 	const hasValidationErrors =
@@ -482,7 +482,7 @@ export default function SpeechAdd({
 					learningLanguageId: userSettings.defaultLearningLanguageId,
 					nativeLanguageId: userSettings.nativeLanguageId,
 					firstSpeechText: transcribedText,
-					notes: memoValue,
+					notes: noteValue,
 					speechPlans: speechPlanItemsValue
 						.map((item) => item.value)
 						.filter((item) => item.trim().length > 0),
@@ -537,8 +537,8 @@ export default function SpeechAdd({
 					audioBlob={audioBlob}
 					onSave={handleSave}
 					isSaving={isSaving}
-					memo={memoValue}
-					onMemoChange={(memo) => setValue("memo", memo)}
+					note={noteValue}
+					onNoteChange={(note) => setValue("note", note)}
 				/>
 			) : (
 				<>
