@@ -6,7 +6,8 @@ import toast from "react-hot-toast";
 import { UserSetupFormData } from "@/types/userSettings";
 import { LanguageInfo } from "@/types/common";
 import { useRouter } from "next/navigation";
-import { mutate } from "swr";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/hooks/api";
 
 export function useUserSettingsSubmit(
 	setError: (error: string) => void,
@@ -16,6 +17,7 @@ export function useUserSettingsSubmit(
 	const [submitting, setSubmitting] = useState(false);
 	const imageUploadRef = useRef<ImageUploadRef>(null);
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const onSubmit = async (data: UserSetupFormData) => {
 		setSubmitting(true);
@@ -184,9 +186,11 @@ export function useUserSettingsSubmit(
 			// 2つ目のAPI: ユーザー設定を保存
 			await api.post("/api/user/settings", finalData);
 
-			// SWRキャッシュを更新
+			// React Queryキャッシュを無効化して再取得
 			if (user?.id) {
-				await mutate(["/api/user/settings", user.id]);
+				await queryClient.invalidateQueries({
+					queryKey: queryKeys.userSettings(user.id),
+				});
 			}
 
 			// Supabaseのユーザーメタデータも更新（空文字列の場合も含む）

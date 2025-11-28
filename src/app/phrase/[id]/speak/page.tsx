@@ -13,7 +13,7 @@ import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { useLanguages } from "@/hooks/api/useSWRApi";
+import { useLanguages } from "@/hooks/api";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface SpeakPhrase {
@@ -35,7 +35,7 @@ export default function SpeakPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// SWRフックを使用してデータを取得
+	// APIフックを使用してデータを取得
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
 

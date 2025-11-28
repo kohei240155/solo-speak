@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguages } from "@/hooks/api/useSWRApi";
+import { useLanguages } from "@/hooks/api";
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES } from "@/constants/languages";
 
 export const usePhraseSettings = () => {
 	const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
-	const { languages } = useLanguages(); // SWRベースの言語取得フック
+	const { languages } = useLanguages(); // 言語取得フック
 	const [learningLanguage, setLearningLanguage] =
 		useState<string>(DEFAULT_LANGUAGE);
 	const [nativeLanguage, setNativeLanguage] = useState<string>(
@@ -13,7 +13,7 @@ export const usePhraseSettings = () => {
 	);
 	const [userSettingsInitialized, setUserSettingsInitialized] = useState(false);
 
-	// SWRのuserSettingsからデータを設定
+	// userSettingsからデータを設定
 	useEffect(() => {
 		if (userSettings && !userSettingsInitialized) {
 			if (userSettings.nativeLanguage?.code) {

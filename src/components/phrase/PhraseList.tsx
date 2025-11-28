@@ -24,6 +24,7 @@ interface PhraseListProps {
 
 export default function PhraseList({
 	nativeLanguage = "",
+	learningLanguage,
 	onUpdatePhrase,
 	onRefreshPhrases,
 	savedPhrases = [],
@@ -97,7 +98,7 @@ export default function PhraseList({
 		[onUpdatePhrase],
 	);
 
-	if (isLoadingPhrases && savedPhrases.length === 0) {
+	if (!learningLanguage || isLoadingPhrases) {
 		return (
 			<div className="pt-20">
 				<LoadingSpinner message="Loading phrases..." />

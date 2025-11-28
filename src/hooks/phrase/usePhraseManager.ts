@@ -13,7 +13,7 @@ import {
 	useInfinitePhrases,
 	useRemainingGenerations,
 	useSituations,
-} from "@/hooks/api/useSWRApi";
+} from "@/hooks/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
@@ -22,7 +22,7 @@ export const usePhraseManager = () => {
 	const { user, userSettings, userSettingsLoading } = useAuth(); // AuthContextから直接ユーザー設定を取得
 	const { t } = useTranslation();
 
-	// SWRフックを使用してデータを取得
+	// APIフックを使用してデータを取得
 	const { languages } = useLanguages();
 	const { remainingGenerations, refetch: mutateGenerations } =
 		useRemainingGenerations();
@@ -40,7 +40,7 @@ export const usePhraseManager = () => {
 		userSettings?.defaultLearningLanguage?.code || "",
 	);
 
-	// フレーズ数をSWRで取得（学習言語変更に対応）
+	// フレーズ数を取得（学習言語変更に対応）
 	const { totalCount: availablePhraseCount, refetch: refetchPhraseList } =
 		useInfinitePhrases(learningLanguage);
 	const [desiredPhrase, setDesiredPhrase] = useState("");
@@ -315,7 +315,7 @@ export const usePhraseManager = () => {
 		async (name: string) => {
 			try {
 				await api.post("/api/situations", { name });
-				// SWRキャッシュを更新
+				// キャッシュを更新
 				mutateSituations();
 				toast.success(t("situation.addSuccess"));
 			} catch (err) {
@@ -331,7 +331,7 @@ export const usePhraseManager = () => {
 		async (id: string) => {
 			try {
 				await api.delete(`/api/situations/${id}`);
-				// SWRキャッシュを更新
+				// キャッシュを更新
 				mutateSituations();
 				toast.success(t("situation.deleteSuccess"));
 			} catch {

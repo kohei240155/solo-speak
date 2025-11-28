@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ReactQueryProvider } from "@/contexts/ReactQueryProvider";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/layout/Header";
 import SecondaryNavigation from "@/components/navigation/SecondaryNavigation";
@@ -85,17 +86,19 @@ export default function RootLayout({
 				<ServiceWorkerRegistration />
 				<DeploymentChecker />
 				<AppVersionChecker />
-				<LanguageProvider>
-					<ChineseFontHandler />
-					<TranslationPreloader />
-					<AuthProvider>
-						<AuthApiConnection />
-						<Header />
-						<SecondaryNavigation />
-						<main className="flex-1">{children}</main>
-						<Toaster />
-					</AuthProvider>
-				</LanguageProvider>
+				<ReactQueryProvider>
+					<LanguageProvider>
+						<ChineseFontHandler />
+						<TranslationPreloader />
+						<AuthProvider>
+							<AuthApiConnection />
+							<Header />
+							<SecondaryNavigation />
+							<main className="flex-1">{children}</main>
+							<Toaster />
+						</AuthProvider>
+					</LanguageProvider>
+				</ReactQueryProvider>
 			</body>
 		</html>
 	);

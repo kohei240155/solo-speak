@@ -13,7 +13,7 @@ import { usePhraseSettings } from "@/hooks/phrase/usePhraseSettings";
 import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { useQuizPhrase } from "@/hooks/quiz/useQuizPhrase";
 import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
-import { useInfinitePhrases } from "@/hooks/api/useSWRApi";
+import { useInfinitePhrases } from "@/hooks/api";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { QuizConfig, QuizModeState } from "@/types/quiz";
 import { Toaster } from "react-hot-toast";

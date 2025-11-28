@@ -91,7 +91,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 	}, [setValue, user, setIsUserSetupComplete]);
 
 	const fetchLanguages = useCallback(async () => {
-		// AuthContextからSWRで取得された言語データを使用
+		// AuthContextから取得された言語データを使用
 		if (languages && languages.length > 0) {
 			setError(""); // エラーをクリア
 		} else {

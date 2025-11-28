@@ -9,21 +9,25 @@ Solo Speakは、AI技術を活用して外国語学習を支援するWebアプ�
 ## ✨ 主な機能
 
 ### 🤖 AI フレーズ生成
+
 - ChatGPT APIを使用した高品質な翻訳
 - 3つのスタイル（一般的、丁寧、カジュアル）での翻訳提案
 - コンテキストを考慮した自然な翻訳
 
 ### 📚 多言語対応
+
 - 9つの言語をサポート（英語、日本語、韓国語、中国語、フランス語、スペイン語、ポルトガル語、ドイツ語、タイ語）
 - ユーザーの母国語と学習言語の設定
 - 多言語UIに対応
 
 ### 🎯 パーソナライズド学習
+
 - ユーザー専用のフレーズ管理
 - 学習進捗の追跡
 - 個別の学習体験
 
 ### 🎙️ 発音練習（予定）
+
 - 音声入力機能
 - 発音評価システム
 - リアルタイムフィードバック
@@ -31,26 +35,29 @@ Solo Speakは、AI技術を活用して外国語学習を支援するWebアプ�
 ## 🛠️ 技術スタック
 
 ### フロントエンド
+
 - **Next.js 15** - Reactフレームワーク
 - **React 19** - UIライブラリ
 - **TypeScript** - 型安全性
 - **Tailwind CSS** - スタイリング
 - **React Hook Form** - フォーム管理
 - **React Hot Toast** - 通知システム
-- **SWR** - データフェッチング
 
 ### バックエンド
+
 - **Next.js API Routes** - サーバーサイドAPI
 - **Prisma** - データベースORM
 - **PostgreSQL** - データベース
 - **Supabase** - 認証・データベースホスティング
 
 ### AI・API
+
 - **OpenAI GPT-4o-mini** - フレーズ生成
 - **Google Cloud Text-to-Speech** - 音声生成
 - **Stripe** - 決済処理
 
 ### 開発ツール
+
 - **ESLint** - コード品質
 - **PostCSS** - CSS処理
 - **tsx** - TypeScriptランナー
@@ -58,22 +65,26 @@ Solo Speakは、AI技術を活用して外国語学習を支援するWebアプ�
 ## 🚀 セットアップ
 
 ### 必要環境
+
 - Node.js 18+
 - npm または yarn
 - PostgreSQL データベース
 
 ### 1. リポジトリのクローン
+
 ```bash
 git clone https://github.com/kohei240155/solo-speak.git
 cd solo-speak
 ```
 
 ### 2. 依存関係のインストール
+
 ```bash
 npm install --legacy-peer-deps
 ```
 
 ### 3. 環境変数の設定
+
 `.env.local` ファイルを作成し、以下の環境変数を設定：
 
 ```env
@@ -99,6 +110,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_stripe_publishable_key"
 ```
 
 ### 4. データベースのセットアップ
+
 ```bash
 # Prismaクライアントの生成
 npm run generate
@@ -111,6 +123,7 @@ npm run db:seed:local
 ```
 
 ### 5. 開発サーバーの起動
+
 ```bash
 npm run dev:local
 ```
@@ -146,20 +159,24 @@ solo-speak/
 ## 📚 使用方法
 
 ### 1. アカウント作成・ログイン
+
 - Supabase Authを使用した安全な認証
 - メールアドレスでの登録・ログイン
 
 ### 2. 言語設定
+
 - 母国語と学習言語の設定
 - プロフィール画面からいつでも変更可能
 
 ### 3. フレーズ生成
+
 1. ダッシュボードから「AI フレーズ生成」を選択
 2. 話したいフレーズを入力
 3. AIが3つのスタイルで翻訳を提案
 4. 気に入ったフレーズを選択・保存
 
 ### 4. フレーズ管理
+
 - 保存したフレーズの一覧表示
 - 検索・フィルタリング機能
 - 学習進捗の確認
@@ -167,6 +184,7 @@ solo-speak/
 ## 🛠️ 開発コマンド
 
 ### 基本コマンド
+
 ```bash
 # 開発サーバー起動
 npm run dev:local              # ローカル環境
@@ -181,6 +199,7 @@ npm run lint
 ```
 
 ### データベース管理
+
 ```bash
 # マイグレーション
 npm run db:migrate:local       # ローカル環境
@@ -196,6 +215,7 @@ npm run db:seed:production     # 本番環境
 ```
 
 ### スクリプト
+
 ```bash
 # フレーズレベル設定
 npm run setup:phrase-levels:local
@@ -211,8 +231,8 @@ npm run diagnose:db
 
 ### ✅ 前提条件
 
-* Macとスマホが**同じWi-Fiネットワーク**に接続されていること
-* Next.jsの開発サーバーを起動中であること
+- Macとスマホが**同じWi-Fiネットワーク**に接続されていること
+- Next.jsの開発サーバーを起動中であること
 
 ---
 
@@ -280,18 +300,19 @@ Next.jsがポート3000で通信できるように一時的に許可してくだ
 
 ### 🔍 まとめ
 
-| 手順 | 内容                                         |
-| -- | ------------------------------------------ |
-| ①  | `ipconfig getifaddr en0` でMacのIPを確認        |
-| ②  | `npx next dev --hostname 0.0.0.0` でサーバーを起動 |
-| ③  | スマホのブラウザで `http://<IP>:3000` にアクセス         |
-| ④  | 必要ならファイアウォールを許可                            |
+| 手順 | 内容                                               |
+| ---- | -------------------------------------------------- |
+| ①    | `ipconfig getifaddr en0` でMacのIPを確認           |
+| ②    | `npx next dev --hostname 0.0.0.0` でサーバーを起動 |
+| ③    | スマホのブラウザで `http://<IP>:3000` にアクセス   |
+| ④    | 必要ならファイアウォールを許可                     |
 
 ---
 
 ## 🌍 多言語対応
 
 現在サポートしている言語：
+
 - 🇺🇸 English
 - 🇯🇵 日本語
 - 🇰🇷 한국어
@@ -314,16 +335,19 @@ Next.jsがポート3000で通信できるように一時的に許可してくだ
 ## 🤝 コントリビューション
 
 1. フォークしてブランチを作成
+
 ```bash
 git checkout -b feature/new-feature
 ```
 
 2. 変更をコミット
+
 ```bash
 git commit -am 'Add new feature'
 ```
 
 3. ブランチにプッシュ
+
 ```bash
 git push origin feature/new-feature
 ```

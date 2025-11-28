@@ -13,7 +13,7 @@ import {
 import { isUILanguage } from "@/constants/languages";
 import LoginModal from "@/components/auth/LoginModal";
 import { userSetupCache } from "@/utils/userSetupCache";
-import { useUserSettingsData, useLanguages } from "@/hooks/api/useSWRApi";
+import { useUserSettingsData, useLanguages } from "@/hooks/api";
 
 type AuthContextType = {
 	user: User | null;
@@ -56,14 +56,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 	const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 	const [hasRedirected, setHasRedirected] = useState(false);
 
-	// SWRを使用してユーザー設定を取得
+	// APIフックを使用してユーザー設定を取得
 	const {
 		userSettings,
 		isLoading: userSettingsLoading,
 		refresh: refreshUserSettings,
 	} = useUserSettingsData(user?.id ?? null);
 
-	// SWRを使用して言語リストを取得（認証不要）
+	// APIフックを使用して言語リストを取得（認証不要）
 	const { languages, isLoading: languagesLoading } = useLanguages();
 
 	useEffect(() => {

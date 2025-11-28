@@ -95,6 +95,7 @@ function PhraseSpeakPage() {
 		openSpeakModal: modalManager.openSpeakModal,
 		resetSavedConfig: resetSession,
 		resetAllDone: multiPhraseSpeak.resetAllDone,
+		refetchPhraseList,
 	});
 
 	// ページ離脱警告（カウントボタンが1回以上押された状態の場合のみ）
