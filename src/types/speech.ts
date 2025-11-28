@@ -103,3 +103,24 @@ export interface SpeechListResponseData {
 	speeches: SpeechListItem[];
 	pagination: PaginationData;
 }
+
+// Speech Detail Types
+export interface SpeechDetailResponse {
+	id: string;
+	title: string;
+	phrases: Array<{
+		id: string;
+		original: string;
+		translation: string;
+		speechOrder: number;
+	}>;
+}
+
+export interface UpdateSpeechRequest {
+	title: string;
+	phrases: Array<{
+		phraseId: string;
+		original: string;
+		translation: string;
+	}>;
+}

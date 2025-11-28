@@ -21,6 +21,7 @@ export default function SpeechListPage() {
 		nativeLanguage,
 		handleLearningLanguageChange,
 		loadMoreSpeeches,
+		refreshSpeeches,
 	} = useSpeechList();
 
 	// 無限スクロール
@@ -76,6 +77,7 @@ export default function SpeechListPage() {
 					isLoadingSpeeches={isLoadingSpeeches}
 					isLoadingMore={isLoadingMore}
 					learningLanguage={learningLanguage}
+					onRefreshSpeeches={refreshSpeeches}
 				/>
 			</div>
 		</div>

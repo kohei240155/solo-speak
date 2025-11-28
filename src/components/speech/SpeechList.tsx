@@ -1,13 +1,16 @@
 import { SpeechListItem } from "@/types/speech";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import LoadingSpinner from "../common/LoadingSpinner";
 import SpeechItem from "./SpeechItem";
+import EditSpeechModal from "./EditSpeechModal";
+import DeleteSpeechConfirmationModal from "./DeleteSpeechConfirmationModal";
 
 interface SpeechListProps {
 	speeches?: SpeechListItem[];
 	isLoadingSpeeches?: boolean;
 	isLoadingMore?: boolean;
 	learningLanguage?: string;
+	onRefreshSpeeches?: () => void;
 }
 
 export default function SpeechList({
@@ -15,12 +18,48 @@ export default function SpeechList({
 	isLoadingSpeeches = false,
 	isLoadingMore = false,
 	learningLanguage,
+	onRefreshSpeeches,
 }: SpeechListProps) {
+	const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+	const [editingSpeech, setEditingSpeech] = useState<SpeechListItem | null>(
+		null,
+	);
+	const [deletingSpeechId, setDeletingSpeechId] = useState<string | null>(null);
+
 	const handleSpeechClick = useCallback((speechId: string) => {
 		// スピーチ詳細ページへ遷移 (実装予定)
 		console.log("Speech clicked:", speechId);
 		// router.push(`/speech/${speechId}`);
 	}, []);
+
+	const handleMenuToggle = useCallback(
+		(speechId: string) => {
+			if (speechId === "") {
+				setOpenMenuId(null);
+			} else {
+				setOpenMenuId(openMenuId === speechId ? null : speechId);
+			}
+		},
+		[openMenuId],
+	);
+
+	const handleEdit = useCallback((speech: SpeechListItem) => {
+		setEditingSpeech(speech);
+		setOpenMenuId(null);
+	}, []);
+
+	const handleDelete = useCallback((speechId: string) => {
+		setDeletingSpeechId(speechId);
+		setOpenMenuId(null);
+	}, []);
+
+	const handleEditClose = () => {
+		setEditingSpeech(null);
+	};
+
+	const handleDeleteClose = () => {
+		setDeletingSpeechId(null);
+	};
 
 	if (!learningLanguage || isLoadingSpeeches) {
 		return (
@@ -45,7 +84,11 @@ export default function SpeechList({
 					<SpeechItem
 						key={`${speech.id}-${index}`}
 						speech={speech}
+						isMenuOpen={openMenuId === speech.id}
+						onMenuToggle={handleMenuToggle}
 						onSpeechClick={handleSpeechClick}
+						onEdit={handleEdit}
+						onDelete={handleDelete}
 					/>
 				))}
 
@@ -56,6 +99,30 @@ export default function SpeechList({
 					</div>
 				)}
 			</div>
+
+			{/* 編集モーダル */}
+			<EditSpeechModal
+				isOpen={!!editingSpeech}
+				speechId={editingSpeech?.id || null}
+				onClose={handleEditClose}
+				onRefresh={onRefreshSpeeches}
+			/>
+
+			{/* 削除確認モーダル */}
+			<DeleteSpeechConfirmationModal
+				isOpen={!!deletingSpeechId}
+				speechId={deletingSpeechId}
+				onClose={handleDeleteClose}
+				onRefresh={onRefreshSpeeches}
+			/>
+
+			{/* メニューが開いている時のオーバーレイ */}
+			{openMenuId && (
+				<div
+					className="fixed inset-0 z-0"
+					onClick={() => setOpenMenuId(null)}
+				/>
+			)}
 		</>
 	);
 }
