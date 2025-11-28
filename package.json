@@ -43,7 +43,10 @@
 		"cleanup:phrase-levels": "tsx scripts/cleanup-phrase-levels.ts",
 		"cleanup:phrase-levels:local": "cp .env.local .env && tsx scripts/cleanup-phrase-levels.ts",
 		"cleanup:phrase-levels:production": "cp .env.production .env && tsx scripts/cleanup-phrase-levels.ts",
-		"test:phrase-levels": "tsx scripts/test-phrase-level-logic.ts"
+		"test:phrase-levels": "tsx scripts/test-phrase-level-logic.ts",
+		"seed:speech-statuses": "tsx scripts/seed-speech-statuses.ts",
+		"seed:speech-statuses:local": "cp .env.local .env && tsx scripts/seed-speech-statuses.ts",
+		"seed:speech-statuses:production": "cp .env.production .env && tsx scripts/seed-speech-statuses.ts"
 	},
 	"dependencies": {
 		"@google-cloud/text-to-speech": "^6.2.0",
