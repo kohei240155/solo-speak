@@ -5,11 +5,13 @@ type SpeechTabType = "List" | "Add" | "Review";
 interface SpeechTabNavigationProps {
 	activeTab: SpeechTabType;
 	checkUnsavedChanges?: () => boolean;
+	onReviewModalOpen?: () => void;
 }
 
 export default function SpeechTabNavigation({
 	activeTab,
 	checkUnsavedChanges,
+	onReviewModalOpen,
 }: SpeechTabNavigationProps) {
 	const router = useRouter();
 
@@ -26,6 +28,14 @@ export default function SpeechTabNavigation({
 	}) => {
 		// アクティブなタブがクリックされた場合は何もしない
 		if (activeTab === tab.key) {
+			return;
+		}
+
+		// Reviewタブの場合は常にモーダルを表示（ページ遷移はしない）
+		if (tab.key === "Review") {
+			if (onReviewModalOpen) {
+				onReviewModalOpen();
+			}
 			return;
 		}
 

@@ -7,6 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
+import ReviewModeModal from "@/components/modals/ReviewModeModal";
+import { ReviewConfig } from "@/components/modals/ReviewModeModal";
+import { Toaster } from "react-hot-toast";
 
 export default function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -18,10 +21,26 @@ export default function SpeechReviewPage() {
 		userSettings?.defaultLearningLanguage?.code || "",
 	);
 
+	// モーダルの状態管理
+	const [showReviewModal, setShowReviewModal] = useState(false);
+
 	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
+	};
+
+	const openReviewModal = () => {
+		setShowReviewModal(true);
+	};
+
+	const closeReviewModal = () => {
+		setShowReviewModal(false);
+	};
+
+	const handleReviewStart = (config: ReviewConfig) => {
+		// TODO: Review開始処理を実装
+		console.log("Review started with config:", config);
 	};
 
 	// 認証ローディング中は何も表示しない
@@ -51,7 +70,10 @@ export default function SpeechReviewPage() {
 				</div>
 
 				{/* タブメニュー */}
-				<SpeechTabNavigation activeTab="Review" />
+				<SpeechTabNavigation
+					activeTab="Review"
+					onReviewModalOpen={openReviewModal}
+				/>
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
@@ -62,6 +84,17 @@ export default function SpeechReviewPage() {
 					</div>
 				</div>
 			</div>
+
+			{/* Review Mode モーダル */}
+			<ReviewModeModal
+				isOpen={showReviewModal}
+				onClose={closeReviewModal}
+				onStart={handleReviewStart}
+				languages={languages || []}
+				defaultLearningLanguage={learningLanguage}
+			/>
+
+			<Toaster />
 		</div>
 	);
 }

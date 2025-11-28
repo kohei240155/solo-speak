@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useSpeechList } from "@/hooks/speech";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechList from "@/components/speech/SpeechList";
+import ReviewModeModal from "@/components/modals/ReviewModeModal";
+import { ReviewConfig } from "@/components/modals/ReviewModeModal";
+import { Toaster } from "react-hot-toast";
 
 export default function SpeechListPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -23,6 +26,22 @@ export default function SpeechListPage() {
 		loadMoreSpeeches,
 		refreshSpeeches,
 	} = useSpeechList();
+
+	// モーダルの状態管理
+	const [showReviewModal, setShowReviewModal] = useState(false);
+
+	const openReviewModal = () => {
+		setShowReviewModal(true);
+	};
+
+	const closeReviewModal = () => {
+		setShowReviewModal(false);
+	};
+
+	const handleReviewStart = (config: ReviewConfig) => {
+		// TODO: Review開始処理を実装
+		console.log("Review started with config:", config);
+	};
 
 	// 無限スクロール
 	useEffect(() => {
@@ -69,7 +88,10 @@ export default function SpeechListPage() {
 				</div>
 
 				{/* タブメニュー */}
-				<SpeechTabNavigation activeTab="List" />
+				<SpeechTabNavigation
+					activeTab="List"
+					onReviewModalOpen={openReviewModal}
+				/>
 
 				{/* コンテンツエリア */}
 				<SpeechList
@@ -80,6 +102,17 @@ export default function SpeechListPage() {
 					onRefreshSpeeches={refreshSpeeches}
 				/>
 			</div>
+
+			{/* Review Mode モーダル */}
+			<ReviewModeModal
+				isOpen={showReviewModal}
+				onClose={closeReviewModal}
+				onStart={handleReviewStart}
+				languages={languages || []}
+				defaultLearningLanguage={learningLanguage}
+			/>
+
+			<Toaster />
 		</div>
 	);
 }
