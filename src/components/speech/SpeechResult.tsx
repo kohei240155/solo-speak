@@ -4,23 +4,14 @@ import { BsPauseFill } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AnimatedButton from "../common/AnimatedButton";
-
-interface Sentence {
-	learningLanguage: string;
-	nativeLanguage: string;
-}
-
-interface FeedbackItem {
-	category: string;
-	content: string;
-}
+import { SentenceData, FeedbackData } from "@/types/speech";
 
 interface SpeechResultProps {
 	title: string;
 	speechPlan: string[];
 	yourSpeech: string;
-	sentences: Sentence[];
-	feedback: FeedbackItem[];
+	sentences: SentenceData[];
+	feedback: FeedbackData[];
 	audioBlob?: Blob | null;
 	onSave?: () => void;
 }
@@ -36,7 +27,7 @@ export default function SpeechResult({
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
-		useState<Sentence[]>(sentences);
+		useState<SentenceData[]>(sentences);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	// 音声再生/一時停止
