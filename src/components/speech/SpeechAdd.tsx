@@ -5,7 +5,11 @@ import { BsFillPlayFill, BsPauseFill } from "react-icons/bs";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/utils/spabase";
 
-export default function SpeechAdd() {
+type SpeechAddProps = {
+	learningLanguage?: string;
+};
+
+export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -170,8 +174,10 @@ export default function SpeechAdd() {
 			const formData = new FormData();
 			// Blobをファイルとして追加（ファイル名と拡張子を指定）
 			formData.append("file", audioBlob, "recording.webm");
-			// オプション: 言語を指定する場合
-			// formData.append("language", "ja");
+			// 学習言語を指定（Whisperの精度向上のため）
+			if (learningLanguage) {
+				formData.append("language", learningLanguage);
+			}
 
 			const response = await fetch("/api/speech/transcribe", {
 				method: "POST",
