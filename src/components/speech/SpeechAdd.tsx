@@ -1,7 +1,8 @@
 import { BsFillMicFill } from "react-icons/bs";
+import { BiStop, BiPlay } from "react-icons/bi";
 import { LuSendHorizontal } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { BsFillPlayFill, BsPauseFill } from "react-icons/bs";
+import { BsPauseFill } from "react-icons/bs";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/utils/spabase";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -204,10 +205,13 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 		};
 	}, []);
 
-	// 録音/停止ボタンのハンドラー
+	// 録音/停止/再生ボタンのハンドラー
 	const handleRecordButtonClick = () => {
 		if (isRecording) {
 			stopRecording();
+		} else if (audioBlob) {
+			// 録音完了後は再生/一時停止
+			togglePlayback();
 		} else {
 			startRecording();
 		}
@@ -371,30 +375,9 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 			<div className="pt-2">
 				{/* タイマー表示 */}
 				<div className="text-center mb-6">
-					<div
-						className={`text-2xl font-bold ${isRecording ? "text-red-600" : "text-gray-900"}`}
-					>
-						{formatTime(recordingTime)}
+					<div className="text-2xl font-bold text-gray-900">
+						{formatTime(MAX_RECORDING_TIME - recordingTime)}
 					</div>
-					{isRecording && (
-						<div className="text-sm text-red-600 mt-1">録音中...</div>
-					)}
-					{audioBlob && !isRecording && (
-						<div className="flex items-center justify-center gap-2 mt-1">
-							<div className="text-sm text-green-600">録音完了</div>
-							<button
-								className="w-6 h-6 rounded-full bg-gray-600 hover:bg-gray-700 flex items-center justify-center text-white transition-colors"
-								onClick={togglePlayback}
-								title={isPlaying ? "一時停止" : "再生"}
-							>
-								{isPlaying ? (
-									<BsPauseFill size={12} />
-								) : (
-									<BsFillPlayFill size={12} />
-								)}
-							</button>
-						</div>
-					)}
 				</div>
 
 				{/* コントロールボタン */}
@@ -403,7 +386,7 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 					<button
 						className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 						onClick={deleteRecording}
-						disabled={!audioBlob && !isRecording}
+						disabled={!audioBlob || isRecording}
 					>
 						<RiDeleteBin6Line size={24} />
 					</button>
@@ -413,21 +396,31 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 						className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg ${
 							isRecording ? "animate-pulse" : ""
 						} ${hasValidationErrors ? "opacity-50 cursor-not-allowed" : ""}`}
-						style={{ backgroundColor: isRecording ? "#ef4444" : "#616161" }}
+						style={{ backgroundColor: "#616161" }}
 						onMouseEnter={(e) => {
-							if (!isRecording && !hasValidationErrors) {
+							if (!hasValidationErrors) {
 								e.currentTarget.style.backgroundColor = "#525252";
 							}
 						}}
 						onMouseLeave={(e) => {
-							if (!isRecording && !hasValidationErrors) {
+							if (!hasValidationErrors) {
 								e.currentTarget.style.backgroundColor = "#616161";
 							}
 						}}
 						onClick={handleRecordButtonClick}
 						disabled={hasValidationErrors}
 					>
-						<BsFillMicFill size={32} />
+						{isRecording ? (
+							<BiStop size={40} />
+						) : audioBlob ? (
+							isPlaying ? (
+								<BsPauseFill size={32} />
+							) : (
+								<BiPlay size={40} />
+							)
+						) : (
+							<BsFillMicFill size={32} />
+						)}
 					</button>
 
 					{/* 送信ボタン */}
@@ -439,7 +432,6 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 						<LuSendHorizontal size={24} />
 					</button>
 				</div>
-
 				{/* 文字起こし結果表示 */}
 				{isTranscribing && (
 					<div className="mt-6 text-center text-gray-600">文字起こし中...</div>
