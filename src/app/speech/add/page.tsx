@@ -63,7 +63,10 @@ export default function SpeechAddPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					<SpeechAdd learningLanguage={learningLanguage} />
+					<SpeechAdd
+						learningLanguage={learningLanguage}
+						nativeLanguage={nativeLanguage}
+					/>
 				</div>
 			</div>
 		</div>
