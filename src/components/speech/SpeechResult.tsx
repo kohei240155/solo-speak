@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill } from "react-icons/bs";
 
@@ -33,6 +32,8 @@ export default function SpeechResult({
 	onSave,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [editableSentences, setEditableSentences] =
+		useState<Sentence[]>(sentences);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	// 音声再生/一時停止
@@ -57,6 +58,20 @@ export default function SpeechResult({
 		}
 	};
 
+	// 文章の編集ハンドラ
+	const handleSentenceChange = (
+		index: number,
+		field: "learningLanguage" | "nativeLanguage",
+		value: string,
+	) => {
+		const newSentences = [...editableSentences];
+		newSentences[index] = {
+			...newSentences[index],
+			[field]: value,
+		};
+		setEditableSentences(newSentences);
+	};
+
 	// クリーンアップ
 	useEffect(() => {
 		return () => {
@@ -66,6 +81,11 @@ export default function SpeechResult({
 			}
 		};
 	}, []);
+
+	// sentencesが変更されたら同期
+	useEffect(() => {
+		setEditableSentences(sentences);
+	}, [sentences]);
 
 	return (
 		<div className="max-w-4xl mx-auto">
@@ -79,7 +99,7 @@ export default function SpeechResult({
 
 			{/* Title */}
 			<div className="mb-4">
-				<h3 className="text-lg font-semibold text-gray-900 mb-2">Title</h3>
+				<h2 className="text-xl font-semibold text-gray-900 mb-2">Title</h2>
 				<div className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm text-gray-900 bg-gray-50">
 					{title}
 				</div>
@@ -87,9 +107,9 @@ export default function SpeechResult({
 
 			{/* Speech Plan */}
 			<div className="mb-6">
-				<h3 className="text-lg font-semibold text-gray-900 mb-2">
+				<h2 className="text-xl font-semibold text-gray-900 mb-2">
 					Speech Plan
-				</h3>
+				</h2>
 				<div className="space-y-2">
 					{speechPlan.map((item, index) => (
 						<div
@@ -104,16 +124,14 @@ export default function SpeechResult({
 
 			{/* Speech Result Section */}
 			<div className="mb-6">
-				<h3 className="text-lg font-semibold text-gray-900 mb-4">
+				<h2 className="text-xl font-semibold text-gray-900 mb-4">
 					Speech Result
-				</h3>
+				</h2>
 
 				{/* Your Speech */}
 				<div className="mb-4">
 					<div className="flex justify-between items-center mb-2">
-						<h4 className="text-base font-semibold text-gray-900">
-							Your Speech
-						</h4>
+						<h3 className="text-lg font-semibold text-gray-900">Your Speech</h3>
 						{audioBlob && (
 							<button
 								type="button"
@@ -135,43 +153,50 @@ export default function SpeechResult({
 
 				{/* AI Suggested Sentences */}
 				<div className="mb-4">
-					<h4 className="text-base font-semibold text-gray-900 mb-2">
+					<h3 className="text-lg font-semibold text-gray-900 mb-2">
 						AI Suggested Sentences
-					</h4>
-					<div className="space-y-3">
-						{sentences.map((sentence, index) => (
-							<div key={index} className="border border-gray-300 rounded-md">
+					</h3>
+					<div className="space-y-6">
+						{editableSentences.map((sentence, index) => (
+							<div key={index}>
 								{/* Header */}
-								<div className="flex items-center justify-between px-4 py-3 bg-gray-50">
-									<div className="flex items-center gap-2">
-										<AiOutlineCaretRight size={16} className="text-gray-600" />
-										<span className="font-semibold text-gray-900">
-											Sentence{index + 1}
-										</span>
-									</div>
-									<button
-										type="button"
-										className="text-gray-600 hover:text-gray-800 p-1"
-									>
-										<RiDeleteBin6Line size={20} />
-									</button>
+								<div className="flex items-center mb-3">
+									<AiOutlineCaretRight
+										size={16}
+										className="text-gray-600 mr-1"
+									/>
+									<span className="font-medium text-gray-900 text-md">
+										Sentence {index + 1}
+									</span>
 								</div>
-								{/* Content */}
-								<div className="px-4 py-3 space-y-3">
-									{/* Learning Language */}
-									<div className="border border-gray-200 rounded-md px-3 py-2 bg-white">
-										<p className="text-sm text-gray-900">
-											{sentence.learningLanguage}
-										</p>
-									</div>
 
-									{/* Native Language */}
-									<div className="border border-gray-200 rounded-md px-3 py-2 bg-white">
-										<p className="text-sm text-gray-900">
-											{sentence.nativeLanguage}
-										</p>
-									</div>
-								</div>
+								{/* Learning Language */}
+								<textarea
+									value={sentence.learningLanguage}
+									onChange={(e) =>
+										handleSentenceChange(
+											index,
+											"learningLanguage",
+											e.target.value,
+										)
+									}
+									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 mb-2"
+									rows={3}
+								/>
+
+								{/* Native Language */}
+								<textarea
+									value={sentence.nativeLanguage}
+									onChange={(e) =>
+										handleSentenceChange(
+											index,
+											"nativeLanguage",
+											e.target.value,
+										)
+									}
+									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-50"
+									rows={2}
+								/>
 							</div>
 						))}
 					</div>
@@ -179,23 +204,24 @@ export default function SpeechResult({
 
 				{/* Feedback */}
 				<div className="mb-6">
-					<h4 className="text-base font-semibold text-gray-900 mb-2">
-						Feedback
-					</h4>
-					<div className="space-y-2">
+					<h3 className="text-lg font-semibold text-gray-900 mb-2">Feedback</h3>
+					<div className="space-y-6">
 						{feedback.map((item, index) => (
-							<div key={index} className="border border-gray-300 rounded-md">
+							<div key={index}>
 								{/* Header */}
-								<div className="flex items-center gap-2 px-4 py-3 bg-gray-50">
-									<AiOutlineCaretRight size={16} className="text-gray-600" />
-									<span className="font-semibold text-gray-900">
+								<div className="flex items-center mb-3">
+									<AiOutlineCaretRight
+										size={16}
+										className="text-gray-600 mr-1"
+									/>
+									<span className="font-medium text-gray-900 text-md">
 										{item.category}
 									</span>
 								</div>
 
-								{/* Content - always shown */}
-								<div className="px-4 py-3 border-t border-gray-200">
-									<p className="text-sm text-gray-900 whitespace-pre-wrap">
+								{/* Content */}
+								<div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+									<p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
 										{item.content}
 									</p>
 								</div>
