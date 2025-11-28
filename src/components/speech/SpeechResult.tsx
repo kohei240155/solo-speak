@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import AnimatedButton from "../common/AnimatedButton";
 
 interface Sentence {
 	learningLanguage: string;
@@ -76,6 +78,12 @@ export default function SpeechResult({
 	// センテンスをリセット
 	const handleResetSentences = () => {
 		setEditableSentences(sentences);
+	};
+
+	// センテンスを削除
+	const handleDeleteSentence = (index: number) => {
+		const newSentences = editableSentences.filter((_, i) => i !== index);
+		setEditableSentences(newSentences);
 	};
 
 	// テキストエリアの高さを自動調整
@@ -182,14 +190,24 @@ export default function SpeechResult({
 						{editableSentences.map((sentence, index) => (
 							<div key={index}>
 								{/* Header */}
-								<div className="flex items-center mb-3">
-									<AiOutlineCaretRight
-										size={16}
-										className="text-gray-600 mr-1"
-									/>
-									<span className="font-medium text-gray-900 text-md">
-										Sentence {index + 1}
-									</span>
+								<div className="flex items-center justify-between mb-1">
+									<div className="flex items-center">
+										<AiOutlineCaretRight
+											size={16}
+											className="text-gray-600 mr-1"
+										/>
+										<span className="font-medium text-gray-900 text-md">
+											Sentence {index + 1}
+										</span>
+									</div>
+									<button
+										type="button"
+										onClick={() => handleDeleteSentence(index)}
+										className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+										title="Delete this sentence"
+									>
+										<RiDeleteBin6Line size={20} className="text-gray-600" />
+									</button>
 								</div>
 
 								{/* Learning Language */}
@@ -258,20 +276,9 @@ export default function SpeechResult({
 			</div>
 
 			{/* Save Button */}
-			<button
-				type="button"
-				onClick={onSave}
-				className="w-full text-white rounded-md font-semibold py-4 transition-colors"
-				style={{ backgroundColor: "#616161" }}
-				onMouseEnter={(e) => {
-					e.currentTarget.style.backgroundColor = "#525252";
-				}}
-				onMouseLeave={(e) => {
-					e.currentTarget.style.backgroundColor = "#616161";
-				}}
-			>
+			<AnimatedButton onClick={onSave || (() => {})} variant="primary">
 				Save
-			</button>
+			</AnimatedButton>
 		</div>
 	);
 }
