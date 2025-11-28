@@ -142,12 +142,12 @@ export default function SpeechResult({
 							<button
 								type="button"
 								onClick={handlePlayAudio}
-								className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+								className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
 							>
 								{isPlaying ? (
-									<BsPauseFill size={20} className="text-gray-600" />
+									<BsPauseFill size={18} className="text-gray-600" />
 								) : (
-									<div className="w-0 h-0 border-t-6 border-t-transparent border-l-8 border-l-gray-600 border-b-6 border-b-transparent ml-1" />
+									<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
 								)}
 							</button>
 						)}
