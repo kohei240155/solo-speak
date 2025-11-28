@@ -146,12 +146,6 @@ export default function SpeechAdd({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [useMockData]);
 
-	// textareaの高さを自動調整
-	const autoResizeTextarea = (element: HTMLTextAreaElement) => {
-		element.style.height = "auto";
-		element.style.height = `${element.scrollHeight}px`;
-	};
-
 	// 録音時間のフォーマット
 	const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -546,12 +540,8 @@ export default function SpeechAdd({
 				<textarea
 					{...register("title")}
 					placeholder="独り言を使ってスピーキングの練習を始めたこと"
-					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
 					rows={1}
-					onChange={(e) => {
-						register("title").onChange(e);
-						autoResizeTextarea(e.target);
-					}}
 					disabled={
 						isTranscribing || isCorrecting || remainingSpeechCount === 0
 					}
@@ -575,12 +565,8 @@ export default function SpeechAdd({
 								<textarea
 									{...register(`speechPlanItems.${index}.value`)}
 									placeholder={placeholders[index]}
-									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 [&]:h-[2.5rem] md:[&]:h-auto"
-									rows={1}
-									onChange={(e) => {
-										register(`speechPlanItems.${index}.value`).onChange(e);
-										autoResizeTextarea(e.target);
-									}}
+									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+									rows={2}
 									disabled={
 										isTranscribing || isCorrecting || remainingSpeechCount === 0
 									}

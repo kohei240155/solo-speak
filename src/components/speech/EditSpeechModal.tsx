@@ -87,12 +87,6 @@ export default function EditSpeechModal({
 				(item.nativeLanguage && item.nativeLanguage.length > 500),
 		);
 
-	// textareaの高さを自動調整
-	const autoResizeTextarea = (element: HTMLTextAreaElement) => {
-		element.style.height = "auto";
-		element.style.height = `${element.scrollHeight}px`;
-	};
-
 	// スピーチ詳細を取得
 	useEffect(() => {
 		if (isOpen && speechId && session) {
@@ -181,12 +175,8 @@ export default function EditSpeechModal({
 						<h3 className="text-xl font-semibold text-gray-900 mb-2">Title</h3>
 						<textarea
 							{...register("title")}
-							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
 							rows={1}
-							onChange={(e) => {
-								register("title").onChange(e);
-								autoResizeTextarea(e.target);
-							}}
 							disabled={isSaving}
 						/>
 						{errors.title && (
@@ -217,24 +207,14 @@ export default function EditSpeechModal({
 								<div className="space-y-2">
 									<textarea
 										{...register(`sentences.${index}.learningLanguage`)}
-										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
 										rows={2}
-										onChange={(e) => {
-											register(`sentences.${index}.learningLanguage`).onChange(
-												e,
-											);
-											autoResizeTextarea(e.target);
-										}}
 										disabled={isSaving}
 									/>
 									<textarea
 										{...register(`sentences.${index}.nativeLanguage`)}
-										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50"
+										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50"
 										rows={2}
-										onChange={(e) => {
-											register(`sentences.${index}.nativeLanguage`).onChange(e);
-											autoResizeTextarea(e.target);
-										}}
 										disabled={isSaving}
 									/>
 								</div>
