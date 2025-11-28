@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest, createErrorResponse } from "@/utils/api-helpers";
+import { RemainingSpeechCountResponse } from "@/types/speech";
 import { prisma } from "@/utils/prisma";
-
-export interface RemainingSpeechCountResponse {
-	remainingSpeechCount: number;
-}
 
 /**
  * ユーザーの残りのスピーチ回数を取得

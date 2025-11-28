@@ -33,7 +33,7 @@ export default function SecondaryNavigation() {
 						Phrase
 					</Link>
 					<Link
-						href="/speech"
+						href="/speech/list"
 						className={`py-2 px-1 border-b-2 font-medium text-[15px] lg:text-[16px] ${
 							pathname === "/speech" || pathname?.startsWith("/speech/")
 								? "border-gray-900 text-gray-900"

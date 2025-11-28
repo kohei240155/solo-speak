@@ -71,3 +71,56 @@ export interface SaveSpeechResponseData {
 export interface RemainingSpeechCountResponse {
 	remainingSpeechCount: number;
 }
+
+// Speech List Types
+export interface SpeechStatus {
+	id: string;
+	name: string;
+	description?: string;
+}
+
+export interface SpeechListItem {
+	id: string;
+	title: string;
+	firstPhrase: {
+		original: string;
+	};
+	practiceCount: number;
+	status: SpeechStatus;
+	lastPracticedAt: string | null;
+	createdAt: string;
+}
+
+export interface PaginationData {
+	total: number;
+	limit: number;
+	page: number;
+	hasMore: boolean;
+}
+
+export interface SpeechListResponseData {
+	success: true;
+	speeches: SpeechListItem[];
+	pagination: PaginationData;
+}
+
+// Speech Detail Types
+export interface SpeechDetailResponse {
+	id: string;
+	title: string;
+	phrases: Array<{
+		id: string;
+		original: string;
+		translation: string;
+		speechOrder: number;
+	}>;
+}
+
+export interface UpdateSpeechRequest {
+	title: string;
+	phrases: Array<{
+		phraseId: string;
+		original: string;
+		translation: string;
+	}>;
+}
