@@ -68,8 +68,11 @@ const SpeechItem = memo(({ speech, onSpeechClick }: SpeechItemProps) => {
 			{/* 1フレーズ目のプレビュー */}
 			{speech.firstPhrase?.original && (
 				<div
-					className="text-sm text-gray-600 mb-3 break-words"
+					className="text-sm text-gray-600 mb-3 break-words overflow-hidden"
 					style={{
+						display: "-webkit-box",
+						WebkitLineClamp: 2,
+						WebkitBoxOrient: "vertical",
 						wordWrap: "break-word",
 						overflowWrap: "anywhere",
 						wordBreak: "break-word",
