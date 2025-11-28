@@ -109,7 +109,7 @@ STRIPE_SECRET_KEY="your_stripe_secret_key"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_stripe_publishable_key"
 ```
 
-### 4. データベースのセットアップ
+### 5. データベースのセットアップ
 
 ```bash
 # Prismaクライアントの生成
@@ -122,11 +122,25 @@ npm run db:migrate:local
 npm run db:seed:local
 ```
 
+### 6. 開発サーバーの起動成
+
+npm run generate
+
+# データベースマイグレーション
+
+npm run db:migrate:local
+
+# シードデータの投入
+
+npm run db:seed:local
+
+````
+
 ### 5. 開発サーバーの起動
 
 ```bash
 npm run dev:local
-```
+````
 
 アプリケーションは `http://localhost:3000` で起動します。
 
@@ -356,10 +370,16 @@ Next.jsがポート3000で通信できるように一時的に許可してくだ
 
 詳細なドキュメントは `docs/` ディレクトリに含まれています：
 
+### 機能ドキュメント
+
 - [フレーズ生成機能](docs/phrase-generation-README.md)
-- [API クライアントガイド](docs/api-client-guide.md)
 - [サブスクリプションシステム](docs/subscription-system-documentation.md)
 - [技術仕様書](docs/phrase-generation-technical-spec.md)
+
+### セットアップガイド
+
+- [Supabase Storage セットアップ](docs/supabase-storage-setup.md)
+- [API クライアントガイド](docs/api-client-guide.md)
 
 ## 🤝 コントリビューション
 
