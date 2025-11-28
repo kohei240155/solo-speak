@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
-import { useLanguages } from "@/hooks/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useSpeechList } from "@/hooks/speech";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
@@ -11,19 +10,36 @@ import SpeechList from "@/components/speech/SpeechList";
 
 export default function SpeechListPage() {
 	const { loading: authLoading } = useAuthGuard();
-	const { languages } = useLanguages();
-	const { userSettings } = useAuth();
 
-	// 言語選択の状態管理
-	const [learningLanguage, setLearningLanguage] = useState<string>(
-		userSettings?.defaultLearningLanguage?.code || "",
-	);
+	const {
+		learningLanguage,
+		languages,
+		savedSpeeches,
+		isLoadingSpeeches,
+		isLoadingMore,
+		hasMoreSpeeches,
+		nativeLanguage,
+		handleLearningLanguageChange,
+		loadMoreSpeeches,
+	} = useSpeechList();
 
-	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
+	// 無限スクロール
+	useEffect(() => {
+		const handleScroll = () => {
+			if (
+				window.innerHeight + window.scrollY >=
+					document.documentElement.offsetHeight - 1000 &&
+				hasMoreSpeeches &&
+				!isLoadingSpeeches &&
+				!isLoadingMore
+			) {
+				loadMoreSpeeches();
+			}
+		};
 
-	const handleLearningLanguageChange = (languageCode: string) => {
-		setLearningLanguage(languageCode);
-	};
+		window.addEventListener("scroll", handleScroll, { passive: true });
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, [hasMoreSpeeches, isLoadingSpeeches, isLoadingMore, loadMoreSpeeches]);
 
 	// 認証ローディング中は何も表示しない
 	if (authLoading) {
@@ -56,9 +72,9 @@ export default function SpeechListPage() {
 
 				{/* コンテンツエリア */}
 				<SpeechList
-					speeches={[]}
-					isLoadingSpeeches={false}
-					isLoadingMore={false}
+					speeches={savedSpeeches}
+					isLoadingSpeeches={isLoadingSpeeches}
+					isLoadingMore={isLoadingMore}
 					learningLanguage={learningLanguage}
 				/>
 			</div>

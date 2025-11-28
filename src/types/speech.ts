@@ -82,7 +82,24 @@ export interface SpeechStatus {
 export interface SpeechListItem {
 	id: string;
 	title: string;
+	firstPhrase: {
+		original: string;
+	};
 	practiceCount: number;
 	status: SpeechStatus;
+	lastPracticedAt: string | null;
 	createdAt: string;
+}
+
+export interface PaginationData {
+	total: number;
+	limit: number;
+	page: number;
+	hasMore: boolean;
+}
+
+export interface SpeechListResponseData {
+	success: true;
+	speeches: SpeechListItem[];
+	pagination: PaginationData;
 }

@@ -20,7 +20,10 @@ import {
 	QuizStreakRankingResponseData,
 } from "@/types/ranking";
 import { UserSettingsResponse } from "@/types/userSettings";
-import { RemainingSpeechCountResponse } from "@/types/speech";
+import {
+	RemainingSpeechCountResponse,
+	SpeechListResponseData,
+} from "@/types/speech";
 import { useAuth } from "@/contexts/AuthContext";
 
 // React Query用の統一fetcher関数
@@ -41,6 +44,8 @@ export const queryKeys = {
 		["phrases", userId, language, page] as const,
 	infinitePhrases: (userId: string, language: string) =>
 		["infinitePhrases", userId, language] as const,
+	infiniteSpeeches: (userId: string, language: string) =>
+		["infiniteSpeeches", userId, language] as const,
 	phrase: (userId: string, phraseId: string) =>
 		["phrase", userId, phraseId] as const,
 	speakPhrase: (userId: string, language: string) =>
@@ -278,6 +283,55 @@ export function useInfinitePhrases(language?: string) {
 		error,
 		size: data?.pages.length || 0,
 		setSize: fetchNextPage, // React QueryではfetchNextPageを使用
+		refetch,
+	};
+}
+
+// 無限スクロール対応のスピーチリストを取得するフック
+export function useInfiniteSpeeches(language?: string) {
+	const { user } = useAuth();
+
+	const {
+		data,
+		error,
+		isLoading,
+		isFetchingNextPage,
+		fetchNextPage,
+		hasNextPage,
+		refetch,
+	} = useInfiniteQuery({
+		queryKey:
+			user?.id && language ? queryKeys.infiniteSpeeches(user.id, language) : [],
+		queryFn: async ({ pageParam = 1 }) => {
+			return await fetcher<SpeechListResponseData>(
+				`/api/speech?languageCode=${language}&page=${pageParam}&limit=10`,
+			);
+		},
+		getNextPageParam: (lastPage) => {
+			return lastPage.pagination?.hasMore
+				? (lastPage.pagination.page || 0) + 1
+				: undefined;
+		},
+		initialPageParam: 1,
+		enabled: !!user?.id && !!language,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// 全ページのスピーチを平坦化
+	const speeches = data
+		? data.pages.flatMap((page) => page.speeches || [])
+		: [];
+	const totalCount = data?.pages[0]?.pagination?.total || 0;
+
+	return {
+		speeches,
+		totalCount,
+		hasMore: hasNextPage,
+		isLoading,
+		isLoadingMore: isFetchingNextPage,
+		error,
+		size: data?.pages.length || 0,
+		setSize: fetchNextPage,
 		refetch,
 	};
 }

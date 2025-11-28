@@ -14,15 +14,15 @@ const SpeechItem = memo(({ speech, onSpeechClick }: SpeechItemProps) => {
 	const getStatusColor = (statusName: string) => {
 		switch (statusName) {
 			case "A":
-				return "#22c55e"; // green
+				return "#1f2937"; // 最も濃いグレー (gray-800)
 			case "B":
-				return "#3b82f6"; // blue
+				return "#4b5563"; // 濃いグレー (gray-600)
 			case "C":
-				return "#f59e0b"; // orange
+				return "#6b7280"; // 中間グレー (gray-500)
 			case "D":
-				return "#ef4444"; // red
+				return "#9ca3af"; // 薄いグレー (gray-400)
 			default:
-				return "#9ca3af"; // gray
+				return "#d1d5db"; // 最も薄いグレー (gray-300)
 		}
 	};
 
@@ -31,15 +31,14 @@ const SpeechItem = memo(({ speech, onSpeechClick }: SpeechItemProps) => {
 		[speech.status.name],
 	);
 
-	const formattedDate = useMemo(
-		() =>
-			new Date(speech.createdAt).toLocaleDateString("ja-JP", {
-				year: "numeric",
-				month: "numeric",
-				day: "numeric",
-			}),
-		[speech.createdAt],
-	);
+	const formattedDate = useMemo(() => {
+		const dateToFormat = speech.lastPracticedAt || speech.createdAt;
+		return new Date(dateToFormat).toLocaleDateString("ja-JP", {
+			year: "numeric",
+			month: "numeric",
+			day: "numeric",
+		});
+	}, [speech.lastPracticedAt, speech.createdAt]);
 
 	return (
 		<div
@@ -51,6 +50,7 @@ const SpeechItem = memo(({ speech, onSpeechClick }: SpeechItemProps) => {
 			}}
 			onClick={() => onSpeechClick(speech.id)}
 		>
+			{/* タイトル */}
 			<div className="flex justify-between mb-2">
 				<div
 					className="text-base font-medium text-gray-900 flex-1 pr-2 break-words"
@@ -65,6 +65,21 @@ const SpeechItem = memo(({ speech, onSpeechClick }: SpeechItemProps) => {
 				</div>
 			</div>
 
+			{/* 1フレーズ目のプレビュー */}
+			{speech.firstPhrase?.original && (
+				<div
+					className="text-sm text-gray-600 mb-3 break-words"
+					style={{
+						wordWrap: "break-word",
+						overflowWrap: "anywhere",
+						wordBreak: "break-word",
+					}}
+				>
+					{speech.firstPhrase.original}
+				</div>
+			)}
+
+			{/* 練習回数、ステータス、日付 */}
 			<div className="flex items-center justify-between text-xs text-gray-900 mt-4">
 				<div className="flex items-center space-x-4">
 					<span className="flex items-center">
