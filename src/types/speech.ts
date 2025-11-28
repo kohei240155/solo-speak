@@ -68,3 +68,7 @@ export interface SaveSpeechResponseData {
 	}>;
 	remainingSpeechCount: number;
 }
+
+export interface RemainingSpeechCountResponse {
+	remainingSpeechCount: number;
+}

@@ -14,6 +14,7 @@ interface SpeechResultProps {
 	feedback: FeedbackData[];
 	audioBlob?: Blob | null;
 	onSave?: () => void;
+	isSaving?: boolean;
 }
 
 export default function SpeechResult({
@@ -24,6 +25,7 @@ export default function SpeechResult({
 	feedback,
 	audioBlob,
 	onSave,
+	isSaving = false,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
@@ -267,8 +269,12 @@ export default function SpeechResult({
 			</div>
 
 			{/* Save Button */}
-			<AnimatedButton onClick={onSave || (() => {})} variant="primary">
-				Save
+			<AnimatedButton
+				onClick={onSave || (() => {})}
+				variant="primary"
+				disabled={isSaving}
+			>
+				{isSaving ? "Saving..." : "Save"}
 			</AnimatedButton>
 		</div>
 	);

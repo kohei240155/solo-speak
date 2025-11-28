@@ -8,23 +8,18 @@ import { supabase } from "@/utils/spabase";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import toast from "react-hot-toast";
 import SpeechResult from "./SpeechResult";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
+import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
+import { SentenceData, FeedbackData } from "@/types/speech";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
 
-interface Sentence {
-	learningLanguage: string;
-	nativeLanguage: string;
-}
-
-interface FeedbackItem {
-	category: string;
-	content: string;
-}
-
-type SpeechAddProps = {
+interface SpeechAddProps {
 	learningLanguage?: string;
 	nativeLanguage?: string;
-};
+}
 
 const speechFormSchema = z.object({
 	title: z.string().max(50),
@@ -41,6 +36,9 @@ export default function SpeechAdd({
 	learningLanguage,
 	nativeLanguage,
 }: SpeechAddProps) {
+	const { userSettings } = useAuth();
+	const { remainingSpeechCount, isLoading: isLoadingRemaining } =
+		useRemainingSpeechCount();
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -48,10 +46,11 @@ export default function SpeechAdd({
 	const [isTranscribing, setIsTranscribing] = useState(false);
 	const [transcribedText, setTranscribedText] = useState<string>("");
 	const [isCorrecting, setIsCorrecting] = useState(false);
-	const [sentences, setSentences] = useState<Sentence[]>([]);
-	const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
+	const [sentences, setSentences] = useState<SentenceData[]>([]);
+	const [feedback, setFeedback] = useState<FeedbackData[]>([]);
 	const [showResult, setShowResult] = useState(false);
 	const [useMockData, setUseMockData] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
 	const {
@@ -359,6 +358,9 @@ export default function SpeechAdd({
 		try {
 			// モックデータモードの場合
 			if (isMock) {
+				// 3秒間待機
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+
 				// モック添削データを読み込む
 				const response = await fetch("/api/mock/correct");
 				if (!response.ok) {
@@ -426,10 +428,52 @@ export default function SpeechAdd({
 	};
 
 	// 保存処理
-	const handleSave = () => {
-		// TODO: データベースへの保存処理を実装
-		console.log("Saving speech data...");
-		alert("保存機能は実装予定です");
+	const handleSave = async () => {
+		if (!userSettings) {
+			toast.error("User settings not found");
+			return;
+		}
+
+		if (
+			!userSettings.defaultLearningLanguageId ||
+			!userSettings.nativeLanguageId
+		) {
+			toast.error("Please set your languages in settings");
+			return;
+		}
+
+		setIsSaving(true);
+		try {
+			const result = await saveSpeech(
+				{
+					title: titleValue,
+					learningLanguageId: userSettings.defaultLearningLanguageId,
+					nativeLanguageId: userSettings.nativeLanguageId,
+					firstSpeechText: transcribedText,
+					speechPlans: speechPlanItemsValue
+						.map((item) => item.value)
+						.filter((item) => item.trim().length > 0),
+					sentences: sentences,
+					feedback: feedback,
+				},
+				audioBlob,
+			);
+
+			toast.success("Speech saved successfully!");
+			console.log("Saved speech:", result);
+
+			// 保存成功後、フォームをリセット
+			setShowResult(false);
+			setTranscribedText("");
+			setSentences([]);
+			setFeedback([]);
+			setAudioBlob(null);
+		} catch (error) {
+			console.error("Failed to save speech:", error);
+			// エラーはapi.tsで自動的にトースト表示される
+		} finally {
+			setIsSaving(false);
+		}
 	};
 
 	// Speech Plan項目を追加
@@ -459,6 +503,7 @@ export default function SpeechAdd({
 					feedback={feedback}
 					audioBlob={audioBlob}
 					onSave={handleSave}
+					isSaving={isSaving}
 				/>
 			) : (
 				<>
@@ -467,7 +512,13 @@ export default function SpeechAdd({
 						<h2 className="text-xl md:text-2xl font-bold text-gray-900">
 							Add Speech
 						</h2>
-						<div className="text-sm text-gray-600">Left: 1 / 1</div>
+						<div className="text-sm text-gray-600">
+							{isLoadingRemaining ? (
+								"Loading..."
+							) : (
+								<>Left: {remainingSpeechCount} / 1</>
+							)}
+						</div>
 					</div>
 
 					{/* モックデータトグル */}
@@ -493,12 +544,15 @@ export default function SpeechAdd({
 						<textarea
 							{...register("title")}
 							placeholder="独り言を使ってスピーキングの練習を始めたこと"
-							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden"
+							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
 							rows={1}
 							onChange={(e) => {
 								register("title").onChange(e);
 								autoResizeTextarea(e.target);
 							}}
+							disabled={
+								isTranscribing || isCorrecting || remainingSpeechCount === 0
+							}
 						/>
 						{errors.title && (
 							<p className="text-red-500 text-xs mt-1">
@@ -519,18 +573,28 @@ export default function SpeechAdd({
 										<textarea
 											{...register(`speechPlanItems.${index}.value`)}
 											placeholder={placeholders[index]}
-											className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden"
+											className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
 											rows={1}
 											onChange={(e) => {
 												register(`speechPlanItems.${index}.value`).onChange(e);
 												autoResizeTextarea(e.target);
 											}}
+											disabled={
+												isTranscribing ||
+												isCorrecting ||
+												remainingSpeechCount === 0
+											}
 										/>
 										<button
 											type="button"
-											className={`flex-shrink-0 mt-1 ${fields.length === 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800"}`}
+											className={`flex-shrink-0 mt-1 ${fields.length === 1 || isTranscribing || isCorrecting || remainingSpeechCount === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800"}`}
 											onClick={() => handleDeleteItem(index)}
-											disabled={fields.length === 1}
+											disabled={
+												fields.length === 1 ||
+												isTranscribing ||
+												isCorrecting ||
+												remainingSpeechCount === 0
+											}
 										>
 											<RiDeleteBin6Line size={20} />
 										</button>
@@ -549,20 +613,35 @@ export default function SpeechAdd({
 					<div className="flex justify-end mb-8">
 						<button
 							type="button"
-							className={`px-6 py-2 text-white rounded-md font-medium transition-colors ${fields.length >= 5 ? "cursor-not-allowed opacity-50" : ""}`}
+							className={`px-6 py-2 text-white rounded-md font-medium transition-colors ${fields.length >= 5 || isTranscribing || isCorrecting || remainingSpeechCount === 0 ? "cursor-not-allowed opacity-50" : ""}`}
 							style={{ backgroundColor: "#616161" }}
 							onMouseEnter={(e) => {
-								if (fields.length < 5) {
+								if (
+									fields.length < 5 &&
+									!isTranscribing &&
+									!isCorrecting &&
+									remainingSpeechCount !== 0
+								) {
 									e.currentTarget.style.backgroundColor = "#525252";
 								}
 							}}
 							onMouseLeave={(e) => {
-								if (fields.length < 5) {
+								if (
+									fields.length < 5 &&
+									!isTranscribing &&
+									!isCorrecting &&
+									remainingSpeechCount !== 0
+								) {
 									e.currentTarget.style.backgroundColor = "#616161";
 								}
 							}}
 							onClick={handleAddItems}
-							disabled={fields.length >= 5}
+							disabled={
+								fields.length >= 5 ||
+								isTranscribing ||
+								isCorrecting ||
+								remainingSpeechCount === 0
+							}
 						>
 							Add
 						</button>
@@ -583,29 +662,50 @@ export default function SpeechAdd({
 							<button
 								className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 								onClick={deleteRecording}
-								disabled={!audioBlob || isRecording}
+								disabled={
+									!audioBlob ||
+									isRecording ||
+									isTranscribing ||
+									isCorrecting ||
+									remainingSpeechCount === 0
+								}
 							>
 								<RiDeleteBin6Line size={24} />
 							</button>
 
 							{/* 録音/再生ボタン（中央・大きめ） */}
 							<button
-								className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg ${
+								className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${
 									isRecording ? "animate-pulse" : ""
-								} ${hasValidationErrors || (useMockData && audioBlob) ? "" : useMockData ? "opacity-50 cursor-not-allowed" : hasValidationErrors ? "opacity-50 cursor-not-allowed" : ""}`}
+								}`}
 								style={{ backgroundColor: "#616161" }}
 								onMouseEnter={(e) => {
-									if (!hasValidationErrors || (useMockData && audioBlob)) {
+									if (
+										(!hasValidationErrors || (useMockData && audioBlob)) &&
+										!isTranscribing &&
+										!isCorrecting &&
+										remainingSpeechCount !== 0
+									) {
 										e.currentTarget.style.backgroundColor = "#525252";
 									}
 								}}
 								onMouseLeave={(e) => {
-									if (!hasValidationErrors || (useMockData && audioBlob)) {
+									if (
+										(!hasValidationErrors || (useMockData && audioBlob)) &&
+										!isTranscribing &&
+										!isCorrecting &&
+										remainingSpeechCount !== 0
+									) {
 										e.currentTarget.style.backgroundColor = "#616161";
 									}
 								}}
 								onClick={handleRecordButtonClick}
-								disabled={hasValidationErrors && !(useMockData && audioBlob)}
+								disabled={
+									(hasValidationErrors && !(useMockData && audioBlob)) ||
+									isTranscribing ||
+									isCorrecting ||
+									remainingSpeechCount === 0
+								}
 							>
 								{isRecording ? (
 									<BiStop size={40} />
@@ -623,24 +723,22 @@ export default function SpeechAdd({
 							{/* 送信ボタン */}
 							<button
 								className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-								disabled={!audioBlob || isRecording || isTranscribing}
+								disabled={
+									!audioBlob ||
+									isRecording ||
+									isTranscribing ||
+									isCorrecting ||
+									remainingSpeechCount === 0
+								}
 								onClick={handleTranscribe}
 							>
-								<LuSendHorizontal size={24} />
+								{isTranscribing || isCorrecting ? (
+									<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-600" />
+								) : (
+									<LuSendHorizontal size={24} />
+								)}
 							</button>
 						</div>
-
-						{/* 文字起こし中の表示 */}
-						{isTranscribing && (
-							<div className="mt-6 text-center text-gray-600">
-								文字起こし中...
-							</div>
-						)}
-
-						{/* 添削中の表示 */}
-						{isCorrecting && (
-							<div className="mt-6 text-center text-gray-600">添削中...</div>
-						)}
 					</div>
 				</>
 			)}

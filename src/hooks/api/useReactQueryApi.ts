@@ -20,6 +20,7 @@ import {
 	QuizStreakRankingResponseData,
 } from "@/types/ranking";
 import { UserSettingsResponse } from "@/types/userSettings";
+import { RemainingSpeechCountResponse } from "@/types/speech";
 import { useAuth } from "@/contexts/AuthContext";
 
 // React Query用の統一fetcher関数
@@ -52,6 +53,8 @@ export const queryKeys = {
 			: (["ranking", userId, type, language] as const),
 	remainingGenerations: (userId: string) =>
 		["remainingGenerations", userId] as const,
+	remainingSpeechCount: (userId: string) =>
+		["remainingSpeechCount", userId] as const,
 	situations: (userId: string) => ["situations", userId] as const,
 	phraseStreakRanking: (userId: string, language: string) =>
 		["phraseStreakRanking", userId, language] as const,
@@ -393,6 +396,31 @@ export function useRemainingGenerations() {
 
 	return {
 		remainingGenerations: data?.remainingGenerations || 0,
+		isLoading,
+		error,
+		refetch,
+	};
+}
+
+// 残りスピーチ回数を取得するフック
+export function useRemainingSpeechCount() {
+	const { user } = useAuth();
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey: user?.id ? queryKeys.remainingSpeechCount(user.id) : [],
+		queryFn: async () =>
+			fetcher<RemainingSpeechCountResponse>("/api/speech/remaining", {
+				showErrorToast: false,
+			}),
+		enabled: !!user?.id,
+		staleTime: 0, // キャッシュしない（毎回最新の残回数を取得）
+		gcTime: 0, // ガベージコレクション時間も0に設定
+		refetchOnWindowFocus: true, // ウィンドウフォーカス時に再取得
+		refetchOnReconnect: true, // 再接続時に再取得
+	});
+
+	return {
+		remainingSpeechCount: data?.remainingSpeechCount || 0,
 		isLoading,
 		error,
 		refetch,
