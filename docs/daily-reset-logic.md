@@ -36,22 +36,22 @@ Solo Speakアプリケーションにおける、フレーズ生成回数とSpea
 // 1. 現在のUTC日付を取得
 const now = new Date();
 const todayUTC = new Date(
-  Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+	Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
 );
 
 // 2. 最後の生成日をUTC基準の日付に変換
 const lastGenerationDateUTC = new Date(lastGenerationDate);
 const lastGenerationDayUTC = new Date(
-  Date.UTC(
-    lastGenerationDateUTC.getUTCFullYear(),
-    lastGenerationDateUTC.getUTCMonth(),
-    lastGenerationDateUTC.getUTCDate(),
-  ),
+	Date.UTC(
+		lastGenerationDateUTC.getUTCFullYear(),
+		lastGenerationDateUTC.getUTCMonth(),
+		lastGenerationDateUTC.getUTCDate(),
+	),
 );
 
 // 3. 日付比較でリセット判定
 if (lastGenerationDayUTC.getTime() < todayUTC.getTime()) {
-  // 日付が変わった場合のリセット処理
+	// 日付が変わった場合のリセット処理
 }
 ```
 
@@ -81,7 +81,7 @@ WHERE id = userId
 ```typescript
 // UTC日付が変わったら自動的にAPI再実行
 if (newUTCDate !== currentUTCDate) {
-  mutateGenerations(); // /api/user/phrase-generations を再実行
+	mutateGenerations(); // /api/user/phrase-generations を再実行
 }
 ```
 
@@ -106,22 +106,22 @@ if (newUTCDate !== currentUTCDate) {
 // UTC基準での日付比較
 const now = new Date();
 const todayUTC = new Date(
-  Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+	Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
 );
 
 // ユーザーのlastSpeakingDateをUTC基準の日付に変換
 const lastSpeakingDateUTC = new Date(user.lastSpeakingDate);
 const lastSpeakingDayUTC = new Date(
-  Date.UTC(
-    lastSpeakingDateUTC.getUTCFullYear(),
-    lastSpeakingDateUTC.getUTCMonth(),
-    lastSpeakingDateUTC.getUTCDate(),
-  ),
+	Date.UTC(
+		lastSpeakingDateUTC.getUTCFullYear(),
+		lastSpeakingDateUTC.getUTCMonth(),
+		lastSpeakingDateUTC.getUTCDate(),
+	),
 );
 
 // 日付比較でリセット判定
 if (lastSpeakingDayUTC.getTime() < todayUTC.getTime()) {
-  // 日付が変わった場合のリセット処理
+	// 日付が変わった場合のリセット処理
 }
 ```
 
@@ -135,14 +135,14 @@ if (lastSpeakingDayUTC.getTime() < todayUTC.getTime()) {
 ```typescript
 // ユーザーに紐づく全てのフレーズのdailySpeakCountを0にリセット
 await prisma.phrase.updateMany({
-  where: { userId: userId, deletedAt: null },
-  data: { dailySpeakCount: 0 },
+	where: { userId: userId, deletedAt: null },
+	data: { dailySpeakCount: 0 },
 });
 
 // ユーザーのlastSpeakingDateを更新
 await prisma.user.update({
-  where: { id: userId },
-  data: { lastSpeakingDate: new Date() },
+	where: { id: userId },
+	data: { lastSpeakingDate: new Date() },
 });
 ```
 
@@ -191,18 +191,18 @@ WHERE id = phraseId
 ```typescript
 // SpeakModeModal.tsx
 useEffect(() => {
-  if (isOpen) {
-    const resetSession = async () => {
-      await resetSessionSpoken(); // 既存のセッションリセット
-    };
+	if (isOpen) {
+		const resetSession = async () => {
+			await resetSessionSpoken(); // 既存のセッションリセット
+		};
 
-    const resetDailyCount = async () => {
-      await resetDailySpeakCount(); // 新しい日次カウントリセット
-    };
+		const resetDailyCount = async () => {
+			await resetDailySpeakCount(); // 新しい日次カウントリセット
+		};
 
-    resetSession();
-    resetDailyCount();
-  }
+		resetSession();
+		resetDailyCount();
+	}
 }, [isOpen]);
 ```
 
@@ -255,6 +255,6 @@ useEffect(() => {
 
 4. **フロントエンド自動検出**: 1分ごとの日付変更チェックにより、ユーザーがアプリを開いたままでも自動的にリセットが反映される
 
-5. **SWRキャッシュ**: データの整合性を保つため、SWRによるキャッシュ管理と自動再検証を使用
+5. **キャッシュ管理**: データの整合性を保つため、キャッシュ管理と自動再検証を使用
 
 6. **一元化されたリセット処理**: 複数のAPIで個別に日付チェックを行うのではなく、`POST /api/user/reset-daily-speak-count`で一元管理

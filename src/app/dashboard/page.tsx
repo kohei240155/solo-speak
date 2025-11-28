@@ -16,7 +16,7 @@ export default function DashboardPage() {
 		return userSettings?.defaultLearningLanguage?.code || "";
 	});
 
-	// SWRを使用してデータを取得
+	// APIフックを使用してデータを取得
 	const {
 		dashboardData,
 		isLoading: dashboardLoading,

@@ -15,29 +15,29 @@
 ```typescript
 // 行: 47-110
 useEffect(() => {
-  // タイムアウト設定（5秒後に強制的にローディング解除）
-  const loadingTimeout = setTimeout(() => {
-    setLoading(false);
-    // ... 状態リセット処理
-  }, 5000);
+	// タイムアウト設定（5秒後に強制的にローディング解除）
+	const loadingTimeout = setTimeout(() => {
+		setLoading(false);
+		// ... 状態リセット処理
+	}, 5000);
 
-  // 現在のセッションを取得
-  const getSession = async () => {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
-    // セッション状態の更新処理
-  };
+	// 現在のセッションを取得
+	const getSession = async () => {
+		const {
+			data: { session },
+			error,
+		} = await supabase.auth.getSession();
+		// セッション状態の更新処理
+	};
 
-  getSession();
+	getSession();
 
-  // 認証状態の変更を監視
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange(async (event, session) => {
-    // 認証状態変更時の処理
-  });
+	// 認証状態の変更を監視
+	const {
+		data: { subscription },
+	} = supabase.auth.onAuthStateChange(async (event, session) => {
+		// 認証状態変更時の処理
+	});
 });
 ```
 
@@ -48,17 +48,17 @@ useEffect(() => {
 ```typescript
 // 行: 227-240
 useEffect(() => {
-  if (user?.id && session && !loading) {
-    // Googleアバターを即座に設定
-    const googleAvatarUrl =
-      user.user_metadata?.avatar_url || user.user_metadata?.picture;
-    if (googleAvatarUrl) {
-      setUserIconUrl(googleAvatarUrl);
-    }
+	if (user?.id && session && !loading) {
+		// Googleアバターを即座に設定
+		const googleAvatarUrl =
+			user.user_metadata?.avatar_url || user.user_metadata?.picture;
+		if (googleAvatarUrl) {
+			setUserIconUrl(googleAvatarUrl);
+		}
 
-    // ユーザー設定を取得（初回セットアップの確認）
-    refreshUserSettings(); // APIリクエストを含む
-  }
+		// ユーザー設定を取得（初回セットアップの確認）
+		refreshUserSettings(); // APIリクエストを含む
+	}
 }, [user?.id, session, loading, refreshUserSettings]);
 ```
 
@@ -73,8 +73,8 @@ useEffect(() => {
 ```typescript
 // 行: 28-32
 useEffect(() => {
-  // デフォルトは10、フレーズ数が10未満の場合でも10に設定
-  setQuestionCount(10);
+	// デフォルトは10、フレーズ数が10未満の場合でも10に設定
+	setQuestionCount(10);
 }, [availablePhraseCount]);
 ```
 
@@ -85,10 +85,10 @@ useEffect(() => {
 ```typescript
 // 行: 34-40
 useEffect(() => {
-  if (isOpen) {
-    setQuestionCount(10);
-    setSpeakCountFilter(50); // 音読回数フィルターも初期化
-  }
+	if (isOpen) {
+		setQuestionCount(10);
+		setSpeakCountFilter(50); // 音読回数フィルターも初期化
+	}
 }, [isOpen]);
 ```
 
@@ -99,9 +99,9 @@ useEffect(() => {
 ```typescript
 // 行: 79-91
 const data = await api.get<{
-  success: boolean;
-  phrases?: unknown[];
-  message?: string;
+	success: boolean;
+	phrases?: unknown[];
+	message?: string;
 }>(`/api/phrase/quiz?${params.toString()}`);
 ```
 
@@ -116,12 +116,12 @@ const data = await api.get<{
 ```typescript
 // 行: 29-36
 useEffect(() => {
-  if (session && session.currentIndex > 0) {
-    const params = new URLSearchParams(window.location.search);
-    params.set("currentIndex", session.currentIndex.toString());
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, "", newUrl);
-  }
+	if (session && session.currentIndex > 0) {
+		const params = new URLSearchParams(window.location.search);
+		params.set("currentIndex", session.currentIndex.toString());
+		const newUrl = `${window.location.pathname}?${params.toString()}`;
+		window.history.replaceState({}, "", newUrl);
+	}
 }, [session]);
 ```
 
@@ -145,22 +145,22 @@ const data = await api.get<{ success: boolean, phrases?: QuizPhrase[], ... }>(`/
 ```typescript
 // 行: 19-32
 useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const language = params.get("language");
-  const excludeIfSpeakCountGTE = params.get("excludeIfSpeakCountGTE");
-  const excludeTodayPracticed = params.get("excludeTodayPracticed");
+	const params = new URLSearchParams(window.location.search);
+	const language = params.get("language");
+	const excludeIfSpeakCountGTE = params.get("excludeIfSpeakCountGTE");
+	const excludeTodayPracticed = params.get("excludeTodayPracticed");
 
-  if (language) {
-    const restoredConfig: SpeakConfig = {
-      language,
-      excludeIfSpeakCountGTE:
-        excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== ""
-          ? parseInt(excludeIfSpeakCountGTE, 10)
-          : undefined,
-      excludeTodayPracticed: excludeTodayPracticed === "true",
-    };
-    setSavedConfig(restoredConfig);
-  }
+	if (language) {
+		const restoredConfig: SpeakConfig = {
+			language,
+			excludeIfSpeakCountGTE:
+				excludeIfSpeakCountGTE && excludeIfSpeakCountGTE !== ""
+					? parseInt(excludeIfSpeakCountGTE, 10)
+					: undefined,
+			excludeTodayPracticed: excludeTodayPracticed === "true",
+		};
+		setSavedConfig(restoredConfig);
+	}
 }, []);
 ```
 
@@ -171,23 +171,23 @@ useEffect(() => {
 ```typescript
 // 行: 210-226
 useEffect(() => {
-  let currentUTCDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD形式
+	let currentUTCDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD形式
 
-  const checkDateChange = () => {
-    const newUTCDate = new Date().toISOString().split("T")[0];
-    if (newUTCDate !== currentUTCDate) {
-      currentUTCDate = newUTCDate;
-      // 日付が変わったら現在のフレーズの情報を再取得
-      if (currentPhrase && savedConfig) {
-        fetchSpeakPhrase(savedConfig); // APIフェッチ
-      }
-    }
-  };
+	const checkDateChange = () => {
+		const newUTCDate = new Date().toISOString().split("T")[0];
+		if (newUTCDate !== currentUTCDate) {
+			currentUTCDate = newUTCDate;
+			// 日付が変わったら現在のフレーズの情報を再取得
+			if (currentPhrase && savedConfig) {
+				fetchSpeakPhrase(savedConfig); // APIフェッチ
+			}
+		}
+	};
 
-  // 1分ごとに日付変更をチェック
-  const interval = setInterval(checkDateChange, 60 * 1000);
+	// 1分ごとに日付変更をチェック
+	const interval = setInterval(checkDateChange, 60 * 1000);
 
-  return () => clearInterval(interval);
+	return () => clearInterval(interval);
 }, [currentPhrase, savedConfig, fetchSpeakPhrase]);
 ```
 
@@ -211,19 +211,19 @@ const data = await api.get<{ success: boolean, phrase?: SpeakPhrase, ... }>(`/ap
 ```typescript
 // 行: 86-98
 useEffect(() => {
-  if (user) {
-    Promise.all([
-      fetchUserSettings(), // APIフェッチ
-      fetchLanguages(), // APIフェッチ
-    ])
-      .then(() => {
-        setDataLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error loading initial data:", error);
-        setDataLoading(false);
-      });
-  }
+	if (user) {
+		Promise.all([
+			fetchUserSettings(), // APIフェッチ
+			fetchLanguages(), // APIフェッチ
+		])
+			.then(() => {
+				setDataLoading(false);
+			})
+			.catch((error) => {
+				console.error("Error loading initial data:", error);
+				setDataLoading(false);
+			});
+	}
 }, [user, fetchUserSettings, fetchLanguages]);
 ```
 
@@ -234,15 +234,15 @@ useEffect(() => {
 ```typescript
 // 行: 17
 const userData = await api.get<UserSettingsResponse>(
-  `/api/user/settings?t=${Date.now()}`,
-  {
-    headers: {
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      Pragma: "no-cache",
-      Expires: "0",
-    },
-    showErrorToast: false,
-  },
+	`/api/user/settings?t=${Date.now()}`,
+	{
+		headers: {
+			"Cache-Control": "no-cache, no-store, must-revalidate",
+			Pragma: "no-cache",
+			Expires: "0",
+		},
+		showErrorToast: false,
+	},
 );
 ```
 
@@ -253,11 +253,11 @@ const userData = await api.get<UserSettingsResponse>(
 ```typescript
 // 行: 67
 const data = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
-  headers: {
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    Pragma: "no-cache",
-    Expires: "0",
-  },
+	headers: {
+		"Cache-Control": "no-cache, no-store, must-revalidate",
+		Pragma: "no-cache",
+		Expires: "0",
+	},
 });
 ```
 
@@ -272,9 +272,9 @@ const data = await api.get<Language[]>(`/api/languages?t=${Date.now()}`, {
 ```typescript
 // 行: 20-25
 useEffect(() => {
-  if (user && userSettings !== undefined) {
-    checkUserSetupComplete(); // 内部でリダイレクト判定
-  }
+	if (user && userSettings !== undefined) {
+		checkUserSetupComplete(); // 内部でリダイレクト判定
+	}
 }, [user, userSettings, checkUserSetupComplete]);
 ```
 
@@ -285,9 +285,9 @@ useEffect(() => {
 ```typescript
 // 行: 27-31
 useEffect(() => {
-  if (userSettings?.defaultLearningLanguage?.code && !selectedLanguage) {
-    setSelectedLanguage(userSettings.defaultLearningLanguage.code);
-  }
+	if (userSettings?.defaultLearningLanguage?.code && !selectedLanguage) {
+		setSelectedLanguage(userSettings.defaultLearningLanguage.code);
+	}
 }, [userSettings, selectedLanguage]);
 ```
 
@@ -302,61 +302,61 @@ useEffect(() => {
 ```typescript
 // 行: 42-51
 useEffect(() => {
-  if (!user) {
-    // ログアウト時に状態をクリア
-    setRemainingGenerations(0);
-    setSavedPhrases([]);
-    setSituations([]);
-    setUserSettingsInitialized(false);
-    setLearningLanguage("en");
-    setIsInitializing(true);
-  }
+	if (!user) {
+		// ログアウト時に状態をクリア
+		setRemainingGenerations(0);
+		setSavedPhrases([]);
+		setSituations([]);
+		setUserSettingsInitialized(false);
+		setLearningLanguage("en");
+		setIsInitializing(true);
+	}
 }, [user]);
 ```
 
 **目的:** ユーザーログアウト時の状態初期化
 
-#### 7.2 SWRユーザー設定適用
+#### 7.2 ユーザー設定適用
 
 ```typescript
 // 行: 64-73
 useEffect(() => {
-  if (userSettings && !userSettingsInitialized) {
-    // ユーザー設定を適用
-    if (userSettings.nativeLanguage?.code) {
-      setNativeLanguage(userSettings.nativeLanguage.code);
-    }
-    if (userSettings.defaultLearningLanguage?.code) {
-      setLearningLanguage(userSettings.defaultLearningLanguage.code);
-    }
-    setUserSettingsInitialized(true);
-  }
+	if (userSettings && !userSettingsInitialized) {
+		// ユーザー設定を適用
+		if (userSettings.nativeLanguage?.code) {
+			setNativeLanguage(userSettings.nativeLanguage.code);
+		}
+		if (userSettings.defaultLearningLanguage?.code) {
+			setLearningLanguage(userSettings.defaultLearningLanguage.code);
+		}
+		setUserSettingsInitialized(true);
+	}
 }, [userSettings, userSettingsInitialized]);
 ```
 
-**目的:** SWRから取得したユーザー設定の適用
+**目的:** 取得したユーザー設定の適用
 
 #### 7.3 初期データ並列取得
 
 ```typescript
 // 行: 275-286
 useEffect(() => {
-  // ユーザーの初期データを並列取得
-  if (user) {
-    setIsInitializing(true);
-    Promise.all([
-      fetchSituations(), // APIフェッチ
-      fetchUserRemainingGenerations(), // APIフェッチ
-      fetchSavedPhrases(1, false), // APIフェッチ
-    ])
-      .then(() => {
-        setIsInitializing(false);
-      })
-      .catch((error) => {
-        console.error("初期データ取得エラー:", error);
-        setIsInitializing(false);
-      });
-  }
+	// ユーザーの初期データを並列取得
+	if (user) {
+		setIsInitializing(true);
+		Promise.all([
+			fetchSituations(), // APIフェッチ
+			fetchUserRemainingGenerations(), // APIフェッチ
+			fetchSavedPhrases(1, false), // APIフェッチ
+		])
+			.then(() => {
+				setIsInitializing(false);
+			})
+			.catch((error) => {
+				console.error("初期データ取得エラー:", error);
+				setIsInitializing(false);
+			});
+	}
 }, [user, fetchSavedPhrases, fetchUserRemainingGenerations, fetchSituations]);
 ```
 
@@ -367,9 +367,9 @@ useEffect(() => {
 ```typescript
 // 行: 288-292
 useEffect(() => {
-  if (user) {
-    fetchSavedPhrases(1, false); // APIフェッチ
-  }
+	if (user) {
+		fetchSavedPhrases(1, false); // APIフェッチ
+	}
 }, [learningLanguage, user, fetchSavedPhrases]);
 ```
 
@@ -390,10 +390,10 @@ useEffect(() => {
 ```typescript
 // 行: 36-40
 useEffect(() => {
-  if (!phraseId) {
-    setLocalPhrase(null);
-    setLocalLoading(false);
-  }
+	if (!phraseId) {
+		setLocalPhrase(null);
+		setLocalLoading(false);
+	}
 }, [phraseId]);
 ```
 
@@ -402,18 +402,18 @@ useEffect(() => {
 ```typescript
 // 行: 57-82
 useEffect(() => {
-  if (singlePhraseFromSWR && !localLoading && phraseId) {
-    // SWRのデータでローカル状態を更新
-    setLocalPhrase(singlePhraseFromSWR);
-    // dailySpeakCount も更新
-    if (
-      singlePhraseData &&
-      typeof singlePhraseData.dailySpeakCount === "number"
-    ) {
-      setLocalDailySpeakCount(singlePhraseData.dailySpeakCount);
-    }
-  }
-}, [singlePhraseFromSWR, singlePhraseData, localLoading, phraseId]);
+	if (singlePhraseFromAPI && !localLoading && phraseId) {
+		// APIのデータでローカル状態を更新
+		setLocalPhrase(singlePhraseFromAPI);
+		// dailySpeakCount も更新
+		if (
+			singlePhraseData &&
+			typeof singlePhraseData.dailySpeakCount === "number"
+		) {
+			setLocalDailySpeakCount(singlePhraseData.dailySpeakCount);
+		}
+	}
+}, [singlePhraseFromAPI, singlePhraseData, localLoading, phraseId]);
 ```
 
 #### 8.3 強制リフレッシュ処理
@@ -421,28 +421,28 @@ useEffect(() => {
 ```typescript
 // 行: 113-133
 useEffect(() => {
-  if (shouldForceRefresh && phraseId) {
-    const timer = setTimeout(() => {
-      if (refetchPhrase) {
-        refetchPhrase(); // SWR再フェッチ
-      }
-      setShouldForceRefresh(false);
-    }, 100);
+	if (shouldForceRefresh && phraseId) {
+		const timer = setTimeout(() => {
+			if (refetchPhrase) {
+				refetchPhrase(); // データ再フェッチ
+			}
+			setShouldForceRefresh(false);
+		}, 100);
 
-    return () => clearTimeout(timer);
-  }
+		return () => clearTimeout(timer);
+	}
 }, [phraseId, refetchPhrase]);
 ```
 
 **目的:** 単一フレーズデータの強制リフレッシュ
 
-## SWR（Stale-While-Revalidate）によるデータフェッチ
+## データフェッチング機能
 
-### SWRベースのAPIフック (useSWRApi.ts)
+### APIフック (src/hooks/api/)
 
-**ファイルパス:** `src/hooks/api/useSWRApi.ts`
+**ファイルパス:** `src/hooks/api/`
 
-このファイルには以下のSWRベースのデータフェッチフックが定義されています：
+このディレクトリには以下のデータフェッチングフックが定義されています：
 
 1. **useUserSettings()** - `/api/user/settings`
 2. **useLanguages()** - `/api/languages`
@@ -454,7 +454,7 @@ useEffect(() => {
 8. **usePhraseInfinite()** - フレーズの無限スクロール対応
 9. **useRankingData()** - `/api/ranking/${type}?language=${language}&period=${validPeriod}`
 
-これらのフックは内部的にSWRを使用してデータフェッチを行い、キャッシュ、再検証、エラーハンドリングを自動的に処理します。
+これらのフックは内部的にデータフェッチを行い、キャッシュ、再検証、エラーハンドリングを自動的に処理します。
 
 ## データフェッチの特徴とパターン
 
@@ -476,15 +476,15 @@ LP画面などでは`showErrorToast: false`を使用してエラートースト�
 
 ### 5. 状態同期
 
-URLパラメータやローカルストレージと状態を同期させるパターンが多用されています。
+5. URLパラメータやローカルストレージと状態を同期させるパターンが多用されています。
 
-### 6. SWRによる自動再検証
+### 6. 自動再検証
 
-多くのデータフェッチがSWRに移行されており、自動的な再検証とキャッシュ管理が行われています。
+多くのデータフェッチがキャッシュ機能を持つフックに移行されており、自動的な再検証とキャッシュ管理が行われています。
 
 ## 改善提案
 
-1. **一貫性の向上**: 一部のフェッチはまだ手動でuseEffectを使用しているため、SWRへの移行を検討
+1. **一貫性の向上**: 一部のフェッチはまだ手動でuseEffectを使用しているため、キャッシュ機能を持つフックへの移行を検討
 2. **エラーハンドリングの統一**: エラー処理パターンの統一化
 3. **ローディング状態の最適化**: 複数のローディング状態の統合と最適化
 4. **依存関係の整理**: useEffectの依存配列の最適化

@@ -22,7 +22,7 @@ export const useRankingData = () => {
 		"phrase" | "speak" | "quiz"
 	>("phrase");
 
-	// SWRフックを使用してデータを取得
+	// APIフックを使用してデータを取得
 
 	// ランキングデータを取得
 	// Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定

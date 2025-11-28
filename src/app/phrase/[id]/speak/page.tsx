@@ -35,7 +35,7 @@ export default function SpeakPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// SWRフックを使用してデータを取得
+	// APIフックを使用してデータを取得
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
 

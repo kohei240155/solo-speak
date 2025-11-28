@@ -49,15 +49,15 @@ model User {
 
 ```json
 {
-  "hasStripeCustomer": true,
-  "subscription": {
-    "isActive": true,
-    "status": "active",
-    "currentPeriodEnd": "2025-09-04T00:00:00.000Z",
-    "productId": "prod_xxx"
-  },
-  "serverTime": "2025-08-04T12:00:00.000Z",
-  "serverTimezone": "UTC"
+	"hasStripeCustomer": true,
+	"subscription": {
+		"isActive": true,
+		"status": "active",
+		"currentPeriodEnd": "2025-09-04T00:00:00.000Z",
+		"productId": "prod_xxx"
+	},
+	"serverTime": "2025-08-04T12:00:00.000Z",
+	"serverTimezone": "UTC"
 }
 ```
 
@@ -77,7 +77,7 @@ model User {
 
 ```json
 {
-  "checkoutUrl": "https://checkout.stripe.com/c/pay/xxx"
+	"checkoutUrl": "https://checkout.stripe.com/c/pay/xxx"
 }
 ```
 
@@ -96,8 +96,8 @@ model User {
 
 ```json
 {
-  "success": true,
-  "message": "Subscription canceled successfully"
+	"success": true,
+	"message": "Subscription canceled successfully"
 }
 ```
 
@@ -116,9 +116,9 @@ model User {
 
 ```json
 {
-  "remainingGenerations": 5,
-  "lastGenerationDate": "2025-08-04T00:00:00.000Z",
-  "hasActiveSubscription": true
+	"remainingGenerations": 5,
+	"lastGenerationDate": "2025-08-04T00:00:00.000Z",
+	"hasActiveSubscription": true
 }
 ```
 
@@ -176,13 +176,13 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 if (!lastGenerationDate || lastGenerationDay.getTime() < today.getTime()) {
-  if (hasActiveSubscription) {
-    remainingGenerations = 5;
-    await updateUser({ remainingPhraseGenerations: 5 });
-  } else {
-    remainingGenerations = 0;
-    await updateUser({ remainingPhraseGenerations: 0 });
-  }
+	if (hasActiveSubscription) {
+		remainingGenerations = 5;
+		await updateUser({ remainingPhraseGenerations: 5 });
+	} else {
+		remainingGenerations = 0;
+		await updateUser({ remainingPhraseGenerations: 0 });
+	}
 }
 ```
 
@@ -204,12 +204,12 @@ if (!lastGenerationDate || lastGenerationDay.getTime() < today.getTime()) {
 
 ```typescript
 interface SubscriptionStatus {
-  hasStripeCustomer: boolean;
-  subscription: {
-    isActive: boolean;
-    status?: string;
-    currentPeriodEnd?: string;
-  };
+	hasStripeCustomer: boolean;
+	subscription: {
+		isActive: boolean;
+		status?: string;
+		currentPeriodEnd?: string;
+	};
 }
 ```
 
@@ -217,9 +217,9 @@ interface SubscriptionStatus {
 
 ```typescript
 const getStatusDisplayText = () => {
-  if (!isSubscribed) return "No Subscribe";
-  if (status === "canceled") return "Basic Plan (Canceled)";
-  return "Basic Plan";
+	if (!isSubscribed) return "No Subscribe";
+	if (status === "canceled") return "Basic Plan (Canceled)";
+	return "Basic Plan";
 };
 ```
 
@@ -291,11 +291,11 @@ sequenceDiagram
 
 ```typescript
 export async function getUserSubscriptionStatus(
-  customerId: string,
+	customerId: string,
 ): Promise<SubscriptionInfo> {
-  // Stripeからサブスクリプション情報を取得
-  // billing_cycle_anchorから次回請求日を計算
-  // SubscriptionInfo形式で返却
+	// Stripeからサブスクリプション情報を取得
+	// billing_cycle_anchorから次回請求日を計算
+	// SubscriptionInfo形式で返却
 }
 ```
 
@@ -303,13 +303,13 @@ export async function getUserSubscriptionStatus(
 
 ```typescript
 export async function createCheckoutSession(
-  customerId: string,
-  priceId: string,
-  successUrl: string,
-  cancelUrl: string,
+	customerId: string,
+	priceId: string,
+	successUrl: string,
+	cancelUrl: string,
 ): Promise<string> {
-  // Stripeチェックアウトセッションを作成
-  // セッションURLを返却
+	// Stripeチェックアウトセッションを作成
+	// セッションURLを返却
 }
 ```
 
@@ -317,10 +317,10 @@ export async function createCheckoutSession(
 
 ```typescript
 export async function cancelSubscription(
-  subscriptionId: string,
+	subscriptionId: string,
 ): Promise<boolean> {
-  // サブスクリプションを即座に解約
-  // 成功/失敗を返却
+	// サブスクリプションを即座に解約
+	// 成功/失敗を返却
 }
 ```
 
@@ -394,12 +394,12 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 **原因**:
 
-- SWRキャッシュが更新されていない
+- キャッシュが更新されていない
 - Webhookの遅延
 
 **対処法**:
 
-1. `mutate()`でキャッシュクリア
+1. データ再取得でキャッシュクリア
 2. ページリロード
 3. Webhook配信ログ確認
 

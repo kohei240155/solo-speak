@@ -29,11 +29,11 @@ export function useSinglePhraseSpeak({
 		useState(false);
 	const [isFinishing, setIsFinishing] = useState(false);
 
-	// SWRフックを使用してフレーズを取得
+	// APIフックを使用してフレーズを取得
 	const {
 		data: singlePhraseData,
-		phrase: singlePhraseFromSWR,
-		isLoading: isLoadingSinglePhraseSWR,
+		phrase: singlePhraseFromAPI,
+		isLoading: isLoadingSinglePhraseAPI,
 		refetch: refetchPhrase,
 	} = useSpeakPhraseById(phraseId || undefined);
 
@@ -46,19 +46,19 @@ export function useSinglePhraseSpeak({
 		router.push("/phrase/list");
 	}, [t, router]);
 
-	// SWRから取得したデータを状態に反映
+	// APIから取得したデータを状態に反映
 	useEffect(() => {
 		if (!phraseId) {
 			return;
 		}
 
-		if (singlePhraseFromSWR) {
-			setSinglePhrase(singlePhraseFromSWR);
-			setSinglePhraseTodayCount(singlePhraseFromSWR.dailySpeakCount || 0);
-			setSinglePhraseTotalCount(singlePhraseFromSWR.totalSpeakCount || 0);
+		if (singlePhraseFromAPI) {
+			setSinglePhrase(singlePhraseFromAPI);
+			setSinglePhraseTodayCount(singlePhraseFromAPI.dailySpeakCount || 0);
+			setSinglePhraseTotalCount(singlePhraseFromAPI.totalSpeakCount || 0);
 			setSinglePhrasePendingCount(0);
 			setSinglePhraseCountDisabled(
-				(singlePhraseFromSWR.dailySpeakCount || 0) >= 100,
+				(singlePhraseFromAPI.dailySpeakCount || 0) >= 100,
 			);
 			setIsLoadingSinglePhrase(false);
 			return;
@@ -67,14 +67,14 @@ export function useSinglePhraseSpeak({
 		if (singlePhraseData && !singlePhraseData.success) {
 			handleNotFoundError();
 		}
-	}, [singlePhraseFromSWR, singlePhraseData, phraseId, handleNotFoundError]);
+	}, [singlePhraseFromAPI, singlePhraseData, phraseId, handleNotFoundError]);
 
 	// ローディング状態の管理
 	useEffect(() => {
 		if (phraseId) {
-			setIsLoadingSinglePhrase(isLoadingSinglePhraseSWR);
+			setIsLoadingSinglePhrase(isLoadingSinglePhraseAPI);
 		}
-	}, [phraseId, isLoadingSinglePhraseSWR]);
+	}, [phraseId, isLoadingSinglePhraseAPI]);
 
 	// 音読回数を更新（ローカルでのみカウントを増加）
 	const handleCount = useCallback(() => {
