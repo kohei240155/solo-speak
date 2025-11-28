@@ -15,6 +15,8 @@ interface SpeechResultProps {
 	audioBlob?: Blob | null;
 	onSave?: () => void;
 	isSaving?: boolean;
+	memo?: string;
+	onMemoChange?: (memo: string) => void;
 }
 
 export default function SpeechResult({
@@ -26,6 +28,8 @@ export default function SpeechResult({
 	audioBlob,
 	onSave,
 	isSaving = false,
+	memo = "",
+	onMemoChange,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
@@ -267,6 +271,20 @@ export default function SpeechResult({
 						))}
 					</div>
 				</div>
+			</div>
+
+			{/* Memo */}
+			<div className="mb-6">
+				<h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2">
+					Memo
+				</h3>
+				<textarea
+					value={memo}
+					onChange={(e) => onMemoChange?.(e.target.value)}
+					placeholder="気づいたことを自由にメモしましょう。"
+					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+					rows={4}
+				/>
 			</div>
 
 			{/* Save Button */}
