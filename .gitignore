@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Google Cloud credentials
 solo-speak-04aa40f53aaa.json
+
+# Mock data
+/mock

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import BaseModal from "../common/BaseModal";
+import AnimatedButton from "../common/AnimatedButton";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 interface AddContextModalProps {
@@ -56,29 +57,16 @@ export default function AddContextModal({
 
 			{/* ボタン */}
 			<div className="flex gap-3">
-				<button
-					onClick={handleCancel}
-					className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-					style={{
-						borderColor: "#616161",
-						color: "#616161",
-					}}
-				>
+				<AnimatedButton onClick={handleCancel} variant="secondary">
 					Cancel
-				</button>
-				<button
+				</AnimatedButton>
+				<AnimatedButton
 					onClick={handleSubmit}
 					disabled={!contextName.trim() || contextName.length > 50}
-					className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-					style={{
-						backgroundColor:
-							!contextName.trim() || contextName.length > 50
-								? "#9CA3AF"
-								: "#616161",
-					}}
+					variant="primary"
 				>
 					Add
-				</button>
+				</AnimatedButton>
 			</div>
 		</BaseModal>
 	);

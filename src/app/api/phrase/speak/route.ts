@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
 				code: language,
 			},
 			deletedAt: null, // 削除されていないフレーズのみ
+			speechId: null, // Add Speechで追加されたフレーズを除外
 			sessionSpoken: false, // セッション中にまだSpeak練習していないフレーズのみ
 			...(config.excludeTodayPracticed && {
 				dailySpeakCount: { equals: 0 }, // 今日練習済みを除外する場合：今日の練習回数が0のフレーズのみ
