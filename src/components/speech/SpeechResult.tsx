@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { AiOutlineCaretRight } from "react-icons/ai";
+import { BsPauseFill } from "react-icons/bs";
 
 interface Sentence {
 	learningLanguage: string;
@@ -32,23 +33,39 @@ export default function SpeechResult({
 	onSave,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
 
-	// 音声再生
+	// 音声再生/一時停止
 	const handlePlayAudio = () => {
 		if (!audioBlob) return;
 
-		if (isPlaying) {
-			// 既に再生中の場合は何もしない（または一時停止を実装）
-			return;
+		if (!audioRef.current) {
+			const audio = new Audio(URL.createObjectURL(audioBlob));
+			audioRef.current = audio;
+
+			audio.onended = () => {
+				setIsPlaying(false);
+			};
 		}
 
-		const audio = new Audio(URL.createObjectURL(audioBlob));
-		audio.onended = () => {
+		if (isPlaying) {
+			audioRef.current.pause();
 			setIsPlaying(false);
-		};
-		audio.play();
-		setIsPlaying(true);
+		} else {
+			audioRef.current.play();
+			setIsPlaying(true);
+		}
 	};
+
+	// クリーンアップ
+	useEffect(() => {
+		return () => {
+			if (audioRef.current) {
+				audioRef.current.pause();
+				audioRef.current = null;
+			}
+		};
+	}, []);
 
 	return (
 		<div className="max-w-4xl mx-auto">
@@ -103,7 +120,11 @@ export default function SpeechResult({
 								onClick={handlePlayAudio}
 								className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
 							>
-								<div className="w-0 h-0 border-t-6 border-t-transparent border-l-8 border-l-gray-600 border-b-6 border-b-transparent ml-1" />
+								{isPlaying ? (
+									<BsPauseFill size={20} className="text-gray-600" />
+								) : (
+									<div className="w-0 h-0 border-t-6 border-t-transparent border-l-8 border-l-gray-600 border-b-6 border-b-transparent ml-1" />
+								)}
 							</button>
 						)}
 					</div>

@@ -30,13 +30,13 @@ const speechCorrectionResponseSchema = z.object({
 				category: z
 					.string()
 					.describe(
-						"フィードバックのカテゴリ（例: Grammar, Vocabulary, Expression）",
+						"フィードバックのカテゴリ（例: Grammar, Vocabulary, Expression）母国語で記述",
 					),
-				content: z.string().describe("具体的な改善点の内容"),
+				content: z.string().describe("具体的な改善点の内容（母国語で記述）"),
 			}),
 		)
 		.max(5)
-		.describe("改善点のフィードバック（最大5項目）"),
+		.describe("改善点のフィードバック（最大5項目、母国語で記述）"),
 });
 
 /**
