@@ -1,15 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
-import SpeechAdd from "@/components/speech/SpeechAdd";
+import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
+import SpeechResult from "@/components/speech/SpeechResult";
+import PracticeConfirmModal from "@/components/modals/PracticeConfirmModal";
+import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
+import toast from "react-hot-toast";
 
 export default function SpeechAddPage() {
+	const router = useRouter();
 	const { loading: authLoading } = useAuthGuard();
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
@@ -23,6 +29,13 @@ export default function SpeechAddPage() {
 
 	// 未保存の変更を追跡
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+	// 添削結果の状態管理
+	const [correctionResult, setCorrectionResult] =
+		useState<CorrectionResult | null>(null);
+	const [showResult, setShowResult] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
 
 	// 未保存の変更をチェックする関数
 	const checkUnsavedChanges = () => {
@@ -38,6 +51,75 @@ export default function SpeechAddPage() {
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
+	};
+
+	// 添削完了時のハンドラー
+	const handleCorrectionComplete = (result: CorrectionResult) => {
+		setCorrectionResult(result);
+		setShowResult(true);
+		setHasUnsavedChanges(false); // 添削完了後は未保存状態をリセット
+	};
+
+	// 保存処理
+	const handleSave = async () => {
+		if (!userSettings || !correctionResult) {
+			toast.error("User settings not found");
+			return;
+		}
+
+		if (
+			!userSettings.defaultLearningLanguageId ||
+			!userSettings.nativeLanguageId
+		) {
+			toast.error("Please set your languages in settings");
+			return;
+		}
+
+		setIsSaving(true);
+		try {
+			const result = await saveSpeech(
+				{
+					title: correctionResult.title,
+					learningLanguageId: userSettings.defaultLearningLanguageId,
+					nativeLanguageId: userSettings.nativeLanguageId,
+					firstSpeechText: correctionResult.yourSpeech,
+					notes: correctionResult.note,
+					speechPlans: correctionResult.speechPlan,
+					sentences: correctionResult.sentences,
+					feedback: correctionResult.feedback,
+				},
+				correctionResult.audioBlob,
+			);
+
+			toast.success("Speech saved successfully!");
+			console.log("Saved speech:", result);
+
+			// 保存成功後、モーダルを表示
+			setShowPracticeModal(true);
+		} catch (error) {
+			console.error("Failed to save speech:", error);
+			// エラーはapi.tsで自動的にトースト表示される
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	// 練習するを選択
+	const handlePracticeConfirm = () => {
+		setShowPracticeModal(false);
+		// 状態をリセット
+		setShowResult(false);
+		setCorrectionResult(null);
+		router.push("/speech/review");
+	};
+
+	// 練習しないを選択
+	const handlePracticeCancel = () => {
+		setShowPracticeModal(false);
+		// 状態をリセット
+		setShowResult(false);
+		setCorrectionResult(null);
+		router.push("/speech/list");
 	};
 
 	// 認証ローディング中は何も表示しない
@@ -74,13 +156,40 @@ export default function SpeechAddPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					<SpeechAdd
-						learningLanguage={learningLanguage}
-						nativeLanguage={nativeLanguage}
-						onHasUnsavedChanges={setHasUnsavedChanges}
-					/>
+					{showResult && correctionResult ? (
+						<SpeechResult
+							title={correctionResult.title}
+							speechPlan={correctionResult.speechPlan}
+							yourSpeech={correctionResult.yourSpeech}
+							sentences={correctionResult.sentences}
+							feedback={correctionResult.feedback}
+							audioBlob={correctionResult.audioBlob}
+							onSave={handleSave}
+							isSaving={isSaving}
+							note={correctionResult.note}
+							onNoteChange={(note) => {
+								if (correctionResult) {
+									setCorrectionResult({ ...correctionResult, note });
+								}
+							}}
+						/>
+					) : (
+						<SpeechAdd
+							learningLanguage={learningLanguage}
+							nativeLanguage={nativeLanguage}
+							onHasUnsavedChanges={setHasUnsavedChanges}
+							onCorrectionComplete={handleCorrectionComplete}
+						/>
+					)}
 				</div>
 			</div>
+
+			{/* Practice Confirm Modal */}
+			<PracticeConfirmModal
+				isOpen={showPracticeModal}
+				onConfirm={handlePracticeConfirm}
+				onCancel={handlePracticeCancel}
+			/>
 		</div>
 	);
 }
