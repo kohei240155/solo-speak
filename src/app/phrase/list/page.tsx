@@ -93,6 +93,7 @@ export default function PhraseListPage() {
 					isLoadingMore={isLoadingMore}
 					languages={languages}
 					nativeLanguage={nativeLanguage}
+					learningLanguage={learningLanguage}
 					onRefreshPhrases={refreshPhrases}
 				/>
 			</div>
