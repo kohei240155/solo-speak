@@ -4,10 +4,24 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { BsFillPlayFill, BsPauseFill } from "react-icons/bs";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/utils/spabase";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 type SpeechAddProps = {
 	learningLanguage?: string;
 };
+
+const speechFormSchema = z.object({
+	title: z.string().max(50),
+	speechPlanItems: z.array(
+		z.object({
+			value: z.string().max(100),
+		}),
+	),
+});
+
+type SpeechFormData = z.infer<typeof speechFormSchema>;
 
 export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 	const [isRecording, setIsRecording] = useState(false);
@@ -17,11 +31,55 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 	const [isTranscribing, setIsTranscribing] = useState(false);
 	const [transcribedText, setTranscribedText] = useState<string>("");
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+	const {
+		register,
+		control,
+		formState: { errors },
+		watch,
+	} = useForm<SpeechFormData>({
+		resolver: zodResolver(speechFormSchema),
+		mode: "onChange",
+		defaultValues: {
+			title: "",
+			speechPlanItems: [{ value: "" }, { value: "" }, { value: "" }],
+		},
+	});
+
+	const { fields, append, remove } = useFieldArray({
+		control,
+		name: "speechPlanItems",
+	});
+
+	const titleValue = watch("title");
+	const speechPlanItemsValue = watch("speechPlanItems");
+
+	// バリデーションエラーがあるかチェック
+	const hasValidationErrors =
+		Object.keys(errors).length > 0 ||
+		!titleValue ||
+		titleValue.trim() === "" ||
+		(titleValue && titleValue.length > 50) ||
+		speechPlanItemsValue?.some((item) => item.value && item.value.length > 100);
+
+	const placeholders = [
+		"今日から独り言を使ったスピーキングの勉強を始めた。",
+		"きっかけは、独り言の練習ができるアプリを見つけたことだった。",
+		"やってみたら、思った以上に難しいことがわかった。",
+		"特に、言いたいことがすぐ出てこない場面が多かった。",
+		"それでも効果はありそうだと思ったので、明日も続けてみようと思う。",
+	];
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	const MAX_RECORDING_TIME = 90; // 1分半（90秒）
+
+	// textareaの高さを自動調整
+	const autoResizeTextarea = (element: HTMLTextAreaElement) => {
+		element.style.height = "auto";
+		element.style.height = `${element.scrollHeight}px`;
+	};
 
 	// 録音時間のフォーマット
 	const formatTime = (seconds: number) => {
@@ -204,6 +262,20 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 		}
 	};
 
+	// Speech Plan項目を追加
+	const handleAddItems = () => {
+		if (fields.length < 5) {
+			append({ value: "" });
+		}
+	};
+
+	// Speech Plan項目を削除
+	const handleDeleteItem = (index: number) => {
+		if (fields.length > 1) {
+			remove(index);
+		}
+	};
+
 	return (
 		<>
 			{/* Add Speech見出しとLeft情報 */}
@@ -217,11 +289,21 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 			{/* Titleセクション */}
 			<div className="mb-4">
 				<h3 className="text-lg font-semibold text-gray-900 mb-2">Title</h3>
-				<input
-					type="text"
-					placeholder="友達とアメフトを見に行った時の話"
-					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300"
+				<textarea
+					{...register("title")}
+					placeholder="独り言を使ってスピーキングの練習を始めたこと"
+					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden"
+					rows={1}
+					onChange={(e) => {
+						register("title").onChange(e);
+						autoResizeTextarea(e.target);
+					}}
 				/>
+				{errors.title && (
+					<p className="text-red-500 text-xs mt-1">
+						タイトルは50文字以内で入力してください
+					</p>
+				)}
 			</div>
 
 			{/* Speech Planセクション */}
@@ -230,19 +312,33 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 					Speech Plan
 				</h3>
 				<div className="space-y-2">
-					{[1, 2, 3, 4, 5].map((index) => (
-						<div
-							key={index}
-							className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-3"
-						>
-							<input
-								type="text"
-								placeholder="友達とアメフトを見に行った時の話"
-								className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300"
-							/>
-							<button className="flex-shrink-0 text-gray-600 hover:text-gray-800">
-								<RiDeleteBin6Line size={20} />
-							</button>
+					{fields.map((field, index) => (
+						<div key={field.id}>
+							<div className="flex items-start gap-2 border border-gray-300 rounded-md px-3 py-3">
+								<textarea
+									{...register(`speechPlanItems.${index}.value`)}
+									placeholder={placeholders[index]}
+									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none overflow-hidden"
+									rows={1}
+									onChange={(e) => {
+										register(`speechPlanItems.${index}.value`).onChange(e);
+										autoResizeTextarea(e.target);
+									}}
+								/>
+								<button
+									type="button"
+									className={`flex-shrink-0 mt-1 ${fields.length === 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800"}`}
+									onClick={() => handleDeleteItem(index)}
+									disabled={fields.length === 1}
+								>
+									<RiDeleteBin6Line size={20} />
+								</button>
+							</div>
+							{errors.speechPlanItems?.[index]?.value && (
+								<p className="text-red-500 text-xs mt-1">
+									100文字以内で入力してください
+								</p>
+							)}
 						</div>
 					))}
 				</div>
@@ -251,14 +347,21 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 			{/* Addボタン */}
 			<div className="flex justify-end mb-8">
 				<button
-					className="px-6 py-2 text-white rounded-md font-medium transition-colors"
+					type="button"
+					className={`px-6 py-2 text-white rounded-md font-medium transition-colors ${fields.length >= 5 ? "cursor-not-allowed opacity-50" : ""}`}
 					style={{ backgroundColor: "#616161" }}
 					onMouseEnter={(e) => {
-						e.currentTarget.style.backgroundColor = "#525252";
+						if (fields.length < 5) {
+							e.currentTarget.style.backgroundColor = "#525252";
+						}
 					}}
 					onMouseLeave={(e) => {
-						e.currentTarget.style.backgroundColor = "#616161";
+						if (fields.length < 5) {
+							e.currentTarget.style.backgroundColor = "#616161";
+						}
 					}}
+					onClick={handleAddItems}
+					disabled={fields.length >= 5}
 				>
 					Add
 				</button>
@@ -309,19 +412,20 @@ export default function SpeechAdd({ learningLanguage }: SpeechAddProps) {
 					<button
 						className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg ${
 							isRecording ? "animate-pulse" : ""
-						}`}
+						} ${hasValidationErrors ? "opacity-50 cursor-not-allowed" : ""}`}
 						style={{ backgroundColor: isRecording ? "#ef4444" : "#616161" }}
 						onMouseEnter={(e) => {
-							if (!isRecording) {
+							if (!isRecording && !hasValidationErrors) {
 								e.currentTarget.style.backgroundColor = "#525252";
 							}
 						}}
 						onMouseLeave={(e) => {
-							if (!isRecording) {
+							if (!isRecording && !hasValidationErrors) {
 								e.currentTarget.style.backgroundColor = "#616161";
 							}
 						}}
 						onClick={handleRecordButtonClick}
+						disabled={hasValidationErrors}
 					>
 						<BsFillMicFill size={32} />
 					</button>
