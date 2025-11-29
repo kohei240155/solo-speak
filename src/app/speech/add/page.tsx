@@ -12,7 +12,6 @@ import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
 import SpeechResult from "@/components/speech/SpeechResult";
 import PracticeConfirmModal from "@/components/modals/PracticeConfirmModal";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
-import { ReviewConfig } from "@/components/modals/ReviewModeModal";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -48,11 +47,6 @@ export default function SpeechAddPage() {
 
 	const closeReviewModal = () => {
 		setShowReviewModal(false);
-	};
-
-	const handleReviewStart = (config: ReviewConfig) => {
-		// TODO: Review開始処理を実装
-		console.log("Review started with config:", config);
 	};
 
 	// 未保存の変更をチェックする関数
@@ -214,7 +208,6 @@ export default function SpeechAddPage() {
 			<ReviewModeModal
 				isOpen={showReviewModal}
 				onClose={closeReviewModal}
-				onStart={handleReviewStart}
 				languages={languages || []}
 				defaultLearningLanguage={learningLanguage}
 			/>

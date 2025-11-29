@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,12 +9,16 @@ import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import { ReviewConfig } from "@/components/modals/ReviewModeModal";
-import { Toaster } from "react-hot-toast";
+import SpeechReview from "@/components/speech/SpeechReview";
+import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
+import { SpeechReviewResponseData } from "@/types/speech";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
+	const { fetchReviewSpeech, loading: fetchingReview } = useReviewSpeech();
 
 	// 言語選択の状態管理
 	const [learningLanguage, setLearningLanguage] = useState<string>(
@@ -24,7 +28,55 @@ export default function SpeechReviewPage() {
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
 
+	// スピーチデータの状態管理
+	const [reviewSpeech, setReviewSpeech] =
+		useState<SpeechReviewResponseData["speech"]>(null);
+
 	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
+
+	// userSettingsが更新されたら学習言語を同期
+	useEffect(() => {
+		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
+			setLearningLanguage(userSettings.defaultLearningLanguage.code);
+		}
+	}, [userSettings, learningLanguage]);
+
+	// ページロード時にセッションストレージから設定を読み込んでAPIを呼び出す
+	useEffect(() => {
+		const loadReviewSpeech = async () => {
+			const savedConfig = sessionStorage.getItem("reviewConfig");
+			if (savedConfig) {
+				try {
+					const config: ReviewConfig = JSON.parse(savedConfig);
+
+					// セッションストレージをクリア（1回だけ使用）
+					sessionStorage.removeItem("reviewConfig");
+
+					const speech = await fetchReviewSpeech({
+						languageCode: config.language,
+						speakCountFilter: config.speakCountFilter as
+							| "lessPractice"
+							| "lowStatus"
+							| null,
+						excludeTodayPracticed: config.excludeTodayPracticed,
+					});
+
+					if (!speech) {
+						toast.error("No speech found matching the criteria");
+						return;
+					}
+
+					setReviewSpeech(speech);
+				} catch (error) {
+					console.error("Failed to fetch review speech:", error);
+				}
+			}
+		};
+
+		if (!authLoading && userSettings) {
+			loadReviewSpeech();
+		}
+	}, [authLoading, userSettings, fetchReviewSpeech]);
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
@@ -36,11 +88,6 @@ export default function SpeechReviewPage() {
 
 	const closeReviewModal = () => {
 		setShowReviewModal(false);
-	};
-
-	const handleReviewStart = (config: ReviewConfig) => {
-		// TODO: Review開始処理を実装
-		console.log("Review started with config:", config);
 	};
 
 	// 認証ローディング中は何も表示しない
@@ -77,11 +124,26 @@ export default function SpeechReviewPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					<div className="text-center py-8">
-						<p className="text-gray-600 text-lg">
-							Speech Review content will be implemented here.
-						</p>
-					</div>
+					{fetchingReview ? (
+						<div className="flex justify-center items-center py-12">
+							<LoadingSpinner message="Loading speech..." />
+						</div>
+					) : reviewSpeech ? (
+						<SpeechReview speech={reviewSpeech} />
+					) : (
+						<div className="text-center py-12">
+							<p className="text-gray-600 text-lg mb-4">
+								Select review conditions to start practicing
+							</p>
+							<button
+								type="button"
+								onClick={openReviewModal}
+								className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+							>
+								Start Review
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -89,7 +151,6 @@ export default function SpeechReviewPage() {
 			<ReviewModeModal
 				isOpen={showReviewModal}
 				onClose={closeReviewModal}
-				onStart={handleReviewStart}
 				languages={languages || []}
 				defaultLearningLanguage={learningLanguage}
 			/>

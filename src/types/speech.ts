@@ -124,3 +124,35 @@ export interface UpdateSpeechRequest {
 		translation: string;
 	}>;
 }
+
+// Speech Review Types
+export interface SpeechReviewResponseData {
+	success: true;
+	speech: {
+		id: string;
+		title: string;
+		practiceCount: number;
+		status: {
+			id: string;
+			name: string;
+			description?: string;
+		};
+		firstSpeechText: string;
+		audioFilePath: string | null;
+		notes: string | null;
+		lastPracticedAt: string | null;
+		createdAt: string;
+		phrases: Array<{
+			id: string;
+			original: string;
+			translation: string;
+			speechOrder: number;
+		}>;
+		feedbacks: Array<{
+			id: string;
+			category: string;
+			content: string;
+			createdAt: string;
+		}>;
+	} | null;
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ModeModal, { ModeModalConfig } from "./ModeModal";
 import { Language } from "@/types/phrase";
 import { useTranslation } from "@/hooks/ui/useTranslation";
@@ -12,7 +13,6 @@ export interface ReviewConfig {
 interface ReviewModeModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	onStart: (config: ReviewConfig) => void;
 	languages: Language[];
 	defaultLearningLanguage: string | undefined;
 }
@@ -20,11 +20,11 @@ interface ReviewModeModalProps {
 export default function ReviewModeModal({
 	isOpen,
 	onClose,
-	onStart,
 	languages,
 	defaultLearningLanguage,
 }: ReviewModeModalProps) {
 	const { t } = useTranslation("common");
+	const router = useRouter();
 	const [speakCountFilter, setSpeakCountFilter] = useState<string | null>(
 		"lessPractice",
 	);
@@ -39,9 +39,14 @@ export default function ReviewModeModal({
 			excludeTodayPracticed: excludeTodayPracticed,
 		};
 
-		// onStartの呼び出し前にモーダルを閉じる
+		// 設定をセッションストレージに保存
+		sessionStorage.setItem("reviewConfig", JSON.stringify(config));
+
+		// モーダルを閉じる
 		onClose();
-		onStart(config);
+
+		// Review画面に遷移
+		router.push("/speech/review");
 	};
 
 	// 出題対象のオプションを生成

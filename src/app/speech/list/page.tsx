@@ -8,7 +8,6 @@ import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechList from "@/components/speech/SpeechList";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
-import { ReviewConfig } from "@/components/modals/ReviewModeModal";
 import { Toaster } from "react-hot-toast";
 
 export default function SpeechListPage() {
@@ -36,11 +35,6 @@ export default function SpeechListPage() {
 
 	const closeReviewModal = () => {
 		setShowReviewModal(false);
-	};
-
-	const handleReviewStart = (config: ReviewConfig) => {
-		// TODO: Review開始処理を実装
-		console.log("Review started with config:", config);
 	};
 
 	// 無限スクロール
@@ -107,7 +101,6 @@ export default function SpeechListPage() {
 			<ReviewModeModal
 				isOpen={showReviewModal}
 				onClose={closeReviewModal}
-				onStart={handleReviewStart}
 				languages={languages || []}
 				defaultLearningLanguage={learningLanguage}
 			/>
