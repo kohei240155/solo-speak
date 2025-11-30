@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
+import { api } from "@/utils/api";
 
 interface UseTextToSpeechOptions {
 	languageCode?: string;
@@ -115,23 +116,18 @@ export function useTextToSpeech(
 				}
 
 				// キャッシュにない場合は新しく音声を取得
-				const response = await fetch("/api/tts", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
+				const data = await api.post<{
+					success: boolean;
+					audioData: string;
+					mimeType?: string;
+				}>(
+					"/api/tts",
+					{
 						text: text.trim(),
 						languageCode,
-					}),
-				});
-
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.error || "Failed to generate speech");
-				}
-
-				const data = await response.json();
+					},
+					{ useAuth: false },
+				);
 
 				if (!data.success || !data.audioData) {
 					throw new Error("Invalid response from server");
