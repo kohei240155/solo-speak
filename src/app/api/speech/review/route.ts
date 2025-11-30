@@ -140,6 +140,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 						description: true,
 					},
 				},
+				nativeLanguage: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+				},
+				learningLanguage: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+				},
 				phrases: {
 					where: {
 						deletedAt: null,
@@ -202,6 +216,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					id: speech.status.id,
 					name: speech.status.name,
 					description: speech.status.description || undefined,
+				},
+				nativeLanguage: {
+					id: speech.nativeLanguage.id,
+					code: speech.nativeLanguage.code,
+					name: speech.nativeLanguage.name,
+				},
+				learningLanguage: {
+					id: speech.learningLanguage.id,
+					code: speech.learningLanguage.code,
+					name: speech.learningLanguage.name,
 				},
 				firstSpeechText: speech.firstSpeechText,
 				audioFilePath: audioUrl,

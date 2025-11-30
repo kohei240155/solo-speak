@@ -137,6 +137,16 @@ export interface SpeechReviewResponseData {
 			name: string;
 			description?: string;
 		};
+		nativeLanguage: {
+			id: string;
+			code: string;
+			name: string;
+		};
+		learningLanguage: {
+			id: string;
+			code: string;
+			name: string;
+		};
 		firstSpeechText: string;
 		audioFilePath: string | null;
 		notes: string | null;
