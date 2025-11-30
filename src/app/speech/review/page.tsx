@@ -12,7 +12,7 @@ import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -27,7 +27,7 @@ function SpeechReviewPage() {
 	const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
 
 	// React Queryでスピーチを取得
-	const { speech, isLoading: isSpeechLoading } = useReviewSpeech({
+	const { speech } = useReviewSpeech({
 		languageCode: language,
 		speakCountFilter: (speakCountFilter || null) as
 			| "lessPractice"
@@ -65,13 +65,6 @@ function SpeechReviewPage() {
 			}
 		}
 	}, [learningLanguage, router]);
-
-	// スピーチが見つからない場合の処理
-	useEffect(() => {
-		if (!isSpeechLoading && language && !speech) {
-			toast.error("No speech found matching the criteria");
-		}
-	}, [isSpeechLoading, language, speech]);
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
