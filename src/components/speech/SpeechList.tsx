@@ -1,5 +1,6 @@
 import { SpeechListItem } from "@/types/speech";
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import LoadingSpinner from "../common/LoadingSpinner";
 import SpeechItem from "./SpeechItem";
 import EditSpeechModal from "./EditSpeechModal";
@@ -20,17 +21,20 @@ export default function SpeechList({
 	learningLanguage,
 	onRefreshSpeeches,
 }: SpeechListProps) {
+	const router = useRouter();
 	const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 	const [editingSpeech, setEditingSpeech] = useState<SpeechListItem | null>(
 		null,
 	);
 	const [deletingSpeechId, setDeletingSpeechId] = useState<string | null>(null);
 
-	const handleSpeechClick = useCallback((speechId: string) => {
-		// スピーチ詳細ページへ遷移 (実装予定)
-		console.log("Speech clicked:", speechId);
-		// router.push(`/speech/${speechId}`);
-	}, []);
+	const handleSpeechClick = useCallback(
+		(speechId: string) => {
+			// スピーチIDを指定してレビューページに遷移
+			router.push(`/speech/review?speechId=${speechId}`);
+		},
+		[router],
+	);
 
 	const handleMenuToggle = useCallback(
 		(speechId: string) => {

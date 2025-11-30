@@ -18,6 +18,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		}
 
 		const { searchParams } = new URL(request.url);
+		const speechId: string | null = searchParams.get("speechId");
 		const languageCode: string | null = searchParams.get("languageCode");
 		const speakCountFilter: string | null =
 			searchParams.get("speakCountFilter");
@@ -25,6 +26,133 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			searchParams.get("excludeTodayPracticed") !== "false";
 
 		const userId = authResult.user.id;
+
+		// speechIdが指定されている場合は、そのスピーチを直接取得
+		if (speechId) {
+			console.log("★Fetching speech with ID:", speechId);
+			const speech = await prisma.speech.findFirst({
+				where: {
+					id: speechId,
+					userId,
+					deletedAt: null,
+				},
+				include: {
+					status: {
+						select: {
+							id: true,
+							name: true,
+							description: true,
+						},
+					},
+					nativeLanguage: {
+						select: {
+							id: true,
+							code: true,
+							name: true,
+						},
+					},
+					learningLanguage: {
+						select: {
+							id: true,
+							code: true,
+							name: true,
+						},
+					},
+					phrases: {
+						where: {
+							deletedAt: null,
+						},
+						select: {
+							id: true,
+							original: true,
+							translation: true,
+							speechOrder: true,
+						},
+						orderBy: {
+							speechOrder: "asc",
+						},
+					},
+					feedbacks: {
+						where: {
+							deletedAt: null,
+						},
+						select: {
+							id: true,
+							category: true,
+							content: true,
+							createdAt: true,
+						},
+						orderBy: {
+							createdAt: "desc",
+						},
+					},
+				},
+			});
+
+			// スピーチが見つからない場合
+			if (!speech) {
+				const errorResponse: ApiErrorResponse = {
+					error: "Speech not found",
+				};
+				return NextResponse.json(errorResponse, { status: 404 });
+			}
+
+			// 音声ファイルのURLを取得
+			let audioUrl: string | null = null;
+			if (speech.audioFilePath) {
+				try {
+					audioUrl = await getSpeechAudioSignedUrl(speech.audioFilePath);
+				} catch (error) {
+					console.error("Error getting audio URL:", error);
+				}
+			}
+
+			// レスポンスデータの変換
+			const responseData = {
+				success: true,
+				speech: {
+					id: speech.id,
+					title: speech.title,
+					practiceCount: speech.practiceCount,
+					status: {
+						id: speech.status.id,
+						name: speech.status.name,
+						description: speech.status.description || undefined,
+					},
+					nativeLanguage: {
+						id: speech.nativeLanguage.id,
+						code: speech.nativeLanguage.code,
+						name: speech.nativeLanguage.name,
+					},
+					learningLanguage: {
+						id: speech.learningLanguage.id,
+						code: speech.learningLanguage.code,
+						name: speech.learningLanguage.name,
+					},
+					firstSpeechText: speech.firstSpeechText,
+					audioFilePath: audioUrl,
+					notes: speech.notes,
+					lastPracticedAt: speech.lastPracticedAt
+						? speech.lastPracticedAt.toISOString()
+						: null,
+					createdAt: speech.createdAt.toISOString(),
+					phrases: speech.phrases.map((phrase) => ({
+						id: phrase.id,
+						original: phrase.original,
+						translation: phrase.translation,
+						speechOrder: phrase.speechOrder || 0,
+					})),
+					feedbacks: speech.feedbacks.map((feedback) => ({
+						id: feedback.id,
+						category: feedback.category,
+						content: feedback.content,
+						createdAt: feedback.createdAt.toISOString(),
+					})),
+				},
+			};
+
+			return NextResponse.json(responseData);
+		}
 
 		// 言語コードのバリデーション
 		if (!languageCode) {

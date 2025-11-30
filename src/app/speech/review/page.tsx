@@ -29,19 +29,21 @@ function SpeechReviewPage() {
 	const [viewMode, setViewMode] = useState<"review" | "practice">("review");
 
 	// URLパラメータを取得
+	const speechId = searchParams.get("speechId");
 	const language = searchParams.get("language");
 	const speakCountFilter = searchParams.get("speakCountFilter");
 	const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
 
 	// React Queryでスピーチを取得
 	const { speech } = useReviewSpeech({
+		speechId: speechId,
 		languageCode: language,
 		speakCountFilter: (speakCountFilter || null) as
 			| "lessPractice"
 			| "lowStatus"
 			| null,
 		excludeTodayPracticed: excludeTodayPracticed === "true",
-		enabled: !authLoading && !!language,
+		enabled: !authLoading && (!!speechId || !!language),
 	});
 
 	// 言語選択の状態管理
@@ -72,7 +74,8 @@ function SpeechReviewPage() {
 		if (learningLanguage) {
 			const params = new URLSearchParams(window.location.search);
 			// URLパラメータがない場合（直接アクセス）はSpeech Listに遷移
-			if (!params.toString()) {
+			// speechIdまたはlanguageのどちらかがあればOK
+			if (!params.get("speechId") && !params.get("language")) {
 				router.push("/speech/list");
 				return;
 			}
