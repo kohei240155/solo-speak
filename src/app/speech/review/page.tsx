@@ -11,16 +11,30 @@ import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
-import { SpeechReviewResponseData } from "@/types/speech";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
-	const { fetchReviewSpeech } = useReviewSpeech();
 	const router = useRouter();
 	const searchParams = useSearchParams();
+
+	// URLパラメータを取得
+	const language = searchParams.get("language");
+	const speakCountFilter = searchParams.get("speakCountFilter");
+	const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
+
+	// React Queryでスピーチを取得
+	const { speech, isLoading: isSpeechLoading } = useReviewSpeech({
+		languageCode: language,
+		speakCountFilter: (speakCountFilter || null) as
+			| "lessPractice"
+			| "lowStatus"
+			| null,
+		excludeTodayPracticed: excludeTodayPracticed === "true",
+		enabled: !authLoading && !!language,
+	});
 
 	// 言語選択の状態管理
 	const [learningLanguage, setLearningLanguage] = useState<string>(
@@ -29,10 +43,6 @@ export default function SpeechReviewPage() {
 
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
-
-	// スピーチデータの状態管理
-	const [reviewSpeech, setReviewSpeech] =
-		useState<SpeechReviewResponseData["speech"]>(null);
 
 	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
 
@@ -55,42 +65,12 @@ export default function SpeechReviewPage() {
 		}
 	}, [learningLanguage, router]);
 
-	// URLパラメータからスピーチを取得
+	// スピーチが見つからない場合の処理
 	useEffect(() => {
-		const loadReviewSpeech = async () => {
-			const language = searchParams.get("language");
-			const speakCountFilter = searchParams.get("speakCountFilter");
-			const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
-
-			if (!language) {
-				return;
-			}
-
-			try {
-				const speech = await fetchReviewSpeech({
-					languageCode: language,
-					speakCountFilter: (speakCountFilter || null) as
-						| "lessPractice"
-						| "lowStatus"
-						| null,
-					excludeTodayPracticed: excludeTodayPracticed === "true",
-				});
-
-				if (!speech) {
-					toast.error("No speech found matching the criteria");
-					return;
-				}
-
-				setReviewSpeech(speech);
-			} catch (error) {
-				console.error("Failed to fetch review speech:", error);
-			}
-		};
-
-		if (!authLoading && userSettings) {
-			loadReviewSpeech();
+		if (!isSpeechLoading && language && !speech) {
+			toast.error("No speech found matching the criteria");
 		}
-	}, [authLoading, userSettings, searchParams, fetchReviewSpeech]);
+	}, [isSpeechLoading, language, speech]);
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
@@ -138,8 +118,8 @@ export default function SpeechReviewPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					{reviewSpeech ? (
-						<SpeechReview speech={reviewSpeech} />
+					{speech ? (
+						<SpeechReview speech={speech} />
 					) : (
 						<div
 							className="flex items-center justify-center"

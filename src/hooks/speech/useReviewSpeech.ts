@@ -1,26 +1,32 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import { SpeechReviewResponseData } from "@/types/speech";
 
 interface UseReviewSpeechParams {
-	languageCode: string;
+	languageCode: string | null;
 	speakCountFilter?: "lessPractice" | "lowStatus" | null;
 	excludeTodayPracticed?: boolean;
+	enabled?: boolean;
 }
 
-export function useReviewSpeech() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+export function useReviewSpeech({
+	languageCode,
+	speakCountFilter = null,
+	excludeTodayPracticed = true,
+	enabled = true,
+}: UseReviewSpeechParams) {
+	const { data, isLoading, error, refetch } = useQuery({
+		queryKey: [
+			"reviewSpeech",
+			languageCode,
+			speakCountFilter,
+			excludeTodayPracticed,
+		],
+		queryFn: async () => {
+			if (!languageCode) {
+				return null;
+			}
 
-	const fetchReviewSpeech = async ({
-		languageCode,
-		speakCountFilter = null,
-		excludeTodayPracticed = true,
-	}: UseReviewSpeechParams): Promise<SpeechReviewResponseData["speech"]> => {
-		setLoading(true);
-		setError(null);
-
-		try {
 			const params = new URLSearchParams({
 				languageCode,
 				excludeTodayPracticed: excludeTodayPracticed.toString(),
@@ -35,19 +41,16 @@ export function useReviewSpeech() {
 			);
 
 			return response.speech;
-		} catch (err) {
-			const errorMessage =
-				err instanceof Error ? err.message : "Failed to fetch review speech";
-			setError(errorMessage);
-			throw err;
-		} finally {
-			setLoading(false);
-		}
-	};
+		},
+		enabled: enabled && !!languageCode,
+		staleTime: 0,
+		refetchOnMount: true,
+	});
 
 	return {
-		fetchReviewSpeech,
-		loading,
-		error,
+		speech: data ?? null,
+		isLoading,
+		error: error instanceof Error ? error.message : null,
+		refetch,
 	};
 }
