@@ -25,7 +25,6 @@ interface SpeechReviewProps {
 	setPendingCount: (count: number) => void;
 	viewMode: ViewMode;
 	setViewMode: (mode: ViewMode) => void;
-	onPracticeCountUpdate: () => void;
 	onRefetchSpeechById: () => void;
 }
 
@@ -37,7 +36,6 @@ export default function SpeechReview({
 	setPendingCount,
 	viewMode,
 	setViewMode,
-	onPracticeCountUpdate,
 	onRefetchSpeechById,
 }: SpeechReviewProps) {
 	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
