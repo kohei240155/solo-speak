@@ -161,6 +161,10 @@
 				"lessPractice": "Less Practice",
 				"lowStatus": "Low Status"
 			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "No speeches found matching the criteria",
+			"countError": "An error occurred while retrieving speech count"
 		}
 	},
 	"home": {

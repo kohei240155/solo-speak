@@ -161,6 +161,10 @@
 				"lessPractice": "練習回数が少ない",
 				"lowStatus": "ステータスが低い"
 			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "条件に一致するスピーチが見つかりませんでした",
+			"countError": "スピーチ数の取得中にエラーが発生しました"
 		}
 	},
 	"home": {

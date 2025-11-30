@@ -3,6 +3,9 @@ import { useRouter } from "next/navigation";
 import ModeModal, { ModeModalConfig } from "./ModeModal";
 import { Language } from "@/types/phrase";
 import { useTranslation } from "@/hooks/ui/useTranslation";
+import { SpeechReviewCountResponse } from "@/types/speech";
+import toast from "react-hot-toast";
+import { api } from "@/utils/api";
 
 export interface ReviewConfig {
 	language: string;
@@ -32,18 +35,40 @@ export default function ReviewModeModal({
 		useState<boolean>(true);
 
 	const handleStart = async (selectedLanguage: string) => {
-		// モーダルを閉じる
-		onClose();
+		try {
+			// APIを呼び出して対象のスピーチ数を確認
+			const params = new URLSearchParams({
+				languageCode: selectedLanguage,
+				speakCountFilter: speakCountFilter || "",
+				excludeTodayPracticed: excludeTodayPracticed.toString(),
+			});
 
-		// URLパラメータを使用してReview画面に遷移
-		const params = new URLSearchParams({
-			language: selectedLanguage,
-			speakCountFilter: speakCountFilter || "",
-			excludeTodayPracticed: excludeTodayPracticed.toString(),
-		});
+			const data = await api.get<SpeechReviewCountResponse>(
+				`/api/speech/review/count?${params.toString()}`,
+			);
 
-		// Review画面に遷移
-		router.push(`/speech/review?${params.toString()}`);
+			// 対象のスピーチが0件の場合
+			if (data.count === 0) {
+				toast.error(t("review.messages.noSpeechesAvailable"));
+				return;
+			}
+
+			// モーダルを閉じる
+			onClose();
+
+			// URLパラメータを使用してReview画面に遷移
+			const reviewParams = new URLSearchParams({
+				language: selectedLanguage,
+				speakCountFilter: speakCountFilter || "",
+				excludeTodayPracticed: excludeTodayPracticed.toString(),
+			});
+
+			// Review画面に遷移
+			router.push(`/speech/review?${reviewParams.toString()}`);
+		} catch (error) {
+			console.error("Error checking speech count:", error);
+			toast.error(t("review.messages.countError"));
+		}
 	};
 
 	// 出題対象のオプションを生成

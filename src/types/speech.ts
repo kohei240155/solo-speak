@@ -206,3 +206,9 @@ export interface RecordPracticeResponse {
 		lastPracticedAt: Date | null;
 	};
 }
+
+// Speech Review Count Types
+export interface SpeechReviewCountResponse {
+	success: true;
+	count: number;
+}
