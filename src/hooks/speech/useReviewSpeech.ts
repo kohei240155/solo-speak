@@ -26,20 +26,16 @@ export function useReviewSpeech({
 			excludeTodayPracticed,
 		],
 		queryFn: async () => {
-			// speechIdが指定されている場合は、そのスピーチを直接取得
+			// speechIdが指定されている場合は、/api/speech/[id]を使用
 			if (speechId) {
-				const params = new URLSearchParams({
-					speechId,
-				});
-
 				const response = await api.get<SpeechReviewResponseData>(
-					`/api/speech/review?${params.toString()}`,
+					`/api/speech/${speechId}`,
 				);
 
 				return response.speech;
 			}
 
-			// speechIdがない場合は従来通りの条件検索
+			// speechIdがない場合は/api/speech/reviewで条件検索
 			if (!languageCode) {
 				return null;
 			}

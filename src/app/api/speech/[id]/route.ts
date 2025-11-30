@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { ApiErrorResponse } from "@/types/api";
-import { SpeechDetailResponse, UpdateSpeechRequest } from "@/types/speech";
+import { UpdateSpeechRequest, SpeechReviewResponseData } from "@/types/speech";
 import { prisma } from "@/utils/prisma";
 import { z } from "zod";
+import { getSpeechAudioSignedUrl } from "@/utils/storage-helpers";
 
 // スピーチ更新のリクエストボディ型
 const updateSpeechSchema: z.ZodType<UpdateSpeechRequest> = z.object({
@@ -21,7 +22,7 @@ const updateSpeechSchema: z.ZodType<UpdateSpeechRequest> = z.object({
  * スピーチ詳細取得APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
  * @param params - URLパラメータ（スピーチID）
- * @returns SpeechDetailResponse - スピーチ詳細データ
+ * @returns SpeechReviewResponseData - スピーチ詳細データ
  */
 export async function GET(
 	request: NextRequest,
@@ -44,6 +45,27 @@ export async function GET(
 				deletedAt: null,
 			},
 			include: {
+				status: {
+					select: {
+						id: true,
+						name: true,
+						description: true,
+					},
+				},
+				nativeLanguage: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+				},
+				learningLanguage: {
+					select: {
+						id: true,
+						code: true,
+						name: true,
+					},
+				},
 				phrases: {
 					where: {
 						deletedAt: null,
@@ -58,6 +80,20 @@ export async function GET(
 						speechOrder: "asc",
 					},
 				},
+				feedbacks: {
+					where: {
+						deletedAt: null,
+					},
+					select: {
+						id: true,
+						category: true,
+						content: true,
+						createdAt: true,
+					},
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
 			},
 		});
 
@@ -68,15 +104,57 @@ export async function GET(
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
-		const responseData: SpeechDetailResponse = {
-			id: speech.id,
-			title: speech.title,
-			phrases: speech.phrases.map((phrase) => ({
-				id: phrase.id,
-				original: phrase.original,
-				translation: phrase.translation,
-				speechOrder: phrase.speechOrder ?? 0,
-			})),
+		// 音声ファイルのURLを取得
+		let audioUrl: string | null = null;
+		if (speech.audioFilePath) {
+			try {
+				audioUrl = await getSpeechAudioSignedUrl(speech.audioFilePath);
+			} catch (error) {
+				console.error("Error getting audio URL:", error);
+			}
+		}
+
+		const responseData: SpeechReviewResponseData = {
+			success: true,
+			speech: {
+				id: speech.id,
+				title: speech.title,
+				practiceCount: speech.practiceCount,
+				status: {
+					id: speech.status.id,
+					name: speech.status.name,
+					description: speech.status.description || undefined,
+				},
+				nativeLanguage: {
+					id: speech.nativeLanguage.id,
+					code: speech.nativeLanguage.code,
+					name: speech.nativeLanguage.name,
+				},
+				learningLanguage: {
+					id: speech.learningLanguage.id,
+					code: speech.learningLanguage.code,
+					name: speech.learningLanguage.name,
+				},
+				firstSpeechText: speech.firstSpeechText,
+				audioFilePath: audioUrl,
+				notes: speech.notes,
+				lastPracticedAt: speech.lastPracticedAt
+					? speech.lastPracticedAt.toISOString()
+					: null,
+				createdAt: speech.createdAt.toISOString(),
+				phrases: speech.phrases.map((phrase) => ({
+					id: phrase.id,
+					original: phrase.original,
+					translation: phrase.translation,
+					speechOrder: phrase.speechOrder ?? 0,
+				})),
+				feedbacks: speech.feedbacks.map((feedback) => ({
+					id: feedback.id,
+					category: feedback.category,
+					content: feedback.content,
+					createdAt: feedback.createdAt.toISOString(),
+				})),
+			},
 		};
 
 		return NextResponse.json(responseData);

@@ -26,6 +26,7 @@ interface SpeechReviewProps {
 	viewMode: ViewMode;
 	setViewMode: (mode: ViewMode) => void;
 	onPracticeCountUpdate: () => void;
+	onRefetchSpeechById: () => void;
 }
 
 type ViewMode = "review" | "practice";
@@ -37,6 +38,7 @@ export default function SpeechReview({
 	viewMode,
 	setViewMode,
 	onPracticeCountUpdate,
+	onRefetchSpeechById,
 }: SpeechReviewProps) {
 	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
@@ -146,7 +148,7 @@ export default function SpeechReview({
 					: 0;
 
 				// 10秒以上の場合のみBlobを保存
-				if (recordingDuration >= 10) {
+				if (recordingDuration >= 3) {
 					const blob = new Blob(chunks, { type: "audio/webm" });
 					setUserAudioBlob(blob);
 				}
@@ -196,7 +198,7 @@ export default function SpeechReview({
 				? (Date.now() - recordingStartTimeRef.current) / 1000
 				: 0;
 
-			if (recordingDuration < 10) {
+			if (recordingDuration < 3) {
 				// 録音時間が10秒未満の場合
 				toast.error("録音時間が短すぎます");
 				// ストリームを停止
@@ -237,8 +239,12 @@ export default function SpeechReview({
 					{ speechId: speech.id },
 					{
 						onSuccess: () => {
-							// 練習回数を更新後、Speechデータを再取得
-							onPracticeCountUpdate();
+							// 練習回数を更新後、SpeechのIDを使って再取得
+							onRefetchSpeechById();
+						},
+						onError: (error) => {
+							console.error("Failed to record practice:", error);
+							toast.error("Failed to record practice");
 						},
 					},
 				);

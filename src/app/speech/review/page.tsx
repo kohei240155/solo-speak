@@ -14,6 +14,9 @@ import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
 import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { Toaster } from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { api } from "@/utils/api";
+import { SpeechReviewResponseData } from "@/types/speech";
 
 function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
@@ -22,13 +25,11 @@ function SpeechReviewPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const { t } = useTranslation("common");
+	const queryClient = useQueryClient();
 
 	// pendingCountとviewModeの状態管理
 	const [pendingCount, setPendingCount] = useState(0);
 	const [viewMode, setViewMode] = useState<"review" | "practice">("review");
-
-	// ロードされたSpeechのIDを保持（refetch用）
-	const [loadedSpeechId, setLoadedSpeechId] = useState<string | null>(null);
 
 	// URLパラメータを取得
 	const speechId = searchParams.get("speechId");
@@ -37,17 +38,42 @@ function SpeechReviewPage() {
 	const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
 
 	// React Queryでスピーチを取得
+	// language パラメータが存在する場合（SpeechModeモーダルからの遷移）は、speechIdベースの再取得は行わない
 	const { speech, refetch: refetchSpeech } = useReviewSpeech({
-		speechId: loadedSpeechId || speechId,
-		languageCode: loadedSpeechId ? null : language,
-		speakCountFilter: loadedSpeechId
-			? null
-			: ((speakCountFilter || null) as "lessPractice" | "lowStatus" | null),
-		excludeTodayPracticed: loadedSpeechId
-			? false
-			: excludeTodayPracticed === "true",
-		enabled: !authLoading && (!!loadedSpeechId || !!speechId || !!language),
+		speechId: speechId,
+		languageCode: language,
+		speakCountFilter: (speakCountFilter || null) as
+			| "lessPractice"
+			| "lowStatus"
+			| null,
+		excludeTodayPracticed: excludeTodayPracticed === "true",
+		enabled: !authLoading && (!!speechId || !!language),
 	});
+
+	// SpeechのIDを使って再取得し、キャッシュを更新する関数
+	const refetchSpeechById = async () => {
+		if (!speech?.id) return;
+
+		try {
+			const response = await api.get<SpeechReviewResponseData>(
+				`/api/speech/${speech.id}`,
+			);
+
+			// 元のクエリキーを使ってキャッシュを更新
+			queryClient.setQueryData(
+				[
+					"reviewSpeech",
+					speechId,
+					language,
+					speakCountFilter,
+					excludeTodayPracticed === "true",
+				],
+				response.speech,
+			);
+		} catch (error) {
+			console.error("Failed to refetch speech:", error);
+		}
+	};
 
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
@@ -57,13 +83,6 @@ function SpeechReviewPage() {
 		hasPendingChanges: viewMode === "practice" && pendingCount > 0,
 		warningMessage: t("confirm.unsavedCount"),
 	});
-
-	// Speechがロードされたら、そのIDを保持（refetch用）
-	useEffect(() => {
-		if (speech?.id) {
-			setLoadedSpeechId(speech.id);
-		}
-	}, [speech?.id]);
 
 	// 直接アクセスチェック: URLパラメータがない場合はSpeech Listに遷移
 	useEffect(() => {
@@ -123,6 +142,7 @@ function SpeechReviewPage() {
 							viewMode={viewMode}
 							setViewMode={setViewMode}
 							onPracticeCountUpdate={refetchSpeech}
+							onRefetchSpeechById={refetchSpeechById}
 						/>
 					) : (
 						<div
