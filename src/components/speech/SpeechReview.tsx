@@ -7,6 +7,10 @@ import { GiChart } from "react-icons/gi";
 import { RiSpeakLine } from "react-icons/ri";
 import { SpeechReviewResponseData } from "@/types/speech";
 import toast from "react-hot-toast";
+import SpeechStatusModal, {
+	SpeechStatus,
+} from "@/components/modals/SpeechStatusModal";
+import { api } from "@/utils/api";
 
 interface SpeechReviewProps {
 	speech: NonNullable<SpeechReviewResponseData["speech"]>;
@@ -18,6 +22,12 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 	);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+
+	// ステータス変更モーダルの状態
+	const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+	const [statuses, setStatuses] = useState<SpeechStatus[]>([]);
+	const [currentStatus, setCurrentStatus] = useState(speech.status);
+	const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
 
 	// ユーザー録音用の状態
 	const [isRecording, setIsRecording] = useState(false);
@@ -238,6 +248,58 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 		};
 	}, []);
 
+	// ステータス一覧を取得
+	const fetchStatuses = async () => {
+		setIsLoadingStatuses(true);
+		try {
+			const data = await api.get<{ statuses: SpeechStatus[] }>(
+				"/api/speech/statuses",
+			);
+			setStatuses(data.statuses);
+		} catch (error) {
+			console.error("Failed to fetch statuses:", error);
+			toast.error("Failed to load statuses");
+		} finally {
+			setIsLoadingStatuses(false);
+		}
+	};
+
+	// ステータス変更処理
+	const handleStatusChange = async (statusId: string) => {
+		try {
+			const data = await api.put<{
+				message: string;
+				speech: {
+					id: string;
+					status: {
+						id: string;
+						name: string;
+						description: string | null;
+					};
+				};
+			}>(`/api/speech/${speech.id}/status`, { statusId });
+
+			setCurrentStatus({
+				id: data.speech.status.id,
+				name: data.speech.status.name,
+				description: data.speech.status.description ?? undefined,
+			});
+			toast.success("Status updated successfully");
+		} catch (error) {
+			console.error("Failed to update status:", error);
+			toast.error("Failed to update status");
+			throw error;
+		}
+	};
+
+	// ステータスモーダルを開く
+	const handleOpenStatusModal = async () => {
+		if (statuses.length === 0) {
+			await fetchStatuses();
+		}
+		setIsStatusModalOpen(true);
+	};
+
 	return (
 		<div className="max-w-4xl mx-auto">
 			{/* Header with checkmark, practice count, and fullscreen */}
@@ -252,7 +314,7 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 					{/* Status */}
 					<div className="flex items-center gap-2">
 						<GiChart className="w-5 h-5 text-gray-700" />
-						<span className="text-sm font-medium">{speech.status.name}</span>
+						<span className="text-sm font-medium">{currentStatus.name}</span>
 					</div>
 				</div>
 			</div>
@@ -368,6 +430,7 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 					{/* Analytics button (左側) */}
 					<button
 						type="button"
+						onClick={handleOpenStatusModal}
 						className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
 					>
 						<AiOutlineLineChart size={24} />
@@ -412,6 +475,16 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 					</button>
 				</div>
 			</div>
+
+			{/* ステータス変更モーダル */}
+			<SpeechStatusModal
+				isOpen={isStatusModalOpen}
+				onClose={() => setIsStatusModalOpen(false)}
+				statuses={statuses}
+				currentStatusId={currentStatus.id}
+				onStatusChange={handleStatusChange}
+				isLoading={isLoadingStatuses}
+			/>
 		</div>
 	);
 }
