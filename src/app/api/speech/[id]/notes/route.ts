@@ -3,20 +3,20 @@ import { authenticateRequest } from "@/utils/api-helpers";
 import { prisma } from "@/utils/prisma";
 import { ApiErrorResponse } from "@/types/api";
 import {
-	UpdateSpeechStatusRequest,
-	UpdateSpeechStatusResponse,
+	UpdateSpeechNotesRequest,
+	UpdateSpeechNotesResponse,
 } from "@/types/speech";
 
 /**
- * スピーチステータス更新APIエンドポイント
+ * スピーチノート更新APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
  * @param params - URLパラメータ
- * @returns UpdateSpeechStatusResponse
+ * @returns UpdatedSpeechNotesResponse
  */
 export async function PUT(
 	request: NextRequest,
 	context: { params: Promise<{ id: string }> },
-): Promise<NextResponse<UpdateSpeechStatusResponse | ApiErrorResponse>> {
+): Promise<NextResponse<UpdateSpeechNotesResponse | ApiErrorResponse>> {
 	try {
 		// 認証チェック
 		const authResult = await authenticateRequest(request);
@@ -28,13 +28,13 @@ export async function PUT(
 		const userId = authResult.user.id;
 
 		// リクエストボディの取得
-		const body: UpdateSpeechStatusRequest = await request.json();
-		const { statusId } = body;
+		const body: UpdateSpeechNotesRequest = await request.json();
+		const { notes } = body;
 
 		// バリデーション
-		if (!statusId) {
+		if (typeof notes !== "string") {
 			const errorResponse: ApiErrorResponse = {
-				error: "Status ID is required",
+				error: "Notes must be a string",
 			};
 			return NextResponse.json(errorResponse, { status: 400 });
 		}
@@ -58,59 +58,42 @@ export async function PUT(
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
+		// 権限チェック：自分のスピーチのみ編集可能
 		if (speech.userId !== userId) {
 			const errorResponse: ApiErrorResponse = {
-				error: "Unauthorized access to this speech",
+				error: "Unauthorized",
 			};
 			return NextResponse.json(errorResponse, { status: 403 });
 		}
 
-		// ステータスの存在確認
-		const status = await prisma.speechStatus.findUnique({
-			where: {
-				id: statusId,
-				deletedAt: null,
-			},
-		});
-
-		if (!status) {
-			const errorResponse: ApiErrorResponse = {
-				error: "Invalid status ID",
-			};
-			return NextResponse.json(errorResponse, { status: 400 });
-		}
-
-		// ステータスの更新
+		// ノートを更新
 		const updatedSpeech = await prisma.speech.update({
 			where: {
 				id,
 			},
 			data: {
-				statusId: statusId,
+				notes,
 			},
 			select: {
 				id: true,
-				status: {
-					select: {
-						id: true,
-						name: true,
-						description: true,
-					},
-				},
+				notes: true,
 			},
 		});
 
-		const response: UpdateSpeechStatusResponse = {
-			message: "Speech status updated successfully",
-			speech: updatedSpeech,
+		const response: UpdateSpeechNotesResponse = {
+			message: "Notes updated successfully",
+			speech: {
+				id: updatedSpeech.id,
+				notes: updatedSpeech.notes ?? "",
+			},
 		};
 
-		return NextResponse.json(response, { status: 200 });
+		return NextResponse.json(response);
 	} catch (error) {
-		console.error("Error updating speech status:", error);
-		return NextResponse.json(
-			{ error: "Failed to update speech status" },
-			{ status: 500 },
-		);
+		console.error("Error updating speech notes:", error);
+		const errorResponse: ApiErrorResponse = {
+			error: "Internal server error",
+		};
+		return NextResponse.json(errorResponse, { status: 500 });
 	}
 }

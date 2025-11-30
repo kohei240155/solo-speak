@@ -166,3 +166,33 @@ export interface SpeechReviewResponseData {
 		}>;
 	} | null;
 }
+
+// Speech Status Update Types
+export interface UpdateSpeechStatusRequest {
+	statusId: string;
+}
+
+export interface UpdateSpeechStatusResponse {
+	message: string;
+	speech: {
+		id: string;
+		status: {
+			id: string;
+			name: string;
+			description: string | null;
+		};
+	};
+}
+
+// Speech Notes Update Types
+export interface UpdateSpeechNotesRequest {
+	notes: string;
+}
+
+export interface UpdateSpeechNotesResponse {
+	message: string;
+	speech: {
+		id: string;
+		notes: string;
+	};
+}

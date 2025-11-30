@@ -11,6 +11,9 @@ import SpeechStatusModal, {
 	SpeechStatus,
 } from "@/components/modals/SpeechStatusModal";
 import { api } from "@/utils/api";
+import AnimatedButton from "@/components/common/AnimatedButton";
+import { useSaveSpeechNotes } from "@/hooks/speech/useSaveSpeechNotes";
+import { useUpdateSpeechStatus } from "@/hooks/speech/useUpdateSpeechStatus";
 
 interface SpeechReviewProps {
 	speech: NonNullable<SpeechReviewResponseData["speech"]>;
@@ -23,10 +26,13 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
+	// React Query hooks
+	const saveNotesMutation = useSaveSpeechNotes();
+	const updateStatusMutation = useUpdateSpeechStatus();
+
 	// ステータス変更モーダルの状態
 	const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 	const [statuses, setStatuses] = useState<SpeechStatus[]>([]);
-	const [currentStatus, setCurrentStatus] = useState(speech.status);
 	const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
 
 	// ユーザー録音用の状態
@@ -39,6 +45,9 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 	const userAudioRef = useRef<HTMLAudioElement | null>(null);
 	const recordingStartTimeRef = useRef<number | null>(null);
 	const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+	// ノートの編集状態
+	const [notes, setNotes] = useState(speech.notes || "");
 
 	// タブのスタイル
 	const getTabStyle = (tab: "Script" | "Feedback" | "Note") => {
@@ -266,30 +275,10 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 
 	// ステータス変更処理
 	const handleStatusChange = async (statusId: string) => {
-		try {
-			const data = await api.put<{
-				message: string;
-				speech: {
-					id: string;
-					status: {
-						id: string;
-						name: string;
-						description: string | null;
-					};
-				};
-			}>(`/api/speech/${speech.id}/status`, { statusId });
-
-			setCurrentStatus({
-				id: data.speech.status.id,
-				name: data.speech.status.name,
-				description: data.speech.status.description ?? undefined,
-			});
-			toast.success("Status updated successfully");
-		} catch (error) {
-			console.error("Failed to update status:", error);
-			toast.error("Failed to update status");
-			throw error;
-		}
+		await updateStatusMutation.mutateAsync({
+			speechId: speech.id,
+			statusId,
+		});
 	};
 
 	// ステータスモーダルを開く
@@ -298,6 +287,14 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 			await fetchStatuses();
 		}
 		setIsStatusModalOpen(true);
+	};
+
+	// ノート保存処理
+	const handleSaveNotes = async () => {
+		await saveNotesMutation.mutateAsync({
+			speechId: speech.id,
+			notes,
+		});
 	};
 
 	return (
@@ -314,7 +311,7 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 					{/* Status */}
 					<div className="flex items-center gap-2">
 						<GiChart className="w-5 h-5 text-gray-700" />
-						<span className="text-sm font-medium">{currentStatus.name}</span>
+						<span className="text-sm font-medium">{speech.status.name}</span>
 					</div>
 				</div>
 			</div>
@@ -450,84 +447,96 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 					</div>
 				)}{" "}
 				{activeTab === "Note" && (
-					<div className="border border-gray-300 rounded-lg p-4 bg-white">
-						{speech.notes ? (
-							<p className="text-base text-gray-900 whitespace-pre-wrap">
-								{speech.notes}
-							</p>
-						) : (
-							<p className="text-gray-500 text-center py-8">No notes</p>
-						)}
+					<div className="space-y-4">
+						<p className="text-sm text-gray-700">
+							気づいたことを自由にメモしましょう。
+						</p>
+						<textarea
+							value={notes}
+							onChange={(e) => setNotes(e.target.value)}
+							placeholder="メモを入力してください"
+							className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white"
+						/>
+						<AnimatedButton
+							onClick={handleSaveNotes}
+							disabled={saveNotesMutation.isPending}
+							isLoading={saveNotesMutation.isPending}
+							size="lg"
+						>
+							Save
+						</AnimatedButton>
 					</div>
 				)}
 			</div>
 			{/* Audio Player */}
-			<div className="pt-2">
-				{/* タイマー表示 */}
-				<div className="text-center mb-6">
-					<div className="text-2xl font-bold text-gray-900">
-						{Math.floor(recordingTime / 60)}:
-						{String(recordingTime % 60).padStart(2, "0")}
+			{activeTab === "Script" && (
+				<div className="pt-2">
+					{/* タイマー表示 */}
+					<div className="text-center mb-6">
+						<div className="text-2xl font-bold text-gray-900">
+							{Math.floor(recordingTime / 60)}:
+							{String(recordingTime % 60).padStart(2, "0")}
+						</div>
+					</div>
+
+					{/* コントロールボタン */}
+					<div className="flex justify-center items-center gap-8">
+						{/* Analytics button (左側) */}
+						<button
+							type="button"
+							onClick={handleOpenStatusModal}
+							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+						>
+							<AiOutlineLineChart size={24} />
+						</button>
+
+						{/* User Recording button (中央) - ユーザー録音 */}
+						<button
+							type="button"
+							onClick={handleUserRecordButtonClick}
+							className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg ${
+								isRecording ? "animate-pulse" : ""
+							}`}
+							style={{ backgroundColor: "#616161" }}
+							onMouseEnter={(e) => {
+								e.currentTarget.style.backgroundColor = "#525252";
+							}}
+							onMouseLeave={(e) => {
+								e.currentTarget.style.backgroundColor = "#616161";
+							}}
+						>
+							{isRecording ? (
+								<BiStop size={40} />
+							) : userAudioBlob ? (
+								isUserAudioPlaying ? (
+									<BsPauseFill size={32} />
+								) : (
+									<BiPlay size={40} />
+								)
+							) : (
+								<BsFillMicFill size={32} />
+							)}
+						</button>
+
+						{/* Speaker button (右側) - speech.audioFilePathの再生 */}
+						<button
+							type="button"
+							onClick={handlePlayAudio}
+							disabled={!speech.audioFilePath}
+							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							<RiSpeakLine size={24} />
+						</button>
 					</div>
 				</div>
-
-				{/* コントロールボタン */}
-				<div className="flex justify-center items-center gap-8">
-					{/* Analytics button (左側) */}
-					<button
-						type="button"
-						onClick={handleOpenStatusModal}
-						className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-					>
-						<AiOutlineLineChart size={24} />
-					</button>
-
-					{/* User Recording button (中央) - ユーザー録音 */}
-					<button
-						type="button"
-						onClick={handleUserRecordButtonClick}
-						className={`w-20 h-20 rounded-full flex items-center justify-center text-white transition-colors shadow-lg ${
-							isRecording ? "animate-pulse" : ""
-						}`}
-						style={{ backgroundColor: "#616161" }}
-						onMouseEnter={(e) => {
-							e.currentTarget.style.backgroundColor = "#525252";
-						}}
-						onMouseLeave={(e) => {
-							e.currentTarget.style.backgroundColor = "#616161";
-						}}
-					>
-						{isRecording ? (
-							<BiStop size={40} />
-						) : userAudioBlob ? (
-							isUserAudioPlaying ? (
-								<BsPauseFill size={32} />
-							) : (
-								<BiPlay size={40} />
-							)
-						) : (
-							<BsFillMicFill size={32} />
-						)}
-					</button>
-
-					{/* Speaker button (右側) - speech.audioFilePathの再生 */}
-					<button
-						type="button"
-						onClick={handlePlayAudio}
-						disabled={!speech.audioFilePath}
-						className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-					>
-						<RiSpeakLine size={24} />
-					</button>
-				</div>
-			</div>
+			)}
 
 			{/* ステータス変更モーダル */}
 			<SpeechStatusModal
 				isOpen={isStatusModalOpen}
 				onClose={() => setIsStatusModalOpen(false)}
 				statuses={statuses}
-				currentStatusId={currentStatus.id}
+				currentStatusId={speech.status.id}
 				onStatusChange={handleStatusChange}
 				isLoading={isLoadingStatuses}
 			/>
