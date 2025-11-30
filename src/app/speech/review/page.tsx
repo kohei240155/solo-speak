@@ -28,6 +28,9 @@ function SpeechReviewPage() {
 	const [pendingCount, setPendingCount] = useState(0);
 	const [viewMode, setViewMode] = useState<"review" | "practice">("review");
 
+	// ロードされたSpeechのIDを保持（refetch用）
+	const [loadedSpeechId, setLoadedSpeechId] = useState<string | null>(null);
+
 	// URLパラメータを取得
 	const speechId = searchParams.get("speechId");
 	const language = searchParams.get("language");
@@ -36,14 +39,15 @@ function SpeechReviewPage() {
 
 	// React Queryでスピーチを取得
 	const { speech, refetch: refetchSpeech } = useReviewSpeech({
-		speechId: speechId,
-		languageCode: language,
-		speakCountFilter: (speakCountFilter || null) as
-			| "lessPractice"
-			| "lowStatus"
-			| null,
-		excludeTodayPracticed: excludeTodayPracticed === "true",
-		enabled: !authLoading && (!!speechId || !!language),
+		speechId: loadedSpeechId || speechId,
+		languageCode: loadedSpeechId ? null : language,
+		speakCountFilter: loadedSpeechId
+			? null
+			: ((speakCountFilter || null) as "lessPractice" | "lowStatus" | null),
+		excludeTodayPracticed: loadedSpeechId
+			? false
+			: excludeTodayPracticed === "true",
+		enabled: !authLoading && (!!loadedSpeechId || !!speechId || !!language),
 	});
 
 	// 言語選択の状態管理
@@ -68,6 +72,13 @@ function SpeechReviewPage() {
 			setLearningLanguage(userSettings.defaultLearningLanguage.code);
 		}
 	}, [userSettings, learningLanguage]);
+
+	// Speechがロードされたら、そのIDを保持（refetch用）
+	useEffect(() => {
+		if (speech?.id) {
+			setLoadedSpeechId(speech.id);
+		}
+	}, [speech?.id]);
 
 	// 直接アクセスチェック: URLパラメータがない場合はSpeech Listに遷移
 	useEffect(() => {

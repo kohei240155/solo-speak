@@ -25,7 +25,7 @@ interface SpeechReviewProps {
 	setPendingCount: (count: number) => void;
 	viewMode: ViewMode;
 	setViewMode: (mode: ViewMode) => void;
-	onPracticeCountUpdate?: () => void;
+	onPracticeCountUpdate: () => void;
 }
 
 type ViewMode = "review" | "practice";
@@ -237,8 +237,8 @@ export default function SpeechReview({
 					{ speechId: speech.id },
 					{
 						onSuccess: () => {
-							// 親コンポーネントでspeechデータを再取得
-							onPracticeCountUpdate?.();
+							// 練習回数を更新後、Speechデータを再取得
+							onPracticeCountUpdate();
 						},
 					},
 				);

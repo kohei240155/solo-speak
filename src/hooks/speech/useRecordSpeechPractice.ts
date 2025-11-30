@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { api } from "@/utils/api";
 
 interface RecordSpeechPracticeParams {
@@ -15,20 +15,12 @@ interface RecordPracticeResponse {
 }
 
 export function useRecordSpeechPractice() {
-	const queryClient = useQueryClient();
-
 	return useMutation({
 		mutationFn: async ({ speechId }: RecordSpeechPracticeParams) => {
 			return await api.post<RecordPracticeResponse>(
 				`/api/speech/${speechId}/practice`,
 				{},
 			);
-		},
-		onSuccess: () => {
-			// reviewSpeechのキャッシュを無効化して再取得
-			queryClient.invalidateQueries({
-				queryKey: ["reviewSpeech"],
-			});
 		},
 		onError: (error) => {
 			console.error("Failed to record practice:", error);
