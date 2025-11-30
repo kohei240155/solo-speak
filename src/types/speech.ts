@@ -124,3 +124,91 @@ export interface UpdateSpeechRequest {
 		translation: string;
 	}>;
 }
+
+// Speech Review Types
+export interface SpeechReviewResponseData {
+	success: true;
+	speech: {
+		id: string;
+		title: string;
+		practiceCount: number;
+		status: {
+			id: string;
+			name: string;
+			description?: string;
+		};
+		nativeLanguage: {
+			id: string;
+			code: string;
+			name: string;
+		};
+		learningLanguage: {
+			id: string;
+			code: string;
+			name: string;
+		};
+		firstSpeechText: string;
+		audioFilePath: string | null;
+		notes: string | null;
+		lastPracticedAt: string | null;
+		createdAt: string;
+		phrases: Array<{
+			id: string;
+			original: string;
+			translation: string;
+			speechOrder: number;
+		}>;
+		feedbacks: Array<{
+			id: string;
+			category: string;
+			content: string;
+			createdAt: string;
+		}>;
+	} | null;
+}
+
+// Speech Status Update Types
+export interface UpdateSpeechStatusRequest {
+	statusId: string;
+}
+
+export interface UpdateSpeechStatusResponse {
+	message: string;
+	speech: {
+		id: string;
+		status: {
+			id: string;
+			name: string;
+			description: string | null;
+		};
+	};
+}
+
+// Speech Notes Update Types
+export interface UpdateSpeechNotesRequest {
+	notes: string;
+}
+
+export interface UpdateSpeechNotesResponse {
+	message: string;
+	speech: {
+		id: string;
+		notes: string;
+	};
+}
+
+// Speech Practice Record Types
+export interface RecordPracticeResponse {
+	message: string;
+	speech: {
+		id: string;
+		practiceCount: number;
+		lastPracticedAt: Date | null;
+	};
+}
+
+// Speech Review Count Types
+export interface SpeechReviewCountResponse {
+	success: true;
+	count: number;
+}

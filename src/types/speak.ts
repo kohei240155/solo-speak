@@ -12,6 +12,7 @@ export interface SpeakPhrase {
 	translation: string;
 	totalSpeakCount: number;
 	dailySpeakCount: number;
+	explanation?: string;
 }
 
 // Speak練習モードの状態型

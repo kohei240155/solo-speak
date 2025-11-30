@@ -10,6 +10,7 @@ import { GoTriangleRight } from "react-icons/go";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { SpeechReviewResponseData } from "@/types/speech";
 
 interface EditSpeechModalProps {
 	isOpen: boolean;
@@ -94,18 +95,21 @@ export default function EditSpeechModal({
 			api
 				.get(`/api/speech/${speechId}`)
 				.then((data) => {
-					const speechData = data as SpeechDetail;
-					setSpeech(speechData);
-					// フォームを初期化
-					reset({
-						title: speechData.title,
-						sentences: speechData.phrases
-							.sort((a, b) => a.speechOrder - b.speechOrder)
-							.map((phrase) => ({
-								learningLanguage: phrase.original,
-								nativeLanguage: phrase.translation,
-							})),
-					});
+					const responseData = data as SpeechReviewResponseData;
+					if (responseData.speech) {
+						const speechData = responseData.speech;
+						setSpeech(speechData);
+						// フォームを初期化
+						reset({
+							title: speechData.title,
+							sentences: speechData.phrases
+								.sort((a, b) => a.speechOrder - b.speechOrder)
+								.map((phrase) => ({
+									learningLanguage: phrase.original,
+									nativeLanguage: phrase.translation,
+								})),
+						});
+					}
 				})
 				.catch((error) => {
 					console.error("Failed to fetch speech:", error);

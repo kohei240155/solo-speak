@@ -9,15 +9,15 @@ const speechStatuses = [
 	},
 	{
 		name: "B",
-		description: "スクリプトの一部を見なくても話すことができる",
+		description: "スクリプトの一部を見れば流暢に話すことができる",
 	},
 	{
 		name: "C",
-		description: "スクリプトを見ないと話すことができない",
+		description: "スクリプトを見れば流暢に話すことができる",
 	},
 	{
 		name: "D",
-		description: "スピーチをしただけで練習していない",
+		description: "スクリプトを見れば話すことができる",
 	},
 ];
 

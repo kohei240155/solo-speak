@@ -4,13 +4,13 @@ import { LuSendHorizontal } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { BsPauseFill } from "react-icons/bs";
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "@/utils/spabase";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { SentenceData, FeedbackData } from "@/types/speech";
 import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
+import { api } from "@/utils/api";
 
 export interface CorrectionResult {
 	title: string;
@@ -321,17 +321,8 @@ export default function SpeechAdd({
 				setTranscribedText(data.text);
 
 				// 添削も自動実行（モックデータを使用）
-				await handleCorrection(data.text, "", true);
+				await handleCorrection(data.text, true);
 				return;
-			}
-
-			// Supabaseセッションからアクセストークンを取得
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-
-			if (!session) {
-				throw new Error("ログインが必要です");
 			}
 
 			// FormDataを作成してBlobを追加
@@ -343,24 +334,14 @@ export default function SpeechAdd({
 				formData.append("language", learningLanguage);
 			}
 
-			const response = await fetch("/api/speech/transcribe", {
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${session.access_token}`,
-				},
-				body: formData,
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || "文字起こしに失敗しました");
-			}
-
-			const data = await response.json();
+			const data = await api.post<{ text: string }>(
+				"/api/speech/transcribe",
+				formData,
+			);
 			setTranscribedText(data.text);
 
 			// 文字起こし成功後、自動的に添削を実行
-			await handleCorrection(data.text, session.access_token);
+			await handleCorrection(data.text);
 		} catch (error) {
 			console.error("文字起こしエラー:", error);
 			alert(
@@ -372,11 +353,7 @@ export default function SpeechAdd({
 	};
 
 	// 添削実行
-	const handleCorrection = async (
-		transcribed: string,
-		accessToken: string,
-		isMock = false,
-	) => {
+	const handleCorrection = async (transcribed: string, isMock = false) => {
 		setIsCorrecting(true);
 		try {
 			// モックデータモードの場合
@@ -430,29 +407,16 @@ export default function SpeechAdd({
 				throw new Error("学習言語と母国語が設定されていません");
 			}
 
-			const response = await fetch("/api/speech/correct", {
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					title,
-					speechPlanItems: planItems,
-					transcribedText: transcribed,
-					learningLanguage: learningLangName,
-					nativeLanguage: nativeLangName,
-				}),
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.error || "添削に失敗しました");
-			}
-
-			const data = await response.json();
-
-			// 添削成功後、残回数を再取得
+			const data = await api.post<{
+				sentences: SentenceData[];
+				feedback: FeedbackData[];
+			}>("/api/speech/correct", {
+				title,
+				speechPlanItems: planItems,
+				transcribedText: transcribed,
+				learningLanguage: learningLangName,
+				nativeLanguage: nativeLangName,
+			}); // 添削成功後、残回数を再取得
 			await refetchRemainingSpeechCount();
 
 			// 添削完了データを親に渡す

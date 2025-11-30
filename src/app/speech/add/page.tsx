@@ -11,8 +11,9 @@ import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
 import SpeechResult from "@/components/speech/SpeechResult";
 import PracticeConfirmModal from "@/components/modals/PracticeConfirmModal";
+import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function SpeechAddPage() {
 	const router = useRouter();
@@ -36,6 +37,17 @@ export default function SpeechAddPage() {
 	const [showResult, setShowResult] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	// モーダルの状態管理
+	const [showReviewModal, setShowReviewModal] = useState(false);
+
+	const openReviewModal = () => {
+		setShowReviewModal(true);
+	};
+
+	const closeReviewModal = () => {
+		setShowReviewModal(false);
+	};
 
 	// 未保存の変更をチェックする関数
 	const checkUnsavedChanges = () => {
@@ -152,6 +164,7 @@ export default function SpeechAddPage() {
 				<SpeechTabNavigation
 					activeTab="Add"
 					checkUnsavedChanges={checkUnsavedChanges}
+					onReviewModalOpen={openReviewModal}
 				/>
 
 				{/* コンテンツエリア */}
@@ -190,6 +203,16 @@ export default function SpeechAddPage() {
 				onConfirm={handlePracticeConfirm}
 				onCancel={handlePracticeCancel}
 			/>
+
+			{/* Review Mode モーダル */}
+			<ReviewModeModal
+				isOpen={showReviewModal}
+				onClose={closeReviewModal}
+				languages={languages || []}
+				defaultLearningLanguage={learningLanguage}
+			/>
+
+			<Toaster />
 		</div>
 	);
 }

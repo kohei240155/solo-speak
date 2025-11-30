@@ -1,4 +1,9 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+	useQuery,
+	useInfiniteQuery,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "@/utils/api";
 import {
 	RemainingGenerationsResponse,
@@ -7,7 +12,7 @@ import {
 	SpeakPhraseResponse,
 	UpdatePhraseCountResponseData,
 } from "@/types/phrase";
-import { SituationsListResponse } from "@/types/situation";
+import { SituationsListResponse, SituationResponse } from "@/types/situation";
 import { DashboardData } from "@/types/dashboard";
 import { LanguageInfo } from "@/types/common";
 import {
@@ -61,6 +66,8 @@ export const queryKeys = {
 	remainingSpeechCount: (userId: string) =>
 		["remainingSpeechCount", userId] as const,
 	situations: (userId: string) => ["situations", userId] as const,
+	situation: (userId: string, situationId: string) =>
+		["situation", userId, situationId] as const,
 	phraseStreakRanking: (userId: string, language: string) =>
 		["phraseStreakRanking", userId, language] as const,
 	speakStreakRanking: (userId: string, language: string) =>
@@ -481,28 +488,6 @@ export function useRemainingSpeechCount() {
 	};
 }
 
-// シチュエーションリストを取得するフック
-export function useSituations() {
-	const { user } = useAuth();
-
-	const { data, error, isLoading, refetch } = useQuery({
-		queryKey: user?.id ? queryKeys.situations(user.id) : [],
-		queryFn: async () =>
-			fetcher<SituationsListResponse>("/api/situations", {
-				showErrorToast: false,
-			}),
-		enabled: !!user?.id,
-		staleTime: 10 * 60 * 1000, // 10分
-	});
-
-	return {
-		situations: data?.situations || [],
-		isLoading,
-		error,
-		refetch,
-	};
-}
-
 // フレーズStreakランキングを取得するフック
 export function usePhraseStreakRanking(language?: string) {
 	const { user } = useAuth();
@@ -660,5 +645,94 @@ export function useQuizStreakRanking(language?: string) {
 		error,
 		message: undefined,
 		refetch,
+	};
+}
+
+// シチュエーション一覧を取得するフック
+export function useSituations() {
+	const { user } = useAuth();
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey: user?.id ? queryKeys.situations(user.id) : [],
+		queryFn: async () =>
+			fetcher<SituationsListResponse>("/api/situations", {
+				showErrorToast: false,
+			}),
+		enabled: !!user?.id,
+		staleTime: 5 * 60 * 1000, // 5分
+		gcTime: 10 * 60 * 1000, // 10分
+	});
+
+	return {
+		situations: data?.situations || [],
+		isLoading,
+		error,
+		refetch,
+	};
+}
+
+// 特定のシチュエーションを取得するフック
+export function useSituationDetail(situationId?: string) {
+	const { user } = useAuth();
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && situationId ? queryKeys.situation(user.id, situationId) : [],
+		queryFn: async () =>
+			fetcher<{ situation: SituationResponse }>(
+				`/api/situations/${situationId}`,
+			),
+		enabled: !!user?.id && !!situationId,
+		staleTime: 5 * 60 * 1000, // 5分
+	});
+
+	return {
+		situation: data?.situation,
+		isLoading,
+		error,
+		refetch,
+	};
+}
+
+// シチュエーションのミューテーション操作
+export function useMutateSituation() {
+	const { user } = useAuth();
+	const queryClient = useQueryClient();
+
+	// シチュエーション追加
+	const addMutation = useMutation({
+		mutationFn: async (name: string) => {
+			return await api.post<SituationResponse>("/api/situations", { name });
+		},
+		onSuccess: () => {
+			// キャッシュを無効化して再取得
+			if (user?.id) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.situations(user.id),
+				});
+			}
+		},
+	});
+
+	// シチュエーション削除
+	const deleteMutation = useMutation({
+		mutationFn: async (id: string) => {
+			return await api.delete(`/api/situations/${id}`);
+		},
+		onSuccess: () => {
+			// キャッシュを無効化して再取得
+			if (user?.id) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.situations(user.id),
+				});
+			}
+		},
+	});
+
+	return {
+		addSituation: addMutation.mutateAsync,
+		deleteSituation: deleteMutation.mutateAsync,
+		isAdding: addMutation.isPending,
+		isDeleting: deleteMutation.isPending,
 	};
 }
