@@ -12,6 +12,8 @@ import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
+import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import { Toaster } from "react-hot-toast";
 
 function SpeechReviewPage() {
@@ -20,6 +22,11 @@ function SpeechReviewPage() {
 	const { userSettings } = useAuth();
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useTranslation("common");
+
+	// pendingCountとviewModeの状態管理
+	const [pendingCount, setPendingCount] = useState(0);
+	const [viewMode, setViewMode] = useState<"review" | "practice">("review");
 
 	// URLパラメータを取得
 	const language = searchParams.get("language");
@@ -47,6 +54,12 @@ function SpeechReviewPage() {
 
 	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
 
+	// ページ離脱警告（プラクティスモードでペンディングカウントがある場合のみ）
+	usePageLeaveWarning({
+		hasPendingChanges: viewMode === "practice" && pendingCount > 0,
+		warningMessage: t("confirm.unsavedCount"),
+	});
+
 	// userSettingsが更新されたら学習言語を同期
 	useEffect(() => {
 		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
@@ -65,6 +78,11 @@ function SpeechReviewPage() {
 			}
 		}
 	}, [learningLanguage, router]);
+
+	// 未保存の変更チェック関数
+	const checkUnsavedChanges = () => {
+		return viewMode === "practice" && pendingCount > 0;
+	};
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
@@ -107,13 +125,20 @@ function SpeechReviewPage() {
 				{/* タブメニュー */}
 				<SpeechTabNavigation
 					activeTab="Review"
+					checkUnsavedChanges={checkUnsavedChanges}
 					onReviewModalOpen={openReviewModal}
 				/>
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					{speech ? (
-						<SpeechReview speech={speech} />
+						<SpeechReview
+							speech={speech}
+							pendingCount={pendingCount}
+							setPendingCount={setPendingCount}
+							viewMode={viewMode}
+							setViewMode={setViewMode}
+						/>
 					) : (
 						<div
 							className="flex items-center justify-center"

@@ -14,12 +14,31 @@ import { api } from "@/utils/api";
 import AnimatedButton from "@/components/common/AnimatedButton";
 import { useSaveSpeechNotes } from "@/hooks/speech/useSaveSpeechNotes";
 import { useUpdateSpeechStatus } from "@/hooks/speech/useUpdateSpeechStatus";
+import { useSpeechSentences } from "@/hooks/speech";
+import { useUpdatePhraseCount } from "@/hooks/phrase/useUpdatePhraseCount";
+import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
+import { useTranslation } from "@/hooks/ui/useTranslation";
+import SpeakPractice from "@/components/speak/SpeakPractice";
 
 interface SpeechReviewProps {
 	speech: NonNullable<SpeechReviewResponseData["speech"]>;
+	pendingCount: number;
+	setPendingCount: (count: number) => void;
+	viewMode: ViewMode;
+	setViewMode: (mode: ViewMode) => void;
 }
 
-export default function SpeechReview({ speech }: SpeechReviewProps) {
+type ViewMode = "review" | "practice";
+
+export default function SpeechReview({
+	speech,
+	pendingCount,
+	setPendingCount,
+	viewMode,
+	setViewMode,
+}: SpeechReviewProps) {
+	const { t } = useTranslation("common");
+	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
 		"Script",
 	);
@@ -29,6 +48,19 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 	// React Query hooks
 	const saveNotesMutation = useSaveSpeechNotes();
 	const updateStatusMutation = useUpdateSpeechStatus();
+	const updatePhraseCountMutation = useUpdatePhraseCount();
+	const {
+		sentences,
+		isLoading: isSentencesLoading,
+		refetch: refetchSentences,
+	} = useSpeechSentences({
+		speechId: speech.id,
+		enabled: false, // 最初は無効化、ボタン押下時に取得
+	});
+
+	// Next/Finishボタンのローディング状態
+	const [isNextLoading, setIsNextLoading] = useState(false);
+	const [isFinishLoading, setIsFinishLoading] = useState(false);
 
 	// ステータス変更モーダルの状態
 	const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -257,6 +289,118 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 		};
 	}, []);
 
+	// センテンスプラクティスモードの開始
+	const handleStartPractice = async () => {
+		// センテンスデータを取得
+		await refetchSentences();
+		setViewMode("practice");
+		setCurrentPhraseIndex(0);
+	};
+
+	// カウントボタンのハンドラー
+	const handleCountSpeech = () => {
+		const currentSentence = sentences[currentPhraseIndex];
+		if (!currentSentence) return;
+
+		const newPendingCount = pendingCount + 1;
+		const newDailyCount =
+			(currentSentence.dailySpeakCount || 0) + newPendingCount;
+
+		// 1日のカウント上限チェック（100回）
+		if (newDailyCount > 100) {
+			toast.error("Daily limit reached (100 times)", {
+				duration: 4000,
+			});
+			return;
+		}
+
+		setPendingCount(newPendingCount);
+
+		if (newDailyCount === 100) {
+			toast.error("Daily limit reached (100 times)", {
+				duration: 4000,
+			});
+		}
+	};
+
+	// 次のフレーズへ進む
+	const handleNextPhrase = async () => {
+		setIsNextLoading(true);
+		try {
+			const currentSentence = sentences[currentPhraseIndex];
+
+			// ペンディングカウントがある場合は送信
+			if (pendingCount > 0 && currentSentence) {
+				try {
+					await updatePhraseCountMutation.mutateAsync({
+						phraseId: currentSentence.id,
+						count: pendingCount,
+					});
+					setPendingCount(0);
+					// センテンスデータを再取得して更新されたカウントを反映
+					await refetchSentences();
+				} catch {
+					toast.error("Failed to update count");
+					return;
+				}
+			} else if (currentSentence) {
+				// カウントが0でもsession_spokenをtrueに設定
+				try {
+					await updatePhraseCountMutation.mutateAsync({
+						phraseId: currentSentence.id,
+						count: 0,
+					});
+				} catch {
+					// session_spoken設定エラーは次のフレーズ取得を阻害しない
+				}
+			}
+
+			if (currentPhraseIndex < sentences.length - 1) {
+				setCurrentPhraseIndex(currentPhraseIndex + 1);
+			}
+		} finally {
+			setIsNextLoading(false);
+		}
+	};
+
+	// プラクティス完了
+	const handleFinishPractice = async () => {
+		setIsFinishLoading(true);
+		try {
+			const currentSentence = sentences[currentPhraseIndex];
+
+			// ペンディングカウントがある場合は送信
+			if (pendingCount > 0 && currentSentence) {
+				try {
+					await updatePhraseCountMutation.mutateAsync({
+						phraseId: currentSentence.id,
+						count: pendingCount,
+					});
+					setPendingCount(0);
+				} catch {
+					toast.error("Failed to update count");
+					return;
+				}
+			} else if (currentSentence) {
+				// カウントが0でもsession_spokenをtrueに設定
+				try {
+					await updatePhraseCountMutation.mutateAsync({
+						phraseId: currentSentence.id,
+						count: 0,
+					});
+				} catch {
+					// エラーは無視
+				}
+			}
+
+			// Review画面に戻る
+			setViewMode("review");
+			setCurrentPhraseIndex(0);
+		} finally {
+			setIsFinishLoading(false);
+		}
+	};
+
 	// ステータス一覧を取得
 	const fetchStatuses = async () => {
 		setIsLoadingStatuses(true);
@@ -297,6 +441,37 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 		});
 	};
 
+	// プラクティスモードの場合
+	if (viewMode === "practice") {
+		const currentSentence = sentences[currentPhraseIndex] || null;
+		const isLastSentence = currentPhraseIndex >= sentences.length - 1;
+
+		return (
+			<SpeakPractice
+				phrase={currentSentence}
+				onCount={handleCountSpeech}
+				onNext={handleNextPhrase}
+				onFinish={handleFinishPractice}
+				todayCount={(currentSentence?.dailySpeakCount ?? 0) + pendingCount}
+				totalCount={(currentSentence?.totalSpeakCount ?? 0) + pendingCount}
+				isLoading={isSentencesLoading}
+				isNextLoading={isNextLoading}
+				isHideNext={isLastSentence}
+				isFinishing={isFinishLoading}
+				isCountDisabled={false}
+				learningLanguage={speech.learningLanguage.code}
+				onExplanation={
+					currentSentence?.explanation
+						? () => {
+								toast.success(currentSentence.explanation || "");
+							}
+						: undefined
+				}
+			/>
+		);
+	}
+
+	// Review画面（デフォルト）
 	return (
 		<div className="max-w-4xl mx-auto">
 			{/* Header with checkmark, practice count, and fullscreen */}
@@ -521,9 +696,8 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 						{/* Speaker button (右側) - speech.audioFilePathの再生 */}
 						<button
 							type="button"
-							onClick={handlePlayAudio}
-							disabled={!speech.audioFilePath}
-							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							onClick={handleStartPractice}
+							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
 						>
 							<RiSpeakLine size={24} />
 						</button>

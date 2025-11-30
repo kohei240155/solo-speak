@@ -39,11 +39,17 @@ export default function SpeechTabNavigation({
 			return;
 		}
 
-		// 未保存の変更チェック（Addタブから離脱する場合）
-		if (activeTab === "Add" && tab.key !== activeTab && checkUnsavedChanges) {
+		// 未保存の変更チェック（Add/Reviewタブから離脱する場合）
+		if (
+			(activeTab === "Add" || activeTab === "Review") &&
+			tab.key !== activeTab &&
+			checkUnsavedChanges
+		) {
 			if (checkUnsavedChanges()) {
 				const confirmLeave = window.confirm(
-					"入力した内容が削除されます。このまま移動しますか？",
+					activeTab === "Add"
+						? "入力した内容が削除されます。このまま移動しますか？"
+						: "保存されていないカウントがあります。このまま移動しますか？",
 				);
 				if (!confirmLeave) {
 					return;

@@ -97,8 +97,8 @@ export default function SpeakPractice({
 	// カウントボタンの無効状態判定
 	const isCountButtonDisabled = isCountDisabled || countCooldown > 0;
 
-	// ローディング中の表示
-	if (isLoading) {
+	// ローディング中の表示（Next処理中も含む）
+	if (isLoading || isNextLoading) {
 		return (
 			<LoadingSpinner message="Loading..." className="py-8" minHeight="280px" />
 		);
