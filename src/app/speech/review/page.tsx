@@ -39,7 +39,7 @@ function SpeechReviewPage() {
 
 	// React Queryでスピーチを取得
 	// language パラメータが存在する場合（SpeechModeモーダルからの遷移）は、speechIdベースの再取得は行わない
-	const { speech, refetch: refetchSpeech } = useReviewSpeech({
+	const { speech } = useReviewSpeech({
 		speechId: speechId,
 		languageCode: language,
 		speakCountFilter: (speakCountFilter || null) as
@@ -141,7 +141,6 @@ function SpeechReviewPage() {
 							setPendingCount={setPendingCount}
 							viewMode={viewMode}
 							setViewMode={setViewMode}
-							onPracticeCountUpdate={refetchSpeech}
 							onRefetchSpeechById={refetchSpeechById}
 						/>
 					) : (
