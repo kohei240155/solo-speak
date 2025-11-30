@@ -61,6 +61,14 @@ export default function SpeechAdd({
 	const [isCorrecting, setIsCorrecting] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
+	const placeholders = [
+		"今日はいつも通り仕事だった。",
+		"午前中は集中できる時間が多かった。",
+		"昼休みに公園まで散歩に行き気分転換ができてよかった。",
+		"午後は少しバタバタしたけど、なんとか終わらせて定時に帰れた。",
+		"今日は早く寝て、明日に備えようと思う。",
+	];
+
 	const {
 		register,
 		control,
@@ -70,8 +78,14 @@ export default function SpeechAdd({
 		resolver: zodResolver(speechFormSchema),
 		mode: "onChange",
 		defaultValues: {
-			title: "",
-			speechPlanItems: [{ value: "" }, { value: "" }, { value: "" }],
+			title: "今日あったことの振り返り",
+			speechPlanItems: [
+				{ value: placeholders[0] },
+				{ value: placeholders[1] },
+				{ value: placeholders[2] },
+				{ value: placeholders[3] },
+				{ value: placeholders[4] },
+			],
 			note: "",
 		},
 	});
@@ -92,14 +106,6 @@ export default function SpeechAdd({
 		titleValue.trim() === "" ||
 		(titleValue && titleValue.length > 50) ||
 		speechPlanItemsValue?.some((item) => item.value && item.value.length > 100);
-
-	const placeholders = [
-		"今日はいつも通り仕事だった。",
-		"午前中は集中できる時間が多かった。",
-		"昼休みに公園まで散歩に行き気分転換ができてよかった。",
-		"午後は少しバタバタしたけど、なんとか終わらせて定時に帰れた。",
-		"今日は早く寝て、明日に備えようと思う。",
-	];
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
@@ -322,13 +328,17 @@ export default function SpeechAdd({
 			const data = await api.post<{
 				sentences: SentenceData[];
 				feedback: FeedbackData[];
-			}>("/api/speech/correct", {
-				title,
-				speechPlanItems: planItems,
-				transcribedText: transcribed,
-				learningLanguage: learningLangName,
-				nativeLanguage: nativeLangName,
-			}); // 添削成功後、残回数を再取得
+			}>(
+				"/api/speech/correct",
+				{
+					title,
+					speechPlanItems: planItems,
+					transcribedText: transcribed,
+					learningLanguage: learningLangName,
+					nativeLanguage: nativeLangName,
+				},
+				{ timeout: 120000 }, // 120秒のタイムアウト（OpenAI APIの処理時間を考慮）
+			); // 添削成功後、残回数を再取得
 			await refetchRemainingSpeechCount();
 
 			// 添削完了データを親に渡す

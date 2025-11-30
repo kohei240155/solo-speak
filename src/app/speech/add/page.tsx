@@ -37,6 +37,7 @@ export default function SpeechAddPage() {
 	const [showResult, setShowResult] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [showPracticeModal, setShowPracticeModal] = useState(false);
+	const [savedSpeechId, setSavedSpeechId] = useState<string | null>(null);
 
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
@@ -106,6 +107,9 @@ export default function SpeechAddPage() {
 			toast.success("Speech saved successfully!");
 			console.log("Saved speech:", result);
 
+			// 保存したスピーチのIDを保存
+			setSavedSpeechId(result.speech.id);
+
 			// 保存成功後、モーダルを表示
 			setShowPracticeModal(true);
 		} catch (error) {
@@ -122,7 +126,17 @@ export default function SpeechAddPage() {
 		// 状態をリセット
 		setShowResult(false);
 		setCorrectionResult(null);
-		router.push("/speech/review");
+
+		// 保存したスピーチのIDを使って復習ページに遷移
+		if (savedSpeechId) {
+			router.push(`/speech/review?speechId=${savedSpeechId}`);
+		} else {
+			// フォールバック: IDがない場合はSpeech Listへ
+			router.push("/speech/list");
+		}
+
+		// IDをリセット
+		setSavedSpeechId(null);
 	};
 
 	// 練習しないを選択
@@ -131,6 +145,7 @@ export default function SpeechAddPage() {
 		// 状態をリセット
 		setShowResult(false);
 		setCorrectionResult(null);
+		setSavedSpeechId(null);
 		router.push("/speech/list");
 	};
 

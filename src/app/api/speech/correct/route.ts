@@ -5,6 +5,9 @@ import { getSpeechCorrectionPrompt } from "@/prompts/speechCorrection";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { prisma } from "@/utils/prisma";
 
+// Vercelでの最大実行時間を60秒に設定（Pro/Enterpriseプラン必須）
+export const maxDuration = 60;
+
 const correctSpeechSchema = z.object({
 	title: z.string().min(1).max(50),
 	speechPlanItems: z.array(z.string().max(100)).min(1).max(5),
@@ -103,37 +106,56 @@ export async function POST(request: NextRequest) {
 		);
 
 		// ChatGPT API呼び出し (Structured Outputs使用)
-		const response = await fetch("https://api.openai.com/v1/chat/completions", {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				model: "gpt-4o-mini",
-				messages: [
-					{
-						role: "user",
-						content: prompt,
-					},
-				],
-				temperature: 0.7,
-				max_tokens: 2000,
-				// Structured Outputs使用
-				response_format: zodResponseFormat(
-					speechCorrectionResponseSchema,
-					"speech_correction",
-				),
-			}),
-		});
+		// Vercelのタイムアウト対策として50秒のタイムアウトを設定
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 50000);
 
-		if (!response.ok) {
-			const errorData = await response.json();
-			console.error("ChatGPT API error:", errorData);
-			return NextResponse.json(
-				{ error: "Speech correction failed" },
-				{ status: 500 },
-			);
+		let response;
+		try {
+			response = await fetch("https://api.openai.com/v1/chat/completions", {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					model: "gpt-5-mini",
+					messages: [
+						{
+							role: "user",
+							content: prompt,
+						},
+					],
+					max_completion_tokens: 10000,
+					// Structured Outputs使用
+					response_format: zodResponseFormat(
+						speechCorrectionResponseSchema,
+						"speech_correction",
+					),
+				}),
+				signal: controller.signal,
+			});
+
+			clearTimeout(timeoutId);
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error("ChatGPT API error:", errorData);
+				return NextResponse.json(
+					{ error: "Speech correction failed" },
+					{ status: 500 },
+				);
+			}
+		} catch (error) {
+			clearTimeout(timeoutId);
+			if (error instanceof Error && error.name === "AbortError") {
+				console.error("OpenAI API timeout");
+				return NextResponse.json(
+					{ error: "Speech correction timed out. Please try again." },
+					{ status: 504 },
+				);
+			}
+			throw error;
 		}
 
 		const data = await response.json();
