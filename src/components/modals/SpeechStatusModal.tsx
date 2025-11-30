@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import BaseModal from "../common/BaseModal";
+import AnimatedButton from "../common/AnimatedButton";
 
 export interface SpeechStatus {
 	id: string;
@@ -90,40 +91,20 @@ export default function SpeechStatusModal({
 					<h3 className="text-base font-medium text-gray-900 mb-3">
 						Explanation
 					</h3>
-					<div className="px-3 py-3 text-sm text-gray-700 bg-gray-50 rounded-md">
+					<div className="px-3 py-3 text-sm text-gray-700">
 						{selectedStatus.description}
 					</div>
 				</div>
 			)}
 
 			{/* Save Button */}
-			<button
+			<AnimatedButton
 				onClick={handleSave}
 				disabled={isLoading}
-				className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-				style={{
-					backgroundColor: isLoading ? "#9CA3AF" : "#616161",
-				}}
-				onMouseEnter={(e) => {
-					if (!isLoading && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#525252";
-					}
-				}}
-				onMouseLeave={(e) => {
-					if (!isLoading && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#616161";
-					}
-				}}
+				isLoading={isLoading}
 			>
-				{isLoading ? (
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-						Loading...
-					</div>
-				) : (
-					"Save"
-				)}
-			</button>
+				Save
+			</AnimatedButton>
 		</BaseModal>
 	);
 }
