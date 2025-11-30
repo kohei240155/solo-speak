@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +14,7 @@ import SpeechReview from "@/components/speech/SpeechReview";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function SpeechReviewPage() {
+function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
@@ -147,3 +148,5 @@ export default function SpeechReviewPage() {
 		</div>
 	);
 }
+
+export default dynamic(() => Promise.resolve(SpeechReviewPage), { ssr: false });
