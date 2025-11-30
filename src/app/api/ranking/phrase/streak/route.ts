@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
 		}
 
 		// 各ユーザーのフレーズ作成日のStreak計算
+		// SpeechIDが設定されているPhraseは除外
 		const users = await prisma.user.findMany({
 			where: {
 				deletedAt: null,
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest) {
 					some: {
 						languageId: languageRecord.id,
 						deletedAt: null,
+						speechId: null,
 					},
 				},
 			},
@@ -62,6 +64,7 @@ export async function GET(request: NextRequest) {
 					where: {
 						languageId: languageRecord.id,
 						deletedAt: null,
+						speechId: null,
 					},
 					select: {
 						createdAt: true,
