@@ -18,6 +18,7 @@ import { useSpeechSentences } from "@/hooks/speech";
 import { useUpdatePhraseCount } from "@/hooks/phrase/useUpdatePhraseCount";
 import { useRecordSpeechPractice } from "@/hooks/speech";
 import SpeakPractice from "@/components/speak/SpeakPractice";
+import { useTextToSpeech } from "@/hooks/ui/useTextToSpeech";
 
 interface SpeechReviewProps {
 	speech: NonNullable<SpeechReviewResponseData["speech"]>;
@@ -81,6 +82,27 @@ export default function SpeechReview({
 
 	// ノートの編集状態
 	const [notes, setNotes] = useState(speech.notes || "");
+
+	// TTS機能の初期化
+	const {
+		isPlaying: isPlayingLearning,
+		playText: playLearningText,
+		stopAudio: stopLearningAudio,
+	} = useTextToSpeech({
+		languageCode: speech.learningLanguage.code,
+	});
+
+	// 学習言語のフレーズ全文を結合
+	const learningText = speech.phrases.map((p) => p.original).join(" ");
+
+	// TTS再生/停止のハンドラー
+	const handleToggleLearningAudio = () => {
+		if (isPlayingLearning) {
+			stopLearningAudio();
+		} else {
+			playLearningText(learningText);
+		}
+	};
 
 	// タブのスタイル
 	const getTabStyle = (tab: "Script" | "Feedback" | "Note") => {
@@ -543,9 +565,22 @@ export default function SpeechReview({
 							流暢に話せるようになるまで練習しましょう。
 						</p>
 						<div>
-							<h3 className="text-lg font-semibold text-gray-900 mb-3">
-								{speech.learningLanguage.name}
-							</h3>
+							<div className="flex items-center justify-between mb-3">
+								<h3 className="text-lg font-semibold text-gray-900">
+									{speech.learningLanguage.name}
+								</h3>
+								<button
+									type="button"
+									onClick={handleToggleLearningAudio}
+									className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+								>
+									{isPlayingLearning ? (
+										<BiStop size={18} className="text-gray-600" />
+									) : (
+										<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
+									)}
+								</button>
+							</div>
 							<div className="border border-gray-300 rounded-lg p-4 bg-white space-y-4">
 								{speech.phrases.map((phrase) => (
 									<p key={phrase.id} className="text-sm text-gray-900">
