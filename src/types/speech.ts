@@ -196,3 +196,13 @@ export interface UpdateSpeechNotesResponse {
 		notes: string;
 	};
 }
+
+// Speech Practice Record Types
+export interface RecordPracticeResponse {
+	message: string;
+	speech: {
+		id: string;
+		practiceCount: number;
+		lastPracticedAt: Date | null;
+	};
+}

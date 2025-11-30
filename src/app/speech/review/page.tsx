@@ -35,7 +35,7 @@ function SpeechReviewPage() {
 	const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
 
 	// React Queryでスピーチを取得
-	const { speech } = useReviewSpeech({
+	const { speech, refetch: refetchSpeech } = useReviewSpeech({
 		speechId: speechId,
 		languageCode: language,
 		speakCountFilter: (speakCountFilter || null) as
@@ -141,6 +141,7 @@ function SpeechReviewPage() {
 							setPendingCount={setPendingCount}
 							viewMode={viewMode}
 							setViewMode={setViewMode}
+							onPracticeCountUpdate={refetchSpeech}
 						/>
 					) : (
 						<div

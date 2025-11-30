@@ -16,6 +16,7 @@ import { useSaveSpeechNotes } from "@/hooks/speech/useSaveSpeechNotes";
 import { useUpdateSpeechStatus } from "@/hooks/speech/useUpdateSpeechStatus";
 import { useSpeechSentences } from "@/hooks/speech";
 import { useUpdatePhraseCount } from "@/hooks/phrase/useUpdatePhraseCount";
+import { useRecordSpeechPractice } from "@/hooks/speech";
 import SpeakPractice from "@/components/speak/SpeakPractice";
 
 interface SpeechReviewProps {
@@ -24,6 +25,7 @@ interface SpeechReviewProps {
 	setPendingCount: (count: number) => void;
 	viewMode: ViewMode;
 	setViewMode: (mode: ViewMode) => void;
+	onPracticeCountUpdate?: () => void;
 }
 
 type ViewMode = "review" | "practice";
@@ -34,6 +36,7 @@ export default function SpeechReview({
 	setPendingCount,
 	viewMode,
 	setViewMode,
+	onPracticeCountUpdate,
 }: SpeechReviewProps) {
 	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
@@ -46,6 +49,7 @@ export default function SpeechReview({
 	const saveNotesMutation = useSaveSpeechNotes();
 	const updateStatusMutation = useUpdateSpeechStatus();
 	const updatePhraseCountMutation = useUpdatePhraseCount();
+	const recordPracticeMutation = useRecordSpeechPractice();
 	const {
 		sentences,
 		isLoading: isSentencesLoading,
@@ -228,6 +232,16 @@ export default function SpeechReview({
 				setIsUserAudioPlaying(false);
 				// トーストを表示
 				toast.success("Review completed!");
+				// Speech練習記録APIを呼び出す
+				recordPracticeMutation.mutate(
+					{ speechId: speech.id },
+					{
+						onSuccess: () => {
+							// 親コンポーネントでspeechデータを再取得
+							onPracticeCountUpdate?.();
+						},
+					},
+				);
 				// 録音データをリセット
 				setTimeout(() => {
 					if (userAudioRef.current) {
