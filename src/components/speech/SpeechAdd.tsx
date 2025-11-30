@@ -78,14 +78,8 @@ export default function SpeechAdd({
 		resolver: zodResolver(speechFormSchema),
 		mode: "onChange",
 		defaultValues: {
-			title: "今日あったことの振り返り",
-			speechPlanItems: [
-				{ value: placeholders[0] },
-				{ value: placeholders[1] },
-				{ value: placeholders[2] },
-				{ value: placeholders[3] },
-				{ value: placeholders[4] },
-			],
+			title: "",
+			speechPlanItems: [{ value: "" }, { value: "" }, { value: "" }],
 			note: "",
 		},
 	});
