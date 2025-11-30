@@ -70,7 +70,7 @@ export default function SpeechAddPage() {
 	const handleCorrectionComplete = (result: CorrectionResult) => {
 		setCorrectionResult(result);
 		setShowResult(true);
-		setHasUnsavedChanges(false); // 添削完了後は未保存状態をリセット
+		setHasUnsavedChanges(true); // 添削完了後は未保存状態にする（保存が必要）
 	};
 
 	// 保存処理
@@ -109,6 +109,9 @@ export default function SpeechAddPage() {
 
 			// 保存したスピーチのIDを保存
 			setSavedSpeechId(result.speech.id);
+
+			// 保存成功したら未保存状態を解除
+			setHasUnsavedChanges(false);
 
 			// 保存成功後、モーダルを表示
 			setShowPracticeModal(true);
@@ -174,14 +177,13 @@ export default function SpeechAddPage() {
 						nativeLanguage={nativeLanguage}
 					/>
 				</div>
-
 				{/* タブメニュー */}
 				<SpeechTabNavigation
 					activeTab="Add"
 					checkUnsavedChanges={checkUnsavedChanges}
 					onReviewModalOpen={openReviewModal}
-				/>
-
+					isShowingResult={showResult}
+				/>{" "}
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					{showResult && correctionResult ? (
@@ -198,8 +200,10 @@ export default function SpeechAddPage() {
 							onNoteChange={(note) => {
 								if (correctionResult) {
 									setCorrectionResult({ ...correctionResult, note });
+									setHasUnsavedChanges(true);
 								}
 							}}
+							onHasUnsavedChanges={setHasUnsavedChanges}
 						/>
 					) : (
 						<SpeechAdd

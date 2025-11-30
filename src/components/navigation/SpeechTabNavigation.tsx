@@ -6,12 +6,14 @@ interface SpeechTabNavigationProps {
 	activeTab: SpeechTabType;
 	checkUnsavedChanges?: () => boolean;
 	onReviewModalOpen?: () => void;
+	isShowingResult?: boolean; // Result画面を表示中かどうか
 }
 
 export default function SpeechTabNavigation({
 	activeTab,
 	checkUnsavedChanges,
 	onReviewModalOpen,
+	isShowingResult = false,
 }: SpeechTabNavigationProps) {
 	const router = useRouter();
 
@@ -46,18 +48,24 @@ export default function SpeechTabNavigation({
 			checkUnsavedChanges
 		) {
 			if (checkUnsavedChanges()) {
-				const confirmLeave = window.confirm(
-					activeTab === "Add"
-						? "入力した内容が削除されます。このまま移動しますか？"
-						: "保存されていないカウントがあります。このまま移動しますか？",
-				);
+				let message = "";
+				if (activeTab === "Add") {
+					// Addタブの場合、Result画面かどうかでメッセージを変える
+					message = isShowingResult
+						? "添削内容が失われます。このまま移動しますか？"
+						: "入力した内容が削除されます。このまま移動しますか？";
+				} else {
+					// Reviewタブの場合
+					message =
+						"保存されていないカウントがあります。このまま移動しますか？";
+				}
+
+				const confirmLeave = window.confirm(message);
 				if (!confirmLeave) {
 					return;
 				}
 			}
-		}
-
-		// ページ遷移
+		} // ページ遷移
 		router.push(tab.path);
 	};
 
