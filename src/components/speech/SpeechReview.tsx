@@ -539,6 +539,9 @@ export default function SpeechReview({
 			<div className="mb-6">
 				{activeTab === "Script" && (
 					<div className="space-y-6">
+						<p className="text-sm text-gray-700 mb-4">
+							流暢に話せるようになるまで練習しましょう。
+						</p>
 						<div>
 							<h3 className="text-lg font-semibold text-gray-900 mb-3">
 								{speech.learningLanguage.name}
@@ -567,6 +570,9 @@ export default function SpeechReview({
 				)}
 				{activeTab === "Feedback" && (
 					<div className="space-y-6">
+						<p className="text-sm text-gray-700 mb-4">
+							初回スピーチのフィードバックを確認しましょう。
+						</p>
 						{/* Your Speech Section */}
 						<div>
 							<div className="flex items-center justify-between mb-3">
