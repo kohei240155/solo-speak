@@ -7,7 +7,6 @@ import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
@@ -50,28 +49,14 @@ function SpeechReviewPage() {
 		enabled: !authLoading && (!!loadedSpeechId || !!speechId || !!language),
 	});
 
-	// 言語選択の状態管理
-	const [learningLanguage, setLearningLanguage] = useState<string>(
-		userSettings?.defaultLearningLanguage?.code || "",
-	);
-
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
-
-	const nativeLanguage = userSettings?.nativeLanguage?.code || "";
 
 	// ページ離脱警告（プラクティスモードでペンディングカウントがある場合のみ）
 	usePageLeaveWarning({
 		hasPendingChanges: viewMode === "practice" && pendingCount > 0,
 		warningMessage: t("confirm.unsavedCount"),
 	});
-
-	// userSettingsが更新されたら学習言語を同期
-	useEffect(() => {
-		if (userSettings?.defaultLearningLanguage?.code && !learningLanguage) {
-			setLearningLanguage(userSettings.defaultLearningLanguage.code);
-		}
-	}, [userSettings, learningLanguage]);
 
 	// Speechがロードされたら、そのIDを保持（refetch用）
 	useEffect(() => {
@@ -82,24 +67,18 @@ function SpeechReviewPage() {
 
 	// 直接アクセスチェック: URLパラメータがない場合はSpeech Listに遷移
 	useEffect(() => {
-		if (learningLanguage) {
-			const params = new URLSearchParams(window.location.search);
-			// URLパラメータがない場合（直接アクセス）はSpeech Listに遷移
-			// speechIdまたはlanguageのどちらかがあればOK
-			if (!params.get("speechId") && !params.get("language")) {
-				router.push("/speech/list");
-				return;
-			}
+		const params = new URLSearchParams(window.location.search);
+		// URLパラメータがない場合（直接アクセス）はSpeech Listに遷移
+		// speechIdまたはlanguageのどちらかがあればOK
+		if (!params.get("speechId") && !params.get("language")) {
+			router.push("/speech/list");
+			return;
 		}
-	}, [learningLanguage, router]);
+	}, [router]);
 
 	// 未保存の変更チェック関数
 	const checkUnsavedChanges = () => {
 		return viewMode === "practice" && pendingCount > 0;
-	};
-
-	const handleLearningLanguageChange = (languageCode: string) => {
-		setLearningLanguage(languageCode);
 	};
 
 	const openReviewModal = () => {
@@ -122,19 +101,10 @@ function SpeechReviewPage() {
 	return (
 		<div className="min-h-screen">
 			<div className="max-w-2xl mx-auto pt-[18px] pb-8 px-3 sm:px-4 md:px-6">
-				{/* Speech タイトルと言語選択を同じ行に配置 */}
-				<div className="flex justify-between items-center mb-[18px]">
-					<h1 className="text-gray-900 text-2xl md:text-3xl font-bold">
-						Speech
-					</h1>
-
-					<LanguageSelector
-						learningLanguage={learningLanguage}
-						onLanguageChange={handleLearningLanguageChange}
-						languages={languages || []}
-						nativeLanguage={nativeLanguage}
-					/>
-				</div>
+				{/* Speech タイトル */}
+				<h1 className="text-gray-900 text-2xl md:text-3xl font-bold mb-[18px]">
+					Speech
+				</h1>
 
 				{/* タブメニュー */}
 				<SpeechTabNavigation
@@ -174,7 +144,9 @@ function SpeechReviewPage() {
 				isOpen={showReviewModal}
 				onClose={closeReviewModal}
 				languages={languages || []}
-				defaultLearningLanguage={learningLanguage}
+				defaultLearningLanguage={
+					userSettings?.defaultLearningLanguage?.code || ""
+				}
 			/>
 
 			<Toaster />
