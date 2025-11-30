@@ -32,21 +32,18 @@ export default function ReviewModeModal({
 		useState<boolean>(true);
 
 	const handleStart = async (selectedLanguage: string) => {
-		// 設定オブジェクトを作成
-		const config: ReviewConfig = {
-			language: selectedLanguage,
-			speakCountFilter: speakCountFilter,
-			excludeTodayPracticed: excludeTodayPracticed,
-		};
-
-		// 設定をセッションストレージに保存
-		sessionStorage.setItem("reviewConfig", JSON.stringify(config));
-
 		// モーダルを閉じる
 		onClose();
 
+		// URLパラメータを使用してReview画面に遷移
+		const params = new URLSearchParams({
+			language: selectedLanguage,
+			speakCountFilter: speakCountFilter || "",
+			excludeTodayPracticed: excludeTodayPracticed.toString(),
+		});
+
 		// Review画面に遷移
-		router.push("/speech/review");
+		router.push(`/speech/review?${params.toString()}`);
 	};
 
 	// 出題対象のオプションを生成

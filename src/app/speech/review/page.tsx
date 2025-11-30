@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,6 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
-import { ReviewConfig } from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
 import { SpeechReviewResponseData } from "@/types/speech";
@@ -21,6 +20,7 @@ export default function SpeechReviewPage() {
 	const { userSettings } = useAuth();
 	const { fetchReviewSpeech } = useReviewSpeech();
 	const router = useRouter();
+	const searchParams = useSearchParams();
 
 	// 言語選択の状態管理
 	const [learningLanguage, setLearningLanguage] = useState<string>(
@@ -55,42 +55,42 @@ export default function SpeechReviewPage() {
 		}
 	}, [learningLanguage, router]);
 
-	// ページロード時にセッションストレージから設定を読み込んでAPIを呼び出す
+	// URLパラメータからスピーチを取得
 	useEffect(() => {
 		const loadReviewSpeech = async () => {
-			const savedConfig = sessionStorage.getItem("reviewConfig");
-			if (savedConfig) {
-				try {
-					const config: ReviewConfig = JSON.parse(savedConfig);
+			const language = searchParams.get("language");
+			const speakCountFilter = searchParams.get("speakCountFilter");
+			const excludeTodayPracticed = searchParams.get("excludeTodayPracticed");
 
-					// セッションストレージをクリア（1回だけ使用）
-					sessionStorage.removeItem("reviewConfig");
+			if (!language) {
+				return;
+			}
 
-					const speech = await fetchReviewSpeech({
-						languageCode: config.language,
-						speakCountFilter: config.speakCountFilter as
-							| "lessPractice"
-							| "lowStatus"
-							| null,
-						excludeTodayPracticed: config.excludeTodayPracticed,
-					});
+			try {
+				const speech = await fetchReviewSpeech({
+					languageCode: language,
+					speakCountFilter: (speakCountFilter || null) as
+						| "lessPractice"
+						| "lowStatus"
+						| null,
+					excludeTodayPracticed: excludeTodayPracticed === "true",
+				});
 
-					if (!speech) {
-						toast.error("No speech found matching the criteria");
-						return;
-					}
-
-					setReviewSpeech(speech);
-				} catch (error) {
-					console.error("Failed to fetch review speech:", error);
+				if (!speech) {
+					toast.error("No speech found matching the criteria");
+					return;
 				}
+
+				setReviewSpeech(speech);
+			} catch (error) {
+				console.error("Failed to fetch review speech:", error);
 			}
 		};
 
 		if (!authLoading && userSettings) {
 			loadReviewSpeech();
 		}
-	}, [authLoading, userSettings, fetchReviewSpeech]);
+	}, [authLoading, userSettings, searchParams, fetchReviewSpeech]);
 
 	const handleLearningLanguageChange = (languageCode: string) => {
 		setLearningLanguage(languageCode);
