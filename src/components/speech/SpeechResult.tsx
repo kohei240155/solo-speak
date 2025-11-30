@@ -83,12 +83,6 @@ export default function SpeechResult({
 		setEditableSentences(newSentences);
 	};
 
-	// テキストエリアの高さを自動調整
-	const adjustTextareaHeight = (element: HTMLTextAreaElement) => {
-		element.style.height = "auto";
-		element.style.height = `${element.scrollHeight}px`;
-	};
-
 	// クリーンアップ
 	useEffect(() => {
 		return () => {
@@ -103,6 +97,18 @@ export default function SpeechResult({
 	useEffect(() => {
 		setEditableSentences(sentences);
 	}, [sentences]);
+
+	// textareaの高さを初期化時と内容変更時に調整
+	useEffect(() => {
+		setTimeout(() => {
+			const textareas =
+				document.querySelectorAll<HTMLTextAreaElement>("textarea");
+			textareas.forEach((textarea) => {
+				textarea.style.height = "auto";
+				textarea.style.height = `${textarea.scrollHeight}px`;
+			});
+		}, 0);
+	}, [editableSentences, note]);
 
 	// 保存ボタンのハンドラー
 	const handleSaveClick = async () => {
@@ -223,9 +229,12 @@ export default function SpeechResult({
 											"learningLanguage",
 											e.target.value,
 										);
-										adjustTextareaHeight(e.target);
 									}}
-									onInput={(e) => adjustTextareaHeight(e.currentTarget)}
+									onInput={(e) => {
+										const target = e.target as HTMLTextAreaElement;
+										target.style.height = "auto";
+										target.style.height = `${target.scrollHeight}px`;
+									}}
 									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 mb-2 overflow-hidden"
 									rows={1}
 								/>
@@ -239,9 +248,12 @@ export default function SpeechResult({
 											"nativeLanguage",
 											e.target.value,
 										);
-										adjustTextareaHeight(e.target);
 									}}
-									onInput={(e) => adjustTextareaHeight(e.currentTarget)}
+									onInput={(e) => {
+										const target = e.target as HTMLTextAreaElement;
+										target.style.height = "auto";
+										target.style.height = `${target.scrollHeight}px`;
+									}}
 									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-50 overflow-hidden"
 									rows={1}
 								/>
@@ -289,8 +301,13 @@ export default function SpeechResult({
 				<textarea
 					value={note}
 					onChange={(e) => onNoteChange?.(e.target.value)}
+					onInput={(e) => {
+						const target = e.target as HTMLTextAreaElement;
+						target.style.height = "auto";
+						target.style.height = `${target.scrollHeight}px`;
+					}}
 					placeholder="気づいたことを自由にメモしましょう。"
-					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 overflow-hidden"
 					rows={4}
 				/>
 			</div>

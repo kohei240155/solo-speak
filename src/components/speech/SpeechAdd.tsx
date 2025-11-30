@@ -398,8 +398,13 @@ export default function SpeechAdd({
 				<textarea
 					{...register("title")}
 					placeholder="独り言を使ってスピーキングの練習を始めたこと"
-					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 					rows={1}
+					onInput={(e) => {
+						const target = e.target as HTMLTextAreaElement;
+						target.style.height = "auto";
+						target.style.height = `${target.scrollHeight}px`;
+					}}
 					disabled={
 						isTranscribing || isCorrecting || remainingSpeechCount === 0
 					}
@@ -423,8 +428,13 @@ export default function SpeechAdd({
 								<textarea
 									{...register(`speechPlanItems.${index}.value`)}
 									placeholder={placeholders[index]}
-									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
-									rows={2}
+									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
+									rows={1}
+									onInput={(e) => {
+										const target = e.target as HTMLTextAreaElement;
+										target.style.height = "auto";
+										target.style.height = `${target.scrollHeight}px`;
+									}}
 									disabled={
 										isTranscribing || isCorrecting || remainingSpeechCount === 0
 									}
