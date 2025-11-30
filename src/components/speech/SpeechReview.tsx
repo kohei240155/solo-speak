@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { AiOutlineLineChart } from "react-icons/ai";
+import { AiOutlineLineChart, AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill, BsFillMicFill } from "react-icons/bs";
 import { BiPlay, BiStop } from "react-icons/bi";
 import { IoCheckboxOutline } from "react-icons/io5";
@@ -378,31 +378,77 @@ export default function SpeechReview({ speech }: SpeechReviewProps) {
 						</div>
 					</div>
 				)}
-
 				{activeTab === "Feedback" && (
-					<div className="space-y-4">
-						{speech.feedbacks.length > 0 ? (
-							speech.feedbacks.map((feedback) => (
-								<div
-									key={feedback.id}
-									className="border border-gray-300 rounded-lg p-4 bg-white"
-								>
-									<div className="font-semibold text-gray-900 mb-2">
-										{feedback.category}
-									</div>
-									<div className="text-sm text-gray-700">
-										{feedback.content}
-									</div>
-								</div>
-							))
-						) : (
-							<div className="text-center py-8 text-gray-500">
-								No feedback available
+					<div className="space-y-6">
+						{/* Your Speech Section */}
+						<div>
+							<div className="flex items-center justify-between mb-3">
+								<h3 className="text-xl font-semibold text-gray-900">
+									Your Speech
+								</h3>
+								{speech.audioFilePath && (
+									<button
+										type="button"
+										onClick={handlePlayAudio}
+										className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+									>
+										{isPlaying ? (
+											<BsPauseFill size={18} className="text-gray-600" />
+										) : (
+											<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
+										)}
+									</button>
+								)}
 							</div>
-						)}
-					</div>
-				)}
+							<div className="border border-gray-300 rounded-lg p-4 bg-white">
+								{speech.firstSpeechText ? (
+									<p className="text-sm text-gray-900 whitespace-pre-wrap">
+										{speech.firstSpeechText}
+									</p>
+								) : (
+									<p className="text-gray-500 text-center py-4">
+										No transcript available
+									</p>
+								)}
+							</div>
+						</div>{" "}
+						{/* Feedback Section */}
+						<div>
+							<h3 className="text-xl font-semibold text-gray-900 mb-2">
+								Feedback
+							</h3>
+							<div className="space-y-6">
+								{speech.feedbacks.length > 0 ? (
+									speech.feedbacks.map((feedback) => (
+										<div key={feedback.id}>
+											{/* Header */}
+											<div className="flex items-center mb-3">
+												<AiOutlineCaretRight
+													size={16}
+													className="text-gray-600 mr-1"
+												/>
+												<span className="font-medium text-gray-900 text-md">
+													{feedback.category}
+												</span>
+											</div>
 
+											{/* Content */}
+											<div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+												<p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+													{feedback.content}
+												</p>
+											</div>
+										</div>
+									))
+								) : (
+									<div className="text-center py-8 text-gray-500">
+										No feedback available
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
+				)}{" "}
 				{activeTab === "Note" && (
 					<div className="border border-gray-300 rounded-lg p-4 bg-white">
 						{speech.notes ? (
