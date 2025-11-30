@@ -13,6 +13,7 @@ import {
 	useInfinitePhrases,
 	useRemainingGenerations,
 	useSituations,
+	useMutateSituation,
 } from "@/hooks/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/ui/useTranslation";
@@ -26,11 +27,11 @@ export const usePhraseManager = () => {
 	const { languages } = useLanguages();
 	const { remainingGenerations, refetch: mutateGenerations } =
 		useRemainingGenerations();
+	const { situations, isLoading: situationsLoading } = useSituations();
 	const {
-		situations,
-		isLoading: situationsLoading,
-		refetch: mutateSituations,
-	} = useSituations();
+		addSituation: addSituationMutation,
+		deleteSituation: deleteSituationMutation,
+	} = useMutateSituation();
 
 	// ローカル状態
 	const [nativeLanguage, setNativeLanguage] = useState<string>(
@@ -314,32 +315,28 @@ export const usePhraseManager = () => {
 	const addSituation = useCallback(
 		async (name: string) => {
 			try {
-				await api.post("/api/situations", { name });
-				// キャッシュを更新
-				mutateSituations();
+				await addSituationMutation(name);
 				toast.success(t("situation.addSuccess"));
 			} catch (err) {
 				toast.error(t("situation.addError"));
 				throw err;
 			}
 		},
-		[mutateSituations, t],
+		[addSituationMutation, t],
 	);
 
 	// シチュエーション削除ハンドラー
 	const deleteSituation = useCallback(
 		async (id: string) => {
 			try {
-				await api.delete(`/api/situations/${id}`);
-				// キャッシュを更新
-				mutateSituations();
+				await deleteSituationMutation(id);
 				toast.success(t("situation.deleteSuccess"));
 			} catch {
 				toast.error(t("situation.deleteError"));
 				throw new Error("Failed to delete situation");
 			}
 		},
-		[mutateSituations, t],
+		[deleteSituationMutation, t],
 	);
 
 	// 未保存変更チェック
