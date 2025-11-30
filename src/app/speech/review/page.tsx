@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useLanguages } from "@/hooks/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +19,8 @@ export default function SpeechReviewPage() {
 	const { loading: authLoading } = useAuthGuard();
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth();
-	const { fetchReviewSpeech, loading: fetchingReview } = useReviewSpeech();
+	const { fetchReviewSpeech } = useReviewSpeech();
+	const router = useRouter();
 
 	// 言語選択の状態管理
 	const [learningLanguage, setLearningLanguage] = useState<string>(
@@ -40,6 +42,18 @@ export default function SpeechReviewPage() {
 			setLearningLanguage(userSettings.defaultLearningLanguage.code);
 		}
 	}, [userSettings, learningLanguage]);
+
+	// 直接アクセスチェック: URLパラメータがない場合はSpeech Listに遷移
+	useEffect(() => {
+		if (learningLanguage) {
+			const params = new URLSearchParams(window.location.search);
+			// URLパラメータがない場合（直接アクセス）はSpeech Listに遷移
+			if (!params.toString()) {
+				router.push("/speech/list");
+				return;
+			}
+		}
+	}, [learningLanguage, router]);
 
 	// ページロード時にセッションストレージから設定を読み込んでAPIを呼び出す
 	useEffect(() => {
@@ -124,24 +138,18 @@ export default function SpeechReviewPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-					{fetchingReview ? (
-						<div className="flex justify-center items-center py-12">
-							<LoadingSpinner message="Loading speech..." />
-						</div>
-					) : reviewSpeech ? (
+					{reviewSpeech ? (
 						<SpeechReview speech={reviewSpeech} />
 					) : (
-						<div className="text-center py-12">
-							<p className="text-gray-600 text-lg mb-4">
-								Select review conditions to start practicing
-							</p>
-							<button
-								type="button"
-								onClick={openReviewModal}
-								className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-							>
-								Start Review
-							</button>
+						<div
+							className="flex items-center justify-center"
+							style={{ minHeight: "240px" }}
+						>
+							<LoadingSpinner
+								size="md"
+								message="Loading..."
+								className="text-center"
+							/>
 						</div>
 					)}
 				</div>
