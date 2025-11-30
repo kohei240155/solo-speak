@@ -92,12 +92,13 @@ export default function RankingPage() {
 					/>
 				</div>
 
-				{/* Phrase、Speak、Quizタブメニュー */}
+				{/* Phrase、Speak、Quiz、Speechタブメニュー */}
 				<div className="flex mb-[18px]">
 					{[
 						{ key: "phrase" as const, label: "Phrase" },
 						{ key: "speak" as const, label: "Speak" },
 						{ key: "quiz" as const, label: "Quiz" },
+						{ key: "speech" as const, label: "Speech" },
 					].map((tab, index) => (
 						<button
 							key={tab.key}
@@ -106,7 +107,7 @@ export default function RankingPage() {
 							}}
 							className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
 								index === 0 ? "rounded-l-[20px]" : ""
-							} ${index === 2 ? "rounded-r-[20px]" : ""} ${
+							} ${index === 3 ? "rounded-r-[20px]" : ""} ${
 								index > 0 ? "border-l-0" : ""
 							} ${
 								tab.key === activeRankingType
@@ -121,8 +122,8 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合はTotal&Streakタブを表示） */}
-					{activeRankingType === "phrase" ? (
+					{/* Daily/Weekly/Totalタブメニュー（PhraseとSpeechの場合はTotal&Streakタブを表示） */}
+					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 justify-between items-center">
 								<div className="flex space-x-0">
@@ -193,7 +194,8 @@ export default function RankingPage() {
 								<div className="text-right pr-2">
 									{(activeRankingType === "phrase" && activeTab === "Streak") ||
 									(activeRankingType === "speak" && activeTab === "Streak") ||
-									(activeRankingType === "quiz" && activeTab === "Streak")
+									(activeRankingType === "quiz" && activeTab === "Streak") ||
+									(activeRankingType === "speech" && activeTab === "Streak")
 										? "Days"
 										: "Count"}
 								</div>

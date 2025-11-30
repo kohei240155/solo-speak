@@ -14,6 +14,7 @@ export interface UseSituationsReturn {
 
 /**
  * ユーザーのシチュエーション一覧を管理するフック
+ * @deprecated このフックはReact Query版に移行しました。代わりに @/hooks/api の useSituations と useMutateSituation を使用してください。
  */
 export function useSituations(): UseSituationsReturn {
 	const [situations, setSituations] = useState<SituationResponse[]>([]);

@@ -151,6 +151,22 @@
 			"submitError": "回答の送信中にエラーが発生しました"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "言語",
+			"targetPhrases": "出題対象",
+			"optionsTitle": "オプション",
+			"excludeTodayPracticedLabel": "今日既に練習したスピーチは除外する",
+			"options": {
+				"lessPractice": "練習回数が少ない",
+				"lowStatus": "ステータスが低い"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "条件に一致するスピーチが見つかりませんでした",
+			"countError": "スピーチ数の取得中にエラーが発生しました"
+		}
+	},
 	"home": {
 		"hero": {
 			"subtitle": "\\ 独り言トレーニング /",

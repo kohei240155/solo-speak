@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { useTranslation } from "./useTranslation";
 
-type RankingType = "phrase" | "speak" | "quiz";
+type RankingType = "phrase" | "speak" | "quiz" | "speech";
 type TabType = "Daily" | "Weekly" | "Total" | "Streak";
 
 export const useShareStreak = () => {
@@ -54,6 +54,12 @@ export const useShareStreak = () => {
 					shareText += t("ranking.shareStreak.quiz.total", { count });
 				} else if (tabType === "Streak") {
 					shareText += t("ranking.shareStreak.quiz.streak", { count });
+				}
+			} else if (rankingType === "speech") {
+				if (tabType === "Total") {
+					shareText += t("ranking.shareStreak.speech.total", { count });
+				} else if (tabType === "Streak") {
+					shareText += t("ranking.shareStreak.speech.streak", { count });
 				}
 			}
 

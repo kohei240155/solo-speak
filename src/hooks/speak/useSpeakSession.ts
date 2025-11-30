@@ -253,6 +253,9 @@ export const useSpeakSession = (learningLanguage: string) => {
 				return await fetchSpeakPhrase(config);
 			}
 
+			// まずローディング状態にして、現在のカウントを維持したまま画面を固定
+			setIsLoadingPhrase(true);
+
 			// ペンディングカウントがある場合は送信
 			if (pendingCount > 0) {
 				const success = await sendPendingCount(currentPhrase.id, pendingCount);
@@ -260,6 +263,7 @@ export const useSpeakSession = (learningLanguage: string) => {
 					setPendingCount(0);
 				} else {
 					toast.error(t("phrase.messages.countError"));
+					setIsLoadingPhrase(false);
 					return false;
 				}
 			} else {
@@ -271,6 +275,7 @@ export const useSpeakSession = (learningLanguage: string) => {
 				}
 			}
 
+			// カウント送信後に次のフレーズを取得（fetchSpeakPhrase内でsetIsLoadingPhrase(false)される）
 			const result = await fetchSpeakPhrase(config);
 			return result;
 		},

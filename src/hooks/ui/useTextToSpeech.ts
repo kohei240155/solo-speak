@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
+import { api } from "@/utils/api";
 
 interface UseTextToSpeechOptions {
 	languageCode?: string;
@@ -9,6 +10,7 @@ interface UseTextToSpeechReturn {
 	isPlaying: boolean;
 	error: string | null;
 	playText: (text: string) => Promise<void>;
+	stopAudio: () => void;
 	clearCache: () => void;
 }
 
@@ -27,6 +29,10 @@ export function useTextToSpeech(
 
 	// 音声キャッシュを保存するRef
 	const audioCache = useRef<Map<string, CachedAudio>>(new Map());
+
+	// 現在再生中のオーディオを追跡
+	const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+	const currentCacheKeyRef = useRef<string | null>(null);
 
 	// キャッシュキーを生成する関数
 	const getCacheKey = useCallback((text: string, languageCode: string) => {
@@ -47,12 +53,18 @@ export function useTextToSpeech(
 				const languageCode = options.languageCode || DEFAULT_LANGUAGE;
 				const cacheKey = getCacheKey(text, languageCode);
 
+				// 現在のキャッシュキーを保存
+				currentCacheKeyRef.current = cacheKey;
+
 				// キャッシュから音声を取得
 				const cachedAudio = audioCache.current.get(cacheKey);
 
 				if (cachedAudio) {
 					// キャッシュされた音声を再生
 					const audio = cachedAudio.audio;
+
+					// 現在のオーディオを設定
+					currentAudioRef.current = audio;
 
 					// 既存のイベントリスナーをクリア（重複防止）
 					audio.removeEventListener(
@@ -115,23 +127,18 @@ export function useTextToSpeech(
 				}
 
 				// キャッシュにない場合は新しく音声を取得
-				const response = await fetch("/api/tts", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
+				const data = await api.post<{
+					success: boolean;
+					audioData: string;
+					mimeType?: string;
+				}>(
+					"/api/tts",
+					{
 						text: text.trim(),
 						languageCode,
-					}),
-				});
-
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(errorData.error || "Failed to generate speech");
-				}
-
-				const data = await response.json();
+					},
+					{ useAuth: false },
+				);
 
 				if (!data.success || !data.audioData) {
 					throw new Error("Invalid response from server");
@@ -148,6 +155,9 @@ export function useTextToSpeech(
 
 				// 音声を再生
 				const audio = new Audio(audioUrl);
+
+				// 現在のオーディオを設定
+				currentAudioRef.current = audio;
 
 				// preloadを設定して音声データを先読みする
 				audio.preload = "auto";
@@ -213,6 +223,15 @@ export function useTextToSpeech(
 		[options.languageCode, getCacheKey],
 	);
 
+	// 音声を停止
+	const stopAudio = useCallback(() => {
+		if (currentAudioRef.current) {
+			currentAudioRef.current.pause();
+			currentAudioRef.current.currentTime = 0;
+			setIsPlaying(false);
+		}
+	}, []);
+
 	// キャッシュをクリアする関数
 	const clearCache = useCallback(() => {
 		// すべてのオーディオURLを解放
@@ -227,6 +246,7 @@ export function useTextToSpeech(
 		isPlaying,
 		error,
 		playText,
+		stopAudio,
 		clearCache,
 	};
 }

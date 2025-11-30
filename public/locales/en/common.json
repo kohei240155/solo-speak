@@ -151,6 +151,22 @@
 			"submitError": "Error occurred while submitting answer"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "Language",
+			"targetPhrases": "Target Phrases",
+			"optionsTitle": "Options",
+			"excludeTodayPracticedLabel": "Exclude speeches practiced today",
+			"options": {
+				"lessPractice": "Less Practice",
+				"lowStatus": "Low Status"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "No speeches found matching the criteria",
+			"countError": "An error occurred while retrieving speech count"
+		}
+	},
 	"home": {
 		"hero": {
 			"subtitle": "\\ Solo Practice Training /",

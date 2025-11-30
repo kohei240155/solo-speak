@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
 						code: language,
 					},
 					deletedAt: null,
+					speechId: null, // Add Speechで追加されたフレーズを除外
 					// 音読回数フィルターを適用
 					...(speakCountMinimum !== null && {
 						totalSpeakCount: {

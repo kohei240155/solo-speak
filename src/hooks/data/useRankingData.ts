@@ -6,6 +6,7 @@ import {
 	usePhraseStreakRanking,
 	useSpeakStreakRanking,
 	useQuizStreakRanking,
+	useSpeechStreakRanking,
 } from "@/hooks/api";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
@@ -19,15 +20,15 @@ export const useRankingData = () => {
 	});
 	const [activeTab, setActiveTab] = useState("Total"); // Phraseがデフォルトなので初期値はTotal
 	const [activeRankingType, setActiveRankingType] = useState<
-		"phrase" | "speak" | "quiz"
+		"phrase" | "speak" | "quiz" | "speech"
 	>("phrase");
 
 	// APIフックを使用してデータを取得
 
 	// ランキングデータを取得
-	// Phraseの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定
+	// PhraseとSpeechの場合は常にtotal、それ以外はactiveTabに基づいてperiodを決定
 	const period =
-		activeRankingType === "phrase"
+		activeRankingType === "phrase" || activeRankingType === "speech"
 			? "total"
 			: (activeTab.toLowerCase() as "daily" | "weekly" | "total");
 	const {
@@ -66,6 +67,15 @@ export const useRankingData = () => {
 		refetch: quizStreakRefetch,
 	} = useQuizStreakRanking(selectedLanguage);
 
+	// Speech Streakランキングデータを取得
+	const {
+		rankingData: speechStreakRankingData,
+		currentUser: speechStreakCurrentUser,
+		isLoading: speechStreakIsLoading,
+		error: speechStreakError,
+		refetch: speechStreakRefetch,
+	} = useSpeechStreakRanking(selectedLanguage);
+
 	// 表示するデータを決定
 	const isPhraseStreakTab =
 		activeRankingType === "phrase" && activeTab === "Streak";
@@ -73,6 +83,8 @@ export const useRankingData = () => {
 		activeRankingType === "speak" && activeTab === "Streak";
 	const isQuizStreakTab =
 		activeRankingType === "quiz" && activeTab === "Streak";
+	const isSpeechStreakTab =
+		activeRankingType === "speech" && activeTab === "Streak";
 
 	let rankingData, currentUser, isLoading, error, message;
 
@@ -93,6 +105,12 @@ export const useRankingData = () => {
 		currentUser = quizStreakCurrentUser;
 		isLoading = quizStreakIsLoading;
 		error = quizStreakError;
+		message = undefined;
+	} else if (isSpeechStreakTab) {
+		rankingData = speechStreakRankingData;
+		currentUser = speechStreakCurrentUser;
+		isLoading = speechStreakIsLoading;
+		error = speechStreakError;
 		message = undefined;
 	} else {
 		rankingData = normalRankingData;
@@ -123,11 +141,13 @@ export const useRankingData = () => {
 	};
 
 	// ランキングタイプ変更ハンドラー
-	const handleRankingTypeChange = (type: "phrase" | "speak" | "quiz") => {
+	const handleRankingTypeChange = (
+		type: "phrase" | "speak" | "quiz" | "speech",
+	) => {
 		setActiveRankingType(type);
 
 		// ランキングタイプ変更時に適切なタブを設定
-		if (type === "phrase") {
+		if (type === "phrase" || type === "speech") {
 			setActiveTab("Total");
 		} else if (type === "speak" || type === "quiz") {
 			setActiveTab("Daily");
@@ -142,6 +162,8 @@ export const useRankingData = () => {
 			speakStreakRefetch();
 		} else if (isQuizStreakTab) {
 			quizStreakRefetch();
+		} else if (isSpeechStreakTab) {
+			speechStreakRefetch();
 		} else {
 			normalRefetch();
 		}

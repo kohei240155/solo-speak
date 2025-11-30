@@ -39,11 +39,13 @@ export async function GET(request: NextRequest) {
 		}
 
 		// 指定された言語のフレーズ数を取得（データベースレベルでフィルタリング）
+		// SpeechIDが設定されているPhraseは除外
 		const phraseCounts = await prisma.phrase.groupBy({
 			by: ["userId"],
 			where: {
 				deletedAt: null,
 				languageId: languageRecord.id,
+				speechId: null,
 			},
 			_count: { id: true },
 		});

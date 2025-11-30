@@ -20,6 +20,7 @@ model User {
   remainingPhraseGenerations Int         @default(0) @map("remaining_phrase_generations")
   lastPhraseGenerationDate   DateTime?   @map("last_phrase_generation_date")
   lastDailySpeakCountResetDate DateTime? @map("last_daily_speak_count_reset_date")
+  remainingSpeechCount       Int         @default(0) @map("remaining_speech_count")
   createdAt                  DateTime    @default(now()) @map("created_at")
   updatedAt                  DateTime    @updatedAt @map("updated_at")
   deletedAt                  DateTime?   @map("deleted_at")
@@ -27,6 +28,7 @@ model User {
   situations                 Situation[]
   defaultLearningLanguage    Language?   @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
   nativeLanguage             Language?   @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
+  speeches                   Speech[]
 
   @@map("users")
 }
@@ -41,6 +43,8 @@ model Language {
   phrases       Phrase[]
   learningUsers User[]    @relation("UserLearningLanguage")
   nativeUsers   User[]    @relation("UserNativeLanguage")
+  speechesLearning  Speech[]  @relation("SpeechLearningLanguage")
+  speechesNative    Speech[]  @relation("SpeechNativeLanguage")
 
   @@map("languages")
 }
@@ -73,12 +77,15 @@ model Phrase {
   correctQuizCount   Int          @default(0) @map("correct_quiz_count")
   incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")
   phraseLevelId      String       @map("phrase_level_id")
+  speechId           String?      @map("speech_id")
+  speechOrder        Int?         @map("speech_order")
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
   deletedAt          DateTime?    @map("deleted_at")
   language           Language     @relation(fields: [languageId], references: [id])
   phraseLevel        PhraseLevel  @relation(fields: [phraseLevelId], references: [id])
   user               User         @relation(fields: [userId], references: [id])
+  speech             Speech?      @relation("SpeechPhrases", fields: [speechId], references: [id])
   quizResults        QuizResult[]
   speakLogs          SpeakLog[]
 
@@ -123,4 +130,67 @@ model Situation {
   user      User      @relation(fields: [userId], references: [id])
 
   @@map("situations")
+}
+
+model Speech {
+  id                 String    @id @default(cuid())
+  userId             String    @map("user_id")
+  title              String
+  learningLanguageId String    @map("learning_language_id")
+  nativeLanguageId   String    @map("native_language_id")
+  statusId           String    @map("status_id")
+  firstSpeechText    String    @map("first_speech_text")
+  audioFilePath      String?   @map("audio_file_path")
+  notes              String?
+  practiceCount      Int       @default(0) @map("practice_count")
+  lastPracticedAt    DateTime? @map("last_practiced_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+  user               User      @relation(fields: [userId], references: [id])
+  learningLanguage   Language  @relation("SpeechLearningLanguage", fields: [learningLanguageId], references: [id])
+  nativeLanguage     Language  @relation("SpeechNativeLanguage", fields: [nativeLanguageId], references: [id])
+  status             SpeechStatus @relation(fields: [statusId], references: [id])
+  feedbacks          SpeechFeedback[]
+  plans              SpeechPlan[]
+  phrases            Phrase[]  @relation("SpeechPhrases")
+
+  @@map("speeches")
+}
+
+model SpeechFeedback {
+  id         String    @id @default(cuid())
+  speechId   String    @map("speech_id")
+  category   String
+  content    String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  speech     Speech    @relation(fields: [speechId], references: [id])
+
+  @@map("speech_feedbacks")
+}
+
+model SpeechPlan {
+  id               String    @id @default(cuid())
+  speechId         String    @map("speech_id")
+  planningContent  String    @map("planning_content")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  deletedAt        DateTime? @map("deleted_at")
+  speech           Speech    @relation(fields: [speechId], references: [id])
+
+  @@map("speech_plans")
+}
+
+model SpeechStatus {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  speeches    Speech[]
+
+  @@map("speech_statuses")
 }
