@@ -122,6 +122,21 @@ export default function EditSpeechModal({
 		}
 	}, [isOpen, speechId, session, onClose, reset]);
 
+	// フォームの値が変更されたら、すべてのtextareaの高さを調整
+	useEffect(() => {
+		if (!isLoading) {
+			// 次のレンダリングサイクルで実行
+			setTimeout(() => {
+				const textareas =
+					document.querySelectorAll<HTMLTextAreaElement>("textarea");
+				textareas.forEach((textarea) => {
+					textarea.style.height = "auto";
+					textarea.style.height = `${textarea.scrollHeight}px`;
+				});
+			}, 0);
+		}
+	}, [isLoading, titleValue, sentencesValue]);
+
 	const handleSave = async () => {
 		if (!speechId || !session || hasValidationErrors) return;
 
@@ -183,7 +198,12 @@ export default function EditSpeechModal({
 						<h3 className="text-xl font-semibold text-gray-900 mb-2">Title</h3>
 						<textarea
 							{...register("title")}
-							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+							onInput={(e) => {
+								const target = e.target as HTMLTextAreaElement;
+								target.style.height = "auto";
+								target.style.height = `${target.scrollHeight}px`;
+							}}
+							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 							rows={1}
 							disabled={isSaving}
 						/>
@@ -215,14 +235,24 @@ export default function EditSpeechModal({
 								<div className="space-y-2">
 									<textarea
 										{...register(`sentences.${index}.learningLanguage`)}
-										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
-										rows={2}
+										onInput={(e) => {
+											const target = e.target as HTMLTextAreaElement;
+											target.style.height = "auto";
+											target.style.height = `${target.scrollHeight}px`;
+										}}
+										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
+										rows={1}
 										disabled={isSaving}
 									/>
 									<textarea
 										{...register(`sentences.${index}.nativeLanguage`)}
-										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50"
-										rows={2}
+										onInput={(e) => {
+											const target = e.target as HTMLTextAreaElement;
+											target.style.height = "auto";
+											target.style.height = `${target.scrollHeight}px`;
+										}}
+										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50 overflow-hidden"
+										rows={1}
 										disabled={isSaving}
 									/>
 								</div>

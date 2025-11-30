@@ -326,6 +326,18 @@ export default function SpeechReview({
 		};
 	}, []);
 
+	// textareaの高さを初期化時と内容変更時に調整
+	useEffect(() => {
+		setTimeout(() => {
+			const textareas =
+				document.querySelectorAll<HTMLTextAreaElement>("textarea");
+			textareas.forEach((textarea) => {
+				textarea.style.height = "auto";
+				textarea.style.height = `${textarea.scrollHeight}px`;
+			});
+		}, 0);
+	}, [notes]);
+
 	// センテンスプラクティスモードの開始
 	const handleStartPractice = async () => {
 		// センテンスデータを取得
@@ -685,8 +697,13 @@ export default function SpeechReview({
 						<textarea
 							value={notes}
 							onChange={(e) => setNotes(e.target.value)}
+							onInput={(e) => {
+								const target = e.target as HTMLTextAreaElement;
+								target.style.height = "auto";
+								target.style.height = `${target.scrollHeight}px`;
+							}}
 							placeholder="メモを入力してください"
-							className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white"
+							className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white overflow-hidden"
 						/>
 						<AnimatedButton
 							onClick={handleSaveNotes}
