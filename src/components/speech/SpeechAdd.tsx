@@ -94,12 +94,13 @@ export default function SpeechAdd({
 		speechPlanItemsValue?.some((item) => item.value && item.value.length > 100);
 
 	const placeholders = [
-		"今日から独り言を使ったスピーキングの勉強を始めた。",
-		"きっかけは、独り言の練習ができるアプリを見つけたことだった。",
-		"やってみたら、思った以上に難しいことがわかった。",
-		"特に、言いたいことがすぐ出てこない場面が多かった。",
-		"それでも効果はありそうだと思ったので、明日も続けてみようと思う。",
+		"今日はいつも通り仕事だった。",
+		"午前中は集中できる時間が多かった。",
+		"昼休みに公園まで散歩に行き気分転換ができてよかった。",
+		"午後は少しバタバタしたけど、なんとか終わらせて定時に帰れた。",
+		"今日は早く寝て、明日に備えようと思う。",
 	];
+
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -397,7 +398,7 @@ export default function SpeechAdd({
 				<h3 className="text-lg font-semibold text-gray-900 mb-2">Title</h3>
 				<textarea
 					{...register("title")}
-					placeholder="独り言を使ってスピーキングの練習を始めたこと"
+					placeholder="今日あったことの振り返り"
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 					rows={1}
 					onInput={(e) => {
