@@ -16,8 +16,6 @@ import { useSaveSpeechNotes } from "@/hooks/speech/useSaveSpeechNotes";
 import { useUpdateSpeechStatus } from "@/hooks/speech/useUpdateSpeechStatus";
 import { useSpeechSentences } from "@/hooks/speech";
 import { useUpdatePhraseCount } from "@/hooks/phrase/useUpdatePhraseCount";
-import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
-import { useTranslation } from "@/hooks/ui/useTranslation";
 import SpeakPractice from "@/components/speak/SpeakPractice";
 
 interface SpeechReviewProps {
@@ -37,7 +35,6 @@ export default function SpeechReview({
 	viewMode,
 	setViewMode,
 }: SpeechReviewProps) {
-	const { t } = useTranslation("common");
 	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
 		"Script",
