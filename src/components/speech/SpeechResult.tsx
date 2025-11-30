@@ -17,6 +17,7 @@ interface SpeechResultProps {
 	onNoteChange?: (note: string) => void;
 	onSave?: () => void | Promise<void>;
 	isSaving?: boolean;
+	onHasUnsavedChanges?: (hasChanges: boolean) => void;
 }
 
 export default function SpeechResult({
@@ -30,6 +31,7 @@ export default function SpeechResult({
 	isSaving = false,
 	note = "",
 	onNoteChange,
+	onHasUnsavedChanges,
 }: SpeechResultProps) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
@@ -70,6 +72,7 @@ export default function SpeechResult({
 			[field]: value,
 		};
 		setEditableSentences(newSentences);
+		onHasUnsavedChanges?.(true);
 	};
 
 	// センテンスをリセット
@@ -81,6 +84,7 @@ export default function SpeechResult({
 	const handleDeleteSentence = (index: number) => {
 		const newSentences = editableSentences.filter((_, i) => i !== index);
 		setEditableSentences(newSentences);
+		onHasUnsavedChanges?.(true);
 	};
 
 	// クリーンアップ
@@ -114,6 +118,7 @@ export default function SpeechResult({
 	const handleSaveClick = async () => {
 		if (onSave) {
 			await onSave();
+			onHasUnsavedChanges?.(false);
 		}
 	};
 

@@ -22,7 +22,7 @@ interface ApiOptions extends RequestInit {
 	showErrorToast?: boolean;
 	/**
 	 * タイムアウト時間（ミリ秒）
-	 * @default 30000
+	 * @default 90000
 	 */
 	timeout?: number;
 }
@@ -63,7 +63,7 @@ class ApiClient {
 		const {
 			useAuth = true,
 			showErrorToast = true,
-			timeout = 30000,
+			timeout = 90000,
 			headers = {},
 			...fetchOptions
 		} = options;
