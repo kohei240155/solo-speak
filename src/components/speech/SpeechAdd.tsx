@@ -59,7 +59,6 @@ export default function SpeechAdd({
 	const [isTranscribing, setIsTranscribing] = useState(false);
 	const [transcribedText, setTranscribedText] = useState<string>("");
 	const [isCorrecting, setIsCorrecting] = useState(false);
-	const [useMockData, setUseMockData] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
 	const {
@@ -71,12 +70,8 @@ export default function SpeechAdd({
 		resolver: zodResolver(speechFormSchema),
 		mode: "onChange",
 		defaultValues: {
-			title: "いま作っているアプリの話",
-			speechPlanItems: [
-				{ value: "自分でアプリを開発した" },
-				{ value: "既に完成しているけど新しい機能を追加したいと思っている" },
-				{ value: "英語を話して文字起こしされた文章をAIが添削してくれる" },
-			],
+			title: "",
+			speechPlanItems: [{ value: "" }, { value: "" }, { value: "" }],
 			note: "",
 		},
 	});
@@ -111,41 +106,6 @@ export default function SpeechAdd({
 
 	const MAX_RECORDING_TIME = 90; // 1分半（90秒）
 
-	// モックデータを読み込む関数
-	const loadMockRecording = async () => {
-		try {
-			// Next.jsではpublicフォルダ直下のファイルは/からアクセス
-			// しかしmockフォルダはsrc外なので、動的インポートを使用
-			const response = await fetch("/api/mock/recorded");
-			if (!response.ok) {
-				throw new Error("モックデータが見つかりません");
-			}
-			const blob = await response.blob();
-			setAudioBlob(blob);
-			setRecordingTime(45); // 45秒の録音を想定
-		} catch (error) {
-			console.error("モックデータの読み込みに失敗しました:", error);
-			alert("モックデータの読み込みに失敗しました");
-		}
-	};
-
-	// useMockDataの変更を監視して、モック録音を自動ロード
-	useEffect(() => {
-		if (useMockData && !audioBlob) {
-			loadMockRecording();
-		} else if (!useMockData && audioBlob) {
-			// モードをOFFにした場合、録音をクリア（直接実装）
-			if (audioRef.current) {
-				audioRef.current.pause();
-				audioRef.current = null;
-			}
-			setAudioBlob(null);
-			setRecordingTime(0);
-			setIsPlaying(false);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [useMockData]);
-
 	// 録音時間のフォーマット
 	const formatTime = (seconds: number) => {
 		const mins = Math.floor(seconds / 60);
@@ -155,11 +115,6 @@ export default function SpeechAdd({
 
 	// 録音開始
 	const startRecording = async () => {
-		// モックモードの場合は録音をスキップ
-		if (useMockData) {
-			return;
-		}
-
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 			streamRef.current = stream;
@@ -310,21 +265,6 @@ export default function SpeechAdd({
 
 		setIsTranscribing(true);
 		try {
-			// モックデータモードの場合
-			if (useMockData) {
-				// モック文字起こしデータを読み込む
-				const response = await fetch("/api/mock/transcribe");
-				if (!response.ok) {
-					throw new Error("モックデータが見つかりません");
-				}
-				const data = await response.json();
-				setTranscribedText(data.text);
-
-				// 添削も自動実行（モックデータを使用）
-				await handleCorrection(data.text, true);
-				return;
-			}
-
 			// FormDataを作成してBlobを追加
 			const formData = new FormData();
 			// Blobをファイルとして追加（ファイル名と拡張子を指定）
@@ -353,38 +293,9 @@ export default function SpeechAdd({
 	};
 
 	// 添削実行
-	const handleCorrection = async (transcribed: string, isMock = false) => {
+	const handleCorrection = async (transcribed: string) => {
 		setIsCorrecting(true);
 		try {
-			// モックデータモードの場合
-			if (isMock) {
-				// 3秒間待機
-				await new Promise((resolve) => setTimeout(resolve, 3000));
-
-				// モック添削データを読み込む
-				const response = await fetch("/api/mock/correct");
-				if (!response.ok) {
-					throw new Error("モックデータが見つかりません");
-				}
-				const data = await response.json();
-
-				// 添削完了データを親に渡す
-				if (onCorrectionComplete) {
-					onCorrectionComplete({
-						title: titleValue.trim(),
-						speechPlan: speechPlanItemsValue
-							.map((item) => item.value.trim())
-							.filter((item) => item.length > 0),
-						yourSpeech: transcribed,
-						sentences: data.sentences,
-						feedback: data.feedback,
-						audioBlob: audioBlob,
-						note: noteValue || "",
-					});
-				}
-				return;
-			}
-
 			// タイトルとスピーチプランの値を取得
 			const title = titleValue.trim();
 			const planItems = speechPlanItemsValue
@@ -479,23 +390,6 @@ export default function SpeechAdd({
 						</span>
 					)}
 				</div>
-			</div>
-
-			{/* モックデータトグル */}
-			<div className="mb-4 flex items-center justify-end gap-2">
-				<span className="text-sm text-gray-600">Mock Mode</span>
-				<button
-					onClick={() => setUseMockData(!useMockData)}
-					className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-						useMockData ? "bg-blue-600" : "bg-gray-300"
-					}`}
-				>
-					<span
-						className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-							useMockData ? "translate-x-6" : "translate-x-1"
-						}`}
-					/>
-				</button>
 			</div>
 
 			{/* Titleセクション */}
@@ -631,7 +525,7 @@ export default function SpeechAdd({
 						style={{ backgroundColor: "#616161" }}
 						onMouseEnter={(e) => {
 							if (
-								(!hasValidationErrors || (useMockData && audioBlob)) &&
+								!hasValidationErrors &&
 								!isTranscribing &&
 								!isCorrecting &&
 								remainingSpeechCount !== 0
@@ -641,7 +535,7 @@ export default function SpeechAdd({
 						}}
 						onMouseLeave={(e) => {
 							if (
-								(!hasValidationErrors || (useMockData && audioBlob)) &&
+								!hasValidationErrors &&
 								!isTranscribing &&
 								!isCorrecting &&
 								remainingSpeechCount !== 0
@@ -651,7 +545,7 @@ export default function SpeechAdd({
 						}}
 						onClick={handleRecordButtonClick}
 						disabled={
-							(hasValidationErrors && !(useMockData && audioBlob)) ||
+							hasValidationErrors ||
 							isTranscribing ||
 							isCorrecting ||
 							remainingSpeechCount === 0
