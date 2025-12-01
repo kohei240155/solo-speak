@@ -409,8 +409,12 @@ export default function SpeechAdd({
 						const scrollY = window.scrollY;
 						const scrollX = window.scrollX;
 						e.target.scrollIntoView = () => {};
+						window.scrollTo(scrollX, scrollY);
 						requestAnimationFrame(() => {
 							window.scrollTo(scrollX, scrollY);
+							requestAnimationFrame(() => {
+								window.scrollTo(scrollX, scrollY);
+							});
 						});
 					}}
 					onInput={(e) => {
@@ -447,8 +451,12 @@ export default function SpeechAdd({
 										const scrollY = window.scrollY;
 										const scrollX = window.scrollX;
 										e.target.scrollIntoView = () => {};
+										window.scrollTo(scrollX, scrollY);
 										requestAnimationFrame(() => {
 											window.scrollTo(scrollX, scrollY);
+											requestAnimationFrame(() => {
+												window.scrollTo(scrollX, scrollY);
+											});
 										});
 									}}
 									onInput={(e) => {
