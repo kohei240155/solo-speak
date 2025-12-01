@@ -405,13 +405,6 @@ export default function SpeechAdd({
 					placeholder="今日あったことの振り返り"
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 					rows={1}
-					onFocus={(e) => {
-						e.preventDefault();
-						const scrollY = window.scrollY;
-						setTimeout(() => {
-							window.scrollTo(0, scrollY);
-						}, 0);
-					}}
 					onInput={(e) => {
 						const target = e.target as HTMLTextAreaElement;
 						target.style.height = "auto";
@@ -442,13 +435,6 @@ export default function SpeechAdd({
 									placeholder={placeholders[index]}
 									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 									rows={1}
-									onFocus={(e) => {
-										e.preventDefault();
-										const scrollY = window.scrollY;
-										setTimeout(() => {
-											window.scrollTo(0, scrollY);
-										}, 0);
-									}}
 									onInput={(e) => {
 										const target = e.target as HTMLTextAreaElement;
 										target.style.height = "auto";
