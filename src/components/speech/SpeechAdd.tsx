@@ -406,11 +406,9 @@ export default function SpeechAdd({
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 					rows={1}
 					onInput={(e) => {
-						requestAnimationFrame(() => {
-							const target = e.target as HTMLTextAreaElement;
-							target.style.height = "auto";
-							target.style.height = `${target.scrollHeight}px`;
-						});
+						const target = e.target as HTMLTextAreaElement;
+						target.style.height = "auto";
+						target.style.height = `${target.scrollHeight}px`;
 					}}
 					disabled={
 						isTranscribing || isCorrecting || remainingSpeechCount === 0
@@ -437,13 +435,11 @@ export default function SpeechAdd({
 									placeholder={placeholders[index]}
 									className="flex-1 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 									rows={1}
-									onInput={(e) => {
-										requestAnimationFrame(() => {
-											const target = e.target as HTMLTextAreaElement;
-											target.style.height = "auto";
-											target.style.height = `${target.scrollHeight}px`;
-										});
-									}}
+								onInput={(e) => {
+									const target = e.target as HTMLTextAreaElement;
+									target.style.height = "auto";
+									target.style.height = `${target.scrollHeight}px`;
+								}}
 									disabled={
 										isTranscribing || isCorrecting || remainingSpeechCount === 0
 									}
