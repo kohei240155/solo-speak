@@ -5,6 +5,7 @@ import { GrPowerReset } from "react-icons/gr";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AnimatedButton from "../common/AnimatedButton";
 import { SentenceData, FeedbackData } from "@/types/speech";
+import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
 
 interface SpeechResultProps {
 	title: string;
@@ -33,6 +34,7 @@ export default function SpeechResult({
 	onNoteChange,
 	onHasUnsavedChanges,
 }: SpeechResultProps) {
+	const scrollPreservation = useScrollPreservation();
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
 		useState<SentenceData[]>(sentences);
@@ -240,6 +242,8 @@ export default function SpeechResult({
 										target.style.height = "auto";
 										target.style.height = `${target.scrollHeight}px`;
 									}}
+									onFocus={scrollPreservation.onFocus}
+									onBlur={scrollPreservation.onBlur}
 									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 mb-2 overflow-hidden"
 									rows={1}
 								/>
@@ -259,6 +263,8 @@ export default function SpeechResult({
 										target.style.height = "auto";
 										target.style.height = `${target.scrollHeight}px`;
 									}}
+									onFocus={scrollPreservation.onFocus}
+									onBlur={scrollPreservation.onBlur}
 									className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-gray-50 overflow-hidden"
 									rows={1}
 								/>
@@ -311,6 +317,8 @@ export default function SpeechResult({
 						target.style.height = "auto";
 						target.style.height = `${target.scrollHeight}px`;
 					}}
+					onFocus={scrollPreservation.onFocus}
+					onBlur={scrollPreservation.onBlur}
 					placeholder="気づいたことを自由にメモしましょう。"
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 overflow-hidden"
 					rows={4}

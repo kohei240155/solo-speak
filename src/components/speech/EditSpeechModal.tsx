@@ -3,6 +3,7 @@ import BaseModal from "../common/BaseModal";
 import LoadingSpinner from "../common/LoadingSpinner";
 import AnimatedButton from "../common/AnimatedButton";
 import { api } from "@/utils/api";
+import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -49,6 +50,7 @@ export default function EditSpeechModal({
 	onRefresh,
 }: EditSpeechModalProps) {
 	const { session } = useAuth();
+	const scrollPreservation = useScrollPreservation();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [speech, setSpeech] = useState<SpeechDetail | null>(null);
@@ -203,6 +205,8 @@ export default function EditSpeechModal({
 								target.style.height = "auto";
 								target.style.height = `${target.scrollHeight}px`;
 							}}
+							onFocus={scrollPreservation.onFocus}
+							onBlur={scrollPreservation.onBlur}
 							className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 							rows={1}
 							disabled={isSaving}
@@ -240,6 +244,8 @@ export default function EditSpeechModal({
 											target.style.height = "auto";
 											target.style.height = `${target.scrollHeight}px`;
 										}}
+										onFocus={scrollPreservation.onFocus}
+										onBlur={scrollPreservation.onBlur}
 										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 										rows={1}
 										disabled={isSaving}
@@ -251,6 +257,8 @@ export default function EditSpeechModal({
 											target.style.height = "auto";
 											target.style.height = `${target.scrollHeight}px`;
 										}}
+										onFocus={scrollPreservation.onFocus}
+										onBlur={scrollPreservation.onBlur}
 										className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed bg-gray-50 overflow-hidden"
 										rows={1}
 										disabled={isSaving}
