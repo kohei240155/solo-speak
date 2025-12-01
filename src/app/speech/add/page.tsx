@@ -183,7 +183,7 @@ export default function SpeechAddPage() {
 					checkUnsavedChanges={checkUnsavedChanges}
 					onReviewModalOpen={openReviewModal}
 					isShowingResult={showResult}
-				/>{" "}
+				/>
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					{showResult && correctionResult ? (

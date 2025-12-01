@@ -5,8 +5,8 @@ import { getSpeechCorrectionPrompt } from "@/prompts/speechCorrection";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { prisma } from "@/utils/prisma";
 
-// Vercelでの最大実行時間を60秒に設定（Pro/Enterpriseプラン必須）
-export const maxDuration = 60;
+// Vercelでの最大実行時間を90秒に設定（Pro/Enterpriseプラン必須）
+export const maxDuration = 90;
 
 const correctSpeechSchema = z.object({
 	title: z.string().min(1).max(50),
@@ -106,9 +106,9 @@ export async function POST(request: NextRequest) {
 		);
 
 		// ChatGPT API呼び出し (Structured Outputs使用)
-		// Vercelのタイムアウト対策として50秒のタイムアウトを設定
+		// Vercelのタイムアウト対策として80秒のタイムアウトを設定
 		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 50000);
+		const timeoutId = setTimeout(() => controller.abort(), 80000);
 
 		let response;
 		try {

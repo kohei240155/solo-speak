@@ -11,6 +11,7 @@ import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { SentenceData, FeedbackData } from "@/types/speech";
 import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
 import { api } from "@/utils/api";
+import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
 
 export interface CorrectionResult {
 	title: string;
@@ -52,6 +53,7 @@ export default function SpeechAdd({
 		isLoading: isLoadingRemaining,
 		refetch: refetchRemainingSpeechCount,
 	} = useRemainingSpeechCount();
+	const scrollPreservation = useScrollPreservation();
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -410,6 +412,8 @@ export default function SpeechAdd({
 						target.style.height = "auto";
 						target.style.height = `${target.scrollHeight}px`;
 					}}
+					onFocus={scrollPreservation.onFocus}
+					onBlur={scrollPreservation.onBlur}
 					disabled={
 						isTranscribing || isCorrecting || remainingSpeechCount === 0
 					}
@@ -440,6 +444,8 @@ export default function SpeechAdd({
 										target.style.height = "auto";
 										target.style.height = `${target.scrollHeight}px`;
 									}}
+									onFocus={scrollPreservation.onFocus}
+									onBlur={scrollPreservation.onBlur}
 									disabled={
 										isTranscribing || isCorrecting || remainingSpeechCount === 0
 									}
