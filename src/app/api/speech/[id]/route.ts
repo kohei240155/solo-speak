@@ -4,6 +4,7 @@ import { ApiErrorResponse } from "@/types/api";
 import { UpdateSpeechRequest, SpeechReviewResponseData } from "@/types/speech";
 import { prisma } from "@/utils/prisma";
 import { z } from "zod";
+import { getSpeechAudioSignedUrl } from "@/utils/storage-helpers";
 
 // スピーチ更新のリクエストボディ型
 const updateSpeechSchema: z.ZodType<UpdateSpeechRequest> = z.object({
@@ -103,6 +104,16 @@ export async function GET(
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
+		// 音声ファイルのURLを取得
+		let audioUrl: string | null = null;
+		if (speech.audioFilePath) {
+			try {
+				audioUrl = await getSpeechAudioSignedUrl(speech.audioFilePath);
+			} catch (error) {
+				console.error("Error getting audio URL:", error);
+			}
+		}
+
 		const responseData: SpeechReviewResponseData = {
 			success: true,
 			speech: {
@@ -125,6 +136,7 @@ export async function GET(
 					name: speech.learningLanguage.name,
 				},
 				firstSpeechText: speech.firstSpeechText,
+				audioFilePath: audioUrl,
 				notes: speech.notes,
 				lastPracticedAt: speech.lastPracticedAt
 					? speech.lastPracticedAt.toISOString()

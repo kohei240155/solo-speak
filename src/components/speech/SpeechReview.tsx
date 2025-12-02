@@ -44,6 +44,9 @@ export default function SpeechReview({
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
 		"Script",
 	);
+	const [isPlaying, setIsPlaying] = useState(false);
+	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const [isAudioLoading, setIsAudioLoading] = useState(false);
 
 	// React Query hooks
 	const saveNotesMutation = useSaveSpeechNotes();
@@ -115,13 +118,127 @@ export default function SpeechReview({
 		}`;
 	};
 
-	// ユーザー録音の開始
+	// 音声再生/一時停止
+	const handlePlayAudio = async () => {
+		if (!speech.audioFilePath) {
+			toast.error("No audio file path available");
+			return;
+		}
+
+		// 既存の音声オブジェクトがある場合
+		if (audioRef.current) {
+			if (isPlaying) {
+				audioRef.current.pause();
+				setIsPlaying(false);
+				return;
+			}
+
+			// 一時停止中の音声を再開
+			try {
+				await audioRef.current.play();
+				setIsPlaying(true);
+			} catch {
+				toast.error("Failed to play audio");
+				audioRef.current = null;
+				setIsPlaying(false);
+			}
+			return;
+		}
+
+		// 新しい音声オブジェクトを作成（Safari対応：直接URLを使用）
+		setIsAudioLoading(true);
+
+		try {
+			// Safari対応：fetch/blob経由をやめて直接URLを使用
+
+			const audio = new Audio(speech.audioFilePath);
+			audioRef.current = audio;
+
+			// 音量を最大に設定
+			audio.volume = 1.0;
+
+			// イベントリスナーを設定
+			audio.onended = () => {
+				setIsPlaying(false);
+			};
+
+			audio.onerror = () => {
+				setIsPlaying(false);
+				setIsAudioLoading(false);
+
+				// Safari用の詳細エラーメッセージ
+				const errorCode = audio.error?.code;
+				const errorMessages: { [key: number]: string } = {
+					1: "MEDIA_ERR_ABORTED: Audio loading was aborted",
+					2: "MEDIA_ERR_NETWORK: Network error occurred",
+					3: "MEDIA_ERR_DECODE: Audio decoding failed",
+					4: "MEDIA_ERR_SRC_NOT_SUPPORTED: Audio format not supported or Range Request failed (Safari)",
+				};
+
+				const errorMsg = errorCode
+					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}`
+					: `Failed to load audio`;
+
+				toast.error(errorMsg, { duration: 8000 });
+
+				audioRef.current = null;
+			};
+
+			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
+			const playPromise = audio.play();
+
+			if (playPromise !== undefined) {
+				playPromise
+					.then(() => {
+						setIsPlaying(true);
+						setIsAudioLoading(false);
+					})
+					.catch((error) => {
+						const errorDetails = `Play failed: ${error.name}\n${error.message}`;
+						toast.error(errorDetails, { duration: 8000 });
+
+						audioRef.current = null;
+						setIsPlaying(false);
+						setIsAudioLoading(false);
+					});
+			} else {
+				setIsPlaying(true);
+				setIsAudioLoading(false);
+			}
+		} catch (error) {
+			const errorMsg =
+				error instanceof Error
+					? `${error.name}: ${error.message}`
+					: String(error);
+
+			toast.error(errorMsg, { duration: 8000 });
+			audioRef.current = null;
+			setIsPlaying(false);
+			setIsAudioLoading(false);
+		}
+	}; // ユーザー録音の開始
 	const startUserRecording = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 			streamRef.current = stream;
 
-			const mediaRecorder = new MediaRecorder(stream);
+			// Safari対応：利用可能な最適なMIMEタイプを選択
+			let mimeType = "audio/webm;codecs=opus";
+			const possibleTypes = [
+				"audio/mp4", // iOS Safari最適（AAC）
+				"audio/webm;codecs=opus",
+				"audio/webm",
+				"audio/ogg;codecs=opus",
+			];
+
+			for (const type of possibleTypes) {
+				if (MediaRecorder.isTypeSupported(type)) {
+					mimeType = type;
+					break;
+				}
+			}
+
+			const mediaRecorder = new MediaRecorder(stream, { mimeType });
 			mediaRecorderRef.current = mediaRecorder;
 
 			const chunks: Blob[] = [];
@@ -139,8 +256,8 @@ export default function SpeechReview({
 					: 0;
 
 				// 10秒以上の場合のみBlobを保存
-				if (recordingDuration >= 10) {
-					const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+				if (recordingDuration >= 3) {
+					const blob = new Blob(chunks, { type: mimeType });
 					setUserAudioBlob(blob);
 				}
 
@@ -188,7 +305,7 @@ export default function SpeechReview({
 				? (Date.now() - recordingStartTimeRef.current) / 1000
 				: 0;
 
-			if (recordingDuration < 10) {
+			if (recordingDuration < 3) {
 				// 録音時間が10秒未満の場合
 				toast.error("録音時間が短すぎます");
 				// ストリームを停止
@@ -283,6 +400,10 @@ export default function SpeechReview({
 	// クリーンアップ
 	useEffect(() => {
 		return () => {
+			if (audioRef.current) {
+				audioRef.current.pause();
+				audioRef.current = null;
+			}
 			if (userAudioRef.current) {
 				userAudioRef.current.pause();
 				userAudioRef.current = null;
@@ -601,9 +722,34 @@ export default function SpeechReview({
 						</p>
 						{/* Your Speech Section */}
 						<div>
-							<h3 className="text-xl font-semibold text-gray-900 mb-3">
-								Your Speech
-							</h3>
+							<div className="flex items-center justify-between mb-3">
+								<h3 className="text-xl font-semibold text-gray-900">
+									Your Speech
+								</h3>
+								<div className="flex gap-2">
+									{speech.audioFilePath && (
+										<>
+											<button
+												type="button"
+												onClick={handlePlayAudio}
+												disabled={isAudioLoading}
+												className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												{isAudioLoading ? (
+													<AiOutlineLoading3Quarters
+														size={18}
+														className="text-gray-600 animate-spin"
+													/>
+												) : isPlaying ? (
+													<BsPauseFill size={18} className="text-gray-600" />
+												) : (
+													<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
+												)}
+											</button>
+										</>
+									)}
+								</div>
+							</div>
 
 							<div className="border border-gray-300 rounded-lg p-4 bg-white">
 								{speech.firstSpeechText ? (
