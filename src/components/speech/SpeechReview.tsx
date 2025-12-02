@@ -173,7 +173,14 @@ export default function SpeechReview({
 			const audio = new Audio(speech.audioFilePath);
 			audioRef.current = audio;
 
+			// 音量を最大に設定
+			audio.volume = 1.0;
+
 			setAudioDebugInfo((prev) => [...prev, "✅ Audio element created"]);
+			setAudioDebugInfo((prev) => [
+				...prev,
+				`🔊 Volume set to: ${audio.volume}`,
+			]);
 
 			// イベントリスナーを設定
 			audio.onloadstart = () => {
@@ -192,6 +199,13 @@ export default function SpeechReview({
 			audio.oncanplay = () => {
 				console.log("Audio can play");
 				setAudioDebugInfo((prev) => [...prev, "✅ Audio ready to play!"]);
+				setAudioDebugInfo((prev) => [
+					...prev,
+					`📊 Current time: ${audio.currentTime}s`,
+				]);
+				setAudioDebugInfo((prev) => [...prev, `🔊 Volume: ${audio.volume}`]);
+				setAudioDebugInfo((prev) => [...prev, `🔇 Muted: ${audio.muted}`]);
+				setAudioDebugInfo((prev) => [...prev, `⏯️ Paused: ${audio.paused}`]);
 			};
 
 			audio.onended = () => {
@@ -248,6 +262,28 @@ export default function SpeechReview({
 						setIsPlaying(true);
 						setIsAudioLoading(false);
 						setAudioDebugInfo((prev) => [...prev, "✅ Audio playing!"]);
+
+						// 再生状態を確認
+						setTimeout(() => {
+							if (audioRef.current) {
+								setAudioDebugInfo((prev) => [
+									...prev,
+									`⏱️ Playing for: ${audioRef.current!.currentTime}s`,
+								]);
+								setAudioDebugInfo((prev) => [
+									...prev,
+									`⏯️ Is paused: ${audioRef.current!.paused}`,
+								]);
+								setAudioDebugInfo((prev) => [
+									...prev,
+									`🔊 Volume: ${audioRef.current!.volume}`,
+								]);
+								setAudioDebugInfo((prev) => [
+									...prev,
+									`🔇 Muted: ${audioRef.current!.muted}`,
+								]);
+							}
+						}, 1000);
 					})
 					.catch((error) => {
 						console.error("Play promise rejected:", error);
