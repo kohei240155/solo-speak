@@ -96,7 +96,7 @@ export default function SpeechAddPage() {
 					learningLanguageId: userSettings.defaultLearningLanguageId,
 					nativeLanguageId: userSettings.nativeLanguageId,
 					firstSpeechText: correctionResult.yourSpeech,
-					notes: correctionResult.note,
+					notes: correctionResult.note || undefined,
 					speechPlans: correctionResult.speechPlan,
 					sentences: correctionResult.sentences,
 					feedback: correctionResult.feedback,
