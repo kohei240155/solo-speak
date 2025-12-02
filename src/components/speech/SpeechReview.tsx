@@ -168,10 +168,20 @@ export default function SpeechReview({
 				setIsPlaying(false);
 				setIsAudioLoading(false);
 
-				const errorMsg = audio.error
-					? `Audio error: ${audio.error.message} (code: ${audio.error.code})`
-					: "Failed to load audio";
-				toast.error(errorMsg);
+				// Safari用の詳細エラーメッセージ
+				const errorCode = audio.error?.code;
+				const errorMessages: { [key: number]: string } = {
+					1: "MEDIA_ERR_ABORTED: Audio loading was aborted",
+					2: "MEDIA_ERR_NETWORK: Network error occurred",
+					3: "MEDIA_ERR_DECODE: Audio decoding failed",
+					4: "MEDIA_ERR_SRC_NOT_SUPPORTED: Audio format not supported or Range Request failed (Safari)",
+				};
+
+				const errorMsg = errorCode
+					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`
+					: `Failed to load audio\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`;
+
+				toast.error(errorMsg, { duration: 6000 });
 
 				audioRef.current = null;
 			};
@@ -189,7 +199,12 @@ export default function SpeechReview({
 						console.error("Play promise rejected:", error);
 						console.error("Error name:", error.name);
 						console.error("Error message:", error.message);
-						toast.error(`Failed to play: ${error.message}`);
+
+						// Safari用の詳細エラーメッセージ
+						const urlPreview = speech.audioFilePath?.substring(0, 100) || "N/A";
+						const errorDetails = `Play failed: ${error.name}\n${error.message}\nURL: ${urlPreview}...`;
+						toast.error(errorDetails, { duration: 6000 });
+
 						audioRef.current = null;
 						setIsPlaying(false);
 						setIsAudioLoading(false);
@@ -201,8 +216,10 @@ export default function SpeechReview({
 		} catch (error) {
 			console.error("Exception in handlePlayAudio:", error);
 			const errorMsg =
-				error instanceof Error ? error.message : "Failed to play audio";
-			toast.error(errorMsg);
+				error instanceof Error
+					? `Exception: ${error.name}\n${error.message}\nStack: ${error.stack?.substring(0, 100)}`
+					: `Failed to play audio: ${String(error)}`;
+			toast.error(errorMsg, { duration: 6000 });
 			audioRef.current = null;
 			setIsPlaying(false);
 			setIsAudioLoading(false);
