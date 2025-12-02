@@ -284,6 +284,14 @@ export default function SpeechReview({
 				setIsUserAudioPlaying(false);
 				console.error("Failed to load user audio");
 			};
+
+			// 新しく作成した音声を再生
+			audio.play().catch((error) => {
+				console.error("Failed to play user audio:", error);
+				setIsUserAudioPlaying(false);
+			});
+			setIsUserAudioPlaying(true);
+			return;
 		}
 
 		if (isUserAudioPlaying) {
