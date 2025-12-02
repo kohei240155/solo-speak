@@ -121,30 +121,50 @@ export default function SpeechReview({
 	const handlePlayAudio = () => {
 		if (!speech.audioFilePath) return;
 
-		if (!audioRef.current) {
-			const audio = new Audio(speech.audioFilePath);
-			audioRef.current = audio;
-
-			audio.onended = () => {
+		// 既存の音声オブジェクトがある場合
+		if (audioRef.current) {
+			if (isPlaying) {
+				audioRef.current.pause();
 				setIsPlaying(false);
-			};
+				return;
+			}
 
-			audio.onerror = () => {
-				setIsPlaying(false);
-				console.error("Failed to load audio");
-			};
-		}
-
-		if (isPlaying) {
-			audioRef.current.pause();
-			setIsPlaying(false);
-		} else {
+			// 一時停止中の音声を再開
 			audioRef.current.play().catch((error) => {
 				console.error("Failed to play audio:", error);
+				toast.error("Failed to play audio");
+				// エラー時はaudioRefをクリアして次回再試行できるようにする
+				audioRef.current = null;
 				setIsPlaying(false);
 			});
 			setIsPlaying(true);
+			return;
 		}
+
+		// 新しい音声オブジェクトを作成
+		const audio = new Audio(speech.audioFilePath);
+		audioRef.current = audio;
+
+		audio.onended = () => {
+			setIsPlaying(false);
+			// 再生終了後もaudioRefを保持（ユーザーが再度再生ボタンを押した時に0秒から再生）
+		};
+
+		audio.onerror = (e) => {
+			setIsPlaying(false);
+			console.error("Failed to load audio:", e);
+			toast.error("Failed to load audio");
+			// エラー時はaudioRefをクリアして次回再試行できるようにする
+			audioRef.current = null;
+		};
+
+		audio.play().catch((error) => {
+			console.error("Failed to play audio:", error);
+			toast.error("Failed to play audio");
+			audioRef.current = null;
+			setIsPlaying(false);
+		});
+		setIsPlaying(true);
 	};
 
 	// ユーザー録音の開始
