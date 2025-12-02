@@ -172,33 +172,20 @@ export default function SpeechReview({
 			};
 
 			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
-			const playPromise = audio.play();
-
-			if (playPromise !== undefined) {
-				playPromise
-					.then(() => {
-						setIsPlaying(true);
-						setIsAudioLoading(false);
-					})
-					.catch((error) => {
-						const errorDetails = `Play failed: ${error.name}\n${error.message}`;
-						toast.error(errorDetails, { duration: 8000 });
-
-						audioRef.current = null;
-						setIsPlaying(false);
-						setIsAudioLoading(false);
-					});
-			} else {
-				setIsPlaying(true);
-				setIsAudioLoading(false);
-			}
-		} catch (error) {
-			const errorMsg =
-				error instanceof Error
-					? `${error.name}: ${error.message}`
-					: String(error);
-
-			toast.error(errorMsg, { duration: 8000 });
+			audio
+				.play()
+				.then(() => {
+					setIsPlaying(true);
+					setIsAudioLoading(false);
+				})
+				.catch(() => {
+					toast.error("Failed to play audio");
+					audioRef.current = null;
+					setIsPlaying(false);
+					setIsAudioLoading(false);
+				});
+		} catch {
+			toast.error("Failed to load audio");
 			audioRef.current = null;
 			setIsPlaying(false);
 			setIsAudioLoading(false);
