@@ -28,7 +28,7 @@ export default function EditPhraseModal({
 	onRefresh,
 }: EditPhraseModalProps) {
 	const { session } = useAuth();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [editedText, setEditedText] = useState("");
 	const [editedTranslation, setEditedTranslation] = useState("");
 	const [isUpdating, setIsUpdating] = useState(false);

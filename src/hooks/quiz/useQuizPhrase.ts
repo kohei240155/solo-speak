@@ -19,7 +19,7 @@ interface UseQuizPhraseReturn {
 }
 
 export function useQuizPhrase(): UseQuizPhraseReturn {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const [session, setSession] = useState<QuizSession | null>(null);
 	const [isLoadingPhrase, setIsLoadingPhrase] = useState(false);
 	const [showTranslation, setShowTranslation] = useState(false);

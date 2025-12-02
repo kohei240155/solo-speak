@@ -19,7 +19,7 @@ export default function DeleteConfirmationModal({
 	onRefresh,
 }: DeleteConfirmationModalProps) {
 	const { session } = useAuth();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleConfirmDelete = async () => {

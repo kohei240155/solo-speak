@@ -26,7 +26,7 @@ interface SpeakPhrase {
 
 export default function SpeakPage() {
 	const { user, loading: authLoading } = useAuthGuard();
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const params = useParams();
 	const router = useRouter();
 	const [phrase, setPhrase] = useState<SpeakPhrase | null>(null);

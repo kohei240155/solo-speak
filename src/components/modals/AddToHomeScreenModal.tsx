@@ -15,7 +15,7 @@ export default function AddToHomeScreenModal({
 	isOpen,
 	onClose,
 }: AddToHomeScreenModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 
 	return (
 		<BaseModal isOpen={isOpen} onClose={onClose} width="500px">
@@ -45,37 +45,37 @@ export default function AddToHomeScreenModal({
 
 			{/* アニメーション定義 */}
 			<style jsx>{`
-        @keyframes slideInFromBottom {
-          0% {
-            transform: translateY(30px);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        @keyframes fadeInSlideUp {
-          0% {
-            transform: translateY(20px);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        @keyframes fadeInStagger {
-          0% {
-            transform: translateY(15px);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-      `}</style>
+				@keyframes slideInFromBottom {
+					0% {
+						transform: translateY(30px);
+						opacity: 0;
+					}
+					100% {
+						transform: translateY(0);
+						opacity: 1;
+					}
+				}
+				@keyframes fadeInSlideUp {
+					0% {
+						transform: translateY(20px);
+						opacity: 0;
+					}
+					100% {
+						transform: translateY(0);
+						opacity: 1;
+					}
+				}
+				@keyframes fadeInStagger {
+					0% {
+						transform: translateY(15px);
+						opacity: 0;
+					}
+					100% {
+						transform: translateY(0);
+						opacity: 1;
+					}
+				}
+			`}</style>
 
 			<div className="mb-6">
 				<div

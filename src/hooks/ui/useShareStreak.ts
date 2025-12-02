@@ -8,7 +8,7 @@ type TabType = "Daily" | "Weekly" | "Total" | "Streak";
 
 export const useShareStreak = () => {
 	const [isLoading, setIsLoading] = useState(false);
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 
 	const shareStreak = async (
 		language: string,

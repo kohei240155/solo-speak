@@ -22,7 +22,7 @@ export default function PhraseQuizPage() {
 	const { loading: authLoading } = useAuthGuard();
 	const { learningLanguage, languages } = usePhraseSettings();
 	const router = useRouter();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	// Phrase Listのキャッシュ無効化用
 	const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage);

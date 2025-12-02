@@ -1,0 +1,231 @@
+{
+	"settings": {
+		"userIcon": "用户图标",
+		"displayName": "排名显示名称",
+		"nativeLanguage": "母语",
+		"defaultLearningLanguage": "默认学习语言",
+		"contactEmail": "联系邮箱",
+		"selectLanguage": "请选择语言",
+		"validation": {
+			"sameLanguageError": "母语和默认学习语言必须不同"
+		},
+		"withdrawal": {
+			"button": "删除账户",
+			"title": "删除账户确认",
+			"message": "您确定要删除您的账户吗？\n\n此操作将永久删除以下所有数据：\n• 用户信息\n• 创建的句子\n• 口语练习历史\n• 测验结果\n• 场景\n\n此操作无法撤消。",
+			"emailConfirmLabel": "为了确认，请输入您注册的电子邮件地址",
+			"emailPlaceholder": "example@email.com",
+			"confirmButton": "删除",
+			"cancelButton": "取消",
+			"success": "账户删除成功。您将被重定向到登录页面。",
+			"error": "删除账户失败。请稍后再试。",
+			"emailNotFound": "未找到注册的电子邮件地址",
+			"emailMismatch": "输入的电子邮件地址与注册地址不匹配"
+		}
+	},
+	"confirm": {
+		"unsavedPhrase": "生成的句子尚未保存。您想离开此页面吗？",
+		"unsavedCount": "朗读计数尚未保存。您想离开此页面吗？"
+	},
+	"common": {
+		"backToHome": "返回首页",
+		"loginRequired": "您需要登录才能使用此功能"
+	},
+	"phrase": {
+		"noPhrasesYet": "尚未注册句子",
+		"placeholders": {
+			"phraseInput": "示例：你最近去哪里了？",
+			"situationInput": "示例：在餐厅点餐时"
+		},
+		"validation": {
+			"required": "请输入句子",
+			"phraseMaxLength": "句子长度必须少于100个字符",
+			"situationMaxLength": "请输入少于50个字符",
+			"variationMaxLength": "请输入少于200个字符"
+		},
+		"messages": {
+			"updateSuccess": "句子更新成功！",
+			"updateError": "句子更新失败",
+			"saveSuccess": "句子已保存",
+			"saveError": "保存句子时出错",
+			"fetchError": "获取句子时出错",
+			"fetchFailed": "获取句子失败",
+			"countError": "提交计数失败",
+			"notFound": "未找到句子",
+			"noPhrasesForQuiz": "未找到符合指定条件的句子",
+			"nextPhraseNotFound": "未找到下一个句子",
+			"nextPhraseError": "获取下一个句子失败",
+			"dailyLimitExceeded": "您已超过今天的生成限制。请明天再试。",
+			"generationFailed": "生成句子失败",
+			"generationError": "句子生成过程中出错"
+		},
+		"delete": {
+			"confirmMessage": "您确定要删除此句子吗？",
+			"warningMessage": "此操作无法撤消。"
+		}
+	},
+	"phraseGeneration": {
+		"help": {
+			"title": "关于句子生成",
+			"resetTime": {
+				"title": "重置时间",
+				"description": "每天UTC 0:00重置。\n• 日本：9:00\n• 美国东海岸：20:00/19:00\n• 美国西海岸：17:00/16:00\n※ 夏令时/冬令时"
+			},
+			"dailyLimit": {
+				"title": "每日使用限制",
+				"description": "您每天最多可以使用句子生成功能5次。让我们每天持续生成5个句子。"
+			}
+		}
+	},
+	"speak": {
+		"modal": {
+			"language": "语言",
+			"targetPhrases": "目标句子",
+			"optionsTitle": "选项",
+			"excludeTodayPracticedLabel": "排除今天练习的句子",
+			"options": {
+				"noLimit": "无限制",
+				"under50": "少于50次",
+				"under60": "少于60次",
+				"under70": "少于70次",
+				"under80": "少于80次",
+				"under90": "少于90次",
+				"under100": "少于100次"
+			}
+		},
+		"messages": {
+			"dailyLimitReached": "您已达到每日100次口语练习限制。明天再试吧！",
+			"endError": "结束过程中出错",
+			"countError": "更新口语计数时出错",
+			"sessionResetFailed": "重置会话状态失败",
+			"dailyCountResetFailed": "重置每日计数失败",
+			"phraseCountFetchFailedEmpty": "获取句子计数失败（空响应）",
+			"phraseCountFetchFailed": "获取句子计数失败",
+			"noPracticeablePhrases": "此模式下没有可练习的句子",
+			"phraseCountCheckError": "检查句子计数时出错",
+			"noPhraseFound": "未找到句子"
+		},
+		"explanation": {
+			"title": "口语模式指南",
+			"howToUse": {
+				"title": "使用方法",
+				"description": "大声朗读显示的句子，每次练习后按计数按钮记录您的练习次数。"
+			},
+			"goals": {
+				"title": "目标和练习次数",
+				"description": "目标是每天朗读10次。建议每个句子至少朗读50次。通过持续重复练习，句子将自然地从你的嘴里说出。"
+			},
+			"effectiveMethods": {
+				"title": "有效的练习方法",
+				"naturalSpeed": "重复直到您可以以自然速度阅读",
+				"understanding": "在理解句子含义的同时练习",
+				"pronunciation": "想象在真实情况下使用句子"
+			}
+		}
+	},
+	"quiz": {
+		"modal": {
+			"mode": "模式",
+			"quizLength": "问题数量",
+			"speakCountFilter": "口语计数",
+			"optionsTitle": "选项",
+			"excludeTodayQuizzedLabel": "排除今天测试的句子",
+			"options": {
+				"normal": "正常",
+				"random": "随机"
+			},
+			"speakCountOptions": {
+				"noLimit": "未指定",
+				"over50": "超过50次",
+				"over60": "超过60次",
+				"over70": "超过70次",
+				"over80": "超过80次",
+				"over90": "超过90次",
+				"over100": "超过100次"
+			},
+			"questions": "问题"
+		},
+		"messages": {
+			"startError": "启动测验失败",
+			"fetchError": "获取句子时出错",
+			"submitError": "提交答案时出错"
+		}
+	},
+	"subscription": {
+		"status": "状态",
+		"nextBillingDate": "下次账单日期",
+		"expiresOn": "到期于",
+		"plans": "计划",
+		"subscriptionRequired": "需要订阅基本计划才能使用AI句子生成功能",
+		"subscribeToBasicPlan": "订阅基本计划",
+		"manageSubscription": "在设置中管理订阅 →",
+		"cancelConfirm": "您确定要取消订阅吗？您将立即失去对AI句子生成功能的访问权限。",
+		"cancelSuccess": "订阅已成功取消。",
+		"cancelError": "取消订阅失败",
+		"fetchError": "获取订阅状态失败",
+		"checkoutError": "创建支付会话失败"
+	},
+	"ranking": {
+		"noData": "没有可显示的数据",
+		"shareStreak": {
+			"intro": "我正在使用 Solo Speak⚡",
+			"phrase": {
+				"total": "迄今为止生成了 {count} 个句子！",
+				"streak": "连续 {count} 天生成句子！"
+			},
+			"speak": {
+				"daily": "今天朗读了 {count} 次！",
+				"weekly": "本周朗读了 {count} 次！",
+				"total": "迄今为止朗读了 {count} 次！",
+				"streak": "连续 {count} 天朗读！"
+			},
+			"quiz": {
+				"daily": "今天正确回答了 {count} 个测验问题！",
+				"weekly": "本周正确回答了 {count} 个测验问题！",
+				"total": "迄今为止正确回答了 {count} 个测验问题！",
+				"streak": "连续 {count} 天正确回答测验问题！"
+			},
+			"url": "https://solo-speak.com",
+			"hashtag": "#SoloSpeak #语言学习 #多语言学习",
+			"error": {
+				"noCount": "无法发布，因为计数为0",
+				"failed": "生成发布链接时出错"
+			}
+		}
+	},
+	"auth": {
+		"modal": {
+			"supportMessage": "Solo Speak 支持您的口语训练。",
+			"supportMessageShort": "支持您的口语训练。",
+			"browserNote": "请使用 Safari/Chrome 登录",
+			"popupBlockedError": "认证屏幕出现时间过长。请检查弹出窗口是否被阻止。",
+			"authFailedError": "认证失败。请重试。",
+			"browserSwitchHelp": {
+				"title": "如何在浏览器中打开",
+				"xApp": {
+					"title": "从 X 应用打开时",
+					"step1": "点击右下角的\"Safari 图标\""
+				},
+				"lineApp": {
+					"title": "从 LINE 应用打开时",
+					"step1": "点击右下角的\"...\"菜单",
+					"step2": "选择\"在浏览器中打开\""
+				},
+				"general": {
+					"title": "对于其他应用",
+					"description": "大多数应用在右上角或右下角都有一个菜单按钮（...，↗），您可以在其中找到\"在浏览器中打开\"、\"在 Safari 中打开\"或\"在外部浏览器中打开\"等选项。"
+				}
+			}
+		}
+	},
+	"situation": {
+		"addSuccess": "场景添加成功",
+		"addError": "添加场景时出错",
+		"deleteSuccess": "场景删除成功",
+		"deleteError": "删除场景时出错",
+		"delete": {
+			"confirmMessage": "您确定要删除此场景吗？",
+			"warningMessage": "此操作无法撤消。"
+		}
+	}
+}

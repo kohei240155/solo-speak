@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
 export default function Footer() {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 
 	return (
 		<footer className="bg-white border-t border-gray-200 mt-auto block">

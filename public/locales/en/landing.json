@@ -1,0 +1,124 @@
+{
+	"home": {
+		"hero": {
+			"subtitle": "\\ Solo Practice Training /",
+			"title": "The Ultimate\nPhrase Memorization Tool",
+			"cta": {
+				"desktop": "Get Started →"
+			},
+			"features": {
+				"aiGeneration": "AI generates natural phrases!",
+				"practiceSupport": "Create your own phrase collection!",
+				"quizFunction": "This will help you have daily conversations!"
+			}
+		},
+		"features": {
+			"title": "Are you facing these challenges?",
+			"speechRecognition": {
+				"title": "I tried using a phrase book but gave up because it was full of phrases I never use"
+			},
+			"quiz": {
+				"title": "I found phrases I wanted to know and generated them with AI, but I left them untouched without reviewing them"
+			},
+			"progress": {
+				"title": "I thought I had memorized phrases, but I couldn't use them in actual conversations"
+			}
+		},
+		"solutions": {
+			"title": {
+				"mobile": "\\ Solo Speak solves these problems /",
+				"desktop": "\\ Solo Speak solves these problems /"
+			},
+			"feature1": {
+				"number": "01",
+				"title": "Your \"personal phrase collection\"\nis practical",
+				"description": "AI translates the phrases you wanted to know into natural expressions. Because it's your original phrase collection, you can immediately feel the benefits. You can also choose your preferred expression from three generated options.",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"outputs": [
+						"日本にはどのぐらい住んでいるの？",
+						"日本に住んで何年になりますか？",
+						"日本にいらしてどのくらいになりますか？"
+					]
+				}
+			},
+			"feature2": {
+				"number": "02",
+				"title": "Reading count feature provides\nthorough support \"until you memorize\"",
+				"description": "Language can't be spoken just by \"knowing\" it. Aim for 10 readings per day per phrase, with a total of 50 readings, until it comes out naturally from your mouth through thorough repetition.",
+				"demo": {
+					"input": "日本にはどのぐらい住んでいるの？",
+					"output": "How long have you been living in Japan?",
+					"todayLabel": "Today:",
+					"totalLabel": "Total:",
+					"goalAchieved": "Goal Achieved!",
+					"goalAchievedMessage": "10 readings completed"
+				}
+			},
+			"feature3": {
+				"number": "03",
+				"title": "Check your \"instant response\"\nwith quiz features",
+				"description": "Whether phrases memorized through reading practice can be used in actual conversations. If you can instantly respond to memorized phrases using the quiz feature, you'll be able to speak fluently in actual conversations too.",
+				"demo": {
+					"input": "日本にはどのぐらい住んでいるの？",
+					"output": "How long have you been living in Japan?"
+				}
+			}
+		},
+		"faq": {
+			"title": "Frequently Asked Questions",
+			"q1": {
+				"question": "Is there a limit to phrase generation?",
+				"answer": "You can use it up to 5 times per day.",
+				"answerDetail": "Let's steadily build up 5 phrases every day."
+			},
+			"q2": {
+				"question": "When does the phrase generation count reset?",
+				"answer": "It resets at 0:00 UTC (Coordinated Universal Time).",
+				"answerDetail": "In Japan Standard Time, it resets at 9:00 AM (winter time) or 8:00 AM (summer time). In Vancouver time, it resets at 4:00 PM (winter time) or 5:00 PM (summer time)."
+			},
+			"q3": {
+				"question": "Is Solo Speak free to use?",
+				"answer": "Basic features are currently available for free.",
+				"answerDetail": "We may introduce paid features in the future as we expand our services, but we will notify you in advance."
+			}
+		},
+		"cta": {
+			"title": "Start your speaking practice\nright now",
+			"subtitle": "Take your language learning to the next level with Solo Speak",
+			"button": "Get Started →"
+		}
+	},
+	"addToHomeScreen": {
+		"title": "Easy access from your home screen!",
+		"description": "You can add this to your smartphone's home screen and use it like an app!",
+		"safari": {
+			"step1": "Open this page in Safari",
+			"step2": "Tap the share button at the bottom",
+			"step3": "Tap 'Add to Home Screen'",
+			"step4": "Confirm the app name and tap 'Add'"
+		},
+		"android": {
+			"step1": "Open this page in Chrome",
+			"step2": "Tap the menu button (three dots) at the top right",
+			"step3": "Tap 'Add to Home Screen' or 'Install App'",
+			"step4": "Confirm the app name and tap 'Add'"
+		}
+	},
+	"footer": {
+		"description": "Supporting your speaking practice journey.",
+		"sections": {
+			"service": "Service",
+			"legal": "Legal",
+			"support": "Support"
+		},
+		"links": {
+			"about": "About Solo Speak",
+			"terms": "Terms of Service",
+			"privacy": "Privacy Policy",
+			"commercialTransaction": "Commercial Transaction Act",
+			"contact": "Contact Us"
+		},
+		"copyright": "All rights reserved."
+	}
+}

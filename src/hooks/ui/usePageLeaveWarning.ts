@@ -10,7 +10,7 @@ export function usePageLeaveWarning({
 	hasPendingChanges,
 	warningMessage,
 }: UsePageLeaveWarningProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const defaultMessage = warningMessage || t("confirm.unsavedCount");
 	const pendingChangesRef = useRef(hasPendingChanges);
 

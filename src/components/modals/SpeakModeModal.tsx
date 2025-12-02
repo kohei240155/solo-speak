@@ -29,7 +29,7 @@ export default function SpeakModeModal({
 	languages,
 	defaultLearningLanguage,
 }: SpeakModeModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [excludeThreshold, setExcludeThreshold] = useState<string>("50"); // 初期値を50回以上に設定
 	const [excludeTodayPracticed, setExcludeTodayPracticed] =
 		useState<boolean>(true); // 今日練習済みのフレーズを除外するかどうか（デフォルトはtrue）

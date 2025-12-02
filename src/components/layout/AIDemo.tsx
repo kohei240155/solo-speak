@@ -6,7 +6,7 @@ interface AIDemoProps {
 }
 
 export default function AIDemo({ visibleSections }: AIDemoProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 	const [isDemoActive, setIsDemoActive] = useState(false);
 	const [showTranslation, setShowTranslation] = useState(false);
 

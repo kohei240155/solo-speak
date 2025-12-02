@@ -7,7 +7,7 @@ interface FeaturesSectionProps {
 export default function FeaturesSection({
 	visibleSections,
 }: FeaturesSectionProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 
 	return (
 		<section

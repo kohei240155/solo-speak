@@ -6,7 +6,7 @@ interface FAQSectionProps {
 }
 
 export default function FAQSection({ visibleSections }: FAQSectionProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 	const [expandedFaq, setExpandedFaq] = useState<Set<number>>(new Set());
 
 	const toggleFaq = (faqNumber: number) => {

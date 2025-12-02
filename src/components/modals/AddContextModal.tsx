@@ -16,7 +16,7 @@ export default function AddContextModal({
 	onClose,
 	onAdd,
 }: AddContextModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [contextName, setContextName] = useState("");
 
 	const handleSubmit = () => {

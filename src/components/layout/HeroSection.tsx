@@ -8,7 +8,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 	const [animationStarted, setAnimationStarted] = useState(false);
 
 	// コンポーネントマウント後にアニメーションを開始

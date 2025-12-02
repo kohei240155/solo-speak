@@ -11,7 +11,7 @@ export default function SpeakModeExplanationModal({
 	isOpen,
 	onClose,
 }: SpeakModeExplanationModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	return (
 		<BaseModal

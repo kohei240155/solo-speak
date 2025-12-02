@@ -11,7 +11,7 @@ export default function PhraseGenerationHelpModal({
 	isOpen,
 	onClose,
 }: PhraseGenerationHelpModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	return (
 		<BaseModal

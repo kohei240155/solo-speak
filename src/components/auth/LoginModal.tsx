@@ -19,7 +19,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 	const [browserAcknowledged, setBrowserAcknowledged] = useState(false);
 	const [showBrowserHelp, setShowBrowserHelp] = useState(false);
 	const { signInWithGoogle } = useAuth();
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const handleGoogleSignIn = async () => {
