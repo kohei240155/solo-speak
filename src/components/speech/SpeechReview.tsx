@@ -331,7 +331,25 @@ export default function SpeechReview({
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 			streamRef.current = stream;
 
-			const mediaRecorder = new MediaRecorder(stream);
+			// Safari対応：利用可能な最適なMIMEタイプを選択
+			let mimeType = "audio/webm;codecs=opus";
+			const possibleTypes = [
+				"audio/mp4", // iOS Safari最適（AAC）
+				"audio/webm;codecs=opus",
+				"audio/webm",
+				"audio/ogg;codecs=opus",
+			];
+
+			for (const type of possibleTypes) {
+				if (MediaRecorder.isTypeSupported(type)) {
+					mimeType = type;
+					console.log("Selected MIME type:", type);
+					setAudioDebugInfo((prev) => [...prev, `🎙️ Recording with: ${type}`]);
+					break;
+				}
+			}
+
+			const mediaRecorder = new MediaRecorder(stream, { mimeType });
 			mediaRecorderRef.current = mediaRecorder;
 
 			const chunks: Blob[] = [];
@@ -350,8 +368,12 @@ export default function SpeechReview({
 
 				// 10秒以上の場合のみBlobを保存
 				if (recordingDuration >= 3) {
-					const blob = new Blob(chunks, { type: "audio/webm" });
+					const blob = new Blob(chunks, { type: mimeType });
 					setUserAudioBlob(blob);
+					setAudioDebugInfo((prev) => [
+						...prev,
+						`💾 Saved audio: ${mimeType}, ${(blob.size / 1024).toFixed(2)}KB`,
+					]);
 				}
 
 				// ストリームを停止
@@ -828,14 +850,6 @@ export default function SpeechReview({
 								<div className="flex gap-2">
 									{speech.audioFilePath && (
 										<>
-											<a
-												href={speech.audioFilePath}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-											>
-												Open URL
-											</a>
 											<button
 												type="button"
 												onClick={handlePlayAudio}
