@@ -47,7 +47,6 @@ export default function SpeechReview({
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isAudioLoading, setIsAudioLoading] = useState(false);
-	const [audioDebugInfo, setAudioDebugInfo] = useState<string[]>([]);
 
 	// React Query hooks
 	const saveNotesMutation = useSaveSpeechNotes();
@@ -122,7 +121,6 @@ export default function SpeechReview({
 	// 音声再生/一時停止
 	const handlePlayAudio = async () => {
 		if (!speech.audioFilePath) {
-			setAudioDebugInfo((prev) => [...prev, "❌ No audio file path available"]);
 			toast.error("No audio file path available");
 			return;
 		}
@@ -132,7 +130,6 @@ export default function SpeechReview({
 			if (isPlaying) {
 				audioRef.current.pause();
 				setIsPlaying(false);
-				setAudioDebugInfo((prev) => [...prev, "⏸️ Audio paused"]);
 				return;
 			}
 
@@ -140,10 +137,7 @@ export default function SpeechReview({
 			try {
 				await audioRef.current.play();
 				setIsPlaying(true);
-				setAudioDebugInfo((prev) => [...prev, "▶️ Audio resumed"]);
-			} catch (error) {
-				console.error("Failed to play audio:", error);
-				setAudioDebugInfo((prev) => [...prev, `❌ Failed to resume: ${error}`]);
+			} catch {
 				toast.error("Failed to play audio");
 				audioRef.current = null;
 				setIsPlaying(false);
@@ -151,24 +145,11 @@ export default function SpeechReview({
 			return;
 		}
 
-		// デバッグ情報をリセット
-		setAudioDebugInfo([]);
-
 		// 新しい音声オブジェクトを作成（Safari対応：直接URLを使用）
 		setIsAudioLoading(true);
-		setAudioDebugInfo((prev) => [...prev, "🔄 Creating audio element..."]);
 
 		try {
 			// Safari対応：fetch/blob経由をやめて直接URLを使用
-			console.log("Audio URL:", speech.audioFilePath);
-			setAudioDebugInfo((prev) => [
-				...prev,
-				`📋 URL length: ${speech?.audioFilePath?.length} chars`,
-			]);
-			setAudioDebugInfo((prev) => [
-				...prev,
-				`🔗 URL preview: ${speech.audioFilePath?.substring(0, 80)}...`,
-			]);
 
 			const audio = new Audio(speech.audioFilePath);
 			audioRef.current = audio;
@@ -176,52 +157,12 @@ export default function SpeechReview({
 			// 音量を最大に設定
 			audio.volume = 1.0;
 
-			setAudioDebugInfo((prev) => [...prev, "✅ Audio element created"]);
-			setAudioDebugInfo((prev) => [
-				...prev,
-				`🔊 Volume set to: ${audio.volume}`,
-			]);
-
 			// イベントリスナーを設定
-			audio.onloadstart = () => {
-				console.log("Audio load started");
-				setAudioDebugInfo((prev) => [...prev, "📥 Audio loading started..."]);
-			};
-
-			audio.onloadedmetadata = () => {
-				console.log("Audio metadata loaded");
-				setAudioDebugInfo((prev) => [
-					...prev,
-					`📊 Metadata loaded (duration: ${audio.duration}s)`,
-				]);
-			};
-
-			audio.oncanplay = () => {
-				console.log("Audio can play");
-				setAudioDebugInfo((prev) => [...prev, "✅ Audio ready to play!"]);
-				setAudioDebugInfo((prev) => [
-					...prev,
-					`📊 Current time: ${audio.currentTime}s`,
-				]);
-				setAudioDebugInfo((prev) => [...prev, `🔊 Volume: ${audio.volume}`]);
-				setAudioDebugInfo((prev) => [...prev, `🔇 Muted: ${audio.muted}`]);
-				setAudioDebugInfo((prev) => [...prev, `⏯️ Paused: ${audio.paused}`]);
-			};
-
 			audio.onended = () => {
 				setIsPlaying(false);
-				setAudioDebugInfo((prev) => [...prev, "🏁 Audio ended"]);
 			};
 
-			audio.onerror = (e) => {
-				console.error("Audio element error event:", e);
-				console.error("Audio error details:", {
-					error: audio.error,
-					code: audio.error?.code,
-					message: audio.error?.message,
-					networkState: audio.networkState,
-					readyState: audio.readyState,
-				});
+			audio.onerror = () => {
 				setIsPlaying(false);
 				setIsAudioLoading(false);
 
@@ -238,67 +179,21 @@ export default function SpeechReview({
 					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}`
 					: `Failed to load audio`;
 
-				setAudioDebugInfo((prev) => [...prev, `❌ ${errorMsg}`]);
-				setAudioDebugInfo((prev) => [
-					...prev,
-					`📊 Network: ${audio.networkState}, Ready: ${audio.readyState}`,
-				]);
-
 				toast.error(errorMsg, { duration: 8000 });
 
 				audioRef.current = null;
 			};
 
 			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
-			console.log("Attempting to play...");
-			setAudioDebugInfo((prev) => [...prev, "▶️ Calling play()..."]);
-
 			const playPromise = audio.play();
 
 			if (playPromise !== undefined) {
 				playPromise
 					.then(() => {
-						console.log("Play promise resolved");
 						setIsPlaying(true);
 						setIsAudioLoading(false);
-						setAudioDebugInfo((prev) => [...prev, "✅ Audio playing!"]);
-
-						// 再生状態を確認
-						setTimeout(() => {
-							if (audioRef.current) {
-								setAudioDebugInfo((prev) => [
-									...prev,
-									`⏱️ Playing for: ${audioRef.current!.currentTime}s`,
-								]);
-								setAudioDebugInfo((prev) => [
-									...prev,
-									`⏯️ Is paused: ${audioRef.current!.paused}`,
-								]);
-								setAudioDebugInfo((prev) => [
-									...prev,
-									`🔊 Volume: ${audioRef.current!.volume}`,
-								]);
-								setAudioDebugInfo((prev) => [
-									...prev,
-									`🔇 Muted: ${audioRef.current!.muted}`,
-								]);
-							}
-						}, 1000);
 					})
 					.catch((error) => {
-						console.error("Play promise rejected:", error);
-						console.error("Error name:", error.name);
-						console.error("Error message:", error.message);
-
-						// Safari用の詳細エラーメッセージ
-						const urlPreview = speech.audioFilePath?.substring(0, 100) || "N/A";
-						setAudioDebugInfo((prev) => [
-							...prev,
-							`❌ Play failed: ${error.name}`,
-						]);
-						setAudioDebugInfo((prev) => [...prev, `📝 ${error.message}`]);
-						setAudioDebugInfo((prev) => [...prev, `🔗 URL: ${urlPreview}...`]);
-
 						const errorDetails = `Play failed: ${error.name}\n${error.message}`;
 						toast.error(errorDetails, { duration: 8000 });
 
@@ -307,18 +202,14 @@ export default function SpeechReview({
 						setIsAudioLoading(false);
 					});
 			} else {
-				console.log("Play returned undefined (old browser)");
 				setIsPlaying(true);
 				setIsAudioLoading(false);
-				setAudioDebugInfo((prev) => [...prev, "✅ Audio playing (sync)"]);
 			}
 		} catch (error) {
-			console.error("Exception in handlePlayAudio:", error);
 			const errorMsg =
 				error instanceof Error
 					? `${error.name}: ${error.message}`
 					: String(error);
-			setAudioDebugInfo((prev) => [...prev, `❌ Exception: ${errorMsg}`]);
 
 			toast.error(errorMsg, { duration: 8000 });
 			audioRef.current = null;
@@ -343,8 +234,6 @@ export default function SpeechReview({
 			for (const type of possibleTypes) {
 				if (MediaRecorder.isTypeSupported(type)) {
 					mimeType = type;
-					console.log("Selected MIME type:", type);
-					setAudioDebugInfo((prev) => [...prev, `🎙️ Recording with: ${type}`]);
 					break;
 				}
 			}
@@ -370,10 +259,6 @@ export default function SpeechReview({
 				if (recordingDuration >= 3) {
 					const blob = new Blob(chunks, { type: mimeType });
 					setUserAudioBlob(blob);
-					setAudioDebugInfo((prev) => [
-						...prev,
-						`💾 Saved audio: ${mimeType}, ${(blob.size / 1024).toFixed(2)}KB`,
-					]);
 				}
 
 				// ストリームを停止
@@ -401,8 +286,7 @@ export default function SpeechReview({
 					return prev - 1;
 				});
 			}, 1000);
-		} catch (error) {
-			console.error("Failed to start recording:", error);
+		} catch {
 			alert("マイクへのアクセスが許可されていません");
 		}
 	};
@@ -465,8 +349,7 @@ export default function SpeechReview({
 							// 練習回数を更新後、SpeechのIDを使って再取得
 							onRefetchSpeechById();
 						},
-						onError: (error) => {
-							console.error("Failed to record practice:", error);
+						onError: () => {
 							toast.error("Failed to record practice");
 						},
 					},
@@ -482,12 +365,10 @@ export default function SpeechReview({
 			};
 			audio.onerror = () => {
 				setIsUserAudioPlaying(false);
-				console.error("Failed to load user audio");
 			};
 
 			// 新しく作成した音声を再生
-			audio.play().catch((error) => {
-				console.error("Failed to play user audio:", error);
+			audio.play().catch(() => {
 				setIsUserAudioPlaying(false);
 			});
 			setIsUserAudioPlaying(true);
@@ -498,8 +379,7 @@ export default function SpeechReview({
 			userAudioRef.current.pause();
 			setIsUserAudioPlaying(false);
 		} else {
-			userAudioRef.current.play().catch((error) => {
-				console.error("Failed to play user audio:", error);
+			userAudioRef.current.play().catch(() => {
 				setIsUserAudioPlaying(false);
 			});
 			setIsUserAudioPlaying(true);
@@ -674,8 +554,7 @@ export default function SpeechReview({
 				"/api/speech/statuses",
 			);
 			setStatuses(data.statuses);
-		} catch (error) {
-			console.error("Failed to fetch statuses:", error);
+		} catch {
 			toast.error("Failed to load statuses");
 		} finally {
 			setIsLoadingStatuses(false);
@@ -871,29 +750,6 @@ export default function SpeechReview({
 									)}
 								</div>
 							</div>
-
-							{/* デバッグ情報表示 */}
-							{audioDebugInfo.length > 0 && (
-								<div className="mb-4 p-3 bg-gray-100 border border-gray-300 rounded-lg">
-									<div className="text-xs font-mono text-gray-700 space-y-1 max-h-60 overflow-y-auto">
-										{audioDebugInfo.map((info, index) => (
-											<div key={index}>{info}</div>
-										))}
-									</div>
-								</div>
-							)}
-
-							{/* HTML Audio タグでのテスト再生 */}
-							{speech.audioFilePath && (
-								<div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
-									<p className="text-xs font-semibold mb-2">HTML Audio Test:</p>
-									<audio controls className="w-full" preload="metadata">
-										<source src={speech.audioFilePath} type="audio/wav" />
-										<source src={speech.audioFilePath} type="audio/mpeg" />
-										Your browser does not support the audio element.
-									</audio>
-								</div>
-							)}
 
 							<div className="border border-gray-300 rounded-lg p-4 bg-white">
 								{speech.firstSpeechText ? (
