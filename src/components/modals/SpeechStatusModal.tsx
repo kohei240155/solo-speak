@@ -91,7 +91,7 @@ export default function SpeechStatusModal({
 					<h3 className="text-base font-medium text-gray-900 mb-3">
 						Explanation
 					</h3>
-					<div className="px-3 py-3 text-sm text-gray-700">
+					<div className="px-3 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md">
 						{selectedStatus.description}
 					</div>
 				</div>

@@ -166,20 +166,7 @@ export default function SpeechReview({
 				setIsPlaying(false);
 				setIsAudioLoading(false);
 
-				// Safari用の詳細エラーメッセージ
-				const errorCode = audio.error?.code;
-				const errorMessages: { [key: number]: string } = {
-					1: "MEDIA_ERR_ABORTED: Audio loading was aborted",
-					2: "MEDIA_ERR_NETWORK: Network error occurred",
-					3: "MEDIA_ERR_DECODE: Audio decoding failed",
-					4: "MEDIA_ERR_SRC_NOT_SUPPORTED: Audio format not supported or Range Request failed (Safari)",
-				};
-
-				const errorMsg = errorCode
-					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}`
-					: `Failed to load audio`;
-
-				toast.error(errorMsg, { duration: 8000 });
+				toast.error("Failed to load audio", { duration: 8000 });
 
 				audioRef.current = null;
 			};
@@ -305,7 +292,7 @@ export default function SpeechReview({
 				? (Date.now() - recordingStartTimeRef.current) / 1000
 				: 0;
 
-			if (recordingDuration < 3) {
+			if (recordingDuration < 10) {
 				// 録音時間が10秒未満の場合
 				toast.error("録音時間が短すぎます");
 				// ストリームを停止
@@ -326,6 +313,10 @@ export default function SpeechReview({
 			mediaRecorderRef.current.stop();
 			setIsRecording(false);
 			// recordingStartTimeRefはonstopで使うのでここではクリアしない
+			// 録音完了後にトーストを表示
+			toast.success("録音完了！\n再生すると練習回数が加算されます！", {
+				duration: 5000,
+			});
 		}
 	};
 
