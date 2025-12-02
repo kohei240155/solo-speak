@@ -185,8 +185,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 							audioBlob = new Blob([new Uint8Array(wavBuffer)], {
 								type: "audio/wav",
 							});
-						} catch (conversionError) {
-							console.error("Audio conversion failed:", conversionError);
+						} catch {
 							// フォールバック：オリジナルファイルをアップロード
 							audioBlob = new Blob([audioBuffer], { type: audioFile.type });
 						}
@@ -201,8 +200,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 						where: { id: speech.id },
 						data: { audioFilePath },
 					});
-				} catch (error) {
-					console.error("Failed to upload audio:", error);
+				} catch {
 					// 音声アップロードの失敗は致命的ではないため、続行
 				}
 			} // 3. SpeechPlanレコードを作成

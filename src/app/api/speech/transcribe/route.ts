@@ -67,7 +67,6 @@ export async function POST(request: NextRequest) {
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({}));
-			console.error("Whisper API error:", errorData);
 			return NextResponse.json(
 				{
 					error: "Failed to transcribe audio",
