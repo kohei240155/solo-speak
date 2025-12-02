@@ -10,7 +10,7 @@ export default function PrivacyPage() {
 
 				<div className="prose prose-lg max-w-none">
 					<p className="text-sm text-gray-500 mb-8">
-						最終更新日：2025年7月22日
+						最終更新日：2025年12月2日
 					</p>
 
 					<section className="mb-8">
@@ -26,6 +26,7 @@ export default function PrivacyPage() {
 							<li>ユーザー名</li>
 							<li>学習履歴・進捗データ</li>
 							<li>登録したフレーズ・翻訳データ</li>
+							<li>音声データ（録音音声・音声の文字起こしデータ）</li>
 						</ul>
 					</section>
 
