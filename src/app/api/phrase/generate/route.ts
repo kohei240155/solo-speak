@@ -4,7 +4,8 @@ import { authenticateRequest } from "@/utils/api-helpers";
 import { getTranslation, getLocaleFromRequest } from "@/utils/api-i18n";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { prisma } from "@/utils/prisma";
-import { getPromptTemplate } from "@/prompts";
+import { getPhraseGenerationPrompt } from "@/prompts/phraseGeneration";
+import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 
 const generatePhraseSchema = z.object({
 	nativeLanguage: z.string().min(1),
@@ -90,11 +91,16 @@ export async function POST(request: NextRequest) {
 		}
 
 		// ChatGPT APIに送信するプロンプトを構築
-		const prompt = getPromptTemplate(
-			learningLanguage,
-			nativeLanguage,
+		const nativeLanguageName =
+			LANGUAGE_NAMES[nativeLanguage as LanguageCode] || nativeLanguage;
+		const learningLanguageName =
+			LANGUAGE_NAMES[learningLanguage as LanguageCode] || learningLanguage;
+
+		const prompt = getPhraseGenerationPrompt(
+			nativeLanguageName,
 			desiredPhrase,
 			selectedContext || undefined,
+			learningLanguageName,
 		);
 
 		const response = await fetch("https://api.openai.com/v1/chat/completions", {
