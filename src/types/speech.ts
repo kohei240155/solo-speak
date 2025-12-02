@@ -178,7 +178,6 @@ export interface UpdateSpeechStatusResponse {
 		status: {
 			id: string;
 			name: string;
-			description: string | null;
 		};
 	};
 }
