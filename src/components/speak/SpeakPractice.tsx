@@ -49,7 +49,7 @@ export default function SpeakPractice({
 	learningLanguage = DEFAULT_LANGUAGE,
 	onExplanation,
 }: SpeakPracticeProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [countCooldown, setCountCooldown] = useState(0);
 
 	// TTS機能の初期化

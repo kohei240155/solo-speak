@@ -16,7 +16,7 @@ export function useSinglePhraseSpeak({
 	learningLanguage,
 	sendPendingCount,
 }: UseSinglePhraseSpeakProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const router = useRouter();
 
 	// 状態管理

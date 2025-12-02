@@ -11,7 +11,7 @@ interface SpeakingDemoProps {
 }
 
 export default function SpeakingDemo({ visibleSections }: SpeakingDemoProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 	const { locale } = useLanguage();
 	const [readingCount, setReadingCount] = useState(0);
 	const [countCooldown, setCountCooldown] = useState(0);

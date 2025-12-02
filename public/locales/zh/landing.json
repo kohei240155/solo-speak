@@ -1,0 +1,124 @@
+{
+	"home": {
+		"hero": {
+			"subtitle": "\\ 独白训练 /",
+			"title": "记忆句子的\n终极工具",
+			"cta": {
+				"desktop": "立即开始 →"
+			},
+			"features": {
+				"aiGeneration": "AI生成自然句子！",
+				"practiceSupport": "创建您自己的句子集！",
+				"quizFunction": "帮助您进行日常对话！"
+			}
+		},
+		"features": {
+			"title": "您是否有这些烦恼？",
+			"speechRecognition": {
+				"title": "尝试使用短语集但放弃了，因为里面充满了我从未使用过的句子"
+			},
+			"quiz": {
+				"title": "找到了想知道的句子并用AI生成了，但没有复习就放置了"
+			},
+			"progress": {
+				"title": "以为记住了句子，但在实际对话中无法使用"
+			}
+		},
+		"solutions": {
+			"title": {
+				"mobile": "\\ 我们解决这些问题 /",
+				"desktop": "\\ Solo Speak 解决这些问题 /"
+			},
+			"feature1": {
+				"number": "01",
+				"title": "您的\"个人句子集\"\n实用",
+				"description": "AI将您想知道的句子翻译成自然表达。因为这是您原创的句子集，所以可以立即感受到好处。您还可以从生成的3个选项中选择您喜欢的表达。",
+				"demo": {
+					"input": "你在日本住了多久？",
+					"outputs": [
+						"How long have you been living in Japan?",
+						"How long have you lived in Japan?",
+						"How long is it since you moved to Japan?"
+					]
+				}
+			},
+			"feature2": {
+				"number": "02",
+				"title": "阅读计数功能\n全面支持\"直到记住\"",
+				"description": "语言不能仅仅通过\"知道\"来说。目标是每天每个句子阅读10次，总共50次，通过彻底重复，直到自然地从你的嘴里说出。",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "你在日本住了多久？",
+					"todayLabel": "今天：",
+					"totalLabel": "总计：",
+					"goalAchieved": "达成目标！",
+					"goalAchievedMessage": "完成10次阅读"
+				}
+			},
+			"feature3": {
+				"number": "03",
+				"title": "通过测验功能\n检查您的\"即时反应\"",
+				"description": "如果通过朗读练习记住的句子可以在实际对话中使用。如果您可以使用测验功能即时回答记住的句子，您也可以在实际对话中流利地说话。",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "你在日本住了多久？"
+				}
+			}
+		},
+		"faq": {
+			"title": "常见问题",
+			"q1": {
+				"question": "句子生成有限制吗？",
+				"answer": "您每天最多可以使用5次。",
+				"answerDetail": "让我们每天持续生成5个句子。"
+			},
+			"q2": {
+				"question": "句子生成次数何时重置？",
+				"answer": "在UTC（协调世界时）0:00重置。",
+				"answerDetail": "日本时间在9:00（冬季）或8:00（夏季）重置。温哥华时间在16:00（冬季）或17:00（夏季）重置。"
+			},
+			"q3": {
+				"question": "Solo Speak 是免费的吗？",
+				"answer": "基本功能目前免费提供。",
+				"answerDetail": "将来，随着我们扩展服务，我们可能会推出付费功能，但我们会提前通知您。"
+			}
+		},
+		"cta": {
+			"title": "立即开始您的\n口语训练",
+			"subtitle": "使用 Solo Speak 将您的语言学习提升到一个新的水平",
+			"button": "立即开始 →"
+		}
+	},
+	"addToHomeScreen": {
+		"title": "从主屏幕快速访问！",
+		"description": "您可以将其添加到智能手机的主屏幕，像应用一样使用！",
+		"safari": {
+			"step1": "在 Safari 中打开此页面",
+			"step2": "点击底部的分享按钮",
+			"step3": "点击\"添加到主屏幕\"",
+			"step4": "确认应用名称并点击\"添加\""
+		},
+		"android": {
+			"step1": "在 Chrome 中打开此页面",
+			"step2": "点击右上角的菜单按钮（三个点）",
+			"step3": "点击\"添加到主屏幕\"或\"安装应用\"",
+			"step4": "确认应用名称并点击\"添加\""
+		}
+	},
+	"footer": {
+		"description": "支持您的口语训练。",
+		"sections": {
+			"service": "服务",
+			"legal": "法律",
+			"support": "支持"
+		},
+		"links": {
+			"about": "关于 Solo Speak",
+			"terms": "服务条款",
+			"privacy": "隐私政策",
+			"commercialTransaction": "商业交易法",
+			"contact": "联系"
+		},
+		"copyright": "保留所有权利。"
+	}
+}

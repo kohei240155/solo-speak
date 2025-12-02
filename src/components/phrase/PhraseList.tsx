@@ -32,7 +32,7 @@ export default function PhraseList({
 	isLoadingMore = false,
 	languages = [],
 }: PhraseListProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const router = useRouter();
 
 	// ローカル状態管理

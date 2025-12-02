@@ -9,7 +9,7 @@ import {
 } from "@/utils/translation-common";
 import { loadTranslation } from "@/utils/translation-loader";
 
-export const useTranslation = (namespace = "common") => {
+export const useTranslation = (namespace = "app") => {
 	const { locale, isLoadingLocale } = useLanguage();
 	const [translations, setTranslations] = useState<TranslationData>({});
 	const [isLoading, setIsLoading] = useState(true);

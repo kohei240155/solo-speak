@@ -21,7 +21,7 @@ import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
 export const usePhraseManager = () => {
 	const { user, userSettings, userSettingsLoading } = useAuth(); // AuthContextから直接ユーザー設定を取得
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 
 	// APIフックを使用してデータを取得
 	const { languages } = useLanguages();

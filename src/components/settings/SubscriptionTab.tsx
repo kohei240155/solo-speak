@@ -25,7 +25,7 @@ interface SubscriptionStatus {
 }
 
 export default function SubscriptionTab() {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const { user } = useAuth();
 	const queryClient = useQueryClient();
 	const [subscriptionStatus, setSubscriptionStatus] =

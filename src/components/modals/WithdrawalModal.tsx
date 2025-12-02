@@ -15,7 +15,7 @@ export default function WithdrawalModal({
 	isOpen,
 	onClose,
 }: WithdrawalModalProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const { signOut, userSettings } = useAuth();
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [emailInput, setEmailInput] = useState("");

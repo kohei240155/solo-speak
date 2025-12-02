@@ -1,0 +1,124 @@
+{
+	"home": {
+		"hero": {
+			"subtitle": "\\ Monolog-Training /",
+			"title": "Die ultimative\nPhrasen-Memo-App",
+			"cta": {
+				"desktop": "Jetzt starten →"
+			},
+			"features": {
+				"aiGeneration": "KI generiert natürliche Phrasen!",
+				"practiceSupport": "Erstellen Sie Ihre eigene Phrasensammlung!",
+				"quizFunction": "Damit können Sie alltägliche Gespräche führen!"
+			}
+		},
+		"features": {
+			"title": "Haben Sie diese Probleme?",
+			"speechRecognition": {
+				"title": "Ich habe ein Phrasenbuch ausprobiert, aber aufgegeben, weil es voller Phrasen war, die ich nie verwende"
+			},
+			"quiz": {
+				"title": "Ich fand Phrasen, die ich wissen wollte, und generierte sie mit KI, aber ließ sie unberührt, ohne sie zu wiederholen"
+			},
+			"progress": {
+				"title": "Ich dachte, ich hätte Phrasen auswendig gelernt, aber konnte sie nicht in echten Gesprächen verwenden"
+			}
+		},
+		"solutions": {
+			"title": {
+				"mobile": "\\ Diese Probleme lösen wir /",
+				"desktop": "\\ Solo Speak löst diese Probleme /"
+			},
+			"feature1": {
+				"number": "01",
+				"title": "Ihre \"persönliche Phrasensammlung\"\nist praktisch",
+				"description": "Die KI übersetzt die Phrasen, die Sie wissen wollten, in natürliche Ausdrücke. Da es Ihre ursprüngliche Phrasensammlung ist, können Sie sofort die Wirkung spüren. Außerdem können Sie Ihren bevorzugten Ausdruck aus drei generierten Optionen wählen.",
+				"demo": {
+					"input": "Wie lange lebst du schon in Japan?",
+					"outputs": [
+						"How long have you been living in Japan?",
+						"How long have you lived in Japan?",
+						"How long is it since you moved to Japan?"
+					]
+				}
+			},
+			"feature2": {
+				"number": "02",
+				"title": "Lautzählungs-Funktion für\ngründliche Unterstützung \"bis zum Auswendiglernen\"",
+				"description": "Sprache kann nicht gesprochen werden, nur weil man sie \"kennt\". Streben Sie 10 Wiederholungen pro Tag für eine Phrase an, insgesamt 50 Wiederholungen, bis sie natürlich aus dem Mund kommt durch gründliche Wiederholung.",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "Wie lange lebst du schon in Japan?",
+					"todayLabel": "Heute:",
+					"totalLabel": "Gesamt:",
+					"goalAchieved": "Ziel erreicht!",
+					"goalAchievedMessage": "10 Wiederholungen abgeschlossen"
+				}
+			},
+			"feature3": {
+				"number": "03",
+				"title": "Überprüfen Sie Ihre \"Spontanreaktion\"\nmit Quiz-Funktionen",
+				"description": "Ob durch Lautleseübung einprägte Phrasen in echten Gesprächen verwendet werden können. Wenn Sie mit der Quiz-Funktion sofort auf einprägte Phrasen antworten können, können Sie auch in echten Gesprächen fließend sprechen.",
+				"demo": {
+					"input": "How long have you been living in Japan?",
+					"output": "Wie lange lebst du schon in Japan?"
+				}
+			}
+		},
+		"faq": {
+			"title": "Häufig gestellte Fragen",
+			"q1": {
+				"question": "Gibt es ein Limit für Phrasengenerierungen?",
+				"answer": "Sie können es bis zu 5 Mal pro Tag nutzen.",
+				"answerDetail": "Bauen Sie jeden Tag stetig 5 Phrasen auf."
+			},
+			"q2": {
+				"question": "Wann wird die Anzahl der Phrasengenerierungen zurückgesetzt?",
+				"answer": "Sie wird um 0:00 UTC (Koordinierte Weltzeit) zurückgesetzt.",
+				"answerDetail": "In der japanischen Zeit wird sie um 9:00 Uhr (Winterzeit) oder 8:00 Uhr (Sommerzeit) zurückgesetzt. In der Vancouverer Zeit wird sie um 16:00 Uhr (Winterzeit) oder 17:00 Uhr (Sommerzeit) zurückgesetzt."
+			},
+			"q3": {
+				"question": "Ist Solo Speak kostenlos nutzbar?",
+				"answer": "Grundfunktionen sind derzeit kostenlos verfügbar.",
+				"answerDetail": "In Zukunft könnten wir mit der Erweiterung unserer Dienste kostenpflichtige Funktionen einführen, aber wir werden Sie im Voraus informieren."
+			}
+		},
+		"cta": {
+			"title": "Beginnen Sie jetzt mit dem\nSprech-Training",
+			"subtitle": "Bringen Sie Ihr Sprachlernen mit Solo Speak auf die nächste Stufe",
+			"button": "Jetzt starten →"
+		}
+	},
+	"addToHomeScreen": {
+		"title": "Schneller Zugriff vom Startbildschirm!",
+		"description": "Sie können dies zum Startbildschirm Ihres Smartphones hinzufügen und wie eine App verwenden!",
+		"safari": {
+			"step1": "Öffnen Sie diese Seite in Safari",
+			"step2": "Tippen Sie auf die Teilen-Schaltfläche unten",
+			"step3": "Tippen Sie auf 'Zum Startbildschirm hinzufügen'",
+			"step4": "Bestätigen Sie den App-Namen und tippen Sie auf 'Hinzufügen'"
+		},
+		"android": {
+			"step1": "Öffnen Sie diese Seite in Chrome",
+			"step2": "Tippen Sie auf die Menü-Schaltfläche (drei Punkte) oben rechts",
+			"step3": "Tippen Sie auf 'Zum Startbildschirm hinzufügen' oder 'App installieren'",
+			"step4": "Bestätigen Sie den App-Namen und tippen Sie auf 'Hinzufügen'"
+		}
+	},
+	"footer": {
+		"description": "Unterstützt Ihr Sprech-Training.",
+		"sections": {
+			"service": "Service",
+			"legal": "Rechtliches",
+			"support": "Support"
+		},
+		"links": {
+			"about": "Über Solo Speak",
+			"terms": "Nutzungsbedingungen",
+			"privacy": "Datenschutzrichtlinie",
+			"commercialTransaction": "Handelsgesetz",
+			"contact": "Kontakt"
+		},
+		"copyright": "Alle Rechte vorbehalten."
+	}
+}

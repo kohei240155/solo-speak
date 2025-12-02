@@ -26,7 +26,7 @@ export default function ReviewModeModal({
 	languages,
 	defaultLearningLanguage,
 }: ReviewModeModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const router = useRouter();
 	const [speakCountFilter, setSpeakCountFilter] = useState<string | null>(
 		"lessPractice",

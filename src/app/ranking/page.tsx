@@ -16,7 +16,7 @@ import { AiOutlineX } from "react-icons/ai";
 export default function RankingPage() {
 	const { user, loading: authLoading } = useAuthGuard();
 	const { userSettings } = useAuth();
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const { shareStreak, isLoading: isShareLoading } = useShareStreak();
 
 	// カスタムフックを使用してランキングデータを管理

@@ -11,7 +11,7 @@ interface SpeakSessionState {
 }
 
 export const useSpeakSession = (learningLanguage: string) => {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 
 	// モード状態
 	const [sessionState, setSessionState] = useState<SpeakSessionState>({

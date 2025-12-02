@@ -26,7 +26,7 @@ function PhraseSpeakPage() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const { learningLanguage, languages } = usePhraseSettings();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	const {
 		sessionState,

@@ -18,7 +18,7 @@ export default function PhraseTabNavigation({
 	onCacheInvalidate,
 }: PhraseTabNavigationProps) {
 	const router = useRouter();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	const tabs: { key: TabType; label: string; path: string }[] = [
 		{ key: "List", label: "List", path: "/phrase/list" },

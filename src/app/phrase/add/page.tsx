@@ -15,7 +15,7 @@ import QuizModeModal from "@/components/modals/QuizModeModal";
 import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
 
 export default function PhraseAddPage() {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const { loading: authLoading } = useAuthGuard();
 
 	const {

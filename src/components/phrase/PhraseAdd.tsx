@@ -60,7 +60,7 @@ export default function PhraseAdd({
 	addSituation,
 	deleteSituation,
 }: PhraseAddProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 
 	// モーダルの状態管理
 	const [isAddContextModalOpen, setIsAddContextModalOpen] = useState(false);

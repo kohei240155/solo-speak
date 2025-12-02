@@ -7,7 +7,7 @@ interface QuizDemoProps {
 }
 
 export default function QuizDemo({ visibleSections }: QuizDemoProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 	const [showQuizTranslation, setShowQuizTranslation] = useState(false);
 
 	const handleQuizHandClick = () => {

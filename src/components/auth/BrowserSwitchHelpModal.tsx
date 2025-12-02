@@ -12,7 +12,7 @@ export default function BrowserSwitchHelpModal({
 	isOpen,
 	onClose,
 }: BrowserSwitchHelpModalProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 
 	return (
 		<BaseModal

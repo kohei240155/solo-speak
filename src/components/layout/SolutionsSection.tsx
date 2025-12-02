@@ -10,7 +10,7 @@ interface SolutionsSectionProps {
 export default function SolutionsSection({
 	visibleSections,
 }: SolutionsSectionProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 
 	return (
 		<section

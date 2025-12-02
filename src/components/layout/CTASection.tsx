@@ -9,7 +9,7 @@ export default function CTASection({
 	visibleSections,
 	onGetStartedClick,
 }: CTASectionProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("landing");
 
 	return (
 		<section

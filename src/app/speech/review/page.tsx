@@ -24,7 +24,7 @@ function SpeechReviewPage() {
 	const { userSettings } = useAuth();
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const queryClient = useQueryClient();
 
 	// pendingCountとviewModeの状態管理

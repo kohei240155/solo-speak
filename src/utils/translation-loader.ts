@@ -13,7 +13,7 @@ const loadingPromises = new Map<string, Promise<TranslationData>>();
  */
 export async function loadTranslation(
 	locale: string,
-	namespace: string = "common",
+	namespace: string = "app",
 ): Promise<TranslationData> {
 	const cacheKey = `${locale}-${namespace}`;
 

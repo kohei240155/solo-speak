@@ -47,7 +47,7 @@ export default function ModeModal({
 	defaultLearningLanguage,
 	isLoading: externalLoading = false,
 }: ModeModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [selectedLanguage, setSelectedLanguage] = useState("");
 	const [internalLoading, setInternalLoading] = useState(false);
 

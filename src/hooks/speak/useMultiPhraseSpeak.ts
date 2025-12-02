@@ -22,7 +22,7 @@ export function useMultiPhraseSpeak({
 	handleNext,
 	handleFinish,
 }: UseMultiPhraseSpeakProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("app");
 	const router = useRouter();
 	const [isFinishing, setIsFinishing] = useState(false);
 	const [isNextLoading, setIsNextLoading] = useState(false);

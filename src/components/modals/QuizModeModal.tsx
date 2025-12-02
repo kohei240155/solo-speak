@@ -23,7 +23,7 @@ export default function QuizModeModal({
 	languages,
 	defaultLearningLanguage,
 }: QuizModeModalProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const [mode, setMode] = useState<"normal" | "random">("normal");
 	const [questionCount, setQuestionCount] = useState<number>(10);
 	const [speakCountFilter, setSpeakCountFilter] = useState<number | null>(50); // デフォルトは50回以上

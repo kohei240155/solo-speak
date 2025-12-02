@@ -24,7 +24,7 @@ export default function GeneratedVariations({
 	onSelectVariation,
 	error,
 }: GeneratedVariationsProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	// スクロール位置保持機能
 	const scrollPreservation = useScrollPreservation();
 

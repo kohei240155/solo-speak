@@ -41,7 +41,7 @@ export default function UserSettingsForm({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	...rest // onSubmitを含む残りのpropsを受け取るが使用しない
 }: UserSettingsFormProps) {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation("app");
 	const {
 		submitting,
 		imageUploadRef,
