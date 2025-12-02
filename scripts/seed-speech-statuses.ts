@@ -5,19 +5,19 @@ const prisma = new PrismaClient();
 const speechStatuses = [
 	{
 		name: "A",
-		description: "スクリプトを見なくても流暢に話すことができる",
+		description: "スクリプトを見なくても流暢に話せる",
 	},
 	{
 		name: "B",
-		description: "スクリプトの一部を見れば流暢に話すことができる",
+		description: "スクリプトの一部を見れば流暢に話せる",
 	},
 	{
 		name: "C",
-		description: "スクリプトを見れば流暢に話すことができる",
+		description: "スクリプトを見れば流暢に話せる",
 	},
 	{
 		name: "D",
-		description: "スクリプトを見れば話すことができる",
+		description: "まだ復習をしていない",
 	},
 ];
 

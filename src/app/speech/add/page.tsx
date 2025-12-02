@@ -105,7 +105,6 @@ export default function SpeechAddPage() {
 			);
 
 			toast.success("Speech saved successfully!");
-			console.log("Saved speech:", result);
 
 			// 保存したスピーチのIDを保存
 			setSavedSpeechId(result.speech.id);
