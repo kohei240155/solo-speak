@@ -174,15 +174,12 @@ export default function SpeechAdd({
 					return prev + 1;
 				});
 			}, 1000);
-		} catch (error) {
-			console.error("録音の開始に失敗しました:", error);
+		} catch {
 			alert(
 				"マイクへのアクセスが拒否されました。ブラウザの設定を確認してください。",
 			);
 		}
-	};
-
-	// 録音停止
+	}; // 録音停止
 	const stopRecording = () => {
 		if (mediaRecorderRef.current && isRecording) {
 			mediaRecorderRef.current.stop();
@@ -302,7 +299,6 @@ export default function SpeechAdd({
 			// 文字起こし成功後、自動的に添削を実行
 			await handleCorrection(data.text);
 		} catch (error) {
-			console.error("文字起こしエラー:", error);
 			alert(
 				error instanceof Error ? error.message : "文字起こしに失敗しました",
 			);
@@ -369,7 +365,6 @@ export default function SpeechAdd({
 				});
 			}
 		} catch (error) {
-			console.error("添削エラー:", error);
 			alert(error instanceof Error ? error.message : "添削に失敗しました");
 		} finally {
 			setIsCorrecting(false);
