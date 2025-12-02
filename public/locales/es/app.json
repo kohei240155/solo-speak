@@ -151,6 +151,22 @@
 			"submitError": "Error al enviar la respuesta"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "Idioma",
+			"targetPhrases": "Frases Objetivo",
+			"optionsTitle": "Opciones",
+			"excludeTodayPracticedLabel": "Excluir discursos practicados hoy",
+			"options": {
+				"lessPractice": "Menos Práctica",
+				"lowStatus": "Estado Bajo"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "No se encontraron discursos que coincidan con los criterios",
+			"countError": "Se produjo un error al obtener el recuento de discursos"
+		}
+	},
 	"subscription": {
 		"status": "Estado",
 		"nextBillingDate": "Próxima Fecha de Facturación",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "¿Está seguro de que desea eliminar esta situación?",
 			"warningMessage": "Esta acción no se puede deshacer."
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "El título debe tener un máximo de 50 caracteres",
+			"sentenceMaxLength": "Cada oración debe tener un máximo de 500 caracteres",
+			"speechPlanMaxLength": "Por favor, ingrese dentro de 100 caracteres"
+		},
+		"notePlaceholder": "Anote libremente sus observaciones.",
+		"placeholders": {
+			"title": "Sobre los eventos de hoy",
+			"speechPlan": [
+				"Hoy fue un día de trabajo normal.",
+				"Tuve más tiempo concentrado por la mañana.",
+				"Fui a caminar al parque durante el almuerzo.",
+				"La tarde estuvo ocupada pero salí a tiempo.",
+				"La cena con amigos fue agradable."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "Se denegó el acceso al micrófono. Por favor, verifique la configuración de su navegador.",
+			"transcribeFailed": "Error al transcribir el audio",
+			"titleOrPlanRequired": "No se ingresó el título o el plan del discurso",
+			"languagesRequired": "El idioma de aprendizaje y el idioma nativo no están configurados",
+			"correctionFailed": "Error al corregir el discurso"
+		},
+		"review": {
+			"micAccessDenied": "No se permite el acceso al micrófono",
+			"recordingTooShort": "La grabación debe durar al menos 10 segundos",
+			"recordingComplete": "¡Grabación completa!\n¡La reproducción contará para tu práctica!",
+			"practiceTip": "Practica hasta que puedas hablar con fluidez.",
+			"feedbackTip": "Revisa los comentarios de tu discurso inicial.",
+			"noteTip": "Anote libremente sus observaciones."
 		}
 	}
 }

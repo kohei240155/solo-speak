@@ -6,21 +6,28 @@ export interface TranslationData {
 }
 
 export interface TranslationOptions {
-	[key: string]: string | number;
+	returnObjects?: boolean;
+	[key: string]: string | number | boolean | undefined;
 }
 
 /**
- * ネストしたキーから翻訳値を取得する共通関数
- * @param translations 翻訳データ
- * @param key ドット記法のキー（例: 'phrase.messages.dailyLimitExceeded'）
- * @param options 変数置換用のオプション
- * @returns 翻訳されたテキスト
+ * ネストしたキーから翻訳値を取得する共通関数（オーバーロード）
  */
 export function getNestedTranslation(
 	translations: TranslationData,
 	key: string,
+	options: TranslationOptions & { returnObjects: true },
+): string[] | TranslationData;
+export function getNestedTranslation(
+	translations: TranslationData,
+	key: string,
 	options?: TranslationOptions,
-): string {
+): string;
+export function getNestedTranslation(
+	translations: TranslationData,
+	key: string,
+	options?: TranslationOptions,
+): string | string[] | TranslationData {
 	const keys = key.split(".");
 	let value: string | TranslationData = translations;
 
@@ -30,6 +37,16 @@ export function getNestedTranslation(
 		} else {
 			// キーが見つからない場合はキーをそのまま返す
 			return key;
+		}
+	}
+
+	// returnObjects: true の場合、配列やオブジェクトをそのまま返す
+	if (options?.returnObjects) {
+		if (Array.isArray(value)) {
+			return value;
+		}
+		if (typeof value === "object" && value !== null) {
+			return value as TranslationData;
 		}
 	}
 

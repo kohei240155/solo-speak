@@ -151,6 +151,22 @@
 			"submitError": "답안을 제출하는 중 오류가 발생했습니다."
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "언어",
+			"targetPhrases": "출제 대상",
+			"optionsTitle": "옵션",
+			"excludeTodayPracticedLabel": "오늘 이미 연습한 스피치는 제외하기",
+			"options": {
+				"lessPractice": "연습 횟수가 적은",
+				"lowStatus": "상태가 낮은"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "조건에 맞는 스피치를 찾을 수 없습니다",
+			"countError": "스피치 수를 가져오는 중 오류가 발생했습니다"
+		}
+	},
 	"subscription": {
 		"status": "상태",
 		"nextBillingDate": "다음 결제일",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "이 상황을 삭제하시겠습니까?",
 			"warningMessage": "이 작업은 취소할 수 없습니다."
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "제목은 50자 이내로 입력해주세요",
+			"sentenceMaxLength": "각 문장은 500자 이내로 입력해주세요",
+			"speechPlanMaxLength": "100자 이내로 입력해주세요"
+		},
+		"notePlaceholder": "자유롭게 메모해 보세요.",
+		"placeholders": {
+			"title": "오늘의 일에 대하여",
+			"speechPlan": [
+				"오늘은 평범한 근무일이었습니다.",
+				"오전에는 집중할 수 있는 시간이 더 많았습니다.",
+				"점심시간에 공원으로 산책을 갔습니다.",
+				"오후는 바빴지만 정시에 퇴근했습니다.",
+				"친구들과의 저녁 식사는 즐거웠습니다."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "마이크 액세스가 거부되었습니다. 브라우저 설정을 확인해주세요.",
+			"transcribeFailed": "오디오 전사 실패",
+			"titleOrPlanRequired": "제목 또는 스피치 계획이 입력되지 않았습니다",
+			"languagesRequired": "학습 언어와 모국어가 설정되지 않았습니다",
+			"correctionFailed": "스피치 수정 실패"
+		},
+		"review": {
+			"micAccessDenied": "마이크 액세스가 허용되지 않았습니다",
+			"recordingTooShort": "녹음은 최소 10초 이상이어야 합니다",
+			"recordingComplete": "녹음 완료!\n재생하면 연습 횟수가 추가됩니다!",
+			"practiceTip": "유창하게 말할 수 있을 때까지 연습하세요.",
+			"feedbackTip": "첫 번째 스피치의 피드백을 확인하세요.",
+			"noteTip": "자유롭게 메모해 보세요."
 		}
 	}
 }

@@ -243,5 +243,38 @@
 			"confirmMessage": "Are you sure you want to delete this situation?",
 			"warningMessage": "This action cannot be undone."
 		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "Title must be within 50 characters",
+			"sentenceMaxLength": "Each sentence must be within 500 characters",
+			"speechPlanMaxLength": "Please enter within 100 characters"
+		},
+		"notePlaceholder": "Feel free to jot down any observations or thoughts.",
+		"placeholders": {
+			"title": "About today's events",
+			"speechPlan": [
+				"Today was a regular workday.",
+				"I had more focused time in the morning.",
+				"I went for a walk to the park during lunch.",
+				"The afternoon was busy but I got off on time.",
+				"Dinner with friends was enjoyable."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "Microphone access was denied. Please check your browser settings.",
+			"transcribeFailed": "Failed to transcribe audio",
+			"titleOrPlanRequired": "Title or speech plan is not entered",
+			"languagesRequired": "Learning language and native language are not set",
+			"correctionFailed": "Failed to correct speech"
+		},
+		"review": {
+			"micAccessDenied": "Microphone access is not permitted",
+			"recordingTooShort": "Recording must be at least 10 seconds long",
+			"recordingComplete": "Recording complete!\nPlayback will count towards your practice!",
+			"practiceTip": "Practice until you can speak fluently.",
+			"feedbackTip": "Review the feedback from your initial speech.",
+			"noteTip": "Feel free to jot down any observations."
+		}
 	}
 }

@@ -151,6 +151,22 @@
 			"submitError": "Fehler beim Senden der Antwort aufgetreten"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "Sprache",
+			"targetPhrases": "Ziel-Phrasen",
+			"optionsTitle": "Optionen",
+			"excludeTodayPracticedLabel": "Heute bereits geübte Reden ausschließen",
+			"options": {
+				"lessPractice": "Weniger Übung",
+				"lowStatus": "Niedriger Status"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "Keine Reden gefunden, die den Kriterien entsprechen",
+			"countError": "Fehler beim Abrufen der Redenanzahl aufgetreten"
+		}
+	},
 	"subscription": {
 		"status": "Status",
 		"nextBillingDate": "Nächstes Abrechnungsdatum",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "Sind Sie sicher, dass Sie diese Situation löschen möchten?",
 			"warningMessage": "Diese Aktion kann nicht rückgängig gemacht werden."
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "Der Titel muss innerhalb von 50 Zeichen liegen",
+			"sentenceMaxLength": "Jeder Satz muss innerhalb von 500 Zeichen liegen",
+			"speechPlanMaxLength": "Bitte geben Sie innerhalb von 100 Zeichen ein"
+		},
+		"notePlaceholder": "Notieren Sie Ihre Beobachtungen und Gedanken.",
+		"placeholders": {
+			"title": "Über die heutigen Ereignisse",
+			"speechPlan": [
+				"Heute war ein normaler Arbeitstag.",
+				"Ich hatte morgens mehr konzentrierte Zeit.",
+				"Ich ging während der Mittagspause in den Park spazieren.",
+				"Der Nachmittag war beschäftigt, aber ich kam pünktlich weg.",
+				"Das Abendessen mit Freunden war angenehm."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "Der Mikrofonzugriff wurde verweigert. Bitte überprüfen Sie Ihre Browsereinstellungen.",
+			"transcribeFailed": "Audio-Transkription fehlgeschlagen",
+			"titleOrPlanRequired": "Titel oder Redeplan ist nicht eingegeben",
+			"languagesRequired": "Lernsprache und Muttersprache sind nicht festgelegt",
+			"correctionFailed": "Korrektur der Rede fehlgeschlagen"
+		},
+		"review": {
+			"micAccessDenied": "Der Zugriff auf das Mikrofon wurde nicht erlaubt",
+			"recordingTooShort": "Die Aufnahme muss mindestens 10 Sekunden lang sein",
+			"recordingComplete": "Aufnahme abgeschlossen!\nDie Wiedergabe zählt zu Ihrer Übung!",
+			"practiceTip": "Üben Sie, bis Sie fließend sprechen können.",
+			"feedbackTip": "Überprüfen Sie das Feedback zu Ihrer ersten Rede.",
+			"noteTip": "Notieren Sie Ihre Beobachtungen."
 		}
 	}
 }

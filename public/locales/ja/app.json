@@ -243,5 +243,38 @@
 			"confirmMessage": "このシチュエーションを削除してもよろしいですか？",
 			"warningMessage": "この操作は取り消すことができません。"
 		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "タイトルは50文字以内で入力してください",
+			"sentenceMaxLength": "各文は500文字以内で入力してください",
+			"speechPlanMaxLength": "100文字以内で入力してください"
+		},
+		"notePlaceholder": "気づいたことを自由にメモしましょう。",
+		"placeholders": {
+			"title": "今日の出来事について",
+			"speechPlan": [
+				"今日はいつも通り仕事だった。",
+				"午前中は集中できる時間が多かった。",
+				"昼休みに公園まで散歩しに行った。",
+				"午後は忙しかったけど定時に帰れた。",
+				"夕食は友達と一緒に食べて楽しかった。"
+			]
+		},
+		"messages": {
+			"micAccessDenied": "マイクへのアクセスが拒否されました。ブラウザの設定を確認してください。",
+			"transcribeFailed": "文字起こしに失敗しました",
+			"titleOrPlanRequired": "タイトルまたはスピーチプランが入力されていません",
+			"languagesRequired": "学習言語と母国語が設定されていません",
+			"correctionFailed": "添削に失敗しました"
+		},
+		"review": {
+			"micAccessDenied": "マイクへのアクセスが許可されていません",
+			"recordingTooShort": "録音時間は10秒以上必要です",
+			"recordingComplete": "録音完了！\n再生すると練習回数が加算されます！",
+			"practiceTip": "流暢に話せるようになるまで練習しましょう。",
+			"feedbackTip": "初回スピーチのフィードバックを確認しましょう。",
+			"noteTip": "気づいたことを自由にメモしましょう。"
+		}
 	}
 }

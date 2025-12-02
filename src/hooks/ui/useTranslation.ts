@@ -34,14 +34,20 @@ export const useTranslation = (namespace = "app") => {
 
 	// 翻訳関数をuseCallbackでメモ化
 	const t = useCallback(
-		(key: string, options?: TranslationOptions): string => {
+		(key: string, options?: TranslationOptions) => {
 			return getNestedTranslation(translations, key, options);
 		},
 		[translations],
 	);
 
 	return {
-		t,
+		t: t as {
+			(
+				key: string,
+				options: TranslationOptions & { returnObjects: true },
+			): string[] | TranslationData;
+			(key: string, options?: TranslationOptions): string;
+		},
 		locale,
 		isLoading,
 	};
