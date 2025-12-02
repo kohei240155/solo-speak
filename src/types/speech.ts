@@ -76,7 +76,6 @@ export interface RemainingSpeechCountResponse {
 export interface SpeechStatus {
 	id: string;
 	name: string;
-	description?: string;
 }
 
 export interface SpeechListItem {
@@ -179,7 +178,6 @@ export interface UpdateSpeechStatusResponse {
 		status: {
 			id: string;
 			name: string;
-			description: string | null;
 		};
 	};
 }

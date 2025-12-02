@@ -275,6 +275,12 @@
 			"practiceTip": "Pratique até conseguir falar fluentemente.",
 			"feedbackTip": "Revise o feedback do seu discurso inicial.",
 			"noteTip": "Anote livremente suas observações."
+		},
+		"status": {
+			"A": "Pode falar fluentemente sem olhar para o roteiro",
+			"B": "Pode falar fluentemente olhando partes do roteiro",
+			"C": "Pode falar fluentemente olhando para o roteiro",
+			"D": "Ainda não revisado"
 		}
 	}
 }

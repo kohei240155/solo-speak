@@ -275,6 +275,12 @@
 			"practiceTip": "Practice until you can speak fluently.",
 			"feedbackTip": "Review the feedback from your initial speech.",
 			"noteTip": "Feel free to jot down any observations."
+		},
+		"status": {
+			"A": "Can speak fluently without looking at the script",
+			"B": "Can speak fluently by looking at parts of the script",
+			"C": "Can speak fluently by looking at the script",
+			"D": "Not yet reviewed"
 		}
 	}
 }

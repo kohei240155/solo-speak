@@ -275,6 +275,12 @@
 			"practiceTip": "Pratiquez jusqu'à ce que vous puissiez parler couramment.",
 			"feedbackTip": "Consultez les commentaires de votre premier discours.",
 			"noteTip": "Notez librement vos observations."
+		},
+		"status": {
+			"A": "Peut parler couramment sans regarder le script",
+			"B": "Peut parler couramment en regardant des parties du script",
+			"C": "Peut parler couramment en regardant le script",
+			"D": "Pas encore révisé"
 		}
 	}
 }

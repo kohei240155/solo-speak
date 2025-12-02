@@ -49,7 +49,6 @@ export async function GET(
 					select: {
 						id: true,
 						name: true,
-						description: true,
 					},
 				},
 				nativeLanguage: {
@@ -123,7 +122,6 @@ export async function GET(
 				status: {
 					id: speech.status.id,
 					name: speech.status.name,
-					description: speech.status.description || undefined,
 				},
 				nativeLanguage: {
 					id: speech.nativeLanguage.id,
