@@ -118,7 +118,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
-		// デフォルトのスピーチステータスを取得（D: スクリプトを見れば話すことができる）
+		// デフォルトのスピーチステータスを取得（D: まだ復習をしていない）
 		const defaultStatus = await prisma.speechStatus.findFirst({
 			where: { name: "D" },
 		});
