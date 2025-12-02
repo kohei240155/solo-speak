@@ -15,15 +15,18 @@ export async function uploadSpeechAudio(
 	const supabase = createServerSupabaseClient();
 
 	// Blobのタイプから拡張子を決定
-	const contentType = audioBlob.type || "audio/webm";
-	let extension = "webm";
+	const contentType = audioBlob.type || "audio/wav";
+	let extension = "wav";
 
-	if (contentType.includes("mp4")) {
-		extension = "mp4";
+	if (contentType.includes("mp4") || contentType.includes("m4a")) {
+		extension = "m4a";
 	} else if (contentType.includes("wav")) {
 		extension = "wav";
 	} else if (contentType.includes("ogg")) {
 		extension = "ogg";
+	} else if (contentType.includes("webm")) {
+		// WebMの場合もwavとして扱う（サーバー側で変換済み）
+		extension = "wav";
 	}
 
 	const filePath = `${userId}/${speechId}/audio.${extension}`;

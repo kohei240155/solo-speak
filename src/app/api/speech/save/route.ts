@@ -5,6 +5,7 @@ import { uploadSpeechAudio } from "@/utils/storage-helpers";
 import { prisma } from "@/utils/prisma";
 import { SaveSpeechRequestBody, SaveSpeechResponseData } from "@/types/speech";
 import { ApiErrorResponse } from "@/types/api";
+import { convertWebMToWav } from "@/utils/audio-converter";
 
 // バリデーションスキーマ
 const sentenceSchema = z.object({
@@ -167,9 +168,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			let audioFilePath: string | undefined;
 			if (audioFile) {
 				try {
-					const audioBlob = new Blob([await audioFile.arrayBuffer()], {
-						type: audioFile.type,
-					});
+					const audioBuffer = await audioFile.arrayBuffer();
+					let audioBlob: Blob;
+
+					// WebMファイルの場合はWAVに変換
+					if (
+						audioFile.type === "audio/webm" ||
+						audioFile.name.endsWith(".webm")
+					) {
+						try {
+							const wavBuffer = await convertWebMToWav(
+								Buffer.from(audioBuffer),
+							);
+
+							// BufferをUint8Arrayに変換してBlobを作成
+							audioBlob = new Blob([new Uint8Array(wavBuffer)], {
+								type: "audio/wav",
+							});
+						} catch (conversionError) {
+							console.error("Audio conversion failed:", conversionError);
+							// フォールバック：オリジナルファイルをアップロード
+							audioBlob = new Blob([audioBuffer], { type: audioFile.type });
+						}
+					} else {
+						audioBlob = new Blob([audioBuffer], { type: audioFile.type });
+					}
+
 					audioFilePath = await uploadSpeechAudio(userId, speech.id, audioBlob);
 
 					// Speechレコードを更新して音声パスを保存
@@ -181,9 +205,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 					console.error("Failed to upload audio:", error);
 					// 音声アップロードの失敗は致命的ではないため、続行
 				}
-			}
-
-			// 3. SpeechPlanレコードを作成
+			} // 3. SpeechPlanレコードを作成
 			const speechPlans = await Promise.all(
 				parsedData.speechPlans.map((planContent) =>
 					tx.speechPlan.create({
