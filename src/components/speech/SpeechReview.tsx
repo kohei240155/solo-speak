@@ -46,6 +46,7 @@ export default function SpeechReview({
 	);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
+	const [isAudioLoading, setIsAudioLoading] = useState(false);
 
 	// React Query hooks
 	const saveNotesMutation = useSaveSpeechNotes();
@@ -118,7 +119,7 @@ export default function SpeechReview({
 	};
 
 	// 音声再生/一時停止
-	const handlePlayAudio = () => {
+	const handlePlayAudio = async () => {
 		if (!speech.audioFilePath) return;
 
 		// 既存の音声オブジェクトがある場合
@@ -130,44 +131,73 @@ export default function SpeechReview({
 			}
 
 			// 一時停止中の音声を再開
-			audioRef.current.play().catch((error) => {
+			try {
+				await audioRef.current.play();
+				setIsPlaying(true);
+			} catch (error) {
 				console.error("Failed to play audio:", error);
 				toast.error("Failed to play audio");
 				// エラー時はaudioRefをクリアして次回再試行できるようにする
 				audioRef.current = null;
 				setIsPlaying(false);
-			});
-			setIsPlaying(true);
+			}
 			return;
 		}
 
 		// 新しい音声オブジェクトを作成
-		const audio = new Audio(speech.audioFilePath);
-		audioRef.current = audio;
+		setIsAudioLoading(true);
+		try {
+			const audio = new Audio();
 
-		audio.onended = () => {
-			setIsPlaying(false);
-			// 再生終了後もaudioRefを保持（ユーザーが再度再生ボタンを押した時に0秒から再生）
-		};
+			// モバイルブラウザ対応: preloadを設定
+			audio.preload = "auto";
 
-		audio.onerror = (e) => {
-			setIsPlaying(false);
-			console.error("Failed to load audio:", e);
-			toast.error("Failed to load audio");
-			// エラー時はaudioRefをクリアして次回再試行できるようにする
-			audioRef.current = null;
-		};
+			// イベントリスナーを先に設定
+			audio.onended = () => {
+				setIsPlaying(false);
+			};
 
-		audio.play().catch((error) => {
+			audio.onerror = (e) => {
+				setIsPlaying(false);
+				setIsAudioLoading(false);
+				console.error("Failed to load audio:", e);
+				toast.error("Failed to load audio");
+				audioRef.current = null;
+			};
+
+			// canplayイベントを待つ（モバイルで重要）
+			const canPlayPromise = new Promise<void>((resolve, reject) => {
+				const timeout = setTimeout(() => {
+					reject(new Error("Audio loading timeout"));
+				}, 10000);
+
+				audio.oncanplay = () => {
+					clearTimeout(timeout);
+					resolve();
+				};
+			});
+
+			// srcを設定してロード開始
+			audio.src = speech.audioFilePath;
+			audio.load();
+
+			audioRef.current = audio;
+
+			// 音声の準備ができるまで待つ
+			await canPlayPromise;
+			setIsAudioLoading(false);
+
+			// 再生開始
+			await audio.play();
+			setIsPlaying(true);
+		} catch (error) {
 			console.error("Failed to play audio:", error);
 			toast.error("Failed to play audio");
 			audioRef.current = null;
 			setIsPlaying(false);
-		});
-		setIsPlaying(true);
-	};
-
-	// ユーザー録音の開始
+			setIsAudioLoading(false);
+		}
+	}; // ユーザー録音の開始
 	const startUserRecording = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -671,9 +701,15 @@ export default function SpeechReview({
 									<button
 										type="button"
 										onClick={handlePlayAudio}
-										className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+										disabled={isAudioLoading}
+										className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 									>
-										{isPlaying ? (
+										{isAudioLoading ? (
+											<AiOutlineLoading3Quarters
+												size={18}
+												className="text-gray-600 animate-spin"
+											/>
+										) : isPlaying ? (
 											<BsPauseFill size={18} className="text-gray-600" />
 										) : (
 											<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
