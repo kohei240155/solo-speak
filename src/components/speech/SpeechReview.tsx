@@ -825,35 +825,59 @@ export default function SpeechReview({
 								<h3 className="text-xl font-semibold text-gray-900">
 									Your Speech
 								</h3>
-								{speech.audioFilePath && (
-									<button
-										type="button"
-										onClick={handlePlayAudio}
-										disabled={isAudioLoading}
-										className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-									>
-										{isAudioLoading ? (
-											<AiOutlineLoading3Quarters
-												size={18}
-												className="text-gray-600 animate-spin"
-											/>
-										) : isPlaying ? (
-											<BsPauseFill size={18} className="text-gray-600" />
-										) : (
-											<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
-										)}
-									</button>
-								)}
+								<div className="flex gap-2">
+									{speech.audioFilePath && (
+										<>
+											<a
+												href={speech.audioFilePath}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+											>
+												Open URL
+											</a>
+											<button
+												type="button"
+												onClick={handlePlayAudio}
+												disabled={isAudioLoading}
+												className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												{isAudioLoading ? (
+													<AiOutlineLoading3Quarters
+														size={18}
+														className="text-gray-600 animate-spin"
+													/>
+												) : isPlaying ? (
+													<BsPauseFill size={18} className="text-gray-600" />
+												) : (
+													<div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[7px] border-l-gray-600 border-b-[5px] border-b-transparent ml-1" />
+												)}
+											</button>
+										</>
+									)}
+								</div>
 							</div>
 
 							{/* デバッグ情報表示 */}
 							{audioDebugInfo.length > 0 && (
 								<div className="mb-4 p-3 bg-gray-100 border border-gray-300 rounded-lg">
-									<div className="text-xs font-mono text-gray-700 space-y-1">
+									<div className="text-xs font-mono text-gray-700 space-y-1 max-h-60 overflow-y-auto">
 										{audioDebugInfo.map((info, index) => (
 											<div key={index}>{info}</div>
 										))}
 									</div>
+								</div>
+							)}
+
+							{/* HTML Audio タグでのテスト再生 */}
+							{speech.audioFilePath && (
+								<div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg">
+									<p className="text-xs font-semibold mb-2">HTML Audio Test:</p>
+									<audio controls className="w-full" preload="metadata">
+										<source src={speech.audioFilePath} type="audio/wav" />
+										<source src={speech.audioFilePath} type="audio/mpeg" />
+										Your browser does not support the audio element.
+									</audio>
 								</div>
 							)}
 
