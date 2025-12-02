@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 							content: prompt,
 						},
 					],
-					max_completion_tokens: 10000,
+					max_completion_tokens: 5000,
 					// Structured Outputs使用
 					response_format: zodResponseFormat(
 						speechCorrectionResponseSchema,
@@ -173,15 +173,19 @@ export async function POST(request: NextRequest) {
 			JSON.parse(generatedContent),
 		);
 
-		// 添削成功時に残回数を減らす
-		await prisma.user.update({
-			where: { id: userId },
-			data: {
-				remainingSpeechCount: {
-					decrement: 1,
+		// 添削成功時に残回数を減らす（非同期で並列実行してレスポンス速度を向上）
+		prisma.user
+			.update({
+				where: { id: userId },
+				data: {
+					remainingSpeechCount: {
+						decrement: 1,
+					},
 				},
-			},
-		});
+			})
+			.catch((error) => {
+				console.error("Failed to update speech count:", error);
+			});
 
 		return NextResponse.json(result);
 	} catch (error) {
