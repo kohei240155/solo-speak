@@ -5,6 +5,7 @@ import { BiPlay, BiStop } from "react-icons/bi";
 import { IoCheckboxOutline } from "react-icons/io5";
 import { GiChart } from "react-icons/gi";
 import { RiSpeakLine } from "react-icons/ri";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { SpeechReviewResponseData } from "@/types/speech";
 import toast from "react-hot-toast";
 import SpeechStatusModal, {
@@ -68,6 +69,8 @@ export default function SpeechReview({
 	const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 	const [statuses, setStatuses] = useState<SpeechStatus[]>([]);
 	const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
+	const [isOpeningStatusModal, setIsOpeningStatusModal] = useState(false);
+	const [isStartingPractice, setIsStartingPractice] = useState(false);
 
 	// ユーザー録音用の状態
 	const [isRecording, setIsRecording] = useState(false);
@@ -340,10 +343,15 @@ export default function SpeechReview({
 
 	// センテンスプラクティスモードの開始
 	const handleStartPractice = async () => {
-		// センテンスデータを取得
-		await refetchSentences();
-		setViewMode("practice");
-		setCurrentPhraseIndex(0);
+		setIsStartingPractice(true);
+		try {
+			// センテンスデータを取得
+			await refetchSentences();
+			setViewMode("practice");
+			setCurrentPhraseIndex(0);
+		} finally {
+			setIsStartingPractice(false);
+		}
 	};
 
 	// カウントボタンのハンドラー
@@ -476,10 +484,15 @@ export default function SpeechReview({
 
 	// ステータスモーダルを開く
 	const handleOpenStatusModal = async () => {
-		if (statuses.length === 0) {
-			await fetchStatuses();
+		setIsOpeningStatusModal(true);
+		try {
+			if (statuses.length === 0) {
+				await fetchStatuses();
+			}
+			setIsStatusModalOpen(true);
+		} finally {
+			setIsOpeningStatusModal(false);
 		}
-		setIsStatusModalOpen(true);
 	};
 
 	// ノート保存処理
@@ -733,9 +746,14 @@ export default function SpeechReview({
 						<button
 							type="button"
 							onClick={handleOpenStatusModal}
-							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+							disabled={isOpeningStatusModal}
+							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							<AiOutlineLineChart size={24} />
+							{isOpeningStatusModal ? (
+								<AiOutlineLoading3Quarters size={24} className="animate-spin" />
+							) : (
+								<AiOutlineLineChart size={24} />
+							)}
 						</button>
 
 						{/* User Recording button (中央) - ユーザー録音 */}
@@ -770,9 +788,14 @@ export default function SpeechReview({
 						<button
 							type="button"
 							onClick={handleStartPractice}
-							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+							disabled={isStartingPractice}
+							className="w-14 h-14 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							<RiSpeakLine size={24} />
+							{isStartingPractice ? (
+								<AiOutlineLoading3Quarters size={24} className="animate-spin" />
+							) : (
+								<RiSpeakLine size={24} />
+							)}
 						</button>
 					</div>
 				</div>
