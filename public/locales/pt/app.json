@@ -151,6 +151,22 @@
 			"submitError": "Erro ao enviar a resposta"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "Idioma",
+			"targetPhrases": "Frases Alvo",
+			"optionsTitle": "Opções",
+			"excludeTodayPracticedLabel": "Excluir discursos praticados hoje",
+			"options": {
+				"lessPractice": "Menos Prática",
+				"lowStatus": "Status Baixo"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "Nenhum discurso encontrado que corresponda aos critérios",
+			"countError": "Ocorreu um erro ao obter a contagem de discursos"
+		}
+	},
 	"subscription": {
 		"status": "Status",
 		"nextBillingDate": "Próxima Data de Cobrança",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "Tem certeza de que deseja excluir esta situação?",
 			"warningMessage": "Esta ação não pode ser desfeita."
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "O título deve ter no máximo 50 caracteres",
+			"sentenceMaxLength": "Cada frase deve ter no máximo 500 caracteres",
+			"speechPlanMaxLength": "Por favor, insira dentro de 100 caracteres"
+		},
+		"notePlaceholder": "Anote livremente suas observações.",
+		"placeholders": {
+			"title": "Sobre os eventos de hoje",
+			"speechPlan": [
+				"Hoje foi um dia de trabalho normal.",
+				"Tive mais tempo concentrado pela manhã.",
+				"Fui caminhar no parque durante o almoço.",
+				"A tarde estava ocupada mas saí no horário.",
+				"O jantar com amigos foi agradável."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "O acesso ao microfone foi negado. Por favor, verifique as configurações do navegador.",
+			"transcribeFailed": "Falha ao transcrever o áudio",
+			"titleOrPlanRequired": "Título ou plano de discurso não foi inserido",
+			"languagesRequired": "Idioma de aprendizagem e idioma nativo não estão definidos",
+			"correctionFailed": "Falha ao corrigir o discurso"
+		},
+		"review": {
+			"micAccessDenied": "O acesso ao microfone não foi permitido",
+			"recordingTooShort": "A gravação deve ter pelo menos 10 segundos",
+			"recordingComplete": "Gravação completa!\nA reprodução contará para sua prática!",
+			"practiceTip": "Pratique até conseguir falar fluentemente.",
+			"feedbackTip": "Revise o feedback do seu discurso inicial.",
+			"noteTip": "Anote livremente suas observações."
 		}
 	}
 }

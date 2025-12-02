@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import BaseModal from "../common/BaseModal";
 import LoadingSpinner from "../common/LoadingSpinner";
 import AnimatedButton from "../common/AnimatedButton";
@@ -48,6 +49,7 @@ export default function EditSpeechModal({
 	onClose,
 	onRefresh,
 }: EditSpeechModalProps) {
+	const { t } = useTranslation("app");
 	const { session } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -209,11 +211,10 @@ export default function EditSpeechModal({
 						/>
 						{errors.title && (
 							<p className="text-red-500 text-xs mt-1">
-								タイトルは50文字以内で入力してください
+								{t("speech.validation.titleMaxLength")}
 							</p>
 						)}
 					</div>
-
 					{/* Sentences */}
 					<div className="mb-6 max-h-[400px] overflow-y-auto scrollbar-hide">
 						{fields.map((field, index) => (
@@ -259,13 +260,12 @@ export default function EditSpeechModal({
 								{(errors.sentences?.[index]?.learningLanguage ||
 									errors.sentences?.[index]?.nativeLanguage) && (
 									<p className="text-red-500 text-xs mt-1">
-										各文は500文字以内で入力してください
+										{t("speech.validation.sentenceMaxLength")}
 									</p>
 								)}
 							</div>
 						))}
 					</div>
-
 					{/* ボタン */}
 					<div className="flex gap-3 sticky bottom-0 bg-white pt-4">
 						<AnimatedButton

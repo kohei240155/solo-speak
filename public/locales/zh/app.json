@@ -151,6 +151,22 @@
 			"submitError": "提交答案时出错"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "语言",
+			"targetPhrases": "目标句子",
+			"optionsTitle": "选项",
+			"excludeTodayPracticedLabel": "排除今天练习的演讲",
+			"options": {
+				"lessPractice": "练习次数少",
+				"lowStatus": "状态低"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "未找到符合条件的演讲",
+			"countError": "获取演讲数量时发生错误"
+		}
+	},
 	"subscription": {
 		"status": "状态",
 		"nextBillingDate": "下次账单日期",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "您确定要删除此场景吗？",
 			"warningMessage": "此操作无法撤消。"
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "标题必须在50个字符以内",
+			"sentenceMaxLength": "每个句子必须在500个字符以内",
+			"speechPlanMaxLength": "请在100个字符以内输入"
+		},
+		"notePlaceholder": "自由记录您的观察和想法。",
+		"placeholders": {
+			"title": "关于今天的事件",
+			"speechPlan": [
+				"今天是正常的工作日。",
+				"我早上有更多集中的时间。",
+				"我午餐时去公园散步。",
+				"下午很忙但我准时下班。",
+				"和朋友的晚餐很愉快。"
+			]
+		},
+		"messages": {
+			"micAccessDenied": "麦克风访问被拒绝。请检查您的浏览器设置。",
+			"transcribeFailed": "音频转录失败",
+			"titleOrPlanRequired": "未输入标题或演讲计划",
+			"languagesRequired": "未设置学习语言和母语",
+			"correctionFailed": "演讲修正失败"
+		},
+		"review": {
+			"micAccessDenied": "未允许访问麦克风",
+			"recordingTooShort": "录音必须至少10秒",
+			"recordingComplete": "录音完成！\n播放将计入您的练习次数!",
+			"practiceTip": "练习直到您能流利地说出来。",
+			"feedbackTip": "查看您初次演讲的反馈。",
+			"noteTip": "自由记录您的观察。"
 		}
 	}
 }

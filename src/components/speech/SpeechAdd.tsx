@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { SentenceData, FeedbackData } from "@/types/speech";
 import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
@@ -48,6 +49,8 @@ export default function SpeechAdd({
 	onHasUnsavedChanges,
 	onCorrectionComplete,
 }: SpeechAddProps) {
+	const { t } = useTranslation("app");
+	// console.log(t("speech.placeholders.title"));
 	const {
 		remainingSpeechCount,
 		isLoading: isLoadingRemaining,
@@ -63,13 +66,9 @@ export default function SpeechAdd({
 	const [isCorrecting, setIsCorrecting] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-	const placeholders = [
-		"今日はいつも通り仕事だった。",
-		"午前中は集中できる時間が多かった。",
-		"昼休みに公園まで散歩に行き気分転換ができてよかった。",
-		"午後は少しバタバタしたけど、なんとか終わらせて定時に帰れた。",
-		"今日は早く寝て、明日に備えようと思う。",
-	];
+	const placeholders = t("speech.placeholders.speechPlan", {
+		returnObjects: true,
+	}) as string[];
 
 	const {
 		register,
@@ -175,9 +174,7 @@ export default function SpeechAdd({
 				});
 			}, 1000);
 		} catch {
-			alert(
-				"マイクへのアクセスが拒否されました。ブラウザの設定を確認してください。",
-			);
+			alert(t("speech.messages.micAccessDenied"));
 		}
 	}; // 録音停止
 	const stopRecording = () => {
@@ -300,7 +297,9 @@ export default function SpeechAdd({
 			await handleCorrection(data.text);
 		} catch (error) {
 			alert(
-				error instanceof Error ? error.message : "文字起こしに失敗しました",
+				error instanceof Error
+					? error.message
+					: t("speech.messages.transcribeFailed"),
 			);
 		} finally {
 			setIsTranscribing(false);
@@ -318,7 +317,7 @@ export default function SpeechAdd({
 				.filter((item) => item.length > 0);
 
 			if (!title || planItems.length === 0) {
-				throw new Error("タイトルまたはスピーチプランが入力されていません");
+				throw new Error(t("speech.messages.titleOrPlanRequired"));
 			}
 
 			// 言語名を取得（言語コードから表示名に変換）
@@ -330,7 +329,7 @@ export default function SpeechAdd({
 				: nativeLanguage || "";
 
 			if (!learningLangName || !nativeLangName) {
-				throw new Error("学習言語と母国語が設定されていません");
+				throw new Error(t("speech.messages.languagesRequired"));
 			}
 
 			const data = await api.post<{
@@ -365,7 +364,11 @@ export default function SpeechAdd({
 				});
 			}
 		} catch (error) {
-			alert(error instanceof Error ? error.message : "添削に失敗しました");
+			alert(
+				error instanceof Error
+					? error.message
+					: t("speech.messages.correctionFailed"),
+			);
 		} finally {
 			setIsCorrecting(false);
 		}
@@ -416,7 +419,7 @@ export default function SpeechAdd({
 				<h3 className="text-lg font-semibold text-gray-900 mb-2">Title</h3>
 				<textarea
 					{...register("title")}
-					placeholder="今日あったことの振り返り"
+					placeholder={t("speech.placeholders.title")}
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm focus:outline-none text-gray-900 placeholder-gray-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 overflow-hidden"
 					rows={1}
 					onInput={(e) => {
@@ -430,7 +433,7 @@ export default function SpeechAdd({
 				/>
 				{errors.title && (
 					<p className="text-red-500 text-xs mt-1">
-						タイトルは50文字以内で入力してください
+						{t("speech.validation.titleMaxLength")}
 					</p>
 				)}
 			</div>
@@ -474,7 +477,7 @@ export default function SpeechAdd({
 							</div>
 							{errors.speechPlanItems?.[index]?.value && (
 								<p className="text-red-500 text-xs mt-1">
-									100文字以内で入力してください
+									{t("speech.validation.speechPlanMaxLength")}
 								</p>
 							)}
 						</div>

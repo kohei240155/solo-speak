@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import { AiOutlineLineChart, AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill, BsFillMicFill } from "react-icons/bs";
 import { BiPlay, BiStop } from "react-icons/bi";
@@ -40,6 +41,7 @@ export default function SpeechReview({
 	setViewMode,
 	onRefetchSpeechById,
 }: SpeechReviewProps) {
+	const { t } = useTranslation("app");
 	const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 	const [activeTab, setActiveTab] = useState<"Script" | "Feedback" | "Note">(
 		"Script",
@@ -261,7 +263,7 @@ export default function SpeechReview({
 				});
 			}, 1000);
 		} catch {
-			alert("マイクへのアクセスが許可されていません");
+			alert(t("speech.review.micAccessDenied"));
 		}
 	};
 
@@ -281,7 +283,7 @@ export default function SpeechReview({
 
 			if (recordingDuration < 10) {
 				// 録音時間が10秒未満の場合
-				toast.error("録音時間が短すぎます");
+				toast.error(t("speech.review.recordingTooShort"));
 				// ストリームを停止
 				if (streamRef.current) {
 					streamRef.current.getTracks().forEach((track) => track.stop());
@@ -301,7 +303,7 @@ export default function SpeechReview({
 			setIsRecording(false);
 			// recordingStartTimeRefはonstopで使うのでここではクリアしない
 			// 録音完了後にトーストを表示
-			toast.success("録音完了！\n再生すると練習回数が加算されます！", {
+			toast.success(t("speech.review.recordingComplete"), {
 				duration: 5000,
 			});
 		}
@@ -652,7 +654,7 @@ export default function SpeechReview({
 				{activeTab === "Script" && (
 					<div className="space-y-6">
 						<p className="text-sm text-gray-700 mb-4">
-							流暢に話せるようになるまで練習しましょう。
+							{t("speech.review.practiceTip")}
 						</p>
 						<div>
 							<div className="flex items-center justify-between mb-3">
@@ -696,7 +698,7 @@ export default function SpeechReview({
 				{activeTab === "Feedback" && (
 					<div className="space-y-6">
 						<p className="text-sm text-gray-700 mb-4">
-							初回スピーチのフィードバックを確認しましょう。
+							{t("speech.review.feedbackTip")}
 						</p>
 						{/* Your Speech Section */}
 						<div>
@@ -781,7 +783,7 @@ export default function SpeechReview({
 				{activeTab === "Note" && (
 					<div className="space-y-4">
 						<p className="text-sm text-gray-700">
-							気づいたことを自由にメモしましょう。
+							{t("speech.review.noteTip")}
 						</p>
 						<textarea
 							value={notes}

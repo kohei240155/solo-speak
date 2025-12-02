@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import { AiOutlineCaretRight } from "react-icons/ai";
 import { BsPauseFill } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
@@ -33,6 +34,7 @@ export default function SpeechResult({
 	onNoteChange,
 	onHasUnsavedChanges,
 }: SpeechResultProps) {
+	const { t } = useTranslation("app");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
 		useState<SentenceData[]>(sentences);
@@ -311,7 +313,7 @@ export default function SpeechResult({
 						target.style.height = "auto";
 						target.style.height = `${target.scrollHeight}px`;
 					}}
-					placeholder="気づいたことを自由にメモしましょう。"
+					placeholder={t("speech.notePlaceholder")}
 					className="w-full border border-gray-300 rounded-md px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 overflow-hidden"
 					rows={4}
 				/>

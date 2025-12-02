@@ -151,6 +151,22 @@
 			"submitError": "Erreur lors de l'envoi de la réponse"
 		}
 	},
+	"review": {
+		"modal": {
+			"language": "Langue",
+			"targetPhrases": "Phrases Cibles",
+			"optionsTitle": "Options",
+			"excludeTodayPracticedLabel": "Exclure les discours pratiqués aujourd'hui",
+			"options": {
+				"lessPractice": "Moins de Pratique",
+				"lowStatus": "Statut Bas"
+			}
+		},
+		"messages": {
+			"noSpeechesAvailable": "Aucun discours trouvé correspondant aux critères",
+			"countError": "Une erreur s'est produite lors de la récupération du nombre de discours"
+		}
+	},
 	"subscription": {
 		"status": "Statut",
 		"nextBillingDate": "Prochaine Date de Facturation",
@@ -226,6 +242,39 @@
 		"delete": {
 			"confirmMessage": "Êtes-vous sûr de vouloir supprimer cette situation ?",
 			"warningMessage": "Cette action ne peut pas être annulée."
+		}
+	},
+	"speech": {
+		"validation": {
+			"titleMaxLength": "Le titre doit comporter un maximum de 50 caractères",
+			"sentenceMaxLength": "Chaque phrase doit comporter un maximum de 500 caractères",
+			"speechPlanMaxLength": "Veuillez saisir dans les 100 caractères"
+		},
+		"notePlaceholder": "Notez librement vos observations.",
+		"placeholders": {
+			"title": "À propos des événements d'aujourd'hui",
+			"speechPlan": [
+				"Aujourd'hui était une journée de travail normale.",
+				"J'ai eu plus de temps concentré le matin.",
+				"Je suis allé me promener au parc pendant le déjeuner.",
+				"L'après-midi était chargé mais je suis sorti à l'heure.",
+				"Le dîner avec des amis était agréable."
+			]
+		},
+		"messages": {
+			"micAccessDenied": "L'accès au microphone a été refusé. Veuillez vérifier les paramètres de votre navigateur.",
+			"transcribeFailed": "Échec de la transcription audio",
+			"titleOrPlanRequired": "Le titre ou le plan du discours n'est pas saisi",
+			"languagesRequired": "La langue d'apprentissage et la langue maternelle ne sont pas définies",
+			"correctionFailed": "Échec de la correction du discours"
+		},
+		"review": {
+			"micAccessDenied": "L'accès au microphone n'est pas autorisé",
+			"recordingTooShort": "L'enregistrement doit durer au moins 10 secondes",
+			"recordingComplete": "Enregistrement terminé !\nLa lecture comptera pour votre pratique !",
+			"practiceTip": "Pratiquez jusqu'à ce que vous puissiez parler couramment.",
+			"feedbackTip": "Consultez les commentaires de votre premier discours.",
+			"noteTip": "Notez librement vos observations."
 		}
 	}
 }
