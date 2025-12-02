@@ -13,12 +13,25 @@ export async function uploadSpeechAudio(
 	audioBlob: Blob,
 ): Promise<string> {
 	const supabase = createServerSupabaseClient();
-	const filePath = `${userId}/${speechId}/audio.wav`;
+
+	// Blobのタイプから拡張子を決定
+	const contentType = audioBlob.type || "audio/webm";
+	let extension = "webm";
+
+	if (contentType.includes("mp4")) {
+		extension = "mp4";
+	} else if (contentType.includes("wav")) {
+		extension = "wav";
+	} else if (contentType.includes("ogg")) {
+		extension = "ogg";
+	}
+
+	const filePath = `${userId}/${speechId}/audio.${extension}`;
 
 	const { data, error } = await supabase.storage
 		.from("speeches")
 		.upload(filePath, audioBlob, {
-			contentType: "audio/wav",
+			contentType,
 			upsert: true, // 既存ファイルを上書き
 		});
 
