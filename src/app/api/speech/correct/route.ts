@@ -39,8 +39,8 @@ const speechCorrectionResponseSchema = z.object({
 				content: z.string().describe("具体的な改善点の内容（母国語で記述）"),
 			}),
 		)
-		.max(5)
-		.describe("改善点のフィードバック（最大5項目、母国語で記述）"),
+		.max(3)
+		.describe("改善点のフィードバック（最大3項目、母国語で記述）"),
 });
 
 /**
