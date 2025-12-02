@@ -99,7 +99,12 @@ export default function SpeechAdd({
 		!titleValue ||
 		titleValue.trim() === "" ||
 		(titleValue && titleValue.length > 50) ||
-		speechPlanItemsValue?.some((item) => item.value && item.value.length > 100);
+		speechPlanItemsValue?.some(
+			(item) => item.value && item.value.length > 100,
+		) ||
+		!speechPlanItemsValue?.some(
+			(item) => item.value && item.value.trim().length > 0,
+		);
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const streamRef = useRef<MediaStream | null>(null);
