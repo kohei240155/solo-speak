@@ -47,6 +47,7 @@ export default function SpeechReview({
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isAudioLoading, setIsAudioLoading] = useState(false);
+	const [audioDebugInfo, setAudioDebugInfo] = useState<string[]>([]);
 
 	// React Query hooks
 	const saveNotesMutation = useSaveSpeechNotes();
@@ -121,6 +122,7 @@ export default function SpeechReview({
 	// 音声再生/一時停止
 	const handlePlayAudio = async () => {
 		if (!speech.audioFilePath) {
+			setAudioDebugInfo((prev) => [...prev, "❌ No audio file path available"]);
 			toast.error("No audio file path available");
 			return;
 		}
@@ -130,7 +132,7 @@ export default function SpeechReview({
 			if (isPlaying) {
 				audioRef.current.pause();
 				setIsPlaying(false);
-				toast.success("Audio paused");
+				setAudioDebugInfo((prev) => [...prev, "⏸️ Audio paused"]);
 				return;
 			}
 
@@ -138,52 +140,63 @@ export default function SpeechReview({
 			try {
 				await audioRef.current.play();
 				setIsPlaying(true);
-				toast.success("Audio resumed");
+				setAudioDebugInfo((prev) => [...prev, "▶️ Audio resumed"]);
 			} catch (error) {
 				console.error("Failed to play audio:", error);
+				setAudioDebugInfo((prev) => [...prev, `❌ Failed to resume: ${error}`]);
 				toast.error("Failed to play audio");
-				// エラー時はaudioRefをクリアして次回再試行できるようにする
 				audioRef.current = null;
 				setIsPlaying(false);
 			}
 			return;
 		}
 
+		// デバッグ情報をリセット
+		setAudioDebugInfo([]);
+
 		// 新しい音声オブジェクトを作成（Safari対応：直接URLを使用）
 		setIsAudioLoading(true);
-		toast("Creating audio element...", { duration: 2000 });
+		setAudioDebugInfo((prev) => [...prev, "🔄 Creating audio element..."]);
 
 		try {
 			// Safari対応：fetch/blob経由をやめて直接URLを使用
 			console.log("Audio URL:", speech.audioFilePath);
-			toast(`Audio URL loaded (${speech.audioFilePath.length} chars)`, {
-				duration: 3000,
-			});
+			setAudioDebugInfo((prev) => [
+				...prev,
+				`📋 URL length: ${speech?.audioFilePath?.length} chars`,
+			]);
+			setAudioDebugInfo((prev) => [
+				...prev,
+				`🔗 URL preview: ${speech.audioFilePath?.substring(0, 80)}...`,
+			]);
 
 			const audio = new Audio(speech.audioFilePath);
 			audioRef.current = audio;
 
-			toast("Audio element created", { duration: 2000 });
+			setAudioDebugInfo((prev) => [...prev, "✅ Audio element created"]);
 
 			// イベントリスナーを設定
 			audio.onloadstart = () => {
 				console.log("Audio load started");
-				toast("Audio loading started...", { duration: 2000 });
+				setAudioDebugInfo((prev) => [...prev, "📥 Audio loading started..."]);
 			};
 
 			audio.onloadedmetadata = () => {
 				console.log("Audio metadata loaded");
-				toast("Audio metadata loaded", { duration: 2000 });
+				setAudioDebugInfo((prev) => [
+					...prev,
+					`📊 Metadata loaded (duration: ${audio.duration}s)`,
+				]);
 			};
 
 			audio.oncanplay = () => {
 				console.log("Audio can play");
-				toast("Audio ready to play!", { duration: 2000 });
+				setAudioDebugInfo((prev) => [...prev, "✅ Audio ready to play!"]);
 			};
 
 			audio.onended = () => {
 				setIsPlaying(false);
-				toast.success("Audio ended");
+				setAudioDebugInfo((prev) => [...prev, "🏁 Audio ended"]);
 			};
 
 			audio.onerror = (e) => {
@@ -208,8 +221,14 @@ export default function SpeechReview({
 				};
 
 				const errorMsg = errorCode
-					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`
-					: `Failed to load audio\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`;
+					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}`
+					: `Failed to load audio`;
+
+				setAudioDebugInfo((prev) => [...prev, `❌ ${errorMsg}`]);
+				setAudioDebugInfo((prev) => [
+					...prev,
+					`📊 Network: ${audio.networkState}, Ready: ${audio.readyState}`,
+				]);
 
 				toast.error(errorMsg, { duration: 8000 });
 
@@ -218,7 +237,7 @@ export default function SpeechReview({
 
 			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
 			console.log("Attempting to play...");
-			toast("Calling play()...", { duration: 2000 });
+			setAudioDebugInfo((prev) => [...prev, "▶️ Calling play()..."]);
 
 			const playPromise = audio.play();
 
@@ -228,7 +247,7 @@ export default function SpeechReview({
 						console.log("Play promise resolved");
 						setIsPlaying(true);
 						setIsAudioLoading(false);
-						toast.success("Audio playing!", { duration: 2000 });
+						setAudioDebugInfo((prev) => [...prev, "✅ Audio playing!"]);
 					})
 					.catch((error) => {
 						console.error("Play promise rejected:", error);
@@ -237,7 +256,14 @@ export default function SpeechReview({
 
 						// Safari用の詳細エラーメッセージ
 						const urlPreview = speech.audioFilePath?.substring(0, 100) || "N/A";
-						const errorDetails = `Play failed: ${error.name}\n${error.message}\nURL: ${urlPreview}...`;
+						setAudioDebugInfo((prev) => [
+							...prev,
+							`❌ Play failed: ${error.name}`,
+						]);
+						setAudioDebugInfo((prev) => [...prev, `📝 ${error.message}`]);
+						setAudioDebugInfo((prev) => [...prev, `🔗 URL: ${urlPreview}...`]);
+
+						const errorDetails = `Play failed: ${error.name}\n${error.message}`;
 						toast.error(errorDetails, { duration: 8000 });
 
 						audioRef.current = null;
@@ -248,14 +274,16 @@ export default function SpeechReview({
 				console.log("Play returned undefined (old browser)");
 				setIsPlaying(true);
 				setIsAudioLoading(false);
-				toast.success("Audio playing (sync)", { duration: 2000 });
+				setAudioDebugInfo((prev) => [...prev, "✅ Audio playing (sync)"]);
 			}
 		} catch (error) {
 			console.error("Exception in handlePlayAudio:", error);
 			const errorMsg =
 				error instanceof Error
-					? `Exception: ${error.name}\n${error.message}\nStack: ${error.stack?.substring(0, 100)}`
-					: `Failed to play audio: ${String(error)}`;
+					? `${error.name}: ${error.message}`
+					: String(error);
+			setAudioDebugInfo((prev) => [...prev, `❌ Exception: ${errorMsg}`]);
+
 			toast.error(errorMsg, { duration: 8000 });
 			audioRef.current = null;
 			setIsPlaying(false);
@@ -781,6 +809,18 @@ export default function SpeechReview({
 									</button>
 								)}
 							</div>
+
+							{/* デバッグ情報表示 */}
+							{audioDebugInfo.length > 0 && (
+								<div className="mb-4 p-3 bg-gray-100 border border-gray-300 rounded-lg">
+									<div className="text-xs font-mono text-gray-700 space-y-1">
+										{audioDebugInfo.map((info, index) => (
+											<div key={index}>{info}</div>
+										))}
+									</div>
+								</div>
+							)}
+
 							<div className="border border-gray-300 rounded-lg p-4 bg-white">
 								{speech.firstSpeechText ? (
 									<p className="text-sm text-gray-900 whitespace-pre-wrap">
