@@ -141,7 +141,6 @@ model Speech {
   nativeLanguageId   String    @map("native_language_id")
   statusId           String    @map("status_id")
   firstSpeechText    String    @map("first_speech_text")
-  audioFilePath      String?   @map("audio_file_path")
   notes              String?
   practiceCount      Int       @default(0) @map("practice_count")
   lastPracticedAt    DateTime? @map("last_practiced_at")

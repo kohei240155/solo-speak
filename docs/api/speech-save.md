@@ -36,7 +36,6 @@ interface SaveSpeechRequestBody {
 	learningLanguageId: string; // 学習言語ID（必須）
 	nativeLanguageId: string; // 母国語ID（必須）
 	firstSpeechText: string; // 最初に話したスピーチテキスト（必須）
-	audioBlob?: Blob | null; // 音声データ（任意）
 	notes?: string; // メモ（任意）
 
 	// スピーチプラン
@@ -54,31 +53,6 @@ interface SaveSpeechRequestBody {
 		content: string; // フィードバック内容（必須、1-2000文字）
 	}>; // 任意
 }
-```
-
-#### 音声ファイルの扱い
-
-- 音声データがある場合は、FormDataとして送信
-- `audioBlob`をファイルとして送信し、他のデータは`data`フィールドにJSON文字列として含める
-
-```typescript
-const formData = new FormData();
-if (audioBlob) {
-	formData.append("audio", audioBlob, "speech.wav");
-}
-formData.append(
-	"data",
-	JSON.stringify({
-		title,
-		learningLanguageId,
-		nativeLanguageId,
-		firstSpeechText,
-		notes,
-		speechPlans,
-		sentences,
-		feedback,
-	}),
-);
 ```
 
 ### レスポンス
@@ -102,7 +76,6 @@ interface SaveSpeechResponseData {
 			code: string;
 		};
 		firstSpeechText: string;
-		audioFilePath?: string; // 音声ファイルのパス（保存された場合）
 		notes?: string;
 		status: {
 			id: string;
@@ -195,7 +168,6 @@ interface SaveSpeechResponseData {
 1. **Speechレコードの作成**
    - ユーザーID、タイトル、言語、初回スピーチテキスト、ステータスを保存
    - ステータスは初期状態として設定（例: "draft" または "completed"）
-   - 音声ファイルがある場合は保存してパスを記録
 
 2. **SpeechPlanレコードの作成**
    - 各スピーチプランを保存（speechIdと紐付け）
@@ -216,23 +188,6 @@ interface SaveSpeechResponseData {
 
 ---
 
-## ファイルストレージ
-
-### 音声ファイルの保存先
-
-- パス形式: `/uploads/speeches/{userId}/{speechId}/audio.wav`
-- ファイル名: `audio.wav`（または元のファイル拡張子）
-- 最大ファイルサイズ: 10MB
-
-### サポートされる音声形式
-
-- WAV
-- MP3
-- WebM
-- OGG
-
----
-
 ## 使用例
 
 ### クライアント側の実装例
@@ -243,7 +198,6 @@ const saveSpeech = async (speechData: {
 	learningLanguageId: string;
 	nativeLanguageId: string;
 	firstSpeechText: string;
-	audioBlob?: Blob | null;
 	notes?: string;
 	speechPlans: string[];
 	sentences: Array<{
@@ -255,20 +209,12 @@ const saveSpeech = async (speechData: {
 		content: string;
 	}>;
 }) => {
-	const formData = new FormData();
-
-	// 音声ファイルがある場合は追加
-	if (speechData.audioBlob) {
-		formData.append("audio", speechData.audioBlob, "speech.wav");
-	}
-
-	// その他のデータをJSON文字列として追加
-	const { audioBlob, ...restData } = speechData;
-	formData.append("data", JSON.stringify(restData));
-
 	const response = await fetch("/api/speech/save", {
 		method: "POST",
-		body: formData,
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(speechData),
 	});
 
 	if (!response.ok) {
@@ -287,9 +233,8 @@ const saveSpeech = async (speechData: {
 1. **認証必須**: このAPIはログインユーザーのみ使用可能
 2. **スピーチ回数制限**: ユーザーの`remainingSpeechCount`が0の場合は保存できない
 3. **トランザクション**: すべてのデータ保存は単一のトランザクション内で実行される
-4. **音声ファイル**: 音声ファイルはオプションだが、指定した場合は正しい形式である必要がある
-5. **フレーズの順序**: フレーズは配列の順序に従って`speechOrder`が自動的に割り当てられる（1から開始）
-6. **デフォルトレベル**: 新規作成されるフレーズには自動的にデフォルトのphraseLevelIdが設定される
+4. **フレーズの順序**: フレーズは配列の順序に従って`speechOrder`が自動的に割り当てられる（1から開始）
+5. **デフォルトレベル**: 新規作成されるフレーズには自動的にデフォルトのphraseLevelIdが設定される
 
 ---
 

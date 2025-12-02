@@ -43,7 +43,6 @@ interface SpeechReviewResponseData {
 			description?: string;
 		};
 		firstSpeechText: string; // 最初に話したときのテキスト
-		audioFilePath: string | null; // 音声ファイルのURL
 		notes: string | null; // メモ/Note
 		lastPracticedAt: string | null; // 最後の練習日時（ISO 8601形式）
 		createdAt: string; // 作成日時（ISO 8601形式）
@@ -104,7 +103,6 @@ interface SpeechReviewResponseData {
 - 指定された学習言語のスピーチのみをフィルタリング
 - 各スピーチに紐づくフレーズデータを全件取得（speechOrderでソート）
 - 各スピーチに紐づくフィードバックデータを全件取得
-- 音声ファイルのパスが存在する場合は完全なURLに変換して返却
 
 ## データ取得ロジック
 
@@ -225,14 +223,12 @@ const data = await response.json();
    - タイトル表示
    - 練習回数、ステータス表示
    - 最初のスピーチテキスト表示
-   - 音声再生機能
    - フレーズ一覧表示（原文と和訳）
    - フィードバック表示
    - メモ表示・編集
 
 ## 注意事項
 
-- 音声ファイルのパスは、Supabase Storageなどの実際のURLに変換して返却する必要があります
 - フィルター条件によっては該当するスピーチが存在しない場合があり、その場合は `speech: null` を返します
 - 条件に合致するスピーチが複数ある場合は、ソート条件に基づいて最初の1件のみを返します
 - フレーズとフィードバックのデータ量が多い場合、レスポンスサイズが大きくなる可能性があります
