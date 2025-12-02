@@ -120,13 +120,17 @@ export default function SpeechReview({
 
 	// 音声再生/一時停止
 	const handlePlayAudio = async () => {
-		if (!speech.audioFilePath) return;
+		if (!speech.audioFilePath) {
+			toast.error("No audio file path available");
+			return;
+		}
 
 		// 既存の音声オブジェクトがある場合
 		if (audioRef.current) {
 			if (isPlaying) {
 				audioRef.current.pause();
 				setIsPlaying(false);
+				toast.success("Audio paused");
 				return;
 			}
 
@@ -134,6 +138,7 @@ export default function SpeechReview({
 			try {
 				await audioRef.current.play();
 				setIsPlaying(true);
+				toast.success("Audio resumed");
 			} catch (error) {
 				console.error("Failed to play audio:", error);
 				toast.error("Failed to play audio");
@@ -146,14 +151,39 @@ export default function SpeechReview({
 
 		// 新しい音声オブジェクトを作成（Safari対応：直接URLを使用）
 		setIsAudioLoading(true);
+		toast("Creating audio element...", { duration: 2000 });
+
 		try {
 			// Safari対応：fetch/blob経由をやめて直接URLを使用
+			console.log("Audio URL:", speech.audioFilePath);
+			toast(`Audio URL loaded (${speech.audioFilePath.length} chars)`, {
+				duration: 3000,
+			});
+
 			const audio = new Audio(speech.audioFilePath);
 			audioRef.current = audio;
 
+			toast("Audio element created", { duration: 2000 });
+
 			// イベントリスナーを設定
+			audio.onloadstart = () => {
+				console.log("Audio load started");
+				toast("Audio loading started...", { duration: 2000 });
+			};
+
+			audio.onloadedmetadata = () => {
+				console.log("Audio metadata loaded");
+				toast("Audio metadata loaded", { duration: 2000 });
+			};
+
+			audio.oncanplay = () => {
+				console.log("Audio can play");
+				toast("Audio ready to play!", { duration: 2000 });
+			};
+
 			audio.onended = () => {
 				setIsPlaying(false);
+				toast.success("Audio ended");
 			};
 
 			audio.onerror = (e) => {
@@ -181,19 +211,24 @@ export default function SpeechReview({
 					? `${errorMessages[errorCode] || `Unknown error (code: ${errorCode})`}\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`
 					: `Failed to load audio\nNetwork: ${audio.networkState}, Ready: ${audio.readyState}`;
 
-				toast.error(errorMsg, { duration: 6000 });
+				toast.error(errorMsg, { duration: 8000 });
 
 				audioRef.current = null;
 			};
 
 			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
+			console.log("Attempting to play...");
+			toast("Calling play()...", { duration: 2000 });
+
 			const playPromise = audio.play();
 
 			if (playPromise !== undefined) {
 				playPromise
 					.then(() => {
+						console.log("Play promise resolved");
 						setIsPlaying(true);
 						setIsAudioLoading(false);
+						toast.success("Audio playing!", { duration: 2000 });
 					})
 					.catch((error) => {
 						console.error("Play promise rejected:", error);
@@ -203,15 +238,17 @@ export default function SpeechReview({
 						// Safari用の詳細エラーメッセージ
 						const urlPreview = speech.audioFilePath?.substring(0, 100) || "N/A";
 						const errorDetails = `Play failed: ${error.name}\n${error.message}\nURL: ${urlPreview}...`;
-						toast.error(errorDetails, { duration: 6000 });
+						toast.error(errorDetails, { duration: 8000 });
 
 						audioRef.current = null;
 						setIsPlaying(false);
 						setIsAudioLoading(false);
 					});
 			} else {
+				console.log("Play returned undefined (old browser)");
 				setIsPlaying(true);
 				setIsAudioLoading(false);
+				toast.success("Audio playing (sync)", { duration: 2000 });
 			}
 		} catch (error) {
 			console.error("Exception in handlePlayAudio:", error);
@@ -219,7 +256,7 @@ export default function SpeechReview({
 				error instanceof Error
 					? `Exception: ${error.name}\n${error.message}\nStack: ${error.stack?.substring(0, 100)}`
 					: `Failed to play audio: ${String(error)}`;
-			toast.error(errorMsg, { duration: 6000 });
+			toast.error(errorMsg, { duration: 8000 });
 			audioRef.current = null;
 			setIsPlaying(false);
 			setIsAudioLoading(false);
