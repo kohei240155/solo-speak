@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
 	},
 
 	// 開発環境でのChunkLoadError対策
-	webpack: (config, { dev }) => {
+	webpack: (config, { dev, isServer }) => {
 		if (dev) {
 			// 開発環境でのチャンク読み込みを安定化
 			config.optimization = {
@@ -44,6 +44,18 @@ const nextConfig: NextConfig = {
 				},
 			};
 		}
+
+		// サーバーサイドでffmpegとfluent-ffmpegを外部化
+		if (isServer) {
+			config.externals = config.externals || [];
+			if (Array.isArray(config.externals)) {
+				config.externals.push({
+					"fluent-ffmpeg": "commonjs fluent-ffmpeg",
+					"@ffmpeg-installer/ffmpeg": "commonjs @ffmpeg-installer/ffmpeg",
+				});
+			}
+		}
+
 		return config;
 	},
 
