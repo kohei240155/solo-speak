@@ -147,14 +147,23 @@ export default function SpeechReview({
 		// 新しい音声オブジェクトを作成
 		setIsAudioLoading(true);
 		try {
-			const audio = new Audio();
+			// 署名付きURLから音声データを取得
+			const response = await fetch(speech.audioFilePath);
+			if (!response.ok) {
+				throw new Error(`Failed to fetch audio: ${response.status}`);
+			}
 
-			// モバイルブラウザ対応: preloadを設定
-			audio.preload = "auto";
+			// BlobとしてダウンロードしてURL作成（モバイル対応）
+			const audioBlob = await response.blob();
+			const audioUrl = URL.createObjectURL(audioBlob);
 
-			// イベントリスナーを先に設定
+			const audio = new Audio(audioUrl);
+			audioRef.current = audio;
+
+			// イベントリスナーを設定
 			audio.onended = () => {
 				setIsPlaying(false);
+				URL.revokeObjectURL(audioUrl);
 			};
 
 			audio.onerror = (e) => {
@@ -163,33 +172,33 @@ export default function SpeechReview({
 				console.error("Failed to load audio:", e);
 				toast.error("Failed to load audio");
 				audioRef.current = null;
+				URL.revokeObjectURL(audioUrl);
 			};
 
-			// canplayイベントを待つ（モバイルで重要）
-			const canPlayPromise = new Promise<void>((resolve, reject) => {
-				const timeout = setTimeout(() => {
-					reject(new Error("Audio loading timeout"));
-				}, 10000);
-
-				audio.oncanplay = () => {
-					clearTimeout(timeout);
-					resolve();
-				};
-			});
-
-			// srcを設定してロード開始
-			audio.src = speech.audioFilePath;
+			// モバイル対応: ユーザーインタラクション内でload()とplay()を呼ぶ
 			audio.load();
 
-			audioRef.current = audio;
+			// すぐにplay()を呼び出す（モバイルで重要）
+			const playPromise = audio.play();
 
-			// 音声の準備ができるまで待つ
-			await canPlayPromise;
-			setIsAudioLoading(false);
-
-			// 再生開始
-			await audio.play();
-			setIsPlaying(true);
+			if (playPromise !== undefined) {
+				playPromise
+					.then(() => {
+						setIsPlaying(true);
+						setIsAudioLoading(false);
+					})
+					.catch((error) => {
+						console.error("Failed to play audio:", error);
+						toast.error("Failed to play audio");
+						audioRef.current = null;
+						setIsPlaying(false);
+						setIsAudioLoading(false);
+						URL.revokeObjectURL(audioUrl);
+					});
+			} else {
+				setIsPlaying(true);
+				setIsAudioLoading(false);
+			}
 		} catch (error) {
 			console.error("Failed to play audio:", error);
 			toast.error("Failed to play audio");
