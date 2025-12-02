@@ -102,6 +102,7 @@ export default function SpeechAddPage() {
 					feedback: correctionResult.feedback,
 				},
 				correctionResult.audioBlob,
+				correctionResult.audioMimeType,
 			);
 
 			toast.success("Speech saved successfully!");

@@ -19,6 +19,7 @@ export interface CorrectionResult {
 	sentences: SentenceData[];
 	feedback: FeedbackData[];
 	audioBlob: Blob | null;
+	audioMimeType?: string;
 	note: string;
 }
 
@@ -55,6 +56,7 @@ export default function SpeechAdd({
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingTime, setRecordingTime] = useState(0);
 	const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+	const [audioMimeType, setAudioMimeType] = useState<string>("audio/webm");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isTranscribing, setIsTranscribing] = useState(false);
 	const [transcribedText, setTranscribedText] = useState<string>("");
@@ -125,7 +127,18 @@ export default function SpeechAdd({
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 			streamRef.current = stream;
 
-			const mediaRecorder = new MediaRecorder(stream);
+			// Safari/iOSに対応するため、サポートされているMIMEタイプを使用
+			let mimeType = "audio/webm";
+			if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+				mimeType = "audio/webm;codecs=opus";
+			} else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+				mimeType = "audio/mp4";
+			} else if (MediaRecorder.isTypeSupported("audio/aac")) {
+				mimeType = "audio/aac";
+			}
+			setAudioMimeType(mimeType);
+
+			const mediaRecorder = new MediaRecorder(stream, { mimeType });
 			mediaRecorderRef.current = mediaRecorder;
 
 			const chunks: Blob[] = [];
@@ -137,7 +150,7 @@ export default function SpeechAdd({
 			};
 
 			mediaRecorder.onstop = () => {
-				const blob = new Blob(chunks, { type: "audio/webm" });
+				const blob = new Blob(chunks, { type: mimeType });
 				setAudioBlob(blob);
 
 				// ストリームを停止
@@ -351,6 +364,7 @@ export default function SpeechAdd({
 					sentences: data.sentences,
 					feedback: data.feedback,
 					audioBlob: audioBlob,
+					audioMimeType: audioMimeType,
 					note: noteValue || "",
 				});
 			}
