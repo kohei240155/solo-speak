@@ -90,19 +90,16 @@ export default function SpeechAddPage() {
 
 		setIsSaving(true);
 		try {
-			const result = await saveSpeech(
-				{
-					title: correctionResult.title,
-					learningLanguageId: userSettings.defaultLearningLanguageId,
-					nativeLanguageId: userSettings.nativeLanguageId,
-					firstSpeechText: correctionResult.yourSpeech,
-					notes: correctionResult.note,
-					speechPlans: correctionResult.speechPlan,
-					sentences: correctionResult.sentences,
-					feedback: correctionResult.feedback,
-				},
-				correctionResult.audioBlob,
-			);
+			const result = await saveSpeech({
+				title: correctionResult.title,
+				learningLanguageId: userSettings.defaultLearningLanguageId,
+				nativeLanguageId: userSettings.nativeLanguageId,
+				firstSpeechText: correctionResult.yourSpeech,
+				notes: correctionResult.note,
+				speechPlans: correctionResult.speechPlan,
+				sentences: correctionResult.sentences,
+				feedback: correctionResult.feedback,
+			});
 
 			toast.success("Speech saved successfully!");
 
