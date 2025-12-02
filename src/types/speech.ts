@@ -37,6 +37,7 @@ export interface SaveSpeechResponseData {
 			code: string;
 		};
 		firstSpeechText: string;
+		audioFilePath?: string;
 		notes?: string;
 		status: {
 			id: string;
@@ -147,6 +148,7 @@ export interface SpeechReviewResponseData {
 			name: string;
 		};
 		firstSpeechText: string;
+		audioFilePath: string | null;
 		notes: string | null;
 		lastPracticedAt: string | null;
 		createdAt: string;

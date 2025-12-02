@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateRequest } from "@/utils/api-helpers";
+import { uploadSpeechAudio } from "@/utils/storage-helpers";
 import { prisma } from "@/utils/prisma";
 import { SaveSpeechRequestBody, SaveSpeechResponseData } from "@/types/speech";
 import { ApiErrorResponse } from "@/types/api";
+import { convertWebMToWav } from "@/utils/audio-converter";
 
 // バリデーションスキーマ
 const sentenceSchema = z.object({
@@ -42,13 +44,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 		const userId = authResult.user.id;
 
-		// リクエストボディのパース
-		const body = await request.json();
+		// FormDataの解析
+		const formData = await request.formData();
+		const dataString = formData.get("data") as string;
+		const audioFile = formData.get("audio") as File | null;
 
-		// JSONデータのバリデーション
+		if (!dataString) {
+			const errorResponse: ApiErrorResponse = {
+				error: "Data field is required",
+			};
+			return NextResponse.json(errorResponse, { status: 400 });
+		}
+
+		// JSONデータのパース
 		let parsedData: SaveSpeechRequestBody;
 		try {
-			parsedData = saveSpeechSchema.parse(body);
+			const rawData = JSON.parse(dataString);
+			parsedData = saveSpeechSchema.parse(rawData);
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				const errorResponse: ApiErrorResponse = {
@@ -152,7 +164,48 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				},
 			});
 
-			// 2. SpeechPlanレコードを作成
+			// 2. 音声ファイルのアップロード（ある場合）
+			let audioFilePath: string | undefined;
+			if (audioFile) {
+				try {
+					const audioBuffer = await audioFile.arrayBuffer();
+					let audioBlob: Blob;
+
+					// WebMファイルの場合はWAVに変換
+					if (
+						audioFile.type === "audio/webm" ||
+						audioFile.name.endsWith(".webm")
+					) {
+						try {
+							const wavBuffer = await convertWebMToWav(
+								Buffer.from(audioBuffer),
+							);
+
+							// BufferをUint8Arrayに変換してBlobを作成
+							audioBlob = new Blob([new Uint8Array(wavBuffer)], {
+								type: "audio/wav",
+							});
+						} catch (conversionError) {
+							console.error("Audio conversion failed:", conversionError);
+							// フォールバック：オリジナルファイルをアップロード
+							audioBlob = new Blob([audioBuffer], { type: audioFile.type });
+						}
+					} else {
+						audioBlob = new Blob([audioBuffer], { type: audioFile.type });
+					}
+
+					audioFilePath = await uploadSpeechAudio(userId, speech.id, audioBlob);
+
+					// Speechレコードを更新して音声パスを保存
+					await tx.speech.update({
+						where: { id: speech.id },
+						data: { audioFilePath },
+					});
+				} catch (error) {
+					console.error("Failed to upload audio:", error);
+					// 音声アップロードの失敗は致命的ではないため、続行
+				}
+			} // 3. SpeechPlanレコードを作成
 			const speechPlans = await Promise.all(
 				parsedData.speechPlans.map((planContent) =>
 					tx.speechPlan.create({
@@ -164,7 +217,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				),
 			);
 
-			// 3. Phraseレコードを作成
+			// 4. Phraseレコードを作成
 			const phrases = await Promise.all(
 				parsedData.sentences.map((sentence, index) =>
 					tx.phrase.create({
@@ -181,7 +234,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				),
 			);
 
-			// 4. SpeechFeedbackレコードを作成
+			// 5. SpeechFeedbackレコードを作成
 			const feedbacks = await Promise.all(
 				parsedData.feedback.map((fb) =>
 					tx.speechFeedback.create({
@@ -195,7 +248,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			);
 
 			return {
-				speech,
+				speech: {
+					...speech,
+					audioFilePath,
+				},
 				speechPlans,
 				phrases,
 				feedbacks,
@@ -219,6 +275,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 					code: result.speech.nativeLanguage.code,
 				},
 				firstSpeechText: result.speech.firstSpeechText,
+				audioFilePath: result.speech.audioFilePath || undefined,
 				notes: result.speech.notes || undefined,
 				status: {
 					id: result.speech.status.id,

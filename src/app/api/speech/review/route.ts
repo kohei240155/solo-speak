@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { ApiErrorResponse } from "@/types/api";
 import { prisma } from "@/utils/prisma";
+import { getSpeechAudioSignedUrl } from "@/utils/storage-helpers";
 
 /**
  * 復習用スピーチデータ取得APIエンドポイント
@@ -193,6 +194,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			});
 		}
 
+		// 音声ファイルのURLを取得
+		let audioUrl: string | null = null;
+		if (speech.audioFilePath) {
+			try {
+				audioUrl = await getSpeechAudioSignedUrl(speech.audioFilePath);
+			} catch (error) {
+				console.error("Error getting audio URL:", error);
+				// 音声URL取得失敗時はnullのまま続行
+			}
+		}
+
 		// レスポンスデータの変換
 		const responseData = {
 			success: true,
@@ -216,6 +228,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					name: speech.learningLanguage.name,
 				},
 				firstSpeechText: speech.firstSpeechText,
+				audioFilePath: audioUrl,
 				notes: speech.notes,
 				lastPracticedAt: speech.lastPracticedAt
 					? speech.lastPracticedAt.toISOString()
