@@ -144,41 +144,39 @@ export default function SpeechReview({
 			return;
 		}
 
-		// 新しい音声オブジェクトを作成
+		// 新しい音声オブジェクトを作成（Safari対応：直接URLを使用）
 		setIsAudioLoading(true);
 		try {
-			// 署名付きURLから音声データを取得
-			const response = await fetch(speech.audioFilePath);
-			if (!response.ok) {
-				throw new Error(`Failed to fetch audio: ${response.status}`);
-			}
-
-			// BlobとしてダウンロードしてURL作成（モバイル対応）
-			const audioBlob = await response.blob();
-			const audioUrl = URL.createObjectURL(audioBlob);
-
-			const audio = new Audio(audioUrl);
+			// Safari対応：fetch/blob経由をやめて直接URLを使用
+			const audio = new Audio(speech.audioFilePath);
 			audioRef.current = audio;
 
 			// イベントリスナーを設定
 			audio.onended = () => {
 				setIsPlaying(false);
-				URL.revokeObjectURL(audioUrl);
 			};
 
 			audio.onerror = (e) => {
+				console.error("Audio element error event:", e);
+				console.error("Audio error details:", {
+					error: audio.error,
+					code: audio.error?.code,
+					message: audio.error?.message,
+					networkState: audio.networkState,
+					readyState: audio.readyState,
+				});
 				setIsPlaying(false);
 				setIsAudioLoading(false);
-				console.error("Failed to load audio:", e);
-				toast.error("Failed to load audio");
+
+				const errorMsg = audio.error
+					? `Audio error: ${audio.error.message} (code: ${audio.error.code})`
+					: "Failed to load audio";
+				toast.error(errorMsg);
+
 				audioRef.current = null;
-				URL.revokeObjectURL(audioUrl);
 			};
 
-			// モバイル対応: ユーザーインタラクション内でload()とplay()を呼ぶ
-			audio.load();
-
-			// すぐにplay()を呼び出す（モバイルで重要）
+			// Safari対応：ユーザーインタラクション内で即座にplay()を呼ぶ
 			const playPromise = audio.play();
 
 			if (playPromise !== undefined) {
@@ -188,20 +186,23 @@ export default function SpeechReview({
 						setIsAudioLoading(false);
 					})
 					.catch((error) => {
-						console.error("Failed to play audio:", error);
-						toast.error("Failed to play audio");
+						console.error("Play promise rejected:", error);
+						console.error("Error name:", error.name);
+						console.error("Error message:", error.message);
+						toast.error(`Failed to play: ${error.message}`);
 						audioRef.current = null;
 						setIsPlaying(false);
 						setIsAudioLoading(false);
-						URL.revokeObjectURL(audioUrl);
 					});
 			} else {
 				setIsPlaying(true);
 				setIsAudioLoading(false);
 			}
 		} catch (error) {
-			console.error("Failed to play audio:", error);
-			toast.error("Failed to play audio");
+			console.error("Exception in handlePlayAudio:", error);
+			const errorMsg =
+				error instanceof Error ? error.message : "Failed to play audio";
+			toast.error(errorMsg);
 			audioRef.current = null;
 			setIsPlaying(false);
 			setIsAudioLoading(false);
