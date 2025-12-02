@@ -275,6 +275,12 @@
 			"practiceTip": "Üben Sie, bis Sie fließend sprechen können.",
 			"feedbackTip": "Überprüfen Sie das Feedback zu Ihrer ersten Rede.",
 			"noteTip": "Notieren Sie Ihre Beobachtungen."
+		},
+		"status": {
+			"A": "Kann fließend sprechen, ohne auf das Skript zu schauen",
+			"B": "Kann fließend sprechen, indem man Teile des Skripts ansieht",
+			"C": "Kann fließend sprechen, indem man das Skript ansieht",
+			"D": "Noch nicht überprüft"
 		}
 	}
 }

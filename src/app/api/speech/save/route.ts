@@ -278,7 +278,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				status: {
 					id: result.speech.status.id,
 					name: result.speech.status.name,
-					description: result.speech.status.description || undefined,
 				},
 				practiceCount: result.speech.practiceCount,
 				createdAt: result.speech.createdAt.toISOString(),

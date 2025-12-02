@@ -76,7 +76,6 @@ export interface RemainingSpeechCountResponse {
 export interface SpeechStatus {
 	id: string;
 	name: string;
-	description?: string;
 }
 
 export interface SpeechListItem {

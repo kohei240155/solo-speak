@@ -275,6 +275,12 @@
 			"practiceTip": "Practica hasta que puedas hablar con fluidez.",
 			"feedbackTip": "Revisa los comentarios de tu discurso inicial.",
 			"noteTip": "Anote libremente sus observaciones."
+		},
+		"status": {
+			"A": "Puede hablar con fluidez sin mirar el guión",
+			"B": "Puede hablar con fluidez mirando partes del guión",
+			"C": "Puede hablar con fluidez mirando el guión",
+			"D": "Aún no revisado"
 		}
 	}
 }

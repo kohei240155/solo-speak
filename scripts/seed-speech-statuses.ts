@@ -5,19 +5,15 @@ const prisma = new PrismaClient();
 const speechStatuses = [
 	{
 		name: "A",
-		description: "スクリプトを見なくても流暢に話せる",
 	},
 	{
 		name: "B",
-		description: "スクリプトの一部を見れば流暢に話せる",
 	},
 	{
 		name: "C",
-		description: "スクリプトを見れば流暢に話せる",
 	},
 	{
 		name: "D",
-		description: "まだ復習をしていない",
 	},
 ];
 
@@ -32,16 +28,14 @@ async function main() {
 
 			let result;
 			if (existing) {
-				result = await prisma.speechStatus.update({
-					where: { id: existing.id },
-					data: { description: status.description },
-				});
+				result = existing;
+				console.log(`✅ Speech Status "${result.name}" already exists`);
 			} else {
 				result = await prisma.speechStatus.create({
 					data: status,
 				});
+				console.log(`✅ Speech Status "${result.name}" created`);
 			}
-			console.log(`✅ Speech Status "${result.name}" seeded`);
 		}
 
 		console.log(

@@ -14,7 +14,6 @@ export async function GET(): Promise<NextResponse> {
 			select: {
 				id: true,
 				name: true,
-				description: true,
 			},
 			orderBy: {
 				name: "asc",

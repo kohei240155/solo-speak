@@ -62,7 +62,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 						select: {
 							id: true,
 							name: true,
-							description: true,
 						},
 					},
 					phrases: {
@@ -104,7 +103,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 				status: {
 					id: speech.status.id,
 					name: speech.status.name,
-					description: speech.status.description || undefined,
 				},
 				lastPracticedAt: speech.lastPracticedAt
 					? speech.lastPracticedAt.toISOString()

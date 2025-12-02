@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/ui/useTranslation";
 import BaseModal from "../common/BaseModal";
 import AnimatedButton from "../common/AnimatedButton";
 
 export interface SpeechStatus {
 	id: string;
 	name: string;
-	description: string | null;
 }
 
 interface SpeechStatusModalProps {
@@ -27,6 +27,7 @@ export default function SpeechStatusModal({
 	onStatusChange,
 	isLoading: externalLoading = false,
 }: SpeechStatusModalProps) {
+	const { t } = useTranslation("app");
 	const [selectedStatusId, setSelectedStatusId] = useState(currentStatusId);
 	const [internalLoading, setInternalLoading] = useState(false);
 
@@ -63,6 +64,9 @@ export default function SpeechStatusModal({
 	};
 
 	const selectedStatus = statuses.find((s) => s.id === selectedStatusId);
+	const statusDescription = selectedStatus
+		? t(`speech.status.${selectedStatus.name}`)
+		: "";
 
 	return (
 		<BaseModal isOpen={isOpen} onClose={onClose} title="Change Status">
@@ -86,13 +90,13 @@ export default function SpeechStatusModal({
 			</div>
 
 			{/* Explanation Section */}
-			{selectedStatus?.description && (
+			{statusDescription && (
 				<div className="mb-8">
 					<h3 className="text-base font-medium text-gray-900 mb-3">
 						Explanation
 					</h3>
 					<div className="px-3 py-3 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-md">
-						{selectedStatus.description}
+						{statusDescription}
 					</div>
 				</div>
 			)}

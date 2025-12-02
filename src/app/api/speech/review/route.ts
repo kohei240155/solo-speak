@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { ApiErrorResponse } from "@/types/api";
+import { SpeechReviewResponseData } from "@/types/speech";
 import { prisma } from "@/utils/prisma";
 import { getSpeechAudioSignedUrl } from "@/utils/storage-helpers";
 
@@ -137,7 +138,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					select: {
 						id: true,
 						name: true,
-						description: true,
 					},
 				},
 				nativeLanguage: {
@@ -206,7 +206,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		}
 
 		// レスポンスデータの変換
-		const responseData = {
+		const responseData: SpeechReviewResponseData = {
 			success: true,
 			speech: {
 				id: speech.id,
@@ -215,7 +215,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 				status: {
 					id: speech.status.id,
 					name: speech.status.name,
-					description: speech.status.description || undefined,
 				},
 				nativeLanguage: {
 					id: speech.nativeLanguage.id,
