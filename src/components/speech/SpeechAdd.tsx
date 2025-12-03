@@ -3,6 +3,7 @@ import { BiStop, BiPlay } from "react-icons/bi";
 import { LuSendHorizontal } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { BsPauseFill } from "react-icons/bs";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { useState, useRef, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +13,7 @@ import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { SentenceData, FeedbackData } from "@/types/speech";
 import { useRemainingSpeechCount } from "@/hooks/api/useReactQueryApi";
 import { api } from "@/utils/api";
+import SpeechHelpModal from "@/components/modals/SpeechHelpModal";
 
 export interface CorrectionResult {
 	title: string;
@@ -64,6 +66,7 @@ export default function SpeechAdd({
 	const [isTranscribing, setIsTranscribing] = useState(false);
 	const [transcribedText, setTranscribedText] = useState<string>("");
 	const [isCorrecting, setIsCorrecting] = useState(false);
+	const [showHelpModal, setShowHelpModal] = useState(false);
 	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
 	const placeholders = t("speech.placeholders.speechPlan", {
@@ -392,9 +395,17 @@ export default function SpeechAdd({
 		<>
 			{/* Add Speech見出しとLeft情報 */}
 			<div className="flex justify-between items-center mb-2">
-				<h2 className="text-xl md:text-2xl font-bold text-gray-900">
-					Add Speech
-				</h2>
+				<div className="flex items-center gap-2">
+					<h2 className="text-xl md:text-2xl font-bold text-gray-900">
+						Add Speech
+					</h2>
+					<button
+						onClick={() => setShowHelpModal(true)}
+						className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+					>
+						<AiOutlineQuestionCircle size={20} />
+					</button>
+				</div>
 				<div>
 					{isLoadingRemaining ? (
 						<span className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-200 rounded-full">
@@ -616,6 +627,12 @@ export default function SpeechAdd({
 					</button>
 				</div>
 			</div>
+
+			{/* Help Modal */}
+			<SpeechHelpModal
+				isOpen={showHelpModal}
+				onClose={() => setShowHelpModal(false)}
+			/>
 		</>
 	);
 }

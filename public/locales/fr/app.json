@@ -264,9 +264,25 @@
 		"messages": {
 			"micAccessDenied": "L'accès au microphone a été refusé. Veuillez vérifier les paramètres de votre navigateur.",
 			"transcribeFailed": "Échec de la transcription audio",
-			"titleOrPlanRequired": "Le titre ou le plan du discours n'est pas saisi",
+			"titleOrPlanRequired": "Le titre ou le plan de discours n'est pas saisi",
 			"languagesRequired": "La langue d'apprentissage et la langue maternelle ne sont pas définies",
 			"correctionFailed": "Échec de la correction du discours"
+		},
+		"help": {
+			"title": "Comment utiliser le mode discours",
+			"howToUse": {
+				"title": "Comment utiliser",
+				"step1": "Saisissez le thème dont vous souhaitez parler",
+				"step2": "Saisissez le contenu que vous souhaitez parler lié au thème",
+				"step3": "Commencez l'enregistrement et parlez selon le contenu saisi",
+				"step4": "Appuyez sur le bouton d'arrêt lorsque l'enregistrement est terminé",
+				"step5": "Appuyez sur le bouton d'envoi pour exécuter la correction"
+			},
+			"notes": {
+				"title": "Remarques",
+				"dailyLimit": "La fonction de discours peut être utilisée une fois par jour",
+				"recordingTime": "L'enregistrement doit durer entre 10 et 90 secondes"
+			}
 		},
 		"review": {
 			"micAccessDenied": "L'accès au microphone n'est pas autorisé",
@@ -275,6 +291,28 @@
 			"practiceTip": "Pratiquez jusqu'à ce que vous puissiez parler couramment.",
 			"feedbackTip": "Consultez les commentaires de votre premier discours.",
 			"noteTip": "Notez librement vos observations."
+		},
+		"reviewHelp": {
+			"title": "Comment utiliser le mode de révision",
+			"recording": {
+				"title": "Fonction d'enregistrement",
+				"description1": "Vous pouvez enregistrer et examiner votre propre discours",
+				"description2": "Vérifiez si vous vous êtes amélioré par rapport à votre discours initial"
+			},
+			"phrasePractice": {
+				"title": "Fonction de pratique de phrases",
+				"description1": "Pratiquez la lecture de phrases individuellement en utilisant l'icône à droite du bouton d'enregistrement",
+				"description2": "Vous pouvez pratiquer avec une concentration ciblée sur chaque phrase"
+			},
+			"statusChange": {
+				"title": "Fonction de changement de statut",
+				"description1": "Gérez votre statut de maîtrise du discours",
+				"description2": "Changez le statut en utilisant l'icône à gauche du bouton d'enregistrement"
+			},
+			"notes": {
+				"title": "Remarques",
+				"description": "Le nombre de pratiques est ajouté lorsque la lecture de l'audio enregistré est terminée"
+			}
 		},
 		"status": {
 			"A": "Peut parler couramment sans regarder le script",

@@ -6,7 +6,7 @@ import { SaveSpeechRequestBody, SaveSpeechResponseData } from "@/types/speech";
  * @param data スピーチデータ
  * @param audioBlob 音声ファイル（オプション）
  * @param audioMimeType 音声ファイルのMIMEタイプ（オプション）
- * @returns 保存されたスピーチデータ
+ * @returns 保存されたスピーチデータ（totalSpeechCountを含む）
  */
 export const saveSpeech = async (
 	data: SaveSpeechRequestBody,

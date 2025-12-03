@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "@/hooks/ui/useTranslation";
-import { AiOutlineLineChart, AiOutlineCaretRight } from "react-icons/ai";
+import { AiOutlineLineChart, AiOutlineCaretRight, AiOutlineQuestionCircle } from "react-icons/ai";
 import { BsPauseFill, BsFillMicFill } from "react-icons/bs";
 import { BiPlay, BiStop } from "react-icons/bi";
 import { IoCheckboxOutline } from "react-icons/io5";
@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import SpeechStatusModal, {
 	SpeechStatus,
 } from "@/components/modals/SpeechStatusModal";
+import SpeechReviewHelpModal from "@/components/modals/SpeechReviewHelpModal";
 import { api } from "@/utils/api";
 import AnimatedButton from "@/components/common/AnimatedButton";
 import { useSaveSpeechNotes } from "@/hooks/speech/useSaveSpeechNotes";
@@ -88,6 +89,7 @@ export default function SpeechReview({
 
 	// ノートの編集状態
 	const [notes, setNotes] = useState(speech.notes || "");
+	const [showHelpModal, setShowHelpModal] = useState(false);
 
 	// TTS機能の初期化
 	const {
@@ -605,7 +607,15 @@ export default function SpeechReview({
 		<div className="max-w-4xl mx-auto">
 			{/* Header with checkmark, practice count, and fullscreen */}
 			<div className="flex items-center justify-between mb-4">
-				<h1 className="text-2xl font-bold text-gray-900">Review Speech</h1>
+				<div className="flex items-center gap-2">
+					<h1 className="text-2xl font-bold text-gray-900">Review Speech</h1>
+					<button
+						onClick={() => setShowHelpModal(true)}
+						className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+					>
+						<AiOutlineQuestionCircle size={20} />
+					</button>
+				</div>
 				<div className="flex items-center gap-4">
 					{/* Practice count */}
 					<div className="flex items-center gap-2">
@@ -785,17 +795,17 @@ export default function SpeechReview({
 						<p className="text-sm text-gray-700">
 							{t("speech.review.noteTip")}
 						</p>
-						<textarea
-							value={notes}
-							onChange={(e) => setNotes(e.target.value)}
-							onInput={(e) => {
-								const target = e.target as HTMLTextAreaElement;
-								target.style.height = "auto";
-								target.style.height = `${target.scrollHeight}px`;
-							}}
-							placeholder="メモを入力してください"
-							className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white overflow-hidden"
-						/>
+							<textarea
+								value={notes}
+								onChange={(e) => setNotes(e.target.value)}
+								onInput={(e) => {
+									const target = e.target as HTMLTextAreaElement;
+									target.style.height = "auto";
+									target.style.height = `${target.scrollHeight}px`;
+								}}
+								placeholder={t("speech.notePlaceholder")}
+								className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white overflow-hidden"
+							/>
 						<AnimatedButton
 							onClick={handleSaveNotes}
 							disabled={saveNotesMutation.isPending}
@@ -887,6 +897,12 @@ export default function SpeechReview({
 				currentStatusId={speech.status.id}
 				onStatusChange={handleStatusChange}
 				isLoading={isLoadingStatuses}
+			/>
+
+			{/* Help Modal */}
+			<SpeechReviewHelpModal
+				isOpen={showHelpModal}
+				onClose={() => setShowHelpModal(false)}
 			/>
 		</div>
 	);

@@ -268,6 +268,22 @@
 			"languagesRequired": "未设置学习语言和母语",
 			"correctionFailed": "演讲修正失败"
 		},
+		"help": {
+			"title": "如何使用演讲模式",
+			"howToUse": {
+				"title": "使用方法",
+				"step1": "输入您想谈论的主题",
+				"step2": "输入与主题相关的谈话内容",
+				"step3": "开始录音并根据输入的内容讲话",
+				"step4": "录音完成后按停止按钮",
+				"step5": "按提交按钮执行修正"
+			},
+			"notes": {
+				"title": "注意事项",
+				"dailyLimit": "演讲功能每天只能使用一次",
+				"recordingTime": "录音必须在10秒到90秒之间"
+			}
+		},
 		"review": {
 			"micAccessDenied": "未允许访问麦克风",
 			"recordingTooShort": "录音必须至少10秒",
@@ -275,6 +291,28 @@
 			"practiceTip": "练习直到您能流利地说出来。",
 			"feedbackTip": "查看您初次演讲的反馈。",
 			"noteTip": "自由记录您的观察。"
+		},
+		"reviewHelp": {
+			"title": "如何使用复习模式",
+			"recording": {
+				"title": "录音功能",
+				"description1": "您可以录制并查看自己的演讲",
+				"description2": "检查是否比初次演讲有所提高"
+			},
+			"phrasePractice": {
+				"title": "短语练习功能",
+				"description1": "使用录音按钮右侧的图标进行短语单位的阅读练习",
+				"description2": "可以集中练习每个短语"
+			},
+			"statusChange": {
+				"title": "状态更改功能",
+				"description1": "管理您的演讲掌握状态",
+				"description2": "使用录音按钮左侧的图标更改状态"
+			},
+			"notes": {
+				"title": "注意事项",
+				"description": "当录制音频播放完成时，练习次数将增加"
+			}
 		},
 		"status": {
 			"A": "无需看稿即可流利表达",

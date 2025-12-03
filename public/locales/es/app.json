@@ -268,6 +268,22 @@
 			"languagesRequired": "El idioma de aprendizaje y el idioma nativo no están configurados",
 			"correctionFailed": "Error al corregir el discurso"
 		},
+		"help": {
+			"title": "Cómo usar el modo de discurso",
+			"howToUse": {
+				"title": "Cómo usar",
+				"step1": "Ingrese el tema del que desea hablar",
+				"step2": "Ingrese el contenido que desea hablar relacionado con el tema",
+				"step3": "Comience a grabar y hable según el contenido ingresado",
+				"step4": "Presione el botón de detener cuando termine la grabación",
+				"step5": "Presione el botón de enviar para ejecutar la corrección"
+			},
+			"notes": {
+				"title": "Notas",
+				"dailyLimit": "La función de discurso se puede usar una vez al día",
+				"recordingTime": "La grabación debe tener entre 10 y 90 segundos"
+			}
+		},
 		"review": {
 			"micAccessDenied": "No se permite el acceso al micrófono",
 			"recordingTooShort": "La grabación debe durar al menos 10 segundos",
@@ -275,6 +291,28 @@
 			"practiceTip": "Practica hasta que puedas hablar con fluidez.",
 			"feedbackTip": "Revisa los comentarios de tu discurso inicial.",
 			"noteTip": "Anote libremente sus observaciones."
+		},
+		"reviewHelp": {
+			"title": "Cómo usar el modo de revisión",
+			"recording": {
+				"title": "Función de grabación",
+				"description1": "Puede grabar y revisar su propio discurso",
+				"description2": "Verifique si ha mejorado desde su discurso inicial"
+			},
+			"phrasePractice": {
+				"title": "Función de práctica de frases",
+				"description1": "Practique la lectura de frases individualmente usando el icono en el lado derecho del botón de grabación",
+				"description2": "Puede practicar con concentración enfocada en cada frase"
+			},
+			"statusChange": {
+				"title": "Función de cambio de estado",
+				"description1": "Administre su estado de dominio del discurso",
+				"description2": "Cambie el estado usando el icono en el lado izquierdo del botón de grabación"
+			},
+			"notes": {
+				"title": "Notas",
+				"description": "El recuento de práctica se agrega cuando se completa la reproducción del audio grabado"
+			}
 		},
 		"status": {
 			"A": "Puede hablar con fluidez sin mirar el guión",
