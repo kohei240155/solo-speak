@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -13,17 +12,6 @@ import DeploymentChecker from "@/components/common/DeploymentChecker";
 import AppVersionChecker from "@/components/common/AppVersionChecker";
 import AuthApiConnection from "@/components/auth/AuthApiConnection";
 import TranslationPreloader from "@/components/common/TranslationPreloader";
-import ChineseFontHandler from "@/components/common/ChineseFontHandler";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
 	title: "Solo Speak",
@@ -76,10 +64,10 @@ export default function RootLayout({
 	return (
 		<html lang="ja">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900 font-sans`}
+				className="antialiased min-h-screen flex flex-col bg-gray-100 text-gray-900"
 				style={{
 					fontFamily:
-						'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+						'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "PingFang SC", "Microsoft YaHei", sans-serif',
 				}}
 			>
 				<ViewportFix />
@@ -88,7 +76,6 @@ export default function RootLayout({
 				<AppVersionChecker />
 				<ReactQueryProvider>
 					<LanguageProvider>
-						<ChineseFontHandler />
 						<TranslationPreloader />
 						<AuthProvider>
 							<AuthApiConnection />
