@@ -335,15 +335,53 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 		return NextResponse.json(response, { status: 201 });
 	} catch (error) {
 		console.error("[Speech Save] Error saving speech:", error);
-		// エラーの詳細をログに記録
+
+		// エラーの詳細な情報を取得
+		let errorMessage = "Failed to save speech";
+		let errorDetails = "";
+
 		if (error instanceof Error) {
 			console.error("[Speech Save] Error details:", {
 				message: error.message,
 				stack: error.stack,
 			});
+
+			// エラーメッセージから具体的な原因を抽出
+			if (
+				error.message.includes("Prisma") ||
+				error.message.includes("database")
+			) {
+				errorMessage = "Database error occurred";
+				errorDetails = `Database operation failed: ${error.message}`;
+			} else if (
+				error.message.includes("timeout") ||
+				error.message.includes("ETIMEDOUT")
+			) {
+				errorMessage = "Request timed out";
+				errorDetails =
+					"The request took too long to complete. Please try again.";
+			} else if (
+				error.message.includes("network") ||
+				error.message.includes("fetch")
+			) {
+				errorMessage = "Network error";
+				errorDetails =
+					"Failed to connect to the server. Please check your internet connection.";
+			} else if (
+				error.message.includes("storage") ||
+				error.message.includes("upload")
+			) {
+				errorMessage = "Audio upload failed";
+				errorDetails = `Failed to upload audio file: ${error.message}`;
+			} else {
+				errorMessage = "Failed to save speech";
+				errorDetails = error.message;
+			}
 		}
+
 		const errorResponse: ApiErrorResponse = {
-			error: "Failed to save speech",
+			error: errorMessage,
+			details: errorDetails || undefined,
 		};
 		return NextResponse.json(errorResponse, { status: 500 });
 	}
