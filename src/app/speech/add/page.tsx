@@ -40,10 +40,6 @@ export default function SpeechAddPage() {
 	const [showPracticeModal, setShowPracticeModal] = useState(false);
 	const [savedSpeechId, setSavedSpeechId] = useState<string | null>(null);
 
-	// エラー状態の管理
-	const [saveError, setSaveError] = useState<string | null>(null);
-	const [saveErrorDetails, setSaveErrorDetails] = useState<string | null>(null);
-
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
 	const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] =
@@ -99,11 +95,7 @@ export default function SpeechAddPage() {
 			return;
 		}
 
-		// エラー状態をクリア（再試行時）
-		setSaveError(null);
-		setSaveErrorDetails(null);
 		setIsSaving(true);
-
 		try {
 			const result = await saveSpeech(
 				{
@@ -135,58 +127,9 @@ export default function SpeechAddPage() {
 
 			// 保存成功後、モーダルを表示
 			setShowPracticeModal(true);
-		} catch (error: unknown) {
+		} catch (error) {
 			console.error("Failed to save speech:", error);
-
-			// エラー詳細を抽出
-			let errorMessage = "Failed to save speech";
-			let errorDetails = "";
-
-			if (error && typeof error === "object") {
-				// APIエラーレスポンスから詳細を取得
-				if ("message" in error && typeof error.message === "string") {
-					errorMessage = error.message;
-				}
-				if ("details" in error && typeof error.details === "string") {
-					errorDetails = error.details;
-				} else if (
-					"response" in error &&
-					error.response &&
-					typeof error.response === "object" &&
-					"json" in error.response
-				) {
-					try {
-						const response = error.response as {
-							json: () => Promise<{ details?: string }>;
-						};
-						const errorData = await response.json();
-						if (errorData.details) {
-							errorDetails = errorData.details;
-						}
-					} catch {
-						// JSONパースに失敗した場合は何もしない
-					}
-				}
-				// スタックトレースがある場合は詳細に含める（開発環境用）
-				if (
-					"stack" in error &&
-					typeof error.stack === "string" &&
-					process.env.NODE_ENV === "development"
-				) {
-					errorDetails = errorDetails
-						? `${errorDetails}\n\n${error.stack}`
-						: error.stack;
-				}
-			}
-
-			// エラー状態を設定（画面に表示するため）
-			setSaveError(errorMessage);
-			setSaveErrorDetails(
-				errorDetails || "An unexpected error occurred. Please try again.",
-			);
-
-			// トーストにも表示（簡潔なメッセージ）
-			toast.error(errorMessage);
+			// エラーはapi.tsで自動的にトースト表示される
 		} finally {
 			setIsSaving(false);
 		}
@@ -274,8 +217,6 @@ export default function SpeechAddPage() {
 								}
 							}}
 							onHasUnsavedChanges={setHasUnsavedChanges}
-							saveError={saveError}
-							saveErrorDetails={saveErrorDetails}
 							debugInfo={correctionResult.debugInfo}
 						/>
 					) : (
