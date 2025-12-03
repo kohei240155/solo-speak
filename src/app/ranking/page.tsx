@@ -132,6 +132,34 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
+					{/* Speech用のAdd/Reviewセレクター */}
+					{activeRankingType === "speech" && (
+						<div className="flex justify-start mb-2">
+							<div className="inline-flex rounded-lg border border-gray-300 overflow-hidden">
+								<button
+									onClick={() => setSpeechMode("add")}
+									className={`px-6 py-1 text-xs sm:text-sm ${
+										speechMode === "add"
+											? "bg-gray-200 text-gray-700 font-bold"
+											: "bg-white text-gray-700 hover:bg-gray-50"
+									}`}
+								>
+									Add
+								</button>
+								<button
+									onClick={() => setSpeechMode("review")}
+									className={`px-4 py-1 text-xs sm:text-sm border-l border-gray-300 ${
+										speechMode === "review"
+											? "bg-gray-200 text-gray-700 font-bold"
+											: "bg-white text-gray-700 hover:bg-gray-50"
+									}`}
+								>
+									Review
+								</button>
+							</div>
+						</div>
+					)}
+
 					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotal&Streakタブを表示、SpeechのReview時はDaily/Weekly/Total/Streakを表示） */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
@@ -155,41 +183,15 @@ export default function RankingPage() {
 									))}
 								</div>
 
-								{/* Speech用のAdd/Reviewセレクター */}
-								{activeRankingType === "speech" ? (
-									<div className="inline-flex rounded-lg border border-gray-300 overflow-hidden">
-										<button
-											onClick={() => setSpeechMode("add")}
-											className={`px-5 py-1 text-xs sm:text-sm ${
-												speechMode === "add"
-													? "bg-gray-200 text-gray-700 font-bold"
-													: "bg-white text-gray-700 hover:bg-gray-50"
-											}`}
-										>
-											Add
-										</button>
-										<button
-											onClick={() => setSpeechMode("review")}
-											className={`px-2 py-1 text-xs sm:text-sm border-l border-gray-300 ${
-												speechMode === "review"
-													? "bg-gray-200 text-gray-700 font-bold"
-													: "bg-white text-gray-700 hover:bg-gray-50"
-											}`}
-										>
-											Review
-										</button>
-									</div>
-								) : (
-									/* X投稿ボタン（非表示） */
-									<button
-										onClick={handleShareStreak}
-										disabled={isShareLoading}
-										className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
-										title="ランキング結果を投稿"
-									>
-										<AiOutlineX className="w-4 h-4" />
-									</button>
-								)}
+								{/* X投稿ボタン（非表示） */}
+								<button
+									onClick={handleShareStreak}
+									disabled={isShareLoading}
+									className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+									title="ランキング結果を投稿"
+								>
+									<AiOutlineX className="w-4 h-4" />
+								</button>
 							</nav>
 						</div>
 					) : (
