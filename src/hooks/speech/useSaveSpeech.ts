@@ -45,20 +45,14 @@ export const saveSpeech = async (
 	formData.append("data", JSON.stringify(data));
 
 	console.log("[useSaveSpeech] Sending request to API");
-	try {
-		const result = await api.post<SaveSpeechResponseData>(
-			"/api/speech/save",
-			formData,
-		);
-		console.log("[useSaveSpeech] Save successful", {
-			speechId: result.speech.id,
-			hasAudioPath: !!result.speech.audioFilePath,
-		});
+	const result = await api.post<SaveSpeechResponseData>(
+		"/api/speech/save",
+		formData,
+	);
+	console.log("[useSaveSpeech] Save successful", {
+		speechId: result.speech.id,
+		hasAudioPath: !!result.speech.audioFilePath,
+	});
 
-		return result;
-	} catch (error) {
-		console.error("[useSaveSpeech] Save failed:", error);
-		// Re-throw the error with details for UI display
-		throw error;
-	}
+	return result;
 };
