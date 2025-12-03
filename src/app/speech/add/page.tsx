@@ -206,6 +206,7 @@ export default function SpeechAddPage() {
 							sentences={correctionResult.sentences}
 							feedback={correctionResult.feedback}
 							audioBlob={correctionResult.audioBlob}
+							audioMimeType={correctionResult.audioMimeType}
 							onSave={handleSave}
 							isSaving={isSaving}
 							note={correctionResult.note}
@@ -216,6 +217,7 @@ export default function SpeechAddPage() {
 								}
 							}}
 							onHasUnsavedChanges={setHasUnsavedChanges}
+							debugInfo={correctionResult.debugInfo}
 						/>
 					) : (
 						<SpeechAdd

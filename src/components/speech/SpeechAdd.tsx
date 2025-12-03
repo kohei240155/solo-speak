@@ -24,6 +24,11 @@ export interface CorrectionResult {
 	audioBlob: Blob | null;
 	audioMimeType?: string;
 	note: string;
+	debugInfo?: {
+		recordingMimeType?: string;
+		audioBlobSize?: number;
+		audioBlobType?: string;
+	};
 }
 
 interface SpeechAddProps {
@@ -131,13 +136,22 @@ export default function SpeechAdd({
 
 			// Safari/iOSに対応するため、サポートされているMIMEタイプを使用
 			let mimeType = "audio/webm";
-			if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
-				mimeType = "audio/webm;codecs=opus";
-			} else if (MediaRecorder.isTypeSupported("audio/mp4")) {
-				mimeType = "audio/mp4";
-			} else if (MediaRecorder.isTypeSupported("audio/aac")) {
-				mimeType = "audio/aac";
+			const supportedTypes = [
+				"audio/webm;codecs=opus",
+				"audio/mp4",
+				"audio/aac",
+				"audio/webm",
+			];
+
+			for (const type of supportedTypes) {
+				if (MediaRecorder.isTypeSupported(type)) {
+					mimeType = type;
+					console.log(`[SpeechAdd] Selected MIME type: ${mimeType}`);
+					break;
+				}
 			}
+
+			console.log("[SpeechAdd] Starting recording with MIME type:", mimeType);
 			setAudioMimeType(mimeType);
 
 			const mediaRecorder = new MediaRecorder(stream, { mimeType });
@@ -148,11 +162,15 @@ export default function SpeechAdd({
 			mediaRecorder.ondataavailable = (e) => {
 				if (e.data.size > 0) {
 					chunks.push(e.data);
+					console.log(`[SpeechAdd] Audio chunk received: ${e.data.size} bytes`);
 				}
 			};
 
 			mediaRecorder.onstop = () => {
 				const blob = new Blob(chunks, { type: mimeType });
+				console.log(
+					`[SpeechAdd] Recording stopped, total size: ${blob.size} bytes, type: ${blob.type}`,
+				);
 				setAudioBlob(blob);
 
 				// ストリームを停止
@@ -364,6 +382,11 @@ export default function SpeechAdd({
 					audioBlob: audioBlob,
 					audioMimeType: audioMimeType,
 					note: noteValue || "",
+					debugInfo: {
+						recordingMimeType: audioMimeType,
+						audioBlobSize: audioBlob?.size,
+						audioBlobType: audioBlob?.type,
+					},
 				});
 			}
 		} catch (error) {
