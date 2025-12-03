@@ -10,7 +10,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { useRankingData } from "@/hooks/data/useRankingData";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { useShareStreak } from "@/hooks/ui/useShareStreak";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineX } from "react-icons/ai";
 
 export default function RankingPage() {
@@ -18,6 +18,7 @@ export default function RankingPage() {
 	const { userSettings } = useAuth();
 	const { t } = useTranslation("app");
 	const { shareStreak, isLoading: isShareLoading } = useShareStreak();
+	const [speechMode, setSpeechMode] = useState<"add" | "review">("add");
 
 	// カスタムフックを使用してランキングデータを管理
 	const {
@@ -33,7 +34,16 @@ export default function RankingPage() {
 		handleLanguageChange,
 		handleTabChange,
 		handleRankingTypeChange,
-	} = useRankingData();
+	} = useRankingData(speechMode);
+
+	// speechModeが変更されたときにタブをリセット
+	useEffect(() => {
+		if (activeRankingType === "speech") {
+			// Add/Reviewどちらの場合もTotalを初期選択
+			handleTabChange("Total");
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [speechMode]);
 
 	// エラーハンドリング
 	useEffect(() => {
@@ -122,12 +132,15 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-					{/* Daily/Weekly/Totalタブメニュー（PhraseとSpeechの場合はTotal&Streakタブを表示） */}
+					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotal&Streakタブを表示、SpeechのReview時はDaily/Weekly/Total/Streakを表示） */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 justify-between items-center">
 								<div className="flex space-x-0">
-									{["Total", "Streak"].map((tab) => (
+									{(activeRankingType === "speech" && speechMode === "review"
+										? ["Total", "Daily", "Weekly", "Streak"]
+										: ["Total", "Streak"]
+									).map((tab) => (
 										<button
 											key={tab}
 											onClick={() => handleTabChange(tab)}
@@ -142,22 +155,48 @@ export default function RankingPage() {
 									))}
 								</div>
 
-								{/* X投稿ボタン（非表示） */}
-								<button
-									onClick={handleShareStreak}
-									disabled={isShareLoading}
-									className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
-									title="ランキング結果を投稿"
-								>
-									<AiOutlineX className="w-4 h-4" />
-								</button>
+								{/* Speech用のAdd/Reviewセレクター */}
+								{activeRankingType === "speech" ? (
+									<div className="inline-flex rounded-lg border border-gray-300 overflow-hidden">
+										<button
+											onClick={() => setSpeechMode("add")}
+											className={`px-5 py-1 text-xs sm:text-sm ${
+												speechMode === "add"
+													? "bg-gray-200 text-gray-700 font-bold"
+													: "bg-white text-gray-700 hover:bg-gray-50"
+											}`}
+										>
+											Add
+										</button>
+										<button
+											onClick={() => setSpeechMode("review")}
+											className={`px-2 py-1 text-xs sm:text-sm border-l border-gray-300 ${
+												speechMode === "review"
+													? "bg-gray-200 text-gray-700 font-bold"
+													: "bg-white text-gray-700 hover:bg-gray-50"
+											}`}
+										>
+											Review
+										</button>
+									</div>
+								) : (
+									/* X投稿ボタン（非表示） */
+									<button
+										onClick={handleShareStreak}
+										disabled={isShareLoading}
+										className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
+										title="ランキング結果を投稿"
+									>
+										<AiOutlineX className="w-4 h-4" />
+									</button>
+								)}
 							</nav>
 						</div>
 					) : (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 justify-between items-center">
 								<div className="flex space-x-0">
-									{["Daily", "Weekly", "Total", "Streak"].map((tab) => (
+									{["Total", "Daily", "Weekly", "Streak"].map((tab) => (
 										<button
 											key={tab}
 											onClick={() => handleTabChange(tab)}
