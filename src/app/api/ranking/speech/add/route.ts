@@ -4,7 +4,7 @@ import { prisma } from "@/utils/prisma";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { ApiErrorResponse } from "@/types/api";
 
-interface SpeechRankingResponseData {
+interface SpeechAddRankingResponseData {
 	success: boolean;
 	topUsers: Array<{
 		rank: number;
@@ -22,15 +22,14 @@ interface SpeechRankingResponseData {
 	} | null;
 }
 
-/** ランキングのSpeech練習回数用APIエンドポイント（Review）
+/** ランキングのSpeech登録数用APIエンドポイント（Total）
  * @param request - Next.jsのリクエストオブジェクト
- * @returns SpeechRankingResponseData - Speech練習回数のランキングデータ
+ * @returns SpeechAddRankingResponseData - Speech登録数のランキングデータ
  */
 export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const language = searchParams.get("language") || DEFAULT_LANGUAGE;
-		const period = searchParams.get("period") || "total"; // daily, weekly, total
 
 		// 認証チェック
 		const authResult = await authenticateRequest(request);
@@ -57,85 +56,63 @@ export async function GET(request: NextRequest) {
 
 		const languageId = languageRecord.id;
 
-		// 期間に応じた日付条件を設定
-		const now = new Date();
-		let startDate: Date;
-
-		if (period === "daily") {
-			startDate = new Date(now.toDateString());
-		} else if (period === "weekly") {
-			startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-		} else {
-			// total の場合は全期間
-			startDate = new Date("1970-01-01");
-		}
-
-		// Speechデータを取得（練習回数の合計）
-		// 期間によってフィルタリング
-		const speeches = await prisma.speech.findMany({
+		// Speechデータを取得（登録数をカウント）
+		const speeches = await prisma.speech.groupBy({
+			by: ["userId"],
 			where: {
 				learningLanguageId: languageId,
 				deletedAt: null,
-				...(period !== "total" && {
-					lastPracticedAt: {
-						gte: startDate,
-					},
-				}),
+			},
+			_count: {
+				id: true,
+			},
+		});
+
+		// ユーザー情報を取得
+		const userIds = speeches.map((speech) => speech.userId);
+		const users = await prisma.user.findMany({
+			where: {
+				id: {
+					in: userIds,
+				},
+				deletedAt: null,
 			},
 			select: {
-				userId: true,
-				practiceCount: true,
-				lastPracticedAt: true,
-				user: {
-					select: {
-						id: true,
-						username: true,
-						iconUrl: true,
-						createdAt: true,
-					},
-				},
+				id: true,
+				username: true,
+				iconUrl: true,
+				createdAt: true,
 			},
 		});
 
-		// ユーザーごとの練習回数を集計
-		const userCounts = new Map<
-			string,
-			{
-				userId: string;
-				username: string;
-				iconUrl: string | null;
-				count: number;
-				createdAt: Date;
-			}
-		>();
+		// ユーザー情報とカウントをマージ
+		const userCounts = speeches
+			.map((speech) => {
+				const userData = users.find((u) => u.id === speech.userId);
+				if (!userData) return null;
 
-		speeches.forEach((speech) => {
-			const userId = speech.user.id;
-			const username = speech.user.username || "Anonymous";
-			const iconUrl = speech.user.iconUrl;
-			const createdAt = speech.user.createdAt;
-			const practiceCount = speech.practiceCount;
-
-			if (userCounts.has(userId)) {
-				userCounts.get(userId)!.count += practiceCount;
-			} else {
-				userCounts.set(userId, {
-					userId,
-					username,
-					iconUrl,
-					count: practiceCount,
-					createdAt,
-				});
-			}
-		});
-
-		// 練習回数が0のユーザーを除外
-		const validUserCounts = Array.from(userCounts.values()).filter(
-			(user) => user.count > 0,
-		);
+				return {
+					userId: userData.id,
+					username: userData.username || "Anonymous",
+					iconUrl: userData.iconUrl,
+					count: speech._count.id,
+					createdAt: userData.createdAt,
+				};
+			})
+			.filter(
+				(
+					item,
+				): item is {
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+					createdAt: Date;
+				} => item !== null && item.count > 0,
+			); // 登録数が0のユーザーを除外
 
 		// ランキング順にソート（同数の場合は登録日時が古い方が上位）
-		const allRankedUsers = validUserCounts.sort((a, b) => {
+		const allRankedUsers = userCounts.sort((a, b) => {
 			if (b.count === a.count) {
 				return (
 					new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -171,7 +148,7 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		const responseData: SpeechRankingResponseData = {
+		const responseData: SpeechAddRankingResponseData = {
 			success: true,
 			topUsers: rankedUsers,
 			currentUser: currentUserRank || null,

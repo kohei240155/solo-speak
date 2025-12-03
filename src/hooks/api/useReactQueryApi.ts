@@ -76,6 +76,14 @@ export const queryKeys = {
 		["quizStreakRanking", userId, language] as const,
 	speechStreakRanking: (userId: string, language: string) =>
 		["speechStreakRanking", userId, language] as const,
+	speechAddRanking: (userId: string, language: string) =>
+		["speechAddRanking", userId, language] as const,
+	speechAddStreakRanking: (userId: string, language: string) =>
+		["speechAddStreakRanking", userId, language] as const,
+	speechReviewRanking: (userId: string, language: string, period: string) =>
+		["speechReviewRanking", userId, language, period] as const,
+	speechReviewStreakRanking: (userId: string, language: string) =>
+		["speechReviewStreakRanking", userId, language] as const,
 };
 
 // ユーザー設定を取得するフック
@@ -664,6 +672,287 @@ export function useSpeechStreakRanking(language?: string) {
 				? queryKeys.speechStreakRanking(user.id, language)
 				: [],
 		queryFn: async () => fetcher<QuizStreakRankingResponseData>(url!),
+		enabled: !!user?.id && !!url,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// データを統一形式に変換
+	let transformedData: UnifiedRankingUser[] = [];
+
+	if (data?.success && data.topUsers) {
+		transformedData = data.topUsers.map((user) => ({
+			userId: user.userId,
+			username: user.username,
+			iconUrl: user.iconUrl,
+			totalCount: user.streakDays,
+			rank: user.rank,
+		}));
+	}
+
+	// currentUserも統一形式に変換
+	let currentUser: UnifiedRankingUser | null = null;
+
+	if (data?.success && data.currentUser) {
+		currentUser = {
+			userId: data.currentUser.userId,
+			username: data.currentUser.username,
+			iconUrl: data.currentUser.iconUrl,
+			totalCount: data.currentUser.streakDays,
+			rank: data.currentUser.rank,
+		};
+	}
+
+	return {
+		rankingData: transformedData,
+		currentUser,
+		isLoading,
+		error,
+		message: undefined,
+		refetch,
+	};
+}
+
+// SpeechAdd (登録数) ランキングを取得するフック
+export function useSpeechAddRanking(language?: string) {
+	const { user } = useAuth();
+
+	const url = language ? `/api/ranking/speech/add?language=${language}` : null;
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && language ? queryKeys.speechAddRanking(user.id, language) : [],
+		queryFn: async () =>
+			fetcher<{
+				success: boolean;
+				topUsers: Array<{
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				}>;
+				currentUser: {
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				} | null;
+			}>(url!),
+		enabled: !!user?.id && !!url,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// データを統一形式に変換
+	let transformedData: UnifiedRankingUser[] = [];
+
+	if (data?.success && data.topUsers) {
+		transformedData = data.topUsers.map((user) => ({
+			userId: user.userId,
+			username: user.username,
+			iconUrl: user.iconUrl,
+			totalCount: user.count,
+			rank: user.rank,
+		}));
+	}
+
+	// currentUserも統一形式に変換
+	let currentUser: UnifiedRankingUser | null = null;
+
+	if (data?.success && data.currentUser) {
+		currentUser = {
+			userId: data.currentUser.userId,
+			username: data.currentUser.username,
+			iconUrl: data.currentUser.iconUrl,
+			totalCount: data.currentUser.count,
+			rank: data.currentUser.rank,
+		};
+	}
+
+	return {
+		rankingData: transformedData,
+		currentUser,
+		isLoading,
+		error,
+		message: undefined,
+		refetch,
+	};
+}
+
+// SpeechAddStreak (登録連続日数) ランキングを取得するフック
+export function useSpeechAddStreakRanking(language?: string) {
+	const { user } = useAuth();
+
+	const url = language
+		? `/api/ranking/speech/add/streak?language=${language}`
+		: null;
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && language
+				? queryKeys.speechAddStreakRanking(user.id, language)
+				: [],
+		queryFn: async () =>
+			fetcher<{
+				success: boolean;
+				topUsers: Array<{
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					streakDays: number;
+				}>;
+				currentUser: {
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					streakDays: number;
+				} | null;
+			}>(url!),
+		enabled: !!user?.id && !!url,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// データを統一形式に変換
+	let transformedData: UnifiedRankingUser[] = [];
+
+	if (data?.success && data.topUsers) {
+		transformedData = data.topUsers.map((user) => ({
+			userId: user.userId,
+			username: user.username,
+			iconUrl: user.iconUrl,
+			totalCount: user.streakDays,
+			rank: user.rank,
+		}));
+	}
+
+	// currentUserも統一形式に変換
+	let currentUser: UnifiedRankingUser | null = null;
+
+	if (data?.success && data.currentUser) {
+		currentUser = {
+			userId: data.currentUser.userId,
+			username: data.currentUser.username,
+			iconUrl: data.currentUser.iconUrl,
+			totalCount: data.currentUser.streakDays,
+			rank: data.currentUser.rank,
+		};
+	}
+
+	return {
+		rankingData: transformedData,
+		currentUser,
+		isLoading,
+		error,
+		message: undefined,
+		refetch,
+	};
+}
+
+// SpeechReview (練習回数) ランキングを取得するフック
+export function useSpeechReviewRanking(language?: string, period?: string) {
+	const { user } = useAuth();
+
+	const url =
+		language && period
+			? `/api/ranking/speech?language=${language}&period=${period}`
+			: null;
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && language && period
+				? queryKeys.speechReviewRanking(user.id, language, period)
+				: [],
+		queryFn: async () =>
+			fetcher<{
+				success: boolean;
+				topUsers: Array<{
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				}>;
+				currentUser: {
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				} | null;
+			}>(url!),
+		enabled: !!user?.id && !!url,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// データを統一形式に変換
+	let transformedData: UnifiedRankingUser[] = [];
+
+	if (data?.success && data.topUsers) {
+		transformedData = data.topUsers.map((user) => ({
+			userId: user.userId,
+			username: user.username,
+			iconUrl: user.iconUrl,
+			totalCount: user.count,
+			rank: user.rank,
+		}));
+	}
+
+	// currentUserも統一形式に変換
+	let currentUser: UnifiedRankingUser | null = null;
+
+	if (data?.success && data.currentUser) {
+		currentUser = {
+			userId: data.currentUser.userId,
+			username: data.currentUser.username,
+			iconUrl: data.currentUser.iconUrl,
+			totalCount: data.currentUser.count,
+			rank: data.currentUser.rank,
+		};
+	}
+
+	return {
+		rankingData: transformedData,
+		currentUser,
+		isLoading,
+		error,
+		message: undefined,
+		refetch,
+	};
+}
+
+// SpeechReviewStreak (練習連続日数) ランキングを取得するフック
+export function useSpeechReviewStreakRanking(language?: string) {
+	const { user } = useAuth();
+
+	const url = language
+		? `/api/ranking/speech/streak?language=${language}`
+		: null;
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && language
+				? queryKeys.speechReviewStreakRanking(user.id, language)
+				: [],
+		queryFn: async () =>
+			fetcher<{
+				success: boolean;
+				topUsers: Array<{
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					streakDays: number;
+				}>;
+				currentUser: {
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					streakDays: number;
+				} | null;
+			}>(url!),
 		enabled: !!user?.id && !!url,
 		staleTime: 2 * 60 * 1000, // 2分
 	});
