@@ -14,11 +14,17 @@ interface SpeechResultProps {
 	sentences: SentenceData[];
 	feedback: FeedbackData[];
 	audioBlob?: Blob | null;
+	audioMimeType?: string;
 	note?: string;
 	onNoteChange?: (note: string) => void;
 	onSave?: () => void | Promise<void>;
 	isSaving?: boolean;
 	onHasUnsavedChanges?: (hasChanges: boolean) => void;
+	debugInfo?: {
+		recordingMimeType?: string;
+		audioBlobSize?: number;
+		audioBlobType?: string;
+	};
 }
 
 export default function SpeechResult({
@@ -28,16 +34,19 @@ export default function SpeechResult({
 	sentences,
 	feedback,
 	audioBlob,
+	audioMimeType,
 	onSave,
 	isSaving = false,
 	note = "",
 	onNoteChange,
 	onHasUnsavedChanges,
+	debugInfo,
 }: SpeechResultProps) {
 	const { t } = useTranslation("app");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [editableSentences, setEditableSentences] =
 		useState<SentenceData[]>(sentences);
+	const [showDebugInfo, setShowDebugInfo] = useState(false);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
 	// 音声再生/一時停止
@@ -127,11 +136,59 @@ export default function SpeechResult({
 	return (
 		<div className="max-w-4xl mx-auto">
 			{/* Header */}
-			<div className="mb-6">
+			<div className="mb-6 flex justify-between items-center">
 				<h2 className="text-xl md:text-2xl font-bold text-gray-900">
 					Add Speech
 				</h2>
+				{/* Debug Info Toggle Button */}
+				{audioBlob && (
+					<button
+						type="button"
+						onClick={() => setShowDebugInfo(!showDebugInfo)}
+						className="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+					>
+						{showDebugInfo ? "Hide" : "Show"} Audio Info
+					</button>
+				)}
 			</div>
+
+			{/* Debug Info Panel */}
+			{showDebugInfo && audioBlob && (
+				<div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+					<h3 className="text-sm font-semibold text-blue-900 mb-2">
+						🔍 Audio Debug Info (for Safari troubleshooting)
+					</h3>
+					<div className="space-y-1 text-xs text-blue-800 font-mono">
+						<div>
+							<span className="font-semibold">Recording MIME Type:</span>{" "}
+							{debugInfo?.recordingMimeType || audioMimeType || "N/A"}
+						</div>
+						<div>
+							<span className="font-semibold">Audio Blob Size:</span>{" "}
+							{debugInfo?.audioBlobSize || audioBlob.size} bytes (
+							{((debugInfo?.audioBlobSize || audioBlob.size) / 1024).toFixed(2)}{" "}
+							KB)
+						</div>
+						<div>
+							<span className="font-semibold">Audio Blob Type:</span>{" "}
+							{debugInfo?.audioBlobType || audioBlob.type || "N/A"}
+						</div>
+						<div>
+							<span className="font-semibold">Browser:</span>{" "}
+							{navigator.userAgent.includes("Safari") &&
+							!navigator.userAgent.includes("Chrome")
+								? "Safari"
+								: navigator.userAgent.includes("Chrome")
+									? "Chrome"
+									: "Other"}
+						</div>
+						<div>
+							<span className="font-semibold">Platform:</span>{" "}
+							{/iPhone|iPad|iPod/.test(navigator.userAgent) ? "iOS" : "Other"}
+						</div>
+					</div>
+				</div>
+			)}
 
 			{/* Title */}
 			<div className="mb-4">

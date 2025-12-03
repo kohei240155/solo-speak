@@ -13,6 +13,12 @@ export const saveSpeech = async (
 	audioBlob?: Blob | null,
 	audioMimeType?: string,
 ): Promise<SaveSpeechResponseData> => {
+	console.log("[useSaveSpeech] Starting save speech process", {
+		hasAudio: !!audioBlob,
+		audioSize: audioBlob?.size,
+		audioMimeType,
+	});
+
 	const formData = new FormData();
 
 	// 音声ファイルがある場合は追加
@@ -26,11 +32,27 @@ export const saveSpeech = async (
 		} else if (audioMimeType?.includes("wav")) {
 			extension = "wav";
 		}
+		console.log("[useSaveSpeech] Adding audio to FormData", {
+			extension,
+			size: audioBlob.size,
+			type: audioBlob.type,
+			mimeType: audioMimeType,
+		});
 		formData.append("audio", audioBlob, `speech.${extension}`);
 	}
 
 	// その他のデータをJSON文字列として追加
 	formData.append("data", JSON.stringify(data));
 
-	return api.post<SaveSpeechResponseData>("/api/speech/save", formData);
+	console.log("[useSaveSpeech] Sending request to API");
+	const result = await api.post<SaveSpeechResponseData>(
+		"/api/speech/save",
+		formData,
+	);
+	console.log("[useSaveSpeech] Save successful", {
+		speechId: result.speech.id,
+		hasAudioPath: !!result.speech.audioFilePath,
+	});
+
+	return result;
 };
