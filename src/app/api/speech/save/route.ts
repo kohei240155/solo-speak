@@ -177,9 +177,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 						audioFile.name.endsWith(".webm")
 					) {
 						try {
-							console.log(
-								`[Speech Save] Converting WebM to WAV for speech ${speech.id}`,
-							);
 							const wavBuffer = await convertWebMToWav(
 								Buffer.from(audioBuffer),
 							);
@@ -188,38 +185,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 							audioBlob = new Blob([new Uint8Array(wavBuffer)], {
 								type: "audio/wav",
 							});
-							console.log(
-								`[Speech Save] Audio conversion successful (${audioBlob.size} bytes)`,
-							);
-						} catch (conversionError) {
-							// WebM変換失敗 - Safari/iOSでは再生できない可能性が高い
-							console.error(
-								"[Speech Save] Audio conversion failed, using original WebM (may not play on Safari):",
-								conversionError,
-							);
+						} catch {
 							// フォールバック：オリジナルファイルをアップロード
 							audioBlob = new Blob([audioBuffer], { type: audioFile.type });
 						}
 					} else {
 						audioBlob = new Blob([audioBuffer], { type: audioFile.type });
-						console.log(
-							`[Speech Save] Using original audio format: ${audioFile.type}`,
-						);
 					}
 
 					audioFilePath = await uploadSpeechAudio(userId, speech.id, audioBlob);
-					console.log(
-						`[Speech Save] Audio uploaded successfully: ${audioFilePath}`,
-					);
 
 					// Speechレコードを更新して音声パスを保存
 					await tx.speech.update({
 						where: { id: speech.id },
 						data: { audioFilePath },
 					});
-				} catch (uploadError) {
-					// 音声アップロードの失敗をログに記録
-					console.error("[Speech Save] Audio upload failed:", uploadError);
+				} catch {
 					// 音声アップロードの失敗は致命的ではないため、続行
 				}
 			} // 3. SpeechPlanレコードを作成
@@ -334,14 +315,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 		return NextResponse.json(response, { status: 201 });
 	} catch (error) {
-		console.error("[Speech Save] Error saving speech:", error);
-		// エラーの詳細をログに記録
-		if (error instanceof Error) {
-			console.error("[Speech Save] Error details:", {
-				message: error.message,
-				stack: error.stack,
-			});
-		}
+		console.error("Error saving speech:", error);
 		const errorResponse: ApiErrorResponse = {
 			error: "Failed to save speech",
 		};
