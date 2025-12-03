@@ -143,127 +143,149 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			return NextResponse.json(errorResponse, { status: 500 });
 		}
 
-		// トランザクション開始
-		const result = await prisma.$transaction(async (tx) => {
-			// 1. Speechレコードを作成
-			const speech = await tx.speech.create({
-				data: {
-					userId,
-					title: parsedData.title,
-					learningLanguageId: parsedData.learningLanguageId,
-					nativeLanguageId: parsedData.nativeLanguageId,
-					statusId: defaultStatus.id,
-					firstSpeechText: parsedData.firstSpeechText,
-					notes: parsedData.notes,
-					practiceCount: 0,
-				},
-				include: {
-					learningLanguage: true,
-					nativeLanguage: true,
-					status: true,
-				},
-			});
+		// トランザクション開始（タイムアウト10秒に延長）
+		const result = await prisma.$transaction(
+			async (tx) => {
+				// 1. Speechレコードを作成
+				const speech = await tx.speech.create({
+					data: {
+						userId,
+						title: parsedData.title,
+						learningLanguageId: parsedData.learningLanguageId,
+						nativeLanguageId: parsedData.nativeLanguageId,
+						statusId: defaultStatus.id,
+						firstSpeechText: parsedData.firstSpeechText,
+						notes: parsedData.notes,
+						practiceCount: 0,
+					},
+					include: {
+						learningLanguage: true,
+						nativeLanguage: true,
+						status: true,
+					},
+				});
 
-			// 2. 音声ファイルのアップロード（ある場合）
-			let audioFilePath: string | undefined;
-			if (audioFile) {
-				try {
-					const audioBuffer = await audioFile.arrayBuffer();
-					let audioBlob: Blob;
+				// 2. SpeechPlanレコードを作成
+				// 2. SpeechPlanレコードを作成
+				const speechPlans = await Promise.all(
+					parsedData.speechPlans.map((planContent) =>
+						tx.speechPlan.create({
+							data: {
+								speechId: speech.id,
+								planningContent: planContent,
+							},
+						}),
+					),
+				);
 
-					// WebMファイルの場合はWAVに変換
-					if (
-						audioFile.type === "audio/webm" ||
-						audioFile.name.endsWith(".webm")
-					) {
-						try {
-							const wavBuffer = await convertWebMToWav(
-								Buffer.from(audioBuffer),
-							);
+				// 3. Phraseレコードを作成
+				const phrases = await Promise.all(
+					parsedData.sentences.map((sentence, index) =>
+						tx.phrase.create({
+							data: {
+								userId,
+								languageId: parsedData.learningLanguageId,
+								original: sentence.learningLanguage,
+								translation: sentence.nativeLanguage,
+								phraseLevelId: defaultPhraseLevel.id,
+								speechId: speech.id,
+								speechOrder: index + 1, // 1から始まる順序
+							},
+						}),
+					),
+				);
 
-							// BufferをUint8Arrayに変換してBlobを作成
-							audioBlob = new Blob([new Uint8Array(wavBuffer)], {
-								type: "audio/wav",
-							});
-						} catch {
-							// フォールバック：オリジナルファイルをアップロード
-							audioBlob = new Blob([audioBuffer], { type: audioFile.type });
-						}
-					} else {
+				// 4. SpeechFeedbackレコードを作成
+				const feedbacks = await Promise.all(
+					parsedData.feedback.map((fb) =>
+						tx.speechFeedback.create({
+							data: {
+								speechId: speech.id,
+								category: fb.category,
+								content: fb.content,
+							},
+						}),
+					),
+				);
+
+				// ユーザーの総Speech数をカウント
+				const totalSpeechCount = await tx.speech.count({
+					where: {
+						userId,
+						deletedAt: null,
+					},
+				});
+
+				return {
+					speech,
+					speechPlans,
+					phrases,
+					feedbacks,
+					totalSpeechCount,
+				};
+			},
+			{
+				maxWait: 10000, // 最大待機時間: 10秒
+				timeout: 10000, // タイムアウト: 10秒
+			},
+		);
+
+		// 音声ファイルのアップロード（トランザクション外で実行）
+		let audioFilePath: string | undefined;
+		if (audioFile) {
+			try {
+				console.log(
+					"[Speech Save] Starting audio upload for speech:",
+					result.speech.id,
+				);
+				const audioBuffer = await audioFile.arrayBuffer();
+				let audioBlob: Blob;
+
+				// WebMファイルの場合はWAVに変換
+				if (
+					audioFile.type === "audio/webm" ||
+					audioFile.name.endsWith(".webm")
+				) {
+					try {
+						const wavBuffer = await convertWebMToWav(Buffer.from(audioBuffer));
+
+						// BufferをUint8Arrayに変換してBlobを作成
+						audioBlob = new Blob([new Uint8Array(wavBuffer)], {
+							type: "audio/wav",
+						});
+					} catch (conversionError) {
+						console.error(
+							"[Speech Save] WebM to WAV conversion failed:",
+							conversionError,
+						);
+						// フォールバック：オリジナルファイルをアップロード
 						audioBlob = new Blob([audioBuffer], { type: audioFile.type });
 					}
-
-					audioFilePath = await uploadSpeechAudio(userId, speech.id, audioBlob);
-
-					// Speechレコードを更新して音声パスを保存
-					await tx.speech.update({
-						where: { id: speech.id },
-						data: { audioFilePath },
-					});
-				} catch {
-					// 音声アップロードの失敗は致命的ではないため、続行
+				} else {
+					audioBlob = new Blob([audioBuffer], { type: audioFile.type });
 				}
-			} // 3. SpeechPlanレコードを作成
-			const speechPlans = await Promise.all(
-				parsedData.speechPlans.map((planContent) =>
-					tx.speechPlan.create({
-						data: {
-							speechId: speech.id,
-							planningContent: planContent,
-						},
-					}),
-				),
-			);
 
-			// 4. Phraseレコードを作成
-			const phrases = await Promise.all(
-				parsedData.sentences.map((sentence, index) =>
-					tx.phrase.create({
-						data: {
-							userId,
-							languageId: parsedData.learningLanguageId,
-							original: sentence.learningLanguage,
-							translation: sentence.nativeLanguage,
-							phraseLevelId: defaultPhraseLevel.id,
-							speechId: speech.id,
-							speechOrder: index + 1, // 1から始まる順序
-						},
-					}),
-				),
-			);
-
-			// 5. SpeechFeedbackレコードを作成
-			const feedbacks = await Promise.all(
-				parsedData.feedback.map((fb) =>
-					tx.speechFeedback.create({
-						data: {
-							speechId: speech.id,
-							category: fb.category,
-							content: fb.content,
-						},
-					}),
-				),
-			);
-
-			// ユーザーの総Speech数をカウント
-			const totalSpeechCount = await tx.speech.count({
-				where: {
+				audioFilePath = await uploadSpeechAudio(
 					userId,
-					deletedAt: null,
-				},
-			});
+					result.speech.id,
+					audioBlob,
+				);
 
-			return {
-				speech: {
-					...speech,
-					audioFilePath,
-				},
-				speechPlans,
-				phrases,
-				feedbacks,
-				totalSpeechCount,
-			};
-		});
+				// Speechレコードを更新して音声パスを保存
+				await prisma.speech.update({
+					where: { id: result.speech.id },
+					data: { audioFilePath },
+				});
+
+				console.log("[Speech Save] Audio upload successful:", audioFilePath);
+			} catch (uploadError) {
+				// 音声アップロードの失敗は致命的ではないため、ログを出力して続行
+				console.error(
+					"[Speech Save] Audio upload failed, but continuing:",
+					uploadError,
+				);
+			}
+		}
 
 		// レスポンスの作成
 		const response: SaveSpeechResponseData = {
