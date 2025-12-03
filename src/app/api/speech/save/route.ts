@@ -245,6 +245,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				),
 			);
 
+			// ユーザーの総Speech数をカウント
+			const totalSpeechCount = await tx.speech.count({
+				where: {
+					userId,
+					deletedAt: null,
+				},
+			});
+
 			return {
 				speech: {
 					...speech,
@@ -253,6 +261,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				speechPlans,
 				phrases,
 				feedbacks,
+				totalSpeechCount,
 			};
 		});
 
@@ -301,6 +310,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 				content: feedback.content,
 				createdAt: feedback.createdAt.toISOString(),
 			})),
+			totalSpeechCount: result.totalSpeechCount,
 		};
 
 		return NextResponse.json(response, { status: 201 });

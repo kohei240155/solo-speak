@@ -12,6 +12,7 @@ import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
 import SpeechResult from "@/components/speech/SpeechResult";
 import PracticeConfirmModal from "@/components/modals/PracticeConfirmModal";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
+import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -41,6 +42,8 @@ export default function SpeechAddPage() {
 
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
+	const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] =
+		useState(false);
 
 	const openReviewModal = () => {
 		setShowReviewModal(true);
@@ -48,6 +51,10 @@ export default function SpeechAddPage() {
 
 	const closeReviewModal = () => {
 		setShowReviewModal(false);
+	};
+
+	const closeAddToHomeScreenModal = () => {
+		setShowAddToHomeScreenModal(false);
 	};
 
 	// 未保存の変更をチェックする関数
@@ -112,6 +119,11 @@ export default function SpeechAddPage() {
 
 			// 保存成功したら未保存状態を解除
 			setHasUnsavedChanges(false);
+
+			// Speech数が1になったときにホーム画面追加モーダルを表示
+			if (result.totalSpeechCount === 1) {
+				setShowAddToHomeScreenModal(true);
+			}
 
 			// 保存成功後、モーダルを表示
 			setShowPracticeModal(true);
@@ -229,6 +241,12 @@ export default function SpeechAddPage() {
 				onClose={closeReviewModal}
 				languages={languages || []}
 				defaultLearningLanguage={learningLanguage}
+			/>
+
+			{/* ホーム画面追加モーダル */}
+			<AddToHomeScreenModal
+				isOpen={showAddToHomeScreenModal}
+				onClose={closeAddToHomeScreenModal}
 			/>
 
 			<Toaster />
