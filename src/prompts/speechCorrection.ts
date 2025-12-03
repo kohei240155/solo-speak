@@ -41,6 +41,7 @@ export const getSpeechCorrectionPrompt = (
 
 # 重要な注意事項
 - feedback のタイトル（category）は必ず英語にしてください。
+- フィードバックは必ず${nativeLanguage}で記述してください。
 
 # 話したいこと
 タイトル: ${title}
