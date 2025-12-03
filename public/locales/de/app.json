@@ -262,11 +262,27 @@
 			]
 		},
 		"messages": {
-			"micAccessDenied": "Der Mikrofonzugriff wurde verweigert. Bitte überprüfen Sie Ihre Browsereinstellungen.",
+			"micAccessDenied": "Der Zugriff auf das Mikrofon wurde verweigert. Bitte überprüfen Sie Ihre Browsereinstellungen.",
 			"transcribeFailed": "Audio-Transkription fehlgeschlagen",
-			"titleOrPlanRequired": "Titel oder Redeplan ist nicht eingegeben",
+			"titleOrPlanRequired": "Titel oder Redeplan wurde nicht eingegeben",
 			"languagesRequired": "Lernsprache und Muttersprache sind nicht festgelegt",
 			"correctionFailed": "Korrektur der Rede fehlgeschlagen"
+		},
+		"help": {
+			"title": "So verwenden Sie den Redemodus",
+			"howToUse": {
+				"title": "So verwenden Sie",
+				"step1": "Geben Sie das Thema ein, über das Sie sprechen möchten",
+				"step2": "Geben Sie den Inhalt ein, über den Sie im Zusammenhang mit dem Thema sprechen möchten",
+				"step3": "Beginnen Sie die Aufnahme und sprechen Sie gemäß dem eingegebenen Inhalt",
+				"step4": "Drücken Sie die Stopp-Taste, wenn die Aufnahme abgeschlossen ist",
+				"step5": "Drücken Sie die Senden-Taste, um die Korrektur auszuführen"
+			},
+			"notes": {
+				"title": "Hinweise",
+				"dailyLimit": "Die Redefunktion kann einmal pro Tag verwendet werden",
+				"recordingTime": "Die Aufnahme muss zwischen 10 und 90 Sekunden dauern"
+			}
 		},
 		"review": {
 			"micAccessDenied": "Der Zugriff auf das Mikrofon wurde nicht erlaubt",
@@ -275,6 +291,28 @@
 			"practiceTip": "Üben Sie, bis Sie fließend sprechen können.",
 			"feedbackTip": "Überprüfen Sie das Feedback zu Ihrer ersten Rede.",
 			"noteTip": "Notieren Sie Ihre Beobachtungen."
+		},
+		"reviewHelp": {
+			"title": "So verwenden Sie den Überprüfungsmodus",
+			"recording": {
+				"title": "Aufnahmefunktion",
+				"description1": "Sie können Ihre eigene Rede aufnehmen und überprüfen",
+				"description2": "Überprüfen Sie, ob Sie sich gegenüber Ihrer ersten Rede verbessert haben"
+			},
+			"phrasePractice": {
+				"title": "Phrasenübungsfunktion",
+				"description1": "Üben Sie das Lesen von Phrasen einzeln mit dem Symbol rechts neben der Aufnahmetaste",
+				"description2": "Sie können mit konzentrierter Aufmerksamkeit auf jede Phrase üben"
+			},
+			"statusChange": {
+				"title": "Statusänderungsfunktion",
+				"description1": "Verwalten Sie Ihren Redebeherrschungsstatus",
+				"description2": "Ändern Sie den Status mit dem Symbol links neben der Aufnahmetaste"
+			},
+			"notes": {
+				"title": "Hinweise",
+				"description": "Die Übungsanzahl wird hinzugefügt, wenn die Wiedergabe der aufgenommenen Audiodatei abgeschlossen ist"
+			}
 		},
 		"status": {
 			"A": "Kann fließend sprechen, ohne auf das Skript zu schauen",

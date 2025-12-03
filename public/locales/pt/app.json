@@ -262,11 +262,27 @@
 			]
 		},
 		"messages": {
-			"micAccessDenied": "O acesso ao microfone foi negado. Por favor, verifique as configurações do navegador.",
+			"micAccessDenied": "O acesso ao microfone foi negado. Por favor, verifique as configurações do seu navegador.",
 			"transcribeFailed": "Falha ao transcrever o áudio",
 			"titleOrPlanRequired": "Título ou plano de discurso não foi inserido",
-			"languagesRequired": "Idioma de aprendizagem e idioma nativo não estão definidos",
+			"languagesRequired": "Idioma de aprendizagem e idioma nativo não foram definidos",
 			"correctionFailed": "Falha ao corrigir o discurso"
+		},
+		"help": {
+			"title": "Como usar o modo de discurso",
+			"howToUse": {
+				"title": "Como usar",
+				"step1": "Digite o tema sobre o qual você deseja falar",
+				"step2": "Digite o conteúdo que você deseja falar relacionado ao tema",
+				"step3": "Comece a gravar e fale de acordo com o conteúdo inserido",
+				"step4": "Pressione o botão de parar quando a gravação terminar",
+				"step5": "Pressione o botão de enviar para executar a correção"
+			},
+			"notes": {
+				"title": "Observações",
+				"dailyLimit": "A função de discurso pode ser usada uma vez por dia",
+				"recordingTime": "A gravação deve ter entre 10 e 90 segundos"
+			}
 		},
 		"review": {
 			"micAccessDenied": "O acesso ao microfone não foi permitido",
@@ -275,6 +291,28 @@
 			"practiceTip": "Pratique até conseguir falar fluentemente.",
 			"feedbackTip": "Revise o feedback do seu discurso inicial.",
 			"noteTip": "Anote livremente suas observações."
+		},
+		"reviewHelp": {
+			"title": "Como usar o modo de revisão",
+			"recording": {
+				"title": "Função de gravação",
+				"description1": "Você pode gravar e revisar seu próprio discurso",
+				"description2": "Verifique se você melhorou em relação ao seu discurso inicial"
+			},
+			"phrasePractice": {
+				"title": "Função de prática de frases",
+				"description1": "Pratique a leitura de frases individualmente usando o ícone no lado direito do botão de gravação",
+				"description2": "Você pode praticar com concentração focada em cada frase"
+			},
+			"statusChange": {
+				"title": "Função de mudança de status",
+				"description1": "Gerencie seu status de domínio do discurso",
+				"description2": "Altere o status usando o ícone no lado esquerdo do botão de gravação"
+			},
+			"notes": {
+				"title": "Observações",
+				"description": "A contagem de prática é adicionada quando a reprodução do áudio gravado é concluída"
+			}
 		},
 		"status": {
 			"A": "Pode falar fluentemente sem olhar para o roteiro",

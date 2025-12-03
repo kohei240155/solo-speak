@@ -268,6 +268,22 @@
 			"languagesRequired": "Learning language and native language are not set",
 			"correctionFailed": "Failed to correct speech"
 		},
+		"help": {
+			"title": "How to Use Speech Mode",
+			"howToUse": {
+				"title": "How to Use",
+				"step1": "Enter the theme you want to talk about",
+				"step2": "Enter the content you want to talk about related to the theme",
+				"step3": "Start recording and speak according to the content you entered",
+				"step4": "Press the stop button when recording is complete",
+				"step5": "Press the submit button to execute correction"
+			},
+			"notes": {
+				"title": "Notes",
+				"dailyLimit": "Speech feature can be used once per day",
+				"recordingTime": "Recording must be between 10 seconds and 90 seconds"
+			}
+		},
 		"review": {
 			"micAccessDenied": "Microphone access is not permitted",
 			"recordingTooShort": "Recording must be at least 10 seconds long",
@@ -275,6 +291,28 @@
 			"practiceTip": "Practice until you can speak fluently.",
 			"feedbackTip": "Review the feedback from your initial speech.",
 			"noteTip": "Feel free to jot down any observations."
+		},
+		"reviewHelp": {
+			"title": "How to Use Review Mode",
+			"recording": {
+				"title": "Recording Feature",
+				"description1": "You can record and review your own speech",
+				"description2": "Check if you have improved from your initial speech"
+			},
+			"phrasePractice": {
+				"title": "Phrase Practice Feature",
+				"description1": "Practice reading phrases individually using the icon on the right side of the recording button",
+				"description2": "You can practice with focused concentration on each phrase"
+			},
+			"statusChange": {
+				"title": "Status Change Feature",
+				"description1": "Manage your speech mastery status",
+				"description2": "Change status using the icon on the left side of the recording button"
+			},
+			"notes": {
+				"title": "Notes",
+				"description": "Practice count is added when playback of recorded audio is completed"
+			}
 		},
 		"status": {
 			"A": "Can speak fluently without looking at the script",
