@@ -99,9 +99,9 @@ npm install --legacy-peer-deps
 
 ### 3. Configure Environment Variables
 
-Create a \`.env.local\` file and set the following environment variables:
+Create a `.env.local` file and set the following environment variables:
 
-\`\`\`env
+```env
 # Database
 DATABASE_URL="your_postgresql_url"
 DIRECT_URL="your_postgresql_direct_url"
@@ -125,11 +125,11 @@ STRIPE_WEBHOOK_SECRET="your_stripe_webhook_secret"
 
 # Application Settings
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-\`\`\`
+```
 
 ### 4. Database Setup
 
-\`\`\`bash
+```bash
 # Generate Prisma client
 npm run generate
 
@@ -138,50 +138,50 @@ npm run db:migrate:local
 
 # Seed database (includes languages, phrase levels, and speech statuses)
 npm run db:seed:local
-\`\`\`
+```
 
 ### 5. Start Development Server
 
-\`\`\`bash
+```bash
 npm run dev:local
-\`\`\`
+```
 
-The application will start at \`http://localhost:3000\`.
+The application will start at `http://localhost:3000`.
 
 ## 🎮 How to Use Main Features
 
 ### Phrase Generation
 
-1. Go to \`/phrase/add\`
+1. Go to `/phrase/add`
 2. Select a situation
 3. Enter a phrase
 4. Choose from 3 styles
 
 ### Quiz Mode
 
-1. Go to \`/phrase/quiz\`
+1. Go to `/phrase/quiz`
 2. Set level and filters
 3. Challenge 4-choice quizzes
 4. Track accuracy rate and streak
 
 ### Speaking Practice
 
-1. Go to \`/phrase/speak\`
+1. Go to `/phrase/speak`
 2. Practice phrases with voice
 3. Be mindful of daily reset
 
 ### Speech Practice
 
-1. Go to \`/speech/add\`
+1. Go to `/speech/add`
 2. Enter a topic
 3. Receive AI correction
-4. Review at \`/speech/review\`
+4. Review at `/speech/review`
 
-The application will be available at \`http://localhost:3000\`.
+The application will be available at `http://localhost:3000`.
 
 ## 📂 Project Structure
 
-\`\`\`
+```
 solo-speak/
 ├── src/
 │   ├── app/                    # Next.js App Router
@@ -242,7 +242,7 @@ solo-speak/
 │   ├── api/             # API documentation
 │   └── ...
 └── scripts/             # Utility scripts
-\`\`\`
+```
 
 ## 📚 Usage
 
@@ -293,7 +293,7 @@ solo-speak/
 
 ### Basic Commands
 
-\`\`\`bash
+```bash
 # Start development server
 npm run dev:local              # Local environment
 npm run dev:production         # Production environment settings
@@ -304,11 +304,11 @@ npm run build:production       # Production environment
 
 # Lint
 npm run lint
-\`\`\`
+```
 
 ### Database Management
 
-\`\`\`bash
+```bash
 # Migrations
 npm run db:migrate:local       # Local environment
 npm run db:migrate:production  # Production environment
@@ -320,11 +320,11 @@ npm run db:studio:production   # Production environment
 # Run seeds
 npm run db:seed:local          # Local environment
 npm run db:seed:production     # Production environment
-\`\`\`
+```
 
 ### Scripts
 
-\`\`\`bash
+```bash
 # Setup phrase levels
 npm run setup:phrase-levels:local
 
@@ -346,25 +346,25 @@ npm run recreate:tables:production
 
 # Seed production environment
 npm run seed:production:production
-\`\`\`
+```
 
 ## 💾 i18n Management Tools
 
 Python scripts are provided to check and manage translation key usage:
 
-\`\`\`bash
+```bash
 # Check translation key usage
 python check_i18n_usage.py
 
 # Remove unused keys
 python remove_unused_i18n_keys.py
-\`\`\`
+```
 
 For details, refer to the following reports:
 
-- \`i18n_final_report.md\` - i18n cleanup completion report
-- \`i18n_analysis_report.md\` - Analysis report
-- \`i18n_cleanup_guide.md\` - Cleanup guide
+- `i18n_final_report.md` - i18n cleanup completion report
+- `i18n_analysis_report.md` - Analysis report
+- `i18n_cleanup_guide.md` - Cleanup guide
 
 ### About Speech Status Seed Values
 
@@ -379,7 +379,7 @@ This project defines SpeechStatus representing speech proficiency:
 
 These statuses can be seeded with the following commands:
 
-\`\`\`bash
+```bash
 # Development environment
 npm run seed:speech-statuses:local
 
@@ -389,7 +389,7 @@ npm run seed:speech-statuses:production
 # All seed data (including languages, phrase levels, speech statuses)
 npm run db:seed:local          # Local environment
 npm run db:seed:production     # Production environment
-\`\`\`
+```
 
 ### Database Models
 
@@ -407,7 +407,7 @@ Main database models:
 - **SpeechStatus**: Proficiency status
 - **Situation**: Situation master
 
-For details, refer to \`prisma/schema.prisma\`.
+For details, refer to `prisma/schema.prisma`.
 
 ## 📱 How to Access Next.js Local Environment from Smartphone on Mac
 
@@ -424,18 +424,18 @@ For details, refer to \`prisma/schema.prisma\`.
 
 Run the following in Terminal:
 
-\`\`\`bash
+```bash
 ipconfig getifaddr en0
-\`\`\`
+```
 
-> 💡 \`en0\` is the Wi-Fi connection interface.
-> If using wired LAN, it might be \`en1\`.
+> 💡 `en0` is the Wi-Fi connection interface.
+> If using wired LAN, it might be `en1`.
 
 Example output:
 
-\`\`\`
+```
 192.168.1.23
-\`\`\`
+```
 
 Note this IP address.
 
@@ -443,14 +443,14 @@ Note this IP address.
 
 #### ② Start Next.js with External Access
 
-Normally \`npm run dev\` only allows "localhost" access.
+Normally `npm run dev` only allows "localhost" access.
 To access from smartphone, use this command:
 
-\`\`\`bash
+```bash
 npx next dev --hostname 0.0.0.0
-\`\`\`
+```
 
-> 💡 Specifying \`--hostname 0.0.0.0\` enables access
+> 💡 Specifying `--hostname 0.0.0.0` enables access
 > from other devices (like smartphones) on the same network.
 
 ---
@@ -459,15 +459,15 @@ npx next dev --hostname 0.0.0.0
 
 In your smartphone browser (Safari, Chrome, etc.), enter the following URL:
 
-\`\`\`
+```
 http://<Mac IP Address>:3000
-\`\`\`
+```
 
 Example:
 
-\`\`\`
+```
 http://192.168.1.23:3000
-\`\`\`
+```
 
 Now you can view the Next.js local app from your smartphone 🎉
 
@@ -482,12 +482,12 @@ and temporarily allow Next.js to communicate on port 3000.
 
 ### 🔍 Summary
 
-| Step | Content                                          |
-| ---- | ------------------------------------------------ |
-| ①    | Check Mac IP with \`ipconfig getifaddr en0\`       |
-| ②    | Start server with \`npx next dev --hostname 0.0.0.0\` |
-| ③    | Access \`http://<IP>:3000\` from smartphone browser |
-| ④    | Allow firewall if needed                         |
+| Step | Content                                             |
+| ---- | --------------------------------------------------- |
+| ①    | Check Mac IP with `ipconfig getifaddr en0`          |
+| ②    | Start server with `npx next dev --hostname 0.0.0.0` |
+| ③    | Access `http://<IP>:3000` from smartphone browser   |
+| ④    | Allow firewall if needed                            |
 
 ---
 
@@ -521,7 +521,7 @@ Currently supported languages (9 languages):
 
 ## 📖 Documentation
 
-Detailed documentation is included in the \`docs/\` directory:
+Detailed documentation is included in the `docs/` directory:
 
 ### Feature Documentation
 
@@ -538,7 +538,7 @@ Detailed documentation is included in the \`docs/\` directory:
 
 ### API Documentation
 
-Refer to the \`docs/api/\` directory for details on each API endpoint:
+Refer to the `docs/api/` directory for details on each API endpoint:
 
 - [Dashboard API](docs/api/dashboard.md)
 - [Languages API](docs/api/languages.md)
@@ -565,21 +565,21 @@ Contributions to the project are welcome!
 
 1. Fork and create a branch
 
-\`\`\`bash
+```bash
 git checkout -b feature/new-feature
-\`\`\`
+```
 
 2. Commit changes
 
-\`\`\`bash
+```bash
 git commit -am 'Add new feature'
-\`\`\`
+```
 
 3. Push to branch
 
-\`\`\`bash
+```bash
 git push origin feature/new-feature
-\`\`\`
+```
 
 4. Create a pull request
 
