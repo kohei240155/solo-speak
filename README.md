@@ -1,94 +1,108 @@
 # Solo Speak
 
-AI駆動の多言語学習プラットフォーム
+AI-Powered Multilingual Learning Platform
 
-## 🌟 概要
+## 🌟 Overview
 
-Solo Speakは、AI技術を活用して外国語学習を支援するWebアプリケーションです。ユーザーが実際に話したいフレーズを入力すると、AIが3つのスタイル（一般的、丁寧、カジュアル）で翻訳し、効果的な語学学習をサポートします。
+Solo Speak is a comprehensive web application that leverages AI technology to support foreign language learning. When users input phrases they want to say, AI translates them in three styles (general, polite, casual) with audio support. Additionally, it provides a systematic and enjoyable language learning experience through quiz features, speaking practice, and ranking systems.
 
-## ✨ 主な機能
+## ✨ Key Features
 
-### 🤖 AI フレーズ生成
+### 🤖 AI Phrase Generation
 
-- ChatGPT APIを使用した高品質な翻訳
-- 3つのスタイル（一般的、丁寧、カジュアル）での翻訳提案
-- コンテキストを考慮した自然な翻訳
+- High-quality translation using ChatGPT API
+- Translation suggestions in 3 styles (general, polite, casual)
+- Natural translations considering context and situations
+- 7-level learning system (Lv1-Lv7)
 
-### 📚 多言語対応
+### 🎙️ Speaking Practice
 
-- 9つの言語をサポート（英語、日本語、韓国語、中国語、フランス語、スペイン語、ポルトガル語、ドイツ語、タイ語）
-- ユーザーの母国語と学習言語の設定
-- 多言語UIに対応
+- **Voice Input**: Real-time speech recognition
+- **AI Correction System**: Automatic pronunciation and grammar correction via ChatGPT API
+- **Speaking Plan**: Step-by-step learning plan presentation
+- **Practice History**: Review and revisit past practice records
+- **Status Management**: 4-level proficiency evaluation (A: Fluent, B: Partially referenced, C: Reference needed, D: Not reviewed)
 
-### 🎯 パーソナライズド学習
+### 📚 Multilingual Support
 
-- ユーザー専用のフレーズ管理
-- 学習進捗の追跡
-- 個別の学習体験
+- Supports **9 languages** (English, Japanese, Korean, Chinese, Spanish, French, Portuguese, German, Thai)
+- User native language and learning language settings
+- Full multilingual UI support
+- Complete i18n support (97.8% translation key usage rate)
 
-### 🎙️ 発音練習（予定）
+### 🎯 Personalized Learning
 
-- 音声入力機能
-- 発音評価システム
-- リアルタイムフィードバック
+- **Phrase Management**: User-specific phrase collection
+- **Quiz Mode**: 4-choice quiz system for review
+- **Learning Progress Tracking**: Practice count, accuracy rate, streak records
+- **Daily Reset**: Daily speaking count limit
+- Individual learning experience and customization
 
-## 🛠️ 技術スタック
+### 🏆 Ranking System
 
-### フロントエンド
+- **Quiz Ranking**: Competition by accuracy rate and streak
+- **Speaking Ranking**: Ranking by practice volume
+- **Phrase Streak Ranking**: Consecutive learning days record
+- Real-time updated global rankings
 
-- **Next.js 15** - Reactフレームワーク
-- **React 19** - UIライブラリ
-- **TypeScript** - 型安全性
-- **Tailwind CSS** - スタイリング
-- **React Hook Form** - フォーム管理
-- **React Hot Toast** - 通知システム
+## 🛠️ Tech Stack
 
-### バックエンド
+### Frontend
 
-- **Next.js API Routes** - サーバーサイドAPI
-- **Prisma** - データベースORM
-- **PostgreSQL** - データベース
-- **Supabase** - 認証・データベースホスティング
+- **Next.js 15** - React framework
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **React Hook Form** - Form management
+- **React Hot Toast** - Notification system
 
-### AI・API
+### Backend
 
-- **OpenAI GPT-4o-mini** - フレーズ生成
-- **Google Cloud Text-to-Speech** - 音声生成
-- **Stripe** - 決済処理
+- **Next.js API Routes** - Server-side API
+- **Prisma** - Database ORM
+- **PostgreSQL** - Database
+- **Supabase** - Authentication, database hosting, and storage
 
-### 開発ツール
+### AI & APIs
 
-- **ESLint** - コード品質
-- **PostCSS** - CSS処理
-- **tsx** - TypeScriptランナー
+- **OpenAI GPT-4o-mini** - Phrase generation and correction system
+- **Google Cloud Text-to-Speech** - Speech synthesis (9 languages supported)
+- **Web Speech API** - Speech recognition
+- **Stripe** - Subscription management and payment processing
 
-## 🚀 セットアップ
+### Development Tools
 
-### 必要環境
+- **ESLint** - Code quality
+- **PostCSS** - CSS processing
+- **tsx** - TypeScript runner
+
+## 🚀 Setup
+
+### Prerequisites
 
 - Node.js 18+
-- npm または yarn
-- PostgreSQL データベース
+- npm or yarn
+- PostgreSQL database
 
-### 1. リポジトリのクローン
+### 1. Clone the Repository
 
-```bash
+\`\`\`bash
 git clone https://github.com/kohei240155/solo-speak.git
 cd solo-speak
-```
+\`\`\`
 
-### 2. 依存関係のインストール
+### 2. Install Dependencies
 
-```bash
+\`\`\`bash
 npm install --legacy-peer-deps
-```
+\`\`\`
 
-### 3. 環境変数の設定
+### 3. Configure Environment Variables
 
-`.env.local` ファイルを作成し、以下の環境変数を設定：
+Create a \`.env.local\` file and set the following environment variables:
 
-```env
-# データベース
+\`\`\`env
+# Database
 DATABASE_URL="your_postgresql_url"
 DIRECT_URL="your_postgresql_direct_url"
 
@@ -99,324 +113,584 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="your_supabase_anon_key"
 # OpenAI
 OPENAI_API_KEY="your_openai_api_key"
 
-# Google Cloud (オプション)
+# Google Cloud (Optional)
 GOOGLE_CLOUD_PROJECT_ID="your_project_id"
 GOOGLE_CLOUD_PRIVATE_KEY="your_private_key"
 GOOGLE_CLOUD_CLIENT_EMAIL="your_client_email"
 
-# Stripe (オプション)
+# Stripe (Optional)
 STRIPE_SECRET_KEY="your_stripe_secret_key"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_stripe_publishable_key"
-```
+STRIPE_WEBHOOK_SECRET="your_stripe_webhook_secret"
 
-### 5. データベースのセットアップ
+# Application Settings
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+\`\`\`
 
-```bash
-# Prismaクライアントの生成
+### 4. Database Setup
+
+\`\`\`bash
+# Generate Prisma client
 npm run generate
 
-# データベースマイグレーション
+# Run database migrations
 npm run db:migrate:local
 
-# シードデータの投入
+# Seed database (includes languages, phrase levels, and speech statuses)
 npm run db:seed:local
-```
+\`\`\`
 
-### 6. 開発サーバーの起動成
+### 5. Start Development Server
 
-npm run generate
-
-# データベースマイグレーション
-
-npm run db:migrate:local
-
-# シードデータの投入
-
-npm run db:seed:local
-
-````
-
-### 5. 開発サーバーの起動
-
-```bash
+\`\`\`bash
 npm run dev:local
-````
+\`\`\`
 
-アプリケーションは `http://localhost:3000` で起動します。
+The application will start at \`http://localhost:3000\`.
 
-## 📂 プロジェクト構造
+## 🎮 How to Use Main Features
 
-```
+### Phrase Generation
+
+1. Go to \`/phrase/add\`
+2. Select a situation
+3. Enter a phrase
+4. Choose from 3 styles
+
+### Quiz Mode
+
+1. Go to \`/phrase/quiz\`
+2. Set level and filters
+3. Challenge 4-choice quizzes
+4. Track accuracy rate and streak
+
+### Speaking Practice
+
+1. Go to \`/phrase/speak\`
+2. Practice phrases with voice
+3. Be mindful of daily reset
+
+### Speech Practice
+
+1. Go to \`/speech/add\`
+2. Enter a topic
+3. Receive AI correction
+4. Review at \`/speech/review\`
+
+The application will be available at \`http://localhost:3000\`.
+
+## 📂 Project Structure
+
+\`\`\`
 solo-speak/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── api/               # API Routes
-│   │   ├── dashboard/         # ダッシュボード
-│   │   ├── phrase/            # フレーズ機能
+│   │   │   ├── dashboard/    # Dashboard API
+│   │   │   ├── languages/    # Language master API
+│   │   │   ├── phrase/       # Phrase generation & management
+│   │   │   ├── ranking/      # Ranking system
+│   │   │   ├── speech/       # Speech practice
+│   │   │   ├── stripe/       # Subscription
+│   │   │   ├── tts/          # Text-to-speech
+│   │   │   └── user/         # User settings
+│   │   ├── auth/             # Authentication pages
+│   │   ├── dashboard/        # Dashboard
+│   │   ├── phrase/           # Phrase features
+│   │   │   ├── add/         # Phrase generation
+│   │   │   ├── list/        # Phrase list
+│   │   │   ├── quiz/        # Quiz mode
+│   │   │   └── speak/       # Speaking practice
+│   │   ├── ranking/          # Rankings
+│   │   ├── settings/         # Settings
+│   │   ├── speech/           # Speech practice
+│   │   │   ├── add/         # New speech
+│   │   │   ├── list/        # Speech list
+│   │   │   └── review/      # Speech review
 │   │   └── ...
-│   ├── components/            # Reactコンポーネント
-│   │   ├── auth/             # 認証関連
-│   │   ├── common/           # 共通コンポーネント
-│   │   ├── phrase/           # フレーズ関連
+│   ├── components/           # React components
+│   │   ├── auth/            # Authentication related
+│   │   ├── common/          # Common components
+│   │   ├── navigation/      # Navigation
+│   │   ├── phrase/          # Phrase related
+│   │   ├── ranking/         # Rankings
+│   │   ├── speech/          # Speech related
 │   │   └── ...
-│   ├── hooks/                # カスタムHooks
-│   ├── types/                # TypeScript型定義
-│   ├── utils/                # ユーティリティ関数
-│   └── constants/            # 定数定義
-├── prisma/                   # データベーススキーマ
-├── public/                   # 静的ファイル
-│   └── locales/             # 国際化ファイル
-├── docs/                     # ドキュメント
-└── scripts/                  # ユーティリティスクリプト
-```
+│   ├── hooks/               # Custom Hooks
+│   │   ├── phrase/         # Phrase-related Hooks
+│   │   ├── speech/         # Speech-related Hooks
+│   │   └── ...
+│   ├── types/              # TypeScript type definitions
+│   ├── utils/              # Utility functions
+│   ├── constants/          # Constant definitions
+│   ├── contexts/           # React contexts
+│   ├── data/               # Master data
+│   ├── prompts/            # AI prompts
+│   └── generated/          # Generated files
+├── prisma/                 # Database schema
+│   ├── schema.prisma      # Prisma schema
+│   ├── seed.ts            # Seed script
+│   └── migrations/        # Migrations
+├── public/                # Static files
+│   ├── locales/          # Internationalization files (ja/en)
+│   │   ├── ja/common.json
+│   │   └── en/common.json
+│   ├── images/           # Image files
+│   ├── manifest.json     # PWA manifest
+│   └── sw.js            # Service Worker
+├── docs/                 # Documentation
+│   ├── api/             # API documentation
+│   └── ...
+└── scripts/             # Utility scripts
+\`\`\`
 
-## 📚 使用方法
+## 📚 Usage
 
-### 1. アカウント作成・ログイン
+### 1. Create Account / Login
 
-- Supabase Authを使用した安全な認証
-- メールアドレスでの登録・ログイン
+- Secure authentication using Supabase Auth
+- Register and login with email address
+- Google account integration
 
-### 2. 言語設定
+### 2. Language Settings
 
-- 母国語と学習言語の設定
-- プロフィール画面からいつでも変更可能
+- Set native language and learning language
+- Choose from 9 languages
+- Can be changed anytime from profile screen
 
-### 3. フレーズ生成
+### 3. Phrase Generation
 
-1. ダッシュボードから「AI フレーズ生成」を選択
-2. 話したいフレーズを入力
-3. AIが3つのスタイルで翻訳を提案
-4. 気に入ったフレーズを選択・保存
+1. Select "AI Phrase Generation" from dashboard
+2. Choose a situation (conversation with friends, cafe, business, etc.)
+3. Enter the phrase you want to say
+4. AI suggests translations in 3 styles (general, polite, casual)
+5. Select and save your preferred phrase
+6. Check audio with Google Text-to-Speech
 
-### 4. フレーズ管理
+### 4. Review with Quiz
 
-- 保存したフレーズの一覧表示
-- 検索・フィルタリング機能
-- 学習進捗の確認
+1. Select "Quiz Mode"
+2. 4-choice questions from learned phrases
+3. Track accuracy rate and streak
+4. Compete with other users on rankings
 
-## 🛠️ 開発コマンド
+### 5. Speaking Practice
 
-### 基本コマンド
+1. Select "Speech Practice"
+2. Enter a topic you want to practice
+3. AI provides correction results and speaking plan
+4. Practice speaking using voice input
+5. Check practice history for review
+6. Manage proficiency with status (A-D)
 
-```bash
-# 開発サーバー起動
-npm run dev:local              # ローカル環境
-npm run dev:production         # 本番環境設定
+### 6. Check Rankings
 
-# ビルド
-npm run build:local            # ローカル環境
-npm run build:production       # 本番環境
+- Quiz Ranking: Compete by accuracy rate and streak
+- Speaking Ranking: Compete by practice volume
+- Phrase Streak Ranking: Record consecutive learning days
 
-# リント
+## 🛠️ Development Commands
+
+### Basic Commands
+
+\`\`\`bash
+# Start development server
+npm run dev:local              # Local environment
+npm run dev:production         # Production environment settings
+
+# Build
+npm run build:local            # Local environment
+npm run build:production       # Production environment
+
+# Lint
 npm run lint
-```
+\`\`\`
 
-### データベース管理
+### Database Management
 
-```bash
-# マイグレーション
-npm run db:migrate:local       # ローカル環境
-npm run db:migrate:production  # 本番環境
+\`\`\`bash
+# Migrations
+npm run db:migrate:local       # Local environment
+npm run db:migrate:production  # Production environment
 
 # Prisma Studio
-npm run db:studio:local        # ローカル環境
-npm run db:studio:production   # 本番環境
+npm run db:studio:local        # Local environment
+npm run db:studio:production   # Production environment
 
-# シード実行
-npm run db:seed:local          # ローカル環境
-npm run db:seed:production     # 本番環境
-```
+# Run seeds
+npm run db:seed:local          # Local environment
+npm run db:seed:production     # Production environment
+\`\`\`
 
-### スクリプト
+### Scripts
 
-```bash
-# フレーズレベル設定
+\`\`\`bash
+# Setup phrase levels
 npm run setup:phrase-levels:local
 
-# フレーズレベル更新
+# Update phrase levels
 npm run update:phrase-levels:local
 
-# スピーチステータス設定
-npm run seed:speech-statuses:local      # ローカル環境
-npm run seed:speech-statuses:production # 本番環境
+# Cleanup phrase levels
+npm run cleanup:phrase-levels:local
 
-# データベース診断
+# Setup speech statuses
+npm run seed:speech-statuses:local      # Local environment
+npm run seed:speech-statuses:production # Production environment
+
+# Database diagnostics
 npm run diagnose:db
-```
 
-### スピーチステータスのシード値について
+# Recreate production tables
+npm run recreate:tables:production
 
-このプロジェクトでは、スピーチの習熟度を表すSpeechStatusが定義されています：
+# Seed production environment
+npm run seed:production:production
+\`\`\`
 
-| ステータス | 説明                                 |
-| ---------- | ------------------------------------ |
-| A          | スクリプトを見なくても流暢に話せる   |
-| B          | スクリプトの一部を見れば流暢に話せる |
-| C          | スクリプトを見れば流暢に話せる       |
-| D          | まだ復習をしていない                 |
+## 💾 i18n Management Tools
 
-これらのステータスは以下のコマンドで投入できます：
+Python scripts are provided to check and manage translation key usage:
 
-```bash
-# 開発環境
+\`\`\`bash
+# Check translation key usage
+python check_i18n_usage.py
+
+# Remove unused keys
+python remove_unused_i18n_keys.py
+\`\`\`
+
+For details, refer to the following reports:
+
+- \`i18n_final_report.md\` - i18n cleanup completion report
+- \`i18n_analysis_report.md\` - Analysis report
+- \`i18n_cleanup_guide.md\` - Cleanup guide
+
+### About Speech Status Seed Values
+
+This project defines SpeechStatus representing speech proficiency:
+
+| Status | Description                                         |
+| ------ | --------------------------------------------------- |
+| A      | Can speak fluently without looking at script        |
+| B      | Can speak fluently with partial reference to script |
+| C      | Can speak fluently with script reference            |
+| D      | Not reviewed yet                                    |
+
+These statuses can be seeded with the following commands:
+
+\`\`\`bash
+# Development environment
 npm run seed:speech-statuses:local
 
-# 本番環境
+# Production environment
 npm run seed:speech-statuses:production
 
-# 全シードデータ（言語、フレーズレベル、スピーチステータス含む）
-npm run db:seed:local          # ローカル環境
-npm run db:seed:production     # 本番環境
-```
+# All seed data (including languages, phrase levels, speech statuses)
+npm run db:seed:local          # Local environment
+npm run db:seed:production     # Production environment
+\`\`\`
 
-## 📱 MacでNext.jsローカル環境をスマホで確認する手順
+### Database Models
 
-### ✅ 前提条件
+Main database models:
 
-- Macとスマホが**同じWi-Fiネットワーク**に接続されていること
-- Next.jsの開発サーバーを起動中であること
+- **User**: User information and authentication
+- **Language**: Supported language master (9 languages)
+- **PhraseLevel**: Phrase levels (Lv1-Lv7)
+- **Phrase**: User phrases
+- **QuizResult**: Quiz results and streaks
+- **SpeakLog**: Speaking practice logs
+- **Speech**: Speech practice data
+- **SpeechFeedback**: AI correction feedback
+- **SpeechPlan**: Speaking plans
+- **SpeechStatus**: Proficiency status
+- **Situation**: Situation master
+
+For details, refer to \`prisma/schema.prisma\`.
+
+## 📱 How to Access Next.js Local Environment from Smartphone on Mac
+
+### ✅ Prerequisites
+
+- Mac and smartphone are connected to **the same Wi-Fi network**
+- Next.js development server is running
 
 ---
 
-### 🪜 手順
+### 🪜 Steps
 
-#### ① MacのローカルIPアドレスを確認
+#### ① Check Mac's Local IP Address
 
-ターミナルで以下を実行します：
+Run the following in Terminal:
 
-```bash
+\`\`\`bash
 ipconfig getifaddr en0
-```
+\`\`\`
 
-> 💡 `en0` はWi-Fi接続のインターフェースです。
-> 有線LANを使っている場合は `en1` の可能性もあります。
+> 💡 \`en0\` is the Wi-Fi connection interface.
+> If using wired LAN, it might be \`en1\`.
 
-出力例：
+Example output:
 
-```
+\`\`\`
 192.168.1.23
-```
+\`\`\`
 
-このIPアドレスをメモしておきます。
+Note this IP address.
 
 ---
 
-#### ② Next.jsを外部アクセス可能に起動
+#### ② Start Next.js with External Access
 
-通常 `npm run dev` では「localhost」しかアクセスできません。
-スマホからもアクセスできるように、以下のコマンドを使います：
+Normally \`npm run dev\` only allows "localhost" access.
+To access from smartphone, use this command:
 
-```bash
+\`\`\`bash
 npx next dev --hostname 0.0.0.0
-```
+\`\`\`
 
-> 💡 `--hostname 0.0.0.0` を指定することで、
-> 同一ネットワーク内の他のデバイス（スマホなど）からアクセス可能になります。
+> 💡 Specifying \`--hostname 0.0.0.0\` enables access
+> from other devices (like smartphones) on the same network.
 
 ---
 
-#### ③ スマホのブラウザでアクセス
+#### ③ Access from Smartphone Browser
 
-スマホのブラウザ（SafariやChromeなど）で、以下のURLを入力します：
+In your smartphone browser (Safari, Chrome, etc.), enter the following URL:
 
-```
-http://<MacのIPアドレス>:3000
-```
+\`\`\`
+http://<Mac IP Address>:3000
+\`\`\`
 
-例：
+Example:
 
-```
+\`\`\`
 http://192.168.1.23:3000
-```
+\`\`\`
 
-これで、スマホからNext.jsのローカルアプリを確認できます 🎉
-
----
-
-#### ④（必要に応じて）ファイアウォールの確認
-
-もし接続できない場合は、Macの**システム設定 → ネットワーク → ファイアウォール**を開き、
-Next.jsがポート3000で通信できるように一時的に許可してください。
+Now you can view the Next.js local app from your smartphone 🎉
 
 ---
 
-### 🔍 まとめ
+#### ④ (If needed) Check Firewall
 
-| 手順 | 内容                                               |
-| ---- | -------------------------------------------------- |
-| ①    | `ipconfig getifaddr en0` でMacのIPを確認           |
-| ②    | `npx next dev --hostname 0.0.0.0` でサーバーを起動 |
-| ③    | スマホのブラウザで `http://<IP>:3000` にアクセス   |
-| ④    | 必要ならファイアウォールを許可                     |
+If connection fails, open **System Settings → Network → Firewall** on Mac
+and temporarily allow Next.js to communicate on port 3000.
 
 ---
 
-## 🌍 多言語対応
+### 🔍 Summary
 
-現在サポートしている言語：
+| Step | Content                                          |
+| ---- | ------------------------------------------------ |
+| ①    | Check Mac IP with \`ipconfig getifaddr en0\`       |
+| ②    | Start server with \`npx next dev --hostname 0.0.0.0\` |
+| ③    | Access \`http://<IP>:3000\` from smartphone browser |
+| ④    | Allow firewall if needed                         |
+
+---
+
+## 🌍 Multilingual Support
+
+Currently supported languages (9 languages):
+
+### Major International Languages
 
 - 🇺🇸 English
-- 🇯🇵 日本語
-- 🇰🇷 한국어
-- 🇨🇳 中文
-- 🇫🇷 Français
-- 🇪🇸 Español
-- 🇵🇹 Português
-- 🇩🇪 Deutsch
-- 🇹🇭 ไทย
+- 🇨🇳 Chinese
+- 🇪🇸 Spanish
+- 🇫🇷 French
+- 🇵🇹 Portuguese
 
-## 📖 ドキュメント
+### Asian Languages
 
-詳細なドキュメントは `docs/` ディレクトリに含まれています：
+- 🇯🇵 Japanese
+- 🇰🇷 Korean
+- 🇹🇭 Thai
 
-### 機能ドキュメント
+### European Languages
 
-- [フレーズ生成機能](docs/phrase-generation-README.md)
-- [サブスクリプションシステム](docs/subscription-system-documentation.md)
-- [技術仕様書](docs/phrase-generation-technical-spec.md)
+- 🇩🇪 German
 
-### セットアップガイド
+### Feature Support
 
-- [Supabase Storage セットアップ](docs/supabase-storage-setup.md)
-- [API クライアントガイド](docs/api-client-guide.md)
+- **Text-to-Speech**: All 9 languages supported by Google Cloud TTS
+- **Situations**: Basic situations supported for all languages
+- **UI Language**: Complete i18n support (all 9 languages)
 
-## 🤝 コントリビューション
+## 📖 Documentation
 
-1. フォークしてブランチを作成
+Detailed documentation is included in the \`docs/\` directory:
 
-```bash
+### Feature Documentation
+
+- [Phrase Generation Feature](docs/phrase-generation-README.md)
+- [Subscription System](docs/subscription-system-documentation.md)
+- [Technical Specifications](docs/phrase-generation-technical-spec.md)
+- [Supported Languages](docs/supported-languages.md)
+- [Daily Reset Logic](docs/daily-reset-logic.md)
+
+### Component Documentation
+
+- [Dropdown Menu](docs/dropdown-menu-component.md)
+- [Mode Modal](docs/mode-modal-component.md)
+
+### API Documentation
+
+Refer to the \`docs/api/\` directory for details on each API endpoint:
+
+- [Dashboard API](docs/api/dashboard.md)
+- [Languages API](docs/api/languages.md)
+- [Phrase APIs](docs/api/phrase.md)
+- [Quiz APIs](docs/api/phrase-quiz.md)
+- [Speaking APIs](docs/api/phrase-speak.md)
+- [Speech APIs](docs/api/speech-save.md)
+- [Ranking APIs](docs/api/ranking-speak.md)
+- [Stripe APIs](docs/api/stripe-checkout.md)
+- [User APIs](docs/api/user-settings.md)
+
+### Setup Guides
+
+- [Supabase Storage Setup](docs/supabase-storage-setup.md)
+- [Stripe Webhook Setup](docs/stripe-webhook-setup.md)
+- [API Client Guide](docs/api-client-guide.md)
+- [Safari Audio Fix (FFmpeg)](docs/safari-audio-fix-ffmpeg.md)
+
+## 🤝 Contributing
+
+Contributions to the project are welcome!
+
+### Development Flow
+
+1. Fork and create a branch
+
+\`\`\`bash
 git checkout -b feature/new-feature
-```
+\`\`\`
 
-2. 変更をコミット
+2. Commit changes
 
-```bash
+\`\`\`bash
 git commit -am 'Add new feature'
-```
+\`\`\`
 
-3. ブランチにプッシュ
+3. Push to branch
 
-```bash
+\`\`\`bash
 git push origin feature/new-feature
-```
+\`\`\`
 
-4. プルリクエストを作成
+4. Create a pull request
 
-## 📄 ライセンス
+### Coding Standards
 
-このプロジェクトはMITライセンスのもとで公開されています。
+- Emphasize TypeScript type safety
+- Follow ESLint rules
+- Properly divide components
+- Implement API clients with type safety
 
-## 🔗 リンク
+### Testing
 
-- [本番サイト](https://solo-speak.vercel.app)
+- Test appropriately when adding features
+- Create migrations when changing database
+- Verify operation before production deployment
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Import project to Vercel
+2. Configure environment variables
+3. Automatic deployment
+
+### Database
+
+- Supabase (Recommended)
+- PostgreSQL-compatible database
+
+### Storage
+
+- Supabase Storage (for audio file storage)
+
+## 📊 Feature Details
+
+### Subscription System
+
+- Payment processing with Stripe
+- Plan management and cancellation
+- Automatic updates via webhooks
+
+Details: [docs/subscription-system-documentation.md](docs/subscription-system-documentation.md)
+
+### Daily Reset
+
+- Daily speaking count limit
+- Automatic reset function
+
+Details: [docs/daily-reset-logic.md](docs/daily-reset-logic.md)
+
+### Ranking System
+
+- Real-time updates
+- Multiple ranking types
+- Streak records
+
+## 🔒 Security
+
+- Authentication with Supabase Auth
+- Row Level Security (RLS)
+- Sensitive information management with environment variables
+- Stripe Webhook signature verification
+
+## 📄 License
+
+This project is released under the MIT License.
+
+## 🔗 Links
+
+- [Production Site](https://solo-speak.vercel.app)
 - [GitHub](https://github.com/kohei240155/solo-speak)
-- [ドキュメント](docs/)
+- [Documentation](docs/)
 
-## 📞 サポート
+## 📞 Support
 
-質問やサポートが必要な場合は、GitHubのIssuesを作成してください。
+If you have questions or need support, please create a GitHub Issue.
+
+## 📝 Changelog
+
+### Recent Feature Additions
+
+- ✅ Speaking practice feature (speech recognition, AI correction)
+- ✅ Quiz mode (4-choice questions, streak records)
+- ✅ Ranking system (3 types of rankings)
+- ✅ Speech practice feature (proficiency management)
+- ✅ 9 language support
+- ✅ Complete i18n support (Japanese and English UI)
+- ✅ Daily reset feature
+- ✅ Subscription system (Stripe integration)
+- ✅ Google authentication integration
+- ✅ PWA support
+
+### Future Plans
+
+- 🔄 More detailed pronunciation evaluation
+- 🔄 Learning statistics dashboard
+- 🔄 Social features
+- 🔄 Enhanced offline support
+- 🔄 Additional language support
+
+## 🙏 Acknowledgments
+
+This project is made possible by the following amazing technologies:
+
+- Next.js / React - Frontend framework
+- OpenAI - AI features
+- Google Cloud - Text-to-speech
+- Supabase - Authentication, database, and storage
+- Stripe - Payment processing
+- Vercel - Hosting
 
 ---
 
-**Solo Speak** - AIで学ぶ、新しい語学学習体験
+**Solo Speak** - A new language learning experience powered by AI 🚀
