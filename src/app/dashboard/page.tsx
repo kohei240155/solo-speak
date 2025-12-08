@@ -103,16 +103,6 @@ export default function DashboardPage() {
 								</div>
 							</div>
 
-							{/* Speak Count (Today) */}
-							<div className="bg-white rounded-lg shadow-md p-8">
-								<h2 className="text-2xl font-bold text-gray-900 mb-4">
-									Today Speak Count
-								</h2>
-								<div className="text-4xl font-bold text-gray-900">
-									{dashboardData.speakCountToday}
-								</div>
-							</div>
-
 							{/* Speak Count (Total) */}
 							<div className="bg-white rounded-lg shadow-md p-8">
 								<h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -120,6 +110,58 @@ export default function DashboardPage() {
 								</h2>
 								<div className="text-4xl font-bold text-gray-900">
 									{dashboardData.speakCountTotal}
+								</div>
+							</div>
+
+							{/* Phrase Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Phrase Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.phraseStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
+							{/* Speak Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Speak Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.speakStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
+							{/* Quiz Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Quiz Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.quizStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
+							{/* Speech Review Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Speech Review Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.speechReviewStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
 								</div>
 							</div>
 
@@ -146,6 +188,37 @@ export default function DashboardPage() {
 													</span>
 													<span className="text-3xl font-bold text-gray-900">
 														{level.score}
+													</span>
+												</div>
+											</div>
+										),
+									)}
+								</div>
+							</div>
+
+							{/* Speech Level Statistics */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-6">
+									Speech Level Statistics
+								</h2>
+								<div className="space-y-4">
+									{dashboardData.speechLevelStatistics?.map(
+										(stat: {
+											status: string;
+											count: number;
+											color: string;
+										}) => (
+											<div key={stat.status} className="flex items-center">
+												<div
+													className="w-4 h-4 rounded mr-4"
+													style={{ backgroundColor: stat.color }}
+												></div>
+												<div className="flex-1 flex justify-between items-center">
+													<span className="text-xl font-semibold text-gray-900">
+														{stat.status}
+													</span>
+													<span className="text-3xl font-bold text-gray-900">
+														{stat.count}
 													</span>
 												</div>
 											</div>

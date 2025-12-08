@@ -39,8 +39,12 @@ export default function RankingPage() {
 	// speechModeが変更されたときにタブをリセット
 	useEffect(() => {
 		if (activeRankingType === "speech") {
-			// Add/Reviewどちらの場合もTotalを初期選択
-			handleTabChange("Total");
+			// Add の場合は Total、Review の場合は Daily を初期選択
+			if (speechMode === "add") {
+				handleTabChange("Total");
+			} else {
+				handleTabChange("Daily");
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [speechMode]);
@@ -132,42 +136,14 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-					{/* Speech用のAdd/Reviewセレクター */}
-					{activeRankingType === "speech" && (
-						<div className="flex justify-start mb-2">
-							<div className="inline-flex rounded-lg border border-gray-300 overflow-hidden">
-								<button
-									onClick={() => setSpeechMode("add")}
-									className={`px-6 py-1 text-xs sm:text-sm ${
-										speechMode === "add"
-											? "bg-gray-200 text-gray-700 font-bold"
-											: "bg-white text-gray-700 hover:bg-gray-50"
-									}`}
-								>
-									Add
-								</button>
-								<button
-									onClick={() => setSpeechMode("review")}
-									className={`px-4 py-1 text-xs sm:text-sm border-l border-gray-300 ${
-										speechMode === "review"
-											? "bg-gray-200 text-gray-700 font-bold"
-											: "bg-white text-gray-700 hover:bg-gray-50"
-									}`}
-								>
-									Review
-								</button>
-							</div>
-						</div>
-					)}
-
-					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotal&Streakタブを表示、SpeechのReview時はDaily/Weekly/Total/Streakを表示） */}
+					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotalタブのみ表示、SpeechのReview時はDaily/Totalを表示） */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
-							<nav className="flex space-x-0 justify-between items-center">
+							<nav className="flex space-x-0 items-center">
 								<div className="flex space-x-0">
 									{(activeRankingType === "speech" && speechMode === "review"
-										? ["Total", "Daily", "Weekly", "Streak"]
-										: ["Total", "Streak"]
+										? ["Daily", "Total"]
+										: ["Total"]
 									).map((tab) => (
 										<button
 											key={tab}
@@ -183,22 +159,38 @@ export default function RankingPage() {
 									))}
 								</div>
 
-								{/* X投稿ボタン（非表示） */}
-								<button
-									onClick={handleShareStreak}
-									disabled={isShareLoading}
-									className="invisible flex items-center justify-center w-8 h-8 text-black hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 mr-4"
-									title="ランキング結果を投稿"
-								>
-									<AiOutlineX className="w-4 h-4" />
-								</button>
+								{/* Speech用のAdd/Reviewセレクター */}
+								{activeRankingType === "speech" && (
+									<div className="inline-flex rounded-lg border border-gray-300 overflow-hidden ml-auto">
+										<button
+											onClick={() => setSpeechMode("add")}
+											className={`px-6 py-1 text-xs sm:text-sm ${
+												speechMode === "add"
+													? "bg-gray-200 text-gray-700 font-bold"
+													: "bg-white text-gray-700 hover:bg-gray-50"
+											}`}
+										>
+											Add
+										</button>
+										<button
+											onClick={() => setSpeechMode("review")}
+											className={`px-4 py-1 text-xs sm:text-sm border-l border-gray-300 ${
+												speechMode === "review"
+													? "bg-gray-200 text-gray-700 font-bold"
+													: "bg-white text-gray-700 hover:bg-gray-50"
+											}`}
+										>
+											Review
+										</button>
+									</div>
+								)}
 							</nav>
 						</div>
 					) : (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 justify-between items-center">
 								<div className="flex space-x-0">
-									{["Total", "Daily", "Weekly", "Streak"].map((tab) => (
+									{["Daily", "Total"].map((tab) => (
 										<button
 											key={tab}
 											onClick={() => handleTabChange(tab)}
@@ -232,14 +224,7 @@ export default function RankingPage() {
 							<div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 text-sm sm:text-base md:text-lg font-bold text-gray-900 pb-2">
 								<div className="text-left pl-2">Rank</div>
 								<div className="text-left ml-8 sm:ml-12">User</div>
-								<div className="text-right pr-2">
-									{(activeRankingType === "phrase" && activeTab === "Streak") ||
-									(activeRankingType === "speak" && activeTab === "Streak") ||
-									(activeRankingType === "quiz" && activeTab === "Streak") ||
-									(activeRankingType === "speech" && activeTab === "Streak")
-										? "Days"
-										: "Count"}
-								</div>
+								<div className="text-right pr-2">Count</div>
 							</div>
 						</div>
 

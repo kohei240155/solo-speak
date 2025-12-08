@@ -13,12 +13,23 @@ export interface QuizMasteryLevel {
 	color: string;
 }
 
+// Speechレベル統計の型
+export interface SpeechLevelStatistic {
+	status: string;
+	count: number;
+	color: string;
+}
+
 // ダッシュボードレスポンスデータの型
 export interface DashboardData {
 	totalPhraseCount: number;
-	speakCountToday: number;
 	speakCountTotal: number;
 	quizMastery: QuizMasteryLevel[];
+	phraseStreak: number;
+	speakStreak: number;
+	quizStreak: number;
+	speechReviewStreak: number;
+	speechLevelStatistics: SpeechLevelStatistic[];
 }
 
 // ダッシュボードAPI成功レスポンスの型
