@@ -1,12 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { ApiErrorResponse } from "@/types/api";
-import { DashboardData, QuizMasteryLevel } from "@/types/dashboard";
+import {
+	DashboardData,
+	QuizMasteryLevel,
+	SpeechLevelStatistic,
+} from "@/types/dashboard";
 import { prisma } from "@/utils/prisma";
 import {
 	calculateStreak,
 	formatDatesToStrings,
 } from "@/utils/streak-calculator";
+
+/**
+ * ステータス名に応じた色を取得
+ */
+function getStatusColor(statusName: string): string {
+	switch (statusName) {
+		case "A":
+			return "#1f2937"; // 最も濃いグレー (gray-800)
+		case "B":
+			return "#4b5563"; // 濃いグレー (gray-600)
+		case "C":
+			return "#6b7280"; // 中間グレー (gray-500)
+		case "D":
+			return "#9ca3af"; // 薄いグレー (gray-400)
+		default:
+			return "#d1d5db"; // 最も薄いグレー (gray-300)
+	}
+}
 
 /**
  * ダッシュボードデータ取得APIエンドポイント
@@ -64,6 +86,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			speakLogsForStreak,
 			quizLogsForStreak,
 			speechesForReviewStreak,
+			allSpeeches,
+			allSpeechStatuses,
 		] = await Promise.all([
 			// 1. Total Phrase Count - 指定言語のフレーズ総数
 			prisma.phrase.count({
@@ -181,6 +205,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					lastPracticedAt: "asc",
 				},
 			}),
+
+			// 9. All Speeches - ステータス別統計用
+			prisma.speech.findMany({
+				where: {
+					userId: user.id,
+					learningLanguageId: languageRecord.id,
+					deletedAt: null,
+				},
+				include: {
+					status: true,
+				},
+			}),
+
+			// 10. All Speech Statuses - ステータス一覧
+			prisma.speechStatus.findMany({
+				where: { deletedAt: null },
+			}),
 		]);
 
 		// Quiz Masteryデータの集計 - レベル別フレーズ総数
@@ -192,6 +233,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 						phrase.phraseLevel?.id === level.id,
 				).length,
 				color: level.color || "#gray-500",
+			}),
+		);
+
+		// Speech Level Statisticsデータの集計 - ステータス別Speech数
+		const speechLevelStatistics: SpeechLevelStatistic[] = allSpeechStatuses.map(
+			(status: { name: string; id: string }) => ({
+				status: status.name,
+				count: allSpeeches.filter(
+					(speech: { status: { id: string } }) =>
+						speech.status.id === status.id,
+				).length,
+				color: getStatusColor(status.name),
 			}),
 		);
 
@@ -229,6 +282,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			speakStreak,
 			quizStreak,
 			speechReviewStreak,
+			speechLevelStatistics,
 		};
 
 		return NextResponse.json(responseData);

@@ -21,7 +21,7 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 	const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
 		return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE;
 	});
-	const [activeTab, setActiveTab] = useState("Daily"); // 初期値はDaily
+	const [activeTab, setActiveTab] = useState("Total"); // 初期値はTotal（phraseのデフォルト）
 	const [activeRankingType, setActiveRankingType] = useState<
 		"phrase" | "speak" | "quiz" | "speech"
 	>("phrase");
