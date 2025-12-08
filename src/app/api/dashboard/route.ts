@@ -63,6 +63,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			phrasesForStreak,
 			speakLogsForStreak,
 			quizLogsForStreak,
+			speechesForReviewStreak,
 		] = await Promise.all([
 			// 1. Total Phrase Count - 指定言語のフレーズ総数
 			prisma.phrase.count({
@@ -162,6 +163,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					date: "asc",
 				},
 			}),
+
+			// 8. Speeches for Review Streak - SpeechReviewStreak計算用
+			prisma.speech.findMany({
+				where: {
+					userId: user.id,
+					learningLanguageId: languageRecord.id,
+					deletedAt: null,
+					lastPracticedAt: {
+						not: null,
+					},
+				},
+				select: {
+					lastPracticedAt: true,
+				},
+				orderBy: {
+					lastPracticedAt: "asc",
+				},
+			}),
 		]);
 
 		// Quiz Masteryデータの集計 - レベル別フレーズ総数
@@ -192,6 +211,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		);
 		const quizStreak = calculateStreak(quizDates);
 
+		// Speech Review Streak計算
+		const speechReviewDates = formatDatesToStrings(
+			speechesForReviewStreak
+				.map(
+					(speech: { lastPracticedAt: Date | null }) => speech.lastPracticedAt,
+				)
+				.filter((date): date is Date => date !== null),
+		);
+		const speechReviewStreak = calculateStreak(speechReviewDates);
+
 		const responseData: DashboardData = {
 			totalPhraseCount,
 			speakCountTotal: speakCountTotal._sum.count || 0,
@@ -199,6 +228,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			phraseStreak,
 			speakStreak,
 			quizStreak,
+			speechReviewStreak,
 		};
 
 		return NextResponse.json(responseData);

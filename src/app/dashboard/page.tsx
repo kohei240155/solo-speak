@@ -152,6 +152,19 @@ export default function DashboardPage() {
 								</div>
 							</div>
 
+							{/* Speech Review Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Speech Review Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.speechReviewStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
 							{/* Phrase Level Statistics */}
 							<div className="bg-white rounded-lg shadow-md p-8">
 								<h2 className="text-2xl font-bold text-gray-900 mb-6">

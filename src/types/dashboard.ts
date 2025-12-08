@@ -21,6 +21,7 @@ export interface DashboardData {
 	phraseStreak: number;
 	speakStreak: number;
 	quizStreak: number;
+	speechReviewStreak: number;
 }
 
 // ダッシュボードAPI成功レスポンスの型
