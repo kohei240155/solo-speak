@@ -39,8 +39,12 @@ export default function RankingPage() {
 	// speechModeが変更されたときにタブをリセット
 	useEffect(() => {
 		if (activeRankingType === "speech") {
-			// Add/Reviewどちらの場合もTotalを初期選択
-			handleTabChange("Total");
+			// Add の場合は Total、Review の場合は Daily を初期選択
+			if (speechMode === "add") {
+				handleTabChange("Total");
+			} else {
+				handleTabChange("Daily");
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [speechMode]);
@@ -132,14 +136,14 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotal&Streakタブを表示、SpeechのReview時はDaily/Total/Streakを表示） */}
+					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotalタブのみ表示、SpeechのReview時はDaily/Totalを表示） */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 items-center">
 								<div className="flex space-x-0">
 									{(activeRankingType === "speech" && speechMode === "review"
-										? ["Total", "Daily", "Streak"]
-										: ["Total", "Streak"]
+										? ["Daily", "Total"]
+										: ["Total"]
 									).map((tab) => (
 										<button
 											key={tab}
@@ -186,7 +190,7 @@ export default function RankingPage() {
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 justify-between items-center">
 								<div className="flex space-x-0">
-									{["Total", "Daily", "Streak"].map((tab) => (
+									{["Daily", "Total"].map((tab) => (
 										<button
 											key={tab}
 											onClick={() => handleTabChange(tab)}
@@ -220,14 +224,7 @@ export default function RankingPage() {
 							<div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_70px] gap-2 text-sm sm:text-base md:text-lg font-bold text-gray-900 pb-2">
 								<div className="text-left pl-2">Rank</div>
 								<div className="text-left ml-8 sm:ml-12">User</div>
-								<div className="text-right pr-2">
-									{(activeRankingType === "phrase" && activeTab === "Streak") ||
-									(activeRankingType === "speak" && activeTab === "Streak") ||
-									(activeRankingType === "quiz" && activeTab === "Streak") ||
-									(activeRankingType === "speech" && activeTab === "Streak")
-										? "Days"
-										: "Count"}
-								</div>
+								<div className="text-right pr-2">Count</div>
 							</div>
 						</div>
 

@@ -103,16 +103,6 @@ export default function DashboardPage() {
 								</div>
 							</div>
 
-							{/* Speak Count (Today) */}
-							<div className="bg-white rounded-lg shadow-md p-8">
-								<h2 className="text-2xl font-bold text-gray-900 mb-4">
-									Today Speak Count
-								</h2>
-								<div className="text-4xl font-bold text-gray-900">
-									{dashboardData.speakCountToday}
-								</div>
-							</div>
-
 							{/* Speak Count (Total) */}
 							<div className="bg-white rounded-lg shadow-md p-8">
 								<h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -120,6 +110,45 @@ export default function DashboardPage() {
 								</h2>
 								<div className="text-4xl font-bold text-gray-900">
 									{dashboardData.speakCountTotal}
+								</div>
+							</div>
+
+							{/* Phrase Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Phrase Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.phraseStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
+							{/* Speak Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Speak Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.speakStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
+								</div>
+							</div>
+
+							{/* Quiz Streak */}
+							<div className="bg-white rounded-lg shadow-md p-8">
+								<h2 className="text-2xl font-bold text-gray-900 mb-4">
+									Quiz Streak
+								</h2>
+								<div className="flex items-baseline">
+									<div className="text-4xl font-bold text-gray-900 mr-3">
+										{dashboardData.quizStreak}
+									</div>
+									<div className="text-xl text-gray-600">days</div>
 								</div>
 							</div>
 

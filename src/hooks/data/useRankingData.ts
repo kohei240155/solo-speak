@@ -21,7 +21,7 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 	const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
 		return userSettings?.defaultLearningLanguage?.code || DEFAULT_LANGUAGE;
 	});
-	const [activeTab, setActiveTab] = useState("Total"); // Phraseがデフォルトなので初期値はTotal
+	const [activeTab, setActiveTab] = useState("Daily"); // 初期値はDaily
 	const [activeRankingType, setActiveRankingType] = useState<
 		"phrase" | "speak" | "quiz" | "speech"
 	>("phrase");
@@ -229,8 +229,12 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 		setActiveRankingType(type);
 
 		// ランキングタイプ変更時に適切なタブを設定
-		// すべてのタイプでTotalを初期タブとして設定
-		setActiveTab("Total");
+		// PhraseとSpeech Addの場合はTotal、それ以外はDaily
+		if (type === "phrase" || (type === "speech" && speechMode === "add")) {
+			setActiveTab("Total");
+		} else {
+			setActiveTab("Daily");
+		}
 	};
 
 	// 手動リフレッシュ関数
