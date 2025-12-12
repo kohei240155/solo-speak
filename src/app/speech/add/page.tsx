@@ -10,7 +10,6 @@ import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
 import SpeechResult from "@/components/speech/SpeechResult";
-import PracticeConfirmModal from "@/components/modals/PracticeConfirmModal";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
@@ -37,8 +36,6 @@ export default function SpeechAddPage() {
 		useState<CorrectionResult | null>(null);
 	const [showResult, setShowResult] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-	const [showPracticeModal, setShowPracticeModal] = useState(false);
-	const [savedSpeechId, setSavedSpeechId] = useState<string | null>(null);
 
 	// モーダルの状態管理
 	const [showReviewModal, setShowReviewModal] = useState(false);
@@ -114,54 +111,20 @@ export default function SpeechAddPage() {
 
 			toast.success("Speech saved successfully!");
 
-			// 保存したスピーチのIDを保存
-			setSavedSpeechId(result.speech.id);
-
 			// 保存成功したら未保存状態を解除
-			setHasUnsavedChanges(false);
-
-			// Speech数が1になったときにホーム画面追加モーダルを表示
+			setHasUnsavedChanges(false); // Speech数が1になったときにホーム画面追加モーダルを表示
 			if (result.totalSpeechCount === 1) {
 				setShowAddToHomeScreenModal(true);
 			}
 
-			// 保存成功後、モーダルを表示
-			setShowPracticeModal(true);
+			// 保存成功後、SpeechList画面に遷移
+			router.push("/speech/list");
 		} catch (error) {
 			console.error("Failed to save speech:", error);
 			// エラーはapi.tsで自動的にトースト表示される
 		} finally {
 			setIsSaving(false);
 		}
-	};
-
-	// 練習するを選択
-	const handlePracticeConfirm = () => {
-		setShowPracticeModal(false);
-		// 状態をリセット
-		setShowResult(false);
-		setCorrectionResult(null);
-
-		// 保存したスピーチのIDを使って復習ページに遷移
-		if (savedSpeechId) {
-			router.push(`/speech/review?speechId=${savedSpeechId}`);
-		} else {
-			// フォールバック: IDがない場合はSpeech Listへ
-			router.push("/speech/list");
-		}
-
-		// IDをリセット
-		setSavedSpeechId(null);
-	};
-
-	// 練習しないを選択
-	const handlePracticeCancel = () => {
-		setShowPracticeModal(false);
-		// 状態をリセット
-		setShowResult(false);
-		setCorrectionResult(null);
-		setSavedSpeechId(null);
-		router.push("/speech/list");
 	};
 
 	// 認証ローディング中は何も表示しない
@@ -227,14 +190,6 @@ export default function SpeechAddPage() {
 					)}
 				</div>
 			</div>
-
-			{/* Practice Confirm Modal */}
-			<PracticeConfirmModal
-				isOpen={showPracticeModal}
-				onConfirm={handlePracticeConfirm}
-				onCancel={handlePracticeCancel}
-			/>
-
 			{/* Review Mode モーダル */}
 			<ReviewModeModal
 				isOpen={showReviewModal}
