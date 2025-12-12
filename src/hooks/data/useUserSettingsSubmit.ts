@@ -244,9 +244,9 @@ export function useUserSettingsSubmit(
 				position: "top-center",
 			});
 
-			// 設定完了後はSpeech Add画面に遷移
+			// 設定完了後はPhrase Add画面に遷移
 			setTimeout(() => {
-				router.push("/speech/add");
+				router.push("/phrase/add");
 			}, 500);
 		} catch (error) {
 			if (error instanceof ApiError) {
