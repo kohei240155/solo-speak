@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "@/hooks/ui/useTranslation";
-import { AiOutlineLineChart, AiOutlineCaretRight, AiOutlineQuestionCircle } from "react-icons/ai";
+import {
+	AiOutlineLineChart,
+	AiOutlineCaretRight,
+	AiOutlineQuestionCircle,
+} from "react-icons/ai";
 import { BsPauseFill, BsFillMicFill } from "react-icons/bs";
 import { BiPlay, BiStop } from "react-icons/bi";
 import { IoCheckboxOutline } from "react-icons/io5";
@@ -320,30 +324,34 @@ export default function SpeechReview({
 			userAudioRef.current = audio;
 
 			audio.onended = () => {
-				setIsUserAudioPlaying(false);
-				// トーストを表示
-				toast.success("Review completed!");
-				// Speech練習記録APIを呼び出す
-				recordPracticeMutation.mutate(
-					{ speechId: speech.id },
-					{
-						onSuccess: () => {
-							// 練習回数を更新後、SpeechのIDを使って再取得
-							onRefetchSpeechById();
+				// 音声が最後まで再生されたことを確認（duration - currentTime < 0.1秒）
+				const audio = userAudioRef.current;
+				if (audio && audio.duration - audio.currentTime < 0.1) {
+					setIsUserAudioPlaying(false);
+					// トーストを表示
+					toast.success("Review completed!");
+					// Speech練習記録APIを呼び出す
+					recordPracticeMutation.mutate(
+						{ speechId: speech.id },
+						{
+							onSuccess: () => {
+								// 練習回数を更新後、SpeechのIDを使って再取得
+								onRefetchSpeechById();
+							},
+							onError: () => {
+								toast.error("Failed to record practice");
+							},
 						},
-						onError: () => {
-							toast.error("Failed to record practice");
-						},
-					},
-				);
-				// 録音データをリセット
-				setTimeout(() => {
-					if (userAudioRef.current) {
-						userAudioRef.current = null;
-					}
-					setUserAudioBlob(null);
-					setRecordingTime(90);
-				}, 500);
+					);
+					// 録音データをリセット
+					setTimeout(() => {
+						if (userAudioRef.current) {
+							userAudioRef.current = null;
+						}
+						setUserAudioBlob(null);
+						setRecordingTime(90);
+					}, 500);
+				}
 			};
 			audio.onerror = () => {
 				setIsUserAudioPlaying(false);
@@ -795,17 +803,17 @@ export default function SpeechReview({
 						<p className="text-sm text-gray-700">
 							{t("speech.review.noteTip")}
 						</p>
-							<textarea
-								value={notes}
-								onChange={(e) => setNotes(e.target.value)}
-								onInput={(e) => {
-									const target = e.target as HTMLTextAreaElement;
-									target.style.height = "auto";
-									target.style.height = `${target.scrollHeight}px`;
-								}}
-								placeholder={t("speech.notePlaceholder")}
-								className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white overflow-hidden"
-							/>
+						<textarea
+							value={notes}
+							onChange={(e) => setNotes(e.target.value)}
+							onInput={(e) => {
+								const target = e.target as HTMLTextAreaElement;
+								target.style.height = "auto";
+								target.style.height = `${target.scrollHeight}px`;
+							}}
+							placeholder={t("speech.notePlaceholder")}
+							className="w-full min-h-[350px] p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-base text-gray-900 resize-none bg-white overflow-hidden"
+						/>
 						<AnimatedButton
 							onClick={handleSaveNotes}
 							disabled={saveNotesMutation.isPending}
