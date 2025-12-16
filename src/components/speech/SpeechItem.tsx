@@ -47,14 +47,13 @@ const SpeechItem = memo(
 		);
 
 		const formattedDate = useMemo(() => {
-			const dateToFormat = speech.lastPracticedAt || speech.createdAt;
+			const dateToFormat = speech.createdAt;
 			return new Date(dateToFormat).toLocaleDateString("ja-JP", {
 				year: "numeric",
 				month: "numeric",
 				day: "numeric",
 			});
-		}, [speech.lastPracticedAt, speech.createdAt]);
-
+		}, [speech.createdAt]);
 		return (
 			<div
 				className="pl-4 pr-6 py-4 bg-white shadow-md relative cursor-pointer"

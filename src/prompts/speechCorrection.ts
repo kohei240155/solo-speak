@@ -33,15 +33,14 @@ export const getSpeechCorrectionPrompt = (
 8. 添削後の全文を${learningLanguage}と${nativeLanguage}で出力してください。
 9. 最後に改善ポイントを${nativeLanguage}で必ず3つフィードバックしてください。
 
-# フォーマットの重要なルール
-- sentences の各要素は必ずピリオドで終わる1文のみを入れること
+# 添削後文章フォーマットの重要なルール
+- sentences の各要素は必ず文末記号(ピリオドなど)で終わる1文のみを入れること
 - 2文以上を1つの sentences 要素に入れないこと
 - 文頭は必ず大文字で開始すること
-- 文末は ".", "?", "!" のいずれかで必ず終了させること
 
-# 重要な注意事項
-- feedback のタイトル（category）は必ず英語にしてください。
-- フィードバックは必ず${nativeLanguage}で記述してください。
+# フィードバックフォーマットの重要なルール
+- feedbackのタイトル（category）は必ず英語にしてください。
+- feedbackは必ず${nativeLanguage}で記述してください。
 
 # 話したいこと
 タイトル: ${title}
