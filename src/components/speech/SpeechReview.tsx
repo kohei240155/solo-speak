@@ -339,25 +339,32 @@ export default function SpeechReview({
 
 		// 練習完了フラグ（重複実行防止）
 		let practiceRecorded = false;
+		// 再生が実際に進んだ最大位置を追跡
+		let maxPlayedTime = 0;
 
-		audio.onended = () => {
+		// timeupdateで再生の進行状況を追跡
+		audio.ontimeupdate = () => {
+			if (audio.currentTime > maxPlayedTime) {
+				maxPlayedTime = audio.currentTime;
+			}
+		};
+
+		const handlePlaybackComplete = () => {
 			setIsUserAudioPlaying(false);
 
 			// 重複実行防止
 			if (practiceRecorded) return;
 
-			// endedプロパティで本当に最後まで再生されたか確認
-			// また、durationが有効な値かも確認
-			if (!audio.ended || !isFinite(audio.duration) || audio.duration <= 0) {
+			// durationが有効な値かを確認
+			if (!isFinite(audio.duration) || audio.duration <= 0) {
 				return;
 			}
 
-			// 追加チェック：currentTimeがdurationの90%以上進んでいることを確認
-			// （onendedイベント発火時にcurrentTimeがリセットされることがあるため、
-			//   endedプロパティと組み合わせてチェック）
-			const playbackRatio = audio.currentTime / audio.duration;
-			if (playbackRatio < 0.9 && audio.currentTime > 0.1) {
-				// currentTimeが有効で、90%未満の場合は完了とみなさない
+			// 実際に再生が進んだ最大位置がdurationの95%以上かを確認
+			// これにより、本当に最後まで再生されたことを保証
+			const playbackRatio = maxPlayedTime / audio.duration;
+			if (playbackRatio < 0.95) {
+				// 95%未満の場合は完了とみなさない
 				return;
 			}
 
@@ -387,6 +394,8 @@ export default function SpeechReview({
 				setRecordingTime(90);
 			}, 500);
 		};
+
+		audio.onended = handlePlaybackComplete;
 
 		// pauseイベントで一時停止時の状態を正しく反映
 		audio.onpause = () => {
