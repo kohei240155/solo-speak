@@ -319,90 +319,92 @@ export default function SpeechReview({
 	const handleUserAudioPlay = () => {
 		if (!userAudioBlob) return;
 
-		if (!userAudioRef.current) {
-			const audio = new Audio(URL.createObjectURL(userAudioBlob));
-			userAudioRef.current = audio;
-
-			// 練習完了フラグ（重複実行防止）
-			let practiceRecorded = false;
-
-			audio.onended = () => {
+		// 既存のaudioオブジェクトがあり、かつ終了していない場合は再利用
+		if (userAudioRef.current && !userAudioRef.current.ended) {
+			if (isUserAudioPlaying) {
+				userAudioRef.current.pause();
 				setIsUserAudioPlaying(false);
-
-				// 重複実行防止
-				if (practiceRecorded) return;
-
-				// endedプロパティで本当に最後まで再生されたか確認
-				// また、durationが有効な値かも確認
-				if (!audio.ended || !isFinite(audio.duration) || audio.duration <= 0) {
-					return;
-				}
-
-				// 追加チェック：currentTimeがdurationの90%以上進んでいることを確認
-				// （onendedイベント発火時にcurrentTimeがリセットされることがあるため、
-				//   endedプロパティと組み合わせてチェック）
-				const playbackRatio = audio.currentTime / audio.duration;
-				if (playbackRatio < 0.9 && audio.currentTime > 0.1) {
-					// currentTimeが有効で、90%未満の場合は完了とみなさない
-					return;
-				}
-
-				practiceRecorded = true;
-
-				// トーストを表示
-				toast.success("Review completed!");
-				// Speech練習記録APIを呼び出す
-				recordPracticeMutation.mutate(
-					{ speechId: speech.id },
-					{
-						onSuccess: () => {
-							// 練習回数を更新後、SpeechのIDを使って再取得
-							onRefetchSpeechById();
-						},
-						onError: () => {
-							toast.error("Failed to record practice");
-						},
-					},
-				);
-				// 録音データをリセット
-				setTimeout(() => {
-					if (userAudioRef.current) {
-						userAudioRef.current = null;
-					}
-					setUserAudioBlob(null);
-					setRecordingTime(90);
-				}, 500);
-			};
-
-			// pauseイベントで一時停止時の状態を正しく反映
-			audio.onpause = () => {
-				// endedでない場合のみ一時停止状態を設定
-				if (!audio.ended) {
+			} else {
+				userAudioRef.current.play().catch(() => {
 					setIsUserAudioPlaying(false);
-				}
-			};
-
-			audio.onerror = () => {
-				setIsUserAudioPlaying(false);
-			};
-
-			// 新しく作成した音声を再生
-			audio.play().catch(() => {
-				setIsUserAudioPlaying(false);
-			});
-			setIsUserAudioPlaying(true);
+				});
+				setIsUserAudioPlaying(true);
+			}
 			return;
 		}
 
-		if (isUserAudioPlaying) {
-			userAudioRef.current.pause();
+		// 新しい音声オブジェクトを作成
+		const audio = new Audio(URL.createObjectURL(userAudioBlob));
+		userAudioRef.current = audio;
+
+		// 練習完了フラグ（重複実行防止）
+		let practiceRecorded = false;
+
+		audio.onended = () => {
 			setIsUserAudioPlaying(false);
-		} else {
-			userAudioRef.current.play().catch(() => {
+
+			// 重複実行防止
+			if (practiceRecorded) return;
+
+			// endedプロパティで本当に最後まで再生されたか確認
+			// また、durationが有効な値かも確認
+			if (!audio.ended || !isFinite(audio.duration) || audio.duration <= 0) {
+				return;
+			}
+
+			// 追加チェック：currentTimeがdurationの90%以上進んでいることを確認
+			// （onendedイベント発火時にcurrentTimeがリセットされることがあるため、
+			//   endedプロパティと組み合わせてチェック）
+			const playbackRatio = audio.currentTime / audio.duration;
+			if (playbackRatio < 0.9 && audio.currentTime > 0.1) {
+				// currentTimeが有効で、90%未満の場合は完了とみなさない
+				return;
+			}
+
+			practiceRecorded = true;
+
+			// トーストを表示
+			toast.success("Review completed!");
+			// Speech練習記録APIを呼び出す
+			recordPracticeMutation.mutate(
+				{ speechId: speech.id },
+				{
+					onSuccess: () => {
+						// 練習回数を更新後、SpeechのIDを使って再取得
+						onRefetchSpeechById();
+					},
+					onError: () => {
+						toast.error("Failed to record practice");
+					},
+				},
+			);
+			// 録音データをリセット
+			setTimeout(() => {
+				if (userAudioRef.current) {
+					userAudioRef.current = null;
+				}
+				setUserAudioBlob(null);
+				setRecordingTime(90);
+			}, 500);
+		};
+
+		// pauseイベントで一時停止時の状態を正しく反映
+		audio.onpause = () => {
+			// endedでない場合のみ一時停止状態を設定
+			if (!audio.ended) {
 				setIsUserAudioPlaying(false);
-			});
-			setIsUserAudioPlaying(true);
-		}
+			}
+		};
+
+		audio.onerror = () => {
+			setIsUserAudioPlaying(false);
+		};
+
+		// 新しく作成した音声を再生
+		audio.play().catch(() => {
+			setIsUserAudioPlaying(false);
+		});
+		setIsUserAudioPlaying(true);
 	};
 
 	// ユーザー録音ボタンのクリック処理
