@@ -63,18 +63,6 @@ npm run db:seed:local       # シードデータ投入
 
 タスクに関連する場合のみ、以下のドキュメントを参照してください：
 
-| ドキュメント | 内容 |
-|------------|------|
-| `docs/phrase-generation-README.md` | フレーズ生成機能の詳細 |
-| `docs/subscription-system-documentation.md` | Stripe連携の詳細 |
-| `docs/daily-reset-logic.md` | 日次リセットロジック |
-| `docs/supported-languages.md` | 対応言語の詳細 |
-| `docs/api/` | APIエンドポイントのドキュメント |
-| `docs/supabase-storage-setup.md` | ストレージ設定 |
-| `docs/safari-audio-fix-ffmpeg.md` | Safari音声互換性対応 |
-| `docs/stripe-webhook-setup.md` | Stripeウェブフック設定 |
-| `prisma/schema.prisma` | データベーススキーマ |
-
 ## プロジェクト構造
 
 ```
