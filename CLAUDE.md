@@ -32,32 +32,11 @@ npm run lint                     # ESLint実行
 - **コマンド修正時**: setup.mdを更新後、`grep "npm run" docs/` で他ファイルのインライン記載も確認・修正
 - **ドキュメント更新時**: setup.md以外にコードブロック形式（```bash）でコマンドを追加しない
 
-## 重要な規約
-
-### Prismaクライアント
-
-- 出力先: `src/generated/prisma`（デフォルトと異なる）
-- インポート: `import { prisma } from "@/utils/prisma"`
-
-### APIルートパターン
-
-すべてのAPIルートは以下の順序で処理：
-
-1. `authenticateRequest(request)` - JWT認証
-2. Zodスキーマでバリデーション
-3. ビジネスロジック実行
-4. エラーレスポンスを返却
-
-※ ユーザー向けエラーメッセージをローカライズする場合のみ `getLocaleFromRequest()` と `getTranslation()` を使用
-
-### TypeScriptパス
-
-- `@/` エイリアスで `src/` を参照（例: `@/utils/prisma`）
-
 ## 必須ルール
 
 - `npm install` では必ず `--legacy-peer-deps` を使用
 - `.env` ファイルはコミット禁止（`.env.local` を使用）
+- `.env.local` と `.env.production` の内容は変更禁止
 - APIルートでは必ず `authenticateRequest()` で認証（Stripe Webhookを除く）
 - 複数ステップのDB操作はPrismaトランザクションを使用
 
@@ -78,14 +57,16 @@ npm run lint                     # ESLint実行
 
 機能追加・バグ修正・既存機能修正を依頼された場合は、対応するコマンドを使用すること。
 
-| 指示のタイプ | コマンド          | 詳細                                                    |
-| ------------ | ----------------- | ------------------------------------------------------- |
-| 新機能追加   | `/add-feature`    | [add-feature.md](.claude/commands/add-feature.md)       |
-| バグ修正     | `/fix-bug`        | [fix-bug.md](.claude/commands/fix-bug.md)               |
-| 既存機能修正 | `/modify-feature` | [modify-feature.md](.claude/commands/modify-feature.md) |
+| 指示のタイプ | コマンド          | 詳細                                               |
+| ------------ | ----------------- | -------------------------------------------------- |
+| 新機能追加   | `/add-feature`    | [SKILL.md](.claude/skills/add-feature/SKILL.md)    |
+| バグ修正     | `/fix-bug`        | [SKILL.md](.claude/skills/fix-bug/SKILL.md)        |
+| 既存機能修正 | `/modify-feature` | [SKILL.md](.claude/skills/modify-feature/SKILL.md) |
 
 **例外**: ユーザーが「設計不要」と明示、または1ファイル以内の小規模変更はスキップ可。
 スキップ時は「設計ドキュメントなしで実装を進めてよいですか？」と確認すること。
+
+**進捗管理**: `/add-feature`、`/fix-bug`、`/modify-feature` で実装中は、`docs/steering/{機能名}/progress.md` のチェックリストを都度更新すること。タスク完了時にチェックを入れ、進捗状況を常に最新に保つ。
 
 ## 詳細ドキュメント
 
@@ -108,5 +89,4 @@ npm run lint                     # ESLint実行
 | [docs/troubleshooting.md](docs/troubleshooting.md)               | 問題が発生したとき                    |
 | [docs/glossary.md](docs/glossary.md)                             | 用語定義を確認・更新するとき          |
 | [docs/development-guidelines.md](docs/development-guidelines.md) | 開発規約を確認するとき                |
-| [docs/templates/](docs/templates/)                               | 設計・開発テンプレートを確認するとき  |
 | [docs/steering/](docs/steering/)                                 | 進行中・完了した設計を確認するとき    |
