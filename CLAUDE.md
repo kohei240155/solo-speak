@@ -65,6 +65,7 @@ npm run lint                     # ESLint実行
 
 以下の操作は**絶対に自動実行しない**。必ずユーザーに確認し、明示的な許可を得てから実行すること。
 
+- **Gitコミット**: ユーザーが明示的に許可したファイルのみをコミットする。許可されていないファイルを勝手にコミットしない
 - **DBマイグレーション**: `prisma migrate dev`, `prisma migrate deploy`, `prisma migrate reset` 等
 - **テーブル定義・スキーマ変更**: `schema.prisma` の変更後のマイグレーション適用
 - **DB初期化・シード**: `prisma db push`, `prisma db seed`, `prisma migrate reset` 等
