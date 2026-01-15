@@ -1,4 +1,5 @@
 ---
+name: modify-feature
 description: 既存機能修正のワークフロー（対話形式で変更要求→影響分析→実装）
 ---
 
