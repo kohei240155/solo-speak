@@ -257,11 +257,32 @@ describe('機能名', () => {
 ### ブランチ命名
 
 ```
+# 小規模変更（〜200行）
 feature/{機能名}     # 新機能
 fix/{バグ名}         # バグ修正
 refactor/{対象}      # リファクタリング
 docs/{対象}          # ドキュメント更新
+modify/{機能名}      # 既存機能修正
+
+# 大規模変更（200行超）- PR分割用
+release/{機能名}              # リリースブランチ（機能の統合先）
+feature/{機能名}/design       # 設計ドキュメント用
+feature/{機能名}/backend      # バックエンド実装用
+feature/{機能名}/frontend     # フロントエンド実装用
 ```
+
+### PR分割フロー（大規模変更時）
+
+200行を超える変更では、レビューしやすい単位でPRを分割:
+
+```
+main ──► release/{機能名} ──┬── feature/{機能名}/design    → 設計PR
+                           ├── feature/{機能名}/backend   → バックエンドPR
+                           ├── feature/{機能名}/frontend  → フロントエンドPR
+                           └──► main                      → リリースPR
+```
+
+詳細: [docs/branching-strategy.md](/docs/branching-strategy.md)
 
 ### コミットメッセージ
 
@@ -290,3 +311,4 @@ chore: ビルド・設定の変更
 - [docs/backend/database.md](/docs/backend/database.md) - DB設計詳細
 - [docs/frontend/components.md](/docs/frontend/components.md) - コンポーネント詳細
 - [docs/testing.md](/docs/testing.md) - テスト戦略
+- [docs/branching-strategy.md](/docs/branching-strategy.md) - ブランチ戦略・PR分割

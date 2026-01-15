@@ -89,4 +89,5 @@ npm run lint                     # ESLint実行
 | [docs/troubleshooting.md](docs/troubleshooting.md)               | 問題が発生したとき                    |
 | [docs/glossary.md](docs/glossary.md)                             | 用語定義を確認・更新するとき          |
 | [docs/development-guidelines.md](docs/development-guidelines.md) | 開発規約を確認するとき                |
+| [docs/branching-strategy.md](docs/branching-strategy.md)         | ブランチ戦略・PR分割を確認するとき    |
 | [docs/steering/](docs/steering/)                                 | 進行中・完了した設計を確認するとき    |
