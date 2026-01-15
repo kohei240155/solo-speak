@@ -10,97 +10,30 @@ description: バグ修正のワークフロー（対話形式で調査→原因�
 
 ```
 docs/steering/{YYYYMMDD}-fix-{bug-name}/
-├── progress.md        # プロセス進捗（Step 2で作成）
-├── investigation.md   # 調査結果（Phase 1-2で作成）
-├── fix-plan.md        # 修正計画（Phase 2で作成）
-└── tasklist.md        # タスクリスト（Phase 3で作成）
+├── progress.md        # プロセス進捗（Step 2 で作成）
+├── investigation.md   # 調査結果（Step 2 で作成、Step 3-5 で更新）
+├── fix-plan.md        # 修正計画（Step 6 で作成）
+└── tasklist.md        # タスクリスト（Step 7 で作成）
 ```
 
 命名例: `docs/steering/20260113-fix-login-error/`
 
 ---
 
-## 再開時の処理
+## スキップ条件
 
-コマンド実行時、まず `docs/steering/` 内に進行中のディレクトリ（`-fix-` を含む）があるか確認する。
-
-**進行中のディレクトリがある場合**:
-1. `progress.md` を読み込む
-2. チェックボックスの状態から最初の未完了ステップを特定
-3. ユーザーに現在の状況を報告:
-
-```
-進行中の作業が見つかりました。
-
-📁 ディレクトリ: `docs/steering/{dir}/`
-📊 現在のフェーズ: {Phase X}
-⏳ 次のステップ: Step {N}
-
-この作業を再開しますか？
-```
-
-4. 再開する場合、該当ステップから処理を続行
-5. 新規で始める場合、Phase 1 の Step 1 から開始
-
-**進行中のディレクトリがない場合**:
-Phase 1 の Step 1 から開始。
-
-### 複数の進行中ディレクトリがある場合
-
-最も新しい日付のディレクトリを優先し、ユーザーに選択を求める:
-
-```
-複数の進行中作業が見つかりました。どちらを再開しますか？
-
-1. 📁 `docs/steering/20260114-fix-login-error/` (Phase 2, Step 5)
-2. 📁 `docs/steering/20260113-fix-api-timeout/` (Phase 1, Step 3)
-3. 🆕 新規で始める
-```
-
-### チェックボックス状態の判定
-
-`progress.md` のチェックリストを以下のルールでパース:
-
-- `- [x]` → 完了
-- `- [ ]` → 未完了
-- 最初の未完了項目 = 次のステップ
-
-**例**:
-```markdown
-- [x] Step 1: バグの症状ヒアリング完了
-- [x] Step 2: ステアリングディレクトリ作成
-- [ ] Step 3: 影響度と環境の確認  ← 次のステップ
-```
+CLAUDE.md の「実装ワークフロー」セクションに記載の例外条件に従う。
 
 ---
 
-## エージェントの呼び出し方法
+## 再開時の処理
 
-本コマンドでは複数のエージェントを使用します。呼び出し方法は以下の通りです。
+コマンド実行時、`docs/steering/` 内に進行中の `-fix-` ディレクトリがあるか確認する。
 
-### Claude Code の Task ツールを使用
-
-```
-Task ツールを使用してエージェントを呼び出す:
-- subagent_type: エージェント名（例: "file-finder"）
-- prompt: エージェントへの指示（入力仕様に従う）
-```
-
-### 呼び出し例（Step 4: file-finder）
-
-```
-Task:
-  subagent_type: "file-finder"
-  prompt: |
-    以下のバグに関連するファイルを検索してください。
-
-    バグ名: ログインエラー
-    症状: ログインボタンをクリックしても反応がない
-    検索目的: バグ原因調査
-    検索範囲: src/app/api/auth/, src/components/auth/, src/hooks/
-```
-
-**重要**: エージェントは独立コンテキストで実行されるため、必要な情報はすべてプロンプトに含めてください。
+- `archive/` は除外、`progress.md` のステータスが「完了」以外を「進行中」と判定
+- 進行中がある場合: ユーザーに再開 or 新規開始を確認
+- 進行中がない場合: Phase 1 Step 1 から開始
+- 次のステップは `progress.md` の最初の `- [ ]` 項目で判定
 
 ---
 
@@ -123,15 +56,13 @@ Task:
 
 ユーザーの回答をもとに:
 
-1. 現在の日付を取得（`date +%Y%m%d`）
-2. バグ名をkebab-caseに変換（日本語の場合は英語に翻訳）
-3. `docs/steering/{YYYYMMDD}-fix-{bug-name}/` ディレクトリを作成
-4. `progress.md` を作成（テンプレート: `.claude/skills/fix-bug/templates/progress-template.md`）
-5. `investigation.md` を作成（テンプレート: `.claude/skills/fix-bug/templates/investigation-template.md`）
-6. 「1. バグ概要」「2. 再現手順」「3. 期待動作 vs 実際の動作」セクションを埋める
-7. `progress.md` の Step 1, Step 2 のチェックを更新
-
-作成後、次のステップに進む旨を報告。
+1. 日付取得（`date +%Y%m%d`）、バグ名をkebab-caseに変換
+2. `docs/steering/{YYYYMMDD}-fix-{bug-name}/` ディレクトリを作成
+3. テンプレートからファイル作成:
+   - `progress.md`（テンプレート: `.claude/skills/fix-bug/templates/progress-template.md`）
+   - `investigation.md`（テンプレート: `.claude/skills/fix-bug/templates/investigation-template.md`）
+4. 「1. バグ概要」「2. 再現手順」「3. 期待動作 vs 実際の動作」セクションを埋める
+5. `progress.md` の Step 1, Step 2 のチェックを更新
 
 ### Step 3: 影響度と環境の確認
 
@@ -164,7 +95,10 @@ Task:
 🔍 **file-finder エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/file-finder.md` を参照
+→ file-finder エージェントへの入力:
+  - 機能名/キーワード: {バグに関連する機能名}
+  - 検索範囲: src/app/api/, src/components/, src/hooks/, src/types/
+  - 検索目的: バグ原因調査
 
 調査結果を `investigation.md` の「5. 原因分析」セクションに反映。
 
@@ -175,7 +109,10 @@ Task:
 🔍 **impact-analyzer エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/impact-analyzer.md` を参照
+→ impact-analyzer エージェントへの入力:
+  - 変更内容: {修正予定の変更概要}
+  - 変更対象ファイル: {修正予定のファイルパス}
+  - 分析観点: 修正による副作用、関連機能への影響
 
 分析結果を `investigation.md` の「6. 影響範囲」セクションに反映。
 ステータスを `原因特定済み` に変更。
@@ -206,46 +143,8 @@ Task:
 
 ### Step 7: タスクリストの作成
 
-```
-タスクリストを作成します。
-
-**バグ修正のタイプ**:
-この修正はどのタイプに該当しますか？
-
-A. **コードのみ**: ロジックの修正、条件の追加など
-B. **UI修正**: 表示・スタイルの修正
-C. **API修正**: エンドポイントの修正
-D. **DB修正**: クエリ・スキーマの修正
-E. **複合**: 上記の組み合わせ
-```
-
-#### タイプ選択ガイド
-
-| ケース | 判断基準 | タイプ |
-|--------|----------|--------|
-| ボタンが動かない、表示崩れ | フロントエンドのみの問題 | A or B |
-| APIがエラーを返す | バックエンドの問題 | C |
-| データが正しく保存されない | DB/クエリの問題 | D |
-| UI表示不具合だがAPIレスポンスが原因 | API + UI両方修正が必要 | E |
-| 認証が通らない | 認証ロジック（API） | C |
-| フォーム送信でエラー | 検証ロジックの場所による | A, C, or E |
-
-#### 迷った場合のフローチャート
-
-```
-バグの原因はどこにある？
-├─ フロントエンドのみ
-│   ├─ ロジックの問題 → タイプ A
-│   └─ スタイルの問題 → タイプ B
-├─ バックエンドのみ
-│   ├─ API処理の問題 → タイプ C
-│   └─ DB/クエリの問題 → タイプ D
-└─ 両方に関連
-    └─ 複合 → タイプ E
-```
-
-修正タイプに関わらず、バグ修正専用テンプレートで `tasklist.md` を作成:
-- `.claude/skills/fix-bug/templates/tasklist.md`
+バグ修正専用テンプレートで `tasklist.md` を作成:
+- テンプレート: `.claude/skills/fix-bug/templates/tasklist.md`
 
 ### Step 8: 最終確認と実装開始
 
@@ -282,44 +181,46 @@ file-finder → impact-analyzer → [修正] → test-runner → code-reviewer
 
 ## Phase 4: 実装・検証
 
-### Step 9: 実装
+### Step 9: [オプション] リグレッションテスト作成（TDD）
+
+複雑なロジックや再発防止が重要な場合、TDDアプローチを使用:
+
+```
+🔴 **Red Phase**: バグを再現するテストを作成（失敗確認）
+🟢 **Green Phase**: バグを修正（テストパス）
+🔵 **Refactor Phase**: 必要に応じてリファクタリング
+```
+
+設定ミス・タイポ・UI問題などはスキップ可。
+
+### Step 10: 実装
 
 `tasklist.md` に従って修正を進める。各タスク完了時に `progress.md` のチェックを更新。
 
-### Step 10: ビルド確認（build-executor エージェント）
+TDDを使用した場合は、テストがパスすることを確認しながら修正。
 
-🔧 **build-executor エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/build-executor.md` を参照
+### Step 11-15: 検証
 
-エラーがあれば修正し、再度ビルドを実行。
+以下のエージェントを順次実行し、問題があれば修正:
 
-### Step 11: テスト・Lint（test-runner エージェント）
+| Step | エージェント | 確認内容 |
+|------|-------------|----------|
+| 11 | build-executor | ビルドエラー（`npm run build:local`） |
+| 12 | test-runner | テスト・Lint（`npm run test && npm run lint`） |
+| 13 | code-reviewer | コード品質（認証、バリデーション、型安全性） |
+| 14 | security-checker | セキュリティ（認証・認可、インジェクション） |
+| 15 | review-docs | ドキュメント整合性 |
 
-🧪 **test-runner エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/test-runner.md` を参照
+---
 
-エラー・警告を解消。
+## ステータス遷移
 
-### Step 12: コードレビュー（code-reviewer エージェント）
-
-🔍 **code-reviewer エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/code-reviewer.md` を参照
-
-Critical Issues を解消。
-
-### Step 13: セキュリティチェック（security-checker エージェント）
-
-🔒 **security-checker エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/security-checker.md` を参照
-
-脆弱性があれば修正。
-
-### Step 14: ドキュメント整合性（review-docs エージェント）
-
-📝 **review-docs エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/review-docs.md` を参照
-
-関連ドキュメントを更新（必要な場合）。
+| ファイル | 初期値 | 主な遷移 |
+|----------|--------|----------|
+| progress.md | Phase 1 | Phase 1 → 2（Step 4）→ 3（Step 7）→ 4（Step 9）→ 完了（Step 15） |
+| investigation.md | 調査中 | → 原因特定済み（Step 5）→ 修正中（Step 10）→ 完了（Step 15） |
+| fix-plan.md | 計画中 | → 承認済み（Step 8 でユーザー承認後） |
+| tasklist.md | 計画中 | → 実装中（Step 10）→ 完了（Step 15） |
 
 ---
 
@@ -336,45 +237,6 @@ Critical Issues を解消。
 
 ## エラーハンドリング
 
-各ステップで問題が発生した場合の対応フロー:
-
-### Step 10 (ビルド) で失敗した場合
-
-1. エラーメッセージを分析
-2. `build-executor` エージェントの提案に従って修正
-3. 修正後、再度 Step 10 を実行
-4. 3回失敗した場合、ユーザーに状況を報告し対応を相談
-
-### Step 11 (テスト/Lint) で失敗した場合
-
-1. 失敗内容を分類（Lint エラー / 型エラー / テスト失敗）
-2. 優先順位: 型エラー → Lint エラー → テスト失敗
-3. 各エラーを修正し、再度 Step 11 を実行
-4. テスト失敗が修正ロジックに起因する場合、Step 9 に戻る
-
-### Step 12-14 で問題が見つかった場合
-
-1. 問題の重大度を判定（Critical / Warning / Info）
-2. Critical: 即座に修正し、Step 10 から再検証
-3. Warning: ユーザーに報告し、修正するか確認
-4. Info: 記録のみ、次のステップへ進む
-
-### フローチャート
-
-```
-[Step 10: ビルド]
-    ↓ 失敗
-    → 修正 → 再実行（最大3回）
-    → 3回失敗 → ユーザーに相談
-    ↓ 成功
-[Step 11: テスト/Lint]
-    ↓ 失敗
-    → 修正 → 再実行
-    → ロジック問題 → Step 9 に戻る
-    ↓ 成功
-[Step 12-14: レビュー系]
-    ↓ Critical
-    → 修正 → Step 10 に戻る
-    ↓ Warning/Info
-    → 記録 → 次へ
-```
+- **ビルド/テスト失敗**: エラーを修正して再実行。3回失敗でユーザーに相談
+- **レビューで Critical**: 即座に修正し Step 11 から再検証
+- **レビューで Warning**: ユーザーに修正要否を確認

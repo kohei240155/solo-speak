@@ -11,96 +11,29 @@ description: 既存機能修正のワークフロー（対話形式で変更要�
 ```
 docs/steering/{YYYYMMDD}-modify-{feature-name}/
 ├── progress.md          # プロセス進捗（Step 2で作成）
-├── change-request.md    # 変更要求（Phase 1で作成）
-├── impact-analysis.md   # 影響分析（Phase 2で作成）
-└── tasklist.md          # タスクリスト（Phase 3で作成）
+├── change-request.md    # 変更要求（Step 2で作成）
+├── impact-analysis.md   # 影響分析（Step 5で作成）
+└── tasklist.md          # タスクリスト（Step 6で作成）
 ```
 
-命名例: `docs/steering/20260113-modify-login-flow/`
+命名例: `docs/steering/20260113-modify-user-profile/`
+
+---
+
+## スキップ条件
+
+CLAUDE.md の「実装ワークフロー」セクションに記載の例外条件に従う。
 
 ---
 
 ## 再開時の処理
 
-コマンド実行時、まず `docs/steering/` 内に進行中のディレクトリ（`-modify-` を含む）があるか確認する。
+コマンド実行時、`docs/steering/` 内に進行中の `-modify-` ディレクトリがあるか確認する。
 
-**進行中のディレクトリがある場合**:
-1. `progress.md` を読み込む
-2. チェックボックスの状態から最初の未完了ステップを特定
-3. ユーザーに現在の状況を報告:
-
-```
-進行中の作業が見つかりました。
-
-📁 ディレクトリ: `docs/steering/{dir}/`
-📊 現在のフェーズ: {Phase X}
-⏳ 次のステップ: Step {N}
-
-この作業を再開しますか？
-```
-
-4. 再開する場合、該当ステップから処理を続行
-5. 新規で始める場合、Phase 1 の Step 1 から開始
-
-**進行中のディレクトリがない場合**:
-Phase 1 の Step 1 から開始。
-
-### 複数の進行中ディレクトリがある場合
-
-最も新しい日付のディレクトリを優先し、ユーザーに選択を求める:
-
-```
-複数の進行中作業が見つかりました。どちらを再開しますか？
-
-1. 📁 `docs/steering/20260114-modify-login-flow/` (Phase 2, Step 5)
-2. 📁 `docs/steering/20260113-modify-search-filter/` (Phase 1, Step 3)
-3. 🆕 新規で始める
-```
-
-### チェックボックス状態の判定
-
-`progress.md` のチェックリストを以下のルールでパース:
-
-- `- [x]` → 完了
-- `- [ ]` → 未完了
-- 最初の未完了項目 = 次のステップ
-
-**例**:
-```markdown
-- [x] Step 1: 変更内容のヒアリング完了
-- [x] Step 2: ステアリングディレクトリ作成
-- [ ] Step 3: 後方互換性と成功指標の確認  ← 次のステップ
-```
-
----
-
-## エージェントの呼び出し方法
-
-本コマンドでは複数のエージェントを使用します。呼び出し方法は以下の通りです。
-
-### Claude Code の Task ツールを使用
-
-```
-Task ツールを使用してエージェントを呼び出す:
-- subagent_type: エージェント名（例: "file-finder"）
-- prompt: エージェントへの指示（入力仕様に従う）
-```
-
-### 呼び出し例（Step 4: file-finder）
-
-```
-Task:
-  subagent_type: "file-finder"
-  prompt: |
-    以下の機能に関連するファイルを検索してください。
-
-    機能名: ログインフロー
-    変更内容: ソーシャルログインの追加
-    検索目的: 既存機能修正のための影響調査
-    検索範囲: src/app/api/auth/, src/components/auth/, src/hooks/
-```
-
-**重要**: エージェントは独立コンテキストで実行されるため、必要な情報はすべてプロンプトに含めてください。
+- `archive/` は除外、`progress.md` のステータスが「完了」以外を「進行中」と判定
+- 進行中がある場合: ユーザーに再開 or 新規開始を確認
+- 進行中がない場合: Phase 1 Step 1 から開始
+- 次のステップは `progress.md` の最初の `- [ ]` 項目で判定
 
 ---
 
@@ -111,7 +44,7 @@ Task:
 ユーザーに以下を質問:
 
 ```
-既存機能の修正を始めましょう。まず、変更内容について教えてください:
+既存機能の修正を始めましょう。変更内容について教えてください:
 
 1. **対象機能**: どの機能を変更しますか？
 2. **変更理由**: なぜ変更が必要ですか？
@@ -123,35 +56,26 @@ Task:
 
 ユーザーの回答をもとに:
 
-1. 現在の日付を取得（`date +%Y%m%d`）
-2. 機能名をkebab-caseに変換（日本語の場合は英語に翻訳）
-3. `docs/steering/{YYYYMMDD}-modify-{feature-name}/` ディレクトリを作成
-4. `progress.md` を作成（テンプレート: `.claude/skills/modify-feature/templates/progress-template.md`）
-5. `change-request.md` を作成（テンプレート: `.claude/skills/modify-feature/templates/change-request-template.md`）
-6. 「1. 変更概要」「2. 変更理由」「3. 変更内容」セクションを埋める
-7. `progress.md` の Step 1, Step 2 のチェックを更新
+1. 日付取得（`date +%Y%m%d`）、機能名をkebab-caseに変換
+2. `docs/steering/{YYYYMMDD}-modify-{feature-name}/` ディレクトリを作成
+3. テンプレートからファイル作成:
+   - `progress.md`（テンプレート: `.claude/skills/modify-feature/templates/progress-template.md`）
+   - `change-request.md`（テンプレート: `.claude/skills/modify-feature/templates/change-request-template.md`）
+4. 変更概要・理由・内容を記入
+5. `progress.md` の Step 1, Step 2 のチェックを更新
 
-作成後、次のステップに進む旨を報告。
-
-### Step 3: 後方互換性と成功指標の確認
+### Step 3: 後方互換性・成功指標の確認
 
 ```
 次に、後方互換性と成功指標を確認します。
 
-**後方互換性**:
-- この変更によって、既存の動作が変わりますか？
-- 既存ユーザーに影響がありますか？
-- 移行対応が必要ですか？
-
-**成功指標**:
-- この変更が成功したら、何が改善されますか？
-- どのように測定しますか？
+**後方互換性**: 既存の動作が変わりますか？移行対応は必要ですか？
+**成功指標**: 何が改善され、どう測定しますか？
 
 それぞれ教えてください。
 ```
 
-回答を得たら、`change-request.md` の「4. 後方互換性」「5. 成功指標」セクションを更新。
-ステータスを `要求確定` に変更。
+回答を得たら、`change-request.md` を更新。
 
 ---
 
@@ -160,80 +84,37 @@ Task:
 ### Step 4: コードベース調査（file-finder エージェント）
 
 ```
-影響分析に入る前に、関連する既存コードを調査します。
+影響分析に入ります。関連する既存コードを調査します。
 🔍 **file-finder エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/file-finder.md` を参照
-
-調査結果を表示後、影響分析に進む。
+→ file-finder エージェントへの入力:
+  - 機能名/キーワード: {変更対象の機能名}
+  - 検索範囲: src/app/api/, src/components/, src/hooks/, src/types/
+  - 検索目的: 変更影響の調査
 
 ### Step 5: 影響範囲分析（impact-analyzer エージェント）
 
 ```
-変更の影響範囲を分析します。
+関連コードを調査しました。次に、変更の影響範囲を分析します。
 🔍 **impact-analyzer エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/impact-analyzer.md` を参照
+→ impact-analyzer エージェントへの入力:
+  - 変更内容: {変更概要}
+  - 変更対象ファイル: {変更予定のファイルパス}
+  - 分析観点: 破壊的変更、関連機能への影響
 
-分析結果をもとに `impact-analysis.md` を作成（テンプレート: `.claude/skills/modify-feature/templates/impact-analysis-template.md`）
-
-以下のセクションを埋める:
-
-- 「1. 影響を受けるコンポーネント」
-- 「2. 依存関係」
-- 「3. API影響」
-- 「4. データベース影響」
-- 「5. リスク評価」
-- 「6. テスト戦略」
-- 「7. ロールバック計画」
+分析結果を `impact-analysis.md` に記録（テンプレート: `.claude/skills/modify-feature/templates/impact-analysis-template.md`）
 
 ---
 
 ## Phase 3: 実装計画
 
-### Step 6: 実装計画の策定
+### Step 6: タスクリスト作成
 
-```
-実装計画を策定しましょう。
-
-**変更タイプの確認**:
-この変更はどのタイプに該当しますか？
-
-A. **フロントエンドのみ**: UIコンポーネント、表示の変更
-B. **バックエンドのみ**: APIエンドポイント、ロジックの変更
-C. **フルスタック**: DB + API + UI の変更
-D. **複合**: 複数機能にまたがる変更
-```
-
-#### タイプ選択ガイド
-
-| ケース | 判断基準 | タイプ |
-|--------|----------|--------|
-| ボタンの配置変更、スタイル修正 | フロントエンドのみ | A |
-| APIレスポンス形式の変更 | バックエンドのみ | B |
-| 新しいフィールドの追加（保存あり） | DB + API + UI | C |
-| 認証フローの変更 | 複数機能に影響 | D |
-| バリデーションルールの変更 | 場所による | A, B, or C |
-| 表示条件の変更 | フロントエンドのみ | A |
-
-#### 迷った場合のフローチャート
-
-```
-変更の影響範囲は？
-├─ UIのみ変更
-│   └─ タイプ A（フロントエンドのみ）
-├─ API/ロジックのみ変更
-│   └─ タイプ B（バックエンドのみ）
-├─ DB + API + UI すべて変更
-│   └─ タイプ C（フルスタック）
-└─ 複数の独立した機能に影響
-    └─ タイプ D（複合）
-```
-
-変更タイプに関わらず、機能修正専用テンプレートで `tasklist.md` を作成:
-- `.claude/skills/modify-feature/templates/tasklist.md`
+テンプレートで `tasklist.md` を作成:
+- テンプレート: `.claude/skills/modify-feature/templates/tasklist.md`
 
 ### Step 7: 最終確認と実装開始
 
@@ -246,8 +127,8 @@ D. **複合**: 複数機能にまたがる変更
 
 | ファイル | 内容 |
 |----------|------|
-| change-request.md | 変更要求（対象、理由、内容） |
-| impact-analysis.md | 影響分析（依存関係、リスク） |
+| change-request.md | 変更要求（対象、理由、変更内容） |
+| impact-analysis.md | 影響分析（破壊的変更、リスク） |
 | tasklist.md | タスクリスト |
 
 ---
@@ -256,7 +137,6 @@ D. **複合**: 複数機能にまたがる変更
 
 - **対象機能**: {機能名}
 - **破壊的変更**: {あり/なし}
-- **変更ファイル数**: {概算}
 - **リスクレベル**: {低/中/高}
 
 ### 推奨エージェントフロー
@@ -271,44 +151,46 @@ file-finder → impact-analyzer → [実装] → test-runner → code-reviewer
 
 ## Phase 4: 実装・検証
 
-### Step 8: 実装
+### Step 8: [オプション] テスト作成（TDD）
 
-`tasklist.md` に従って実装を進める。各タスク完了時に `progress.md` のチェックを更新。
+複雑なロジック変更やリグレッション防止が重要な場合、TDDアプローチを使用:
 
-### Step 9: ビルド確認（build-executor エージェント）
+```
+🔴 **Red Phase**: 変更後の動作を検証するテストを作成（失敗確認）
+🟢 **Green Phase**: 変更を実装（テストパス）
+🔵 **Refactor Phase**: 必要に応じてリファクタリング
+```
 
-🔧 **build-executor エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/build-executor.md` を参照
+単純な修正はスキップ可。
 
-エラーがあれば修正し、再度ビルドを実行。
+### Step 9: 実装
 
-### Step 10: テスト・Lint（test-runner エージェント）
+`tasklist.md` に従って実装。各タスク完了時に `progress.md` のチェックを更新。
 
-🧪 **test-runner エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/test-runner.md` を参照
+TDDを使用した場合は、テストがパスすることを確認しながら進める。
 
-エラー・警告を解消。
+### Step 10-14: 検証
 
-### Step 11: コードレビュー（code-reviewer エージェント）
+以下のエージェントを順次実行し、問題があれば修正:
 
-🔍 **code-reviewer エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/code-reviewer.md` を参照
+| Step | エージェント | 確認内容 |
+|------|-------------|----------|
+| 10 | build-executor | ビルドエラー（`npm run build:local`） |
+| 11 | test-runner | テスト・Lint（`npm run test && npm run lint`） |
+| 12 | code-reviewer | コード品質（認証、バリデーション、型安全性） |
+| 13 | security-checker | セキュリティ（認証・認可、インジェクション） |
+| 14 | review-docs | ドキュメント整合性 |
 
-Critical Issues を解消。
+---
 
-### Step 12: セキュリティチェック（security-checker エージェント）
+## ステータス遷移
 
-🔒 **security-checker エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/security-checker.md` を参照
-
-脆弱性があれば修正。
-
-### Step 13: ドキュメント整合性（review-docs エージェント）
-
-📝 **review-docs エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/review-docs.md` を参照
-
-関連ドキュメントを更新。
+| ファイル | 初期値 | 主な遷移 |
+|----------|--------|----------|
+| progress.md | Phase 1 | Phase 1 → 2（Step 4）→ 3（Step 6）→ 4（Step 8）→ 完了（Step 14） |
+| change-request.md | 作成中 | → 確定（Step 3） |
+| impact-analysis.md | 分析中 | → 分析完了（Step 5） |
+| tasklist.md | 計画中 | → 実装中（Step 9）→ 完了（Step 14） |
 
 ---
 
@@ -318,7 +200,6 @@ Critical Issues を解消。
 - 各ステップでユーザーの回答を待ってから次に進む
 - 後方互換性を最大限維持することを優先する
 - 技術的な判断が必要な場合は、CLAUDE.md を参照する
-- 影響範囲が大きい場合は、段階的なリリースを検討する
 - 対話が中断されても、途中まで入力した内容はファイルに保存されている
 - 完了後、`mv docs/steering/{dir} docs/steering/archive/` でアーカイブ
 
@@ -326,45 +207,6 @@ Critical Issues を解消。
 
 ## エラーハンドリング
 
-各ステップで問題が発生した場合の対応フロー:
-
-### Step 9 (ビルド) で失敗した場合
-
-1. エラーメッセージを分析
-2. `build-executor` エージェントの提案に従って修正
-3. 修正後、再度 Step 9 を実行
-4. 3回失敗した場合、ユーザーに状況を報告し対応を相談
-
-### Step 10 (テスト/Lint) で失敗した場合
-
-1. 失敗内容を分類（Lint エラー / 型エラー / テスト失敗）
-2. 優先順位: 型エラー → Lint エラー → テスト失敗
-3. 各エラーを修正し、再度 Step 10 を実行
-4. テスト失敗が変更ロジックに起因する場合、Step 8 に戻る
-
-### Step 11-13 で問題が見つかった場合
-
-1. 問題の重大度を判定（Critical / Warning / Info）
-2. Critical: 即座に修正し、Step 9 から再検証
-3. Warning: ユーザーに報告し、修正するか確認
-4. Info: 記録のみ、次のステップへ進む
-
-### フローチャート
-
-```
-[Step 9: ビルド]
-    ↓ 失敗
-    → 修正 → 再実行（最大3回）
-    → 3回失敗 → ユーザーに相談
-    ↓ 成功
-[Step 10: テスト/Lint]
-    ↓ 失敗
-    → 修正 → 再実行
-    → ロジック問題 → Step 8 に戻る
-    ↓ 成功
-[Step 11-13: レビュー系]
-    ↓ Critical
-    → 修正 → Step 9 に戻る
-    ↓ Warning/Info
-    → 記録 → 次へ
-```
+- **ビルド/テスト失敗**: エラーを修正して再実行。3回失敗でユーザーに相談
+- **レビューで Critical**: 即座に修正し Step 10 から再検証
+- **レビューで Warning**: ユーザーに修正要否を確認

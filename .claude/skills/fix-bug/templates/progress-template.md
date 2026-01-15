@@ -2,7 +2,8 @@
 
 **コマンド**: /fix-bug
 **開始日時**: {YYYY-MM-DD HH:mm}
-**現在フェーズ**: Phase 1 | Phase 2 | Phase 3 | Phase 4 | 完了
+**現在フェーズ**: Phase 1
+<!-- 現在フェーズの更新: Phase 1 → Phase 2 → Phase 3 → Phase 4 → 完了 -->
 
 ---
 
@@ -13,7 +14,7 @@
   - [ ] 再現手順を確認
   - [ ] 期待動作を確認
   - [ ] 実際の動作を確認
-- [ ] Step 2: ステアリングディレクトリ作成
+- [ ] Step 2: ステアリングディレクトリの作成
   - [ ] ディレクトリ作成
   - [ ] progress.md 作成
   - [ ] investigation.md 作成
@@ -56,22 +57,28 @@
 
 ## Phase 4: 実装・検証
 
-- [ ] Step 9: 実装
+- [ ] Step 9: [オプション] リグレッションテスト作成（TDD）
+  - [ ] TDD使用有無を決定
+  - [ ] 🔴 バグ再現テスト作成（TDD使用時）
+  - [ ] テストが失敗することを確認（TDD使用時）
+- [ ] Step 10: 実装
   - [ ] tasklist.md に従って実装
+  - [ ] 🟢 テストがパスすることを確認（TDD使用時）
+  - [ ] 🔵 必要に応じてリファクタリング
   - [ ] 各タスク完了時にチェック
-- [ ] Step 10: ビルド確認
+- [ ] Step 11: ビルド確認
   - [ ] 🔧 build-executor エージェント実行（独立コンテキスト）
   - [ ] エラーがあれば修正
-- [ ] Step 11: テスト・Lint
+- [ ] Step 12: テスト・Lint
   - [ ] 🧪 test-runner エージェント実行（独立コンテキスト）
   - [ ] エラー・警告を解消
-- [ ] Step 12: コードレビュー
+- [ ] Step 13: コードレビュー
   - [ ] 🔍 code-reviewer エージェント実行（独立コンテキスト）
   - [ ] Critical Issues を解消
-- [ ] Step 13: セキュリティチェック
+- [ ] Step 14: セキュリティチェック
   - [ ] 🔒 security-checker エージェント実行（独立コンテキスト）
   - [ ] 脆弱性があれば修正
-- [ ] Step 14: ドキュメント整合性
+- [ ] Step 15: ドキュメント整合性
   - [ ] 📝 review-docs エージェント実行（独立コンテキスト）
   - [ ] 関連ドキュメントを更新
 
@@ -79,9 +86,9 @@
 
 ## 生成されたファイル
 
-- [ ] investigation.md（Phase 1-2 で作成・更新）
-- [ ] fix-plan.md（Phase 2 完了時）
-- [ ] tasklist.md（Phase 3 完了時）
+- [ ] investigation.md（Step 2 で作成、Step 3-5 で更新）
+- [ ] fix-plan.md（Step 6 で作成）
+- [ ] tasklist.md（Step 7 で作成）
 
 ---
 

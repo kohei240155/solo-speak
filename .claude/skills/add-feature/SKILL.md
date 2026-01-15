@@ -20,91 +20,20 @@ docs/steering/{YYYYMMDD}-{feature-name}/
 
 ---
 
-## 再開時の処理
+## スキップ条件
 
-コマンド実行時、まず `docs/steering/` 内に進行中のディレクトリがあるか確認する。
-
-### 進行中ディレクトリの判定
-
-1. `docs/steering/` 配下のディレクトリを日付降順でリスト
-2. `archive/` ディレクトリは除外
-3. 各ディレクトリの `progress.md` を確認
-4. ステータスが「完了」以外のものを「進行中」と判定
-
-### 複数の進行中ディレクトリがある場合
-
-最も新しい日付のディレクトリを優先し、ユーザーに選択を求める:
-
-```
-複数の進行中作業が見つかりました。どちらを再開しますか？
-
-1. 📁 `docs/steering/20260114-bookmark-feature/` (Phase 2, Step 5)
-2. 📁 `docs/steering/20260113-notification/` (Phase 1, Step 3)
-3. 🆕 新規で始める
-```
-
-### 単一の進行中ディレクトリがある場合
-
-```
-進行中の作業が見つかりました。
-
-📁 ディレクトリ: `docs/steering/{dir}/`
-📊 現在のフェーズ: {Phase X}
-⏳ 次のステップ: Step {N}
-
-この作業を再開しますか？
-```
-
-- 再開する場合、該当ステップから処理を続行
-- 新規で始める場合、Phase 1 の Step 1 から開始
-
-### チェックボックス状態の判定
-
-`progress.md` のチェックリストを以下のルールでパース:
-
-- `- [x]` → 完了
-- `- [ ]` → 未完了
-- 最初の未完了項目 = 次のステップ
-
-**例**:
-```markdown
-- [x] Step 1: 機能概要のヒアリング
-- [x] Step 2: ステアリングディレクトリの作成
-- [ ] Step 3: ゴールと成功指標の明確化  ← 次のステップ
-```
-
-### 進行中のディレクトリがない場合
-
-Phase 1 の Step 1 から開始。
+CLAUDE.md の「実装ワークフロー」セクションに記載の例外条件に従う。
 
 ---
 
-## エージェントの呼び出し方法
+## 再開時の処理
 
-本コマンドでは複数のエージェントを使用します。呼び出し方法は以下の通りです。
+コマンド実行時、`docs/steering/` 内に進行中のディレクトリがあるか確認する。
 
-### Claude Code の Task ツールを使用
-
-```
-Task ツールを使用してエージェントを呼び出す:
-- subagent_type: エージェント名（例: "file-finder"）
-- prompt: エージェントへの指示（入力仕様に従う）
-```
-
-### 呼び出し例（Step 4: file-finder）
-
-```
-Task:
-  subagent_type: "file-finder"
-  prompt: |
-    以下の機能に関連するファイルを検索してください。
-
-    機能名: ブックマーク機能
-    検索目的: 新機能追加のための既存コード調査
-    検索範囲: src/app/api/, src/components/, src/hooks/, src/types/
-```
-
-**重要**: エージェントは独立コンテキストで実行されるため、必要な情報はすべてプロンプトに含めてください。
+- `archive/` は除外、`progress.md` のステータスが「完了」以外を「進行中」と判定
+- 進行中がある場合: ユーザーに再開 or 新規開始を確認
+- 進行中がない場合: Phase 1 Step 1 から開始
+- 次のステップは `progress.md` の最初の `- [ ]` 項目で判定
 
 ---
 
@@ -126,15 +55,13 @@ Task:
 
 ユーザーの回答をもとに:
 
-1. 現在の日付を取得（`date +%Y%m%d`）
-2. 機能名をkebab-caseに変換（日本語の場合は英語に翻訳）
-3. `docs/steering/{YYYYMMDD}-{feature-name}/` ディレクトリを作成
-4. `progress.md` を作成（テンプレート: `.claude/skills/add-feature/templates/progress-template.md`）
-5. `requirements.md` を作成（テンプレート: `.claude/skills/add-feature/templates/requirements-template.md`）
-6. 「1. 背景と課題」「2. 期待する結果」セクションを埋める
-7. `progress.md` の Step 1, Step 2 のチェックを更新
-
-作成後、次のステップに進む旨を報告。
+1. 日付取得（`date +%Y%m%d`）、機能名をkebab-caseに変換
+2. `docs/steering/{YYYYMMDD}-{feature-name}/` ディレクトリを作成
+3. テンプレートからファイル作成:
+   - `progress.md`（テンプレート: `.claude/skills/add-feature/templates/progress-template.md`）
+   - `requirements.md`（テンプレート: `.claude/skills/add-feature/templates/requirements-template.md`）
+4. 「1. 背景と課題」「2. 期待する結果」セクションを埋める
+5. `progress.md` の Step 1, Step 2 のチェックを更新
 
 ### Step 3: ゴールと成功指標の明確化
 
@@ -162,7 +89,10 @@ Task:
 🔍 **file-finder エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/file-finder.md` を参照
+→ file-finder エージェントへの入力:
+  - 機能名/キーワード: {Phase1で決まった機能名}
+  - 検索範囲: src/app/api/, src/components/, src/hooks/, src/types/
+  - 検索目的: 技術設計のための既存コード調査
 
 調査結果を表示後、設計の検討に進む。
 
@@ -193,15 +123,40 @@ Task:
 🔍 **impact-analyzer エージェントを実行します（独立コンテキスト）**
 ```
 
-→ 入力仕様: `.claude/agents/impact-analyzer.md` を参照
+→ impact-analyzer エージェントへの入力:
+  - 変更内容: {技術設計で決まった変更概要}
+  - 変更対象ファイル: {新規作成・修正予定のファイルパス}
+  - 分析観点: DBスキーマ変更、API変更、型変更など該当する観点
 
 分析結果を `design.md` の「7. 影響範囲」「8. リスクと代替案」セクションに反映。
+
+### Step 7: テストケース設計
+
+```
+技術設計に基づいて、テストケースを設計しましょう。
+
+**テスト対象の確認**:
+この機能で作成するコンポーネント/関数のうち、テストが必要なものはどれですか？
+
+- [ ] APIルート（バリデーション、認証、レスポンス）
+- [ ] カスタムフック（状態管理、副作用）
+- [ ] UIコンポーネント（レンダリング、ユーザー操作）
+- [ ] ユーティリティ関数（純粋関数）
+```
+
+対話を通じて以下を決定:
+
+- テスト対象の優先度（必須 / 推奨 / オプション）
+- 各対象の正常系・異常系テストケース
+- モックが必要な外部依存
+
+決定後、`design.md` の「6. テスト戦略」セクションを詳細に記入。
 
 ---
 
 ## Phase 3: 実装計画
 
-### Step 7: 実装計画の策定
+### Step 8: 実装計画の策定
 
 ```
 実装計画を策定しましょう。
@@ -215,37 +170,13 @@ C. **フルスタック**: DB + API + UI の新機能
 D. **複合ページ**: 複数機能を持つページ追加
 ```
 
-#### タイプ選択ガイド
-
-| ケース | 判断基準 | タイプ |
-|--------|----------|--------|
-| 既存データを表示するUI追加 | DBスキーマ変更なし、既存API使用 | A |
-| 新しいデータ入力フォーム | 新規保存が必要 → API/DB必要 | C |
-| 外部APIとの連携追加 | バックエンドのみ変更 | B |
-| ダッシュボード追加 | 複数データソース、複数コンポーネント | D |
-| 設定画面に新オプション | 保存が必要なら C、表示のみなら A | A or C |
-
-#### 迷った場合のフローチャート
-
-```
-DBスキーマ変更が必要？
-├─ Yes → タイプ C（フルスタック）
-└─ No
-    ├─ 新しいAPIエンドポイントが必要？
-    │   ├─ Yes → タイプ B or C
-    │   └─ No → タイプ A（フロントエンドのみ）
-    └─ 複数の独立した機能を含む？
-        ├─ Yes → タイプ D（複合ページ）
-        └─ No → タイプ A, B, or C
-```
-
 機能タイプが決まったら、該当するテンプレートで `tasklist.md` を作成:
 - A → `.claude/skills/add-feature/templates/tasklist-frontend.md`
 - B → `.claude/skills/add-feature/templates/tasklist-backend.md`
 - C → `.claude/skills/add-feature/templates/tasklist-fullstack.md`
 - D → `.claude/skills/add-feature/templates/tasklist-complex.md`
 
-### Step 8: 最終確認と実装開始
+### Step 9: 最終確認と実装開始
 
 すべてのファイルが揃ったら:
 
@@ -278,46 +209,80 @@ file-finder → impact-analyzer → [実装] → test-runner → code-reviewer
 
 ---
 
-## Phase 4: 実装・検証
+## Phase 4: TDD実装・検証
 
-### Step 9: 実装
+### Step 10: TDDサイクル - Red Phase（テスト作成）
 
-`tasklist.md` に従って実装を進める。各タスク完了時に `progress.md` のチェックを更新。
+```
+🔴 **Red Phase**: まずテストを書きます。
 
-### Step 10: ビルド確認（build-executor エージェント）
+tasklist.md の最初の実装タスクに対応するテストファイルを作成します。
+テストは失敗する状態（Red）で開始します。
 
-🔧 **build-executor エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/build-executor.md` を参照
+**テストファイル作成手順**:
+1. design.md の「6. テスト戦略」に記載したテストケースを確認
+2. 対象ファイルと同階層にテストファイルを作成
+   - コンポーネント: `ComponentName.test.tsx`
+   - フック: `useHookName.test.ts`
+   - APIルート: `route.test.ts`
+3. テストケースを実装
+4. `npm run test:watch` でテスト失敗を確認
+```
 
-エラーがあれば修正し、再度ビルドを実行。
+### Step 11: TDDサイクル - Green Phase（最小実装）
 
-### Step 11: テスト・Lint（test-runner エージェント）
+```
+🟢 **Green Phase**: テストを通す最小限のコードを実装します。
 
-🧪 **test-runner エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/test-runner.md` を参照
+design.md に従いつつ、まずはテストを通すことを優先してください。
+完璧な実装でなくてOKです。
+```
 
-エラー・警告を解消。
+### Step 12: TDDサイクル - Refactor Phase（リファクタリング）
 
-### Step 12: コードレビュー（code-reviewer エージェント）
+```
+🔵 **Refactor Phase**: コードを改善します。
 
-🔍 **code-reviewer エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/code-reviewer.md` を参照
+テストがパスした状態を維持しながら:
+- 重複の除去
+- 命名の改善
+- パフォーマンス最適化
 
-Critical Issues を解消。
+を行います。リファクタリング後もテストがパスすることを確認してください。
+```
 
-### Step 13: セキュリティチェック（security-checker エージェント）
+### Step 13: TDDサイクル繰り返し
 
-🔒 **security-checker エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/security-checker.md` を参照
+`tasklist.md` の残りのタスクに対して、Step 10-12 を繰り返す。
+各タスク完了時に `progress.md` のチェックを更新。
 
-脆弱性があれば修正。
+**TDDサイクルの凡例**:
+- 🔴 Red: テスト作成（失敗するテスト）
+- 🟢 Green: 最小実装（テストをパス）
+- 🔵 Refactor: コード改善（テスト維持）
 
-### Step 14: ドキュメント整合性（review-docs エージェント）
+### Step 14-18: 検証
 
-📝 **review-docs エージェントを実行**（独立コンテキスト）
-→ 入力仕様: `.claude/agents/review-docs.md` を参照
+以下のエージェントを順次実行し、問題があれば修正:
 
-関連ドキュメントを更新。
+| Step | エージェント | 確認内容 |
+|------|-------------|----------|
+| 14 | build-executor | ビルドエラー（`npm run build:local`） |
+| 15 | test-runner | テスト・Lint（`npm run test && npm run lint`） |
+| 16 | code-reviewer | コード品質（認証、バリデーション、型安全性） |
+| 17 | security-checker | セキュリティ（認証・認可、インジェクション） |
+| 18 | review-docs | ドキュメント整合性 |
+
+---
+
+## ステータス遷移
+
+| ファイル | 初期値 | 主な遷移 |
+|----------|--------|----------|
+| progress.md | Phase 1 | Phase 1 → 2（Step 4）→ 3（Step 8）→ 4（Step 10）→ 完了（Step 18） |
+| requirements.md | 作成中 | → 要件確定（Step 3） |
+| design.md | 設計中 | → 設計確定（Step 7） |
+| tasklist.md | 計画中 | → 実装中（Step 10）→ 完了（Step 18） |
 
 ---
 
@@ -334,45 +299,6 @@ Critical Issues を解消。
 
 ## エラーハンドリング
 
-各ステップで問題が発生した場合の対応フロー:
-
-### Step 10 (ビルド) で失敗した場合
-
-1. エラーメッセージを分析
-2. `build-executor` エージェントの提案に従って修正
-3. 修正後、再度 Step 10 を実行
-4. 3回失敗した場合、ユーザーに状況を報告し対応を相談
-
-### Step 11 (テスト/Lint) で失敗した場合
-
-1. 失敗内容を分類（Lint エラー / 型エラー / テスト失敗）
-2. 優先順位: 型エラー → Lint エラー → テスト失敗
-3. 各エラーを修正し、再度 Step 11 を実行
-4. テスト失敗が実装ロジックに起因する場合、Step 9 に戻る
-
-### Step 12-14 で問題が見つかった場合
-
-1. 問題の重大度を判定（Critical / Warning / Info）
-2. Critical: 即座に修正し、Step 10 から再検証
-3. Warning: ユーザーに報告し、修正するか確認
-4. Info: 記録のみ、次のステップへ進む
-
-### フローチャート
-
-```
-[Step 10: ビルド]
-    ↓ 失敗
-    → 修正 → 再実行（最大3回）
-    → 3回失敗 → ユーザーに相談
-    ↓ 成功
-[Step 11: テスト/Lint]
-    ↓ 失敗
-    → 修正 → 再実行
-    → ロジック問題 → Step 9 に戻る
-    ↓ 成功
-[Step 12-14: レビュー系]
-    ↓ Critical
-    → 修正 → Step 10 に戻る
-    ↓ Warning/Info
-    → 記録 → 次へ
-```
+- **ビルド/テスト失敗**: エラーを修正して再実行。3回失敗でユーザーに相談
+- **レビューで Critical**: 即座に修正し Step 14 から再検証
+- **レビューで Warning**: ユーザーに修正要否を確認
