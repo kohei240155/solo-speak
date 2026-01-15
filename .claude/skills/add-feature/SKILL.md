@@ -11,10 +11,18 @@ description: 新機能追加のワークフロー（対話形式で要件定義�
 
 ```
 docs/steering/{YYYYMMDD}-{feature-name}/
-├── progress.md       # プロセス進捗（Step 2で作成）
+├── progress.md       # プロセス進捗（Step 6で作成）
 ├── requirements.md   # 要件定義（Phase 1で作成）
 ├── design.md         # 技術設計（Phase 2で作成）
-└── tasklist.md       # タスクリスト（Phase 3で作成）
+├── tasklist.md       # タスクリスト（Phase 3で作成）
+└── reports/          # サブエージェントのレポート
+    ├── file-finder.md      # コードベース調査結果（Step 7）
+    ├── impact-analyzer.md  # 影響範囲分析結果（Step 9）
+    ├── build-executor.md   # ビルド結果（Step 17）
+    ├── test-runner.md      # テスト・Lint結果（Step 18）
+    ├── code-reviewer.md    # コードレビュー結果（Step 19）
+    ├── security-checker.md # セキュリティチェック結果（Step 20）
+    └── review-docs.md      # ドキュメント整合性結果（Step 21）
 ```
 
 命名例: `docs/steering/20260113-bookmark-feature/`
@@ -38,31 +46,151 @@ CLAUDE.md の「実装ワークフロー」セクションに記載の例外条�
 
 ---
 
-## Phase 1: 要件ヒアリング
+## Phase 1: 対話的な要件ヒアリング
 
-### Step 1: 機能概要のヒアリング
+### Step 1: 初期入力の受け取り
 
-ユーザーに以下を質問:
+ユーザーが自由形式で入力できるように促す:
 
 ```
-新機能の実装を始めましょう。まず、以下について教えてください:
+新機能の実装を始めましょう！
 
-1. **機能名**: この機能の名前は何ですか？
-2. **解決したい課題**: どんな問題を解決したいですか？
-3. **期待する結果**: この機能が完成したら、ユーザーは何ができるようになりますか？
+どんな機能を作りたいですか？
+自由に教えてください。「〇〇みたいなことがしたい」「△△ができると嬉しい」など、何でもOKです。
 ```
 
-### Step 2: ステアリングディレクトリの作成
+### Step 2: 初期入力の解釈と確認
 
-ユーザーの回答をもとに:
+ユーザーの回答を受け取ったら:
+
+1. AIが内容を解釈・整理
+2. 理解内容を要約して提示
+3. 最初の深掘り質問を行う
+
+```
+ありがとうございます！いくつか確認させてください。
+
+---
+### 現時点での理解
+
+**やりたいこと**: {AIが解釈した内容を1-2文で要約}
+
+---
+
+では、詳しく教えてください。
+
+{最初の質問}
+```
+
+### Step 3: 一問一答の深掘り
+
+以下のルールで質問を進める:
+
+**質問スタイルの使い分け**:
+- **技術的な質問** → 選択肢付きで提示
+- **ユーザー体験の質問** → オープン形式
+
+**質問例（技術的・選択肢付き）**:
+```
+**Q. データの保存**
+この機能で扱うデータは保存が必要ですか？
+
+A. はい、DBに永続化したい
+B. はい、ローカルストレージに一時保存したい
+C. いいえ、保存不要（その場限り）
+D. まだわからない
+```
+
+**質問例（ユーザー体験・オープン）**:
+```
+**Q. 完了したときの体験**
+この機能が完成したら、ユーザーにとって何が嬉しいですか？
+今できないことで、できるようになることを教えてください。
+```
+
+**質問カテゴリ**:
+- ユースケース理解（誰が、いつ、どんな状況で使うか）
+- 技術的な方向性（データ保存、API、UI配置）
+- 期待値・優先度（何を重視するか）
+
+### Step 4: 中間確認（3-4回の質問ごと）
+
+3-4回の質問を行ったら、中間確認を挟む:
+
+```
+---
+### ここまでの理解
+
+**機能概要**: {1-2文で要約}
+
+**ユースケース**:
+- {ユースケース1}
+- {ユースケース2}
+
+**技術的な方向性**:
+- データ保存: {選択された方式}
+- UI: {想定されるUI}
+
+---
+
+ここまでの理解は合っていますか？修正点があれば教えてください。
+問題なければ「OK」と入力してください。
+```
+
+ユーザーが「OK」と回答したら、必要に応じてさらに質問を続ける。
+
+### Step 5: 終了判定と仕様確定
+
+以下が明確になったら終了を提案:
+- 解決したい課題
+- ユーザーが得られる価値
+- 主要なユースケース（1-2個）
+- 技術的な方向性（DB/API/UIの有無）
+- ゴールと非ゴール
+
+```
+十分な情報が集まりました！
+
+---
+### 要件サマリー
+
+**機能名（提案）**: {AIが提案する機能名}
+
+**解決する課題**:
+{1-2文}
+
+**期待する結果**:
+- ユーザーは〇〇できるようになる
+- ユーザーは△△できるようになる
+
+**ゴール**:
+- [ ] {ゴール1}
+- [ ] {ゴール2}
+
+**非ゴール**:
+- {今回は対象外とすること}
+
+**成功指標**:
+- {指標1}
+
+---
+
+この内容で仕様を固めてよいですか？
+修正したい点があれば教えてください。OKであれば「確定」と入力してください。
+```
+
+### Step 6: ステアリングディレクトリの作成
+
+ユーザーが「確定」と回答したら:
 
 1. 日付取得（`date +%Y%m%d`）、機能名をkebab-caseに変換
 2. `docs/steering/{YYYYMMDD}-{feature-name}/` ディレクトリを作成
 3. テンプレートからファイル作成:
    - `progress.md`（テンプレート: `.claude/skills/add-feature/templates/progress-template.md`）
    - `requirements.md`（テンプレート: `.claude/skills/add-feature/templates/requirements-template.md`）
-4. 「1. 背景と課題」「2. 期待する結果」セクションを埋める
-5. `progress.md` の Step 1, Step 2 のチェックを更新
+4. 対話で得た内容を `requirements.md` に反映
+5. `progress.md` の Phase 1 チェックを更新
+6. ステータスを `要件確定` に変更
 
 #### 🚀 ブランチ準備（大規模機能の場合）
 
@@ -75,26 +203,11 @@ git push -u origin release/{機能名}
 git checkout -b feature/{機能名}/design
 ```
 
-### Step 3: ゴールと成功指標の明確化
-
-```
-次に、ゴールと成功指標を明確にしましょう。
-
-**ゴール**（この機能で達成すること）:
-**非ゴール**（今回は対象外とすること）:
-**成功指標**（どうなれば成功か）:
-
-それぞれ教えてください。
-```
-
-回答を得たら、`requirements.md` の「3. ゴール」「4. 成功指標」セクションを更新。
-ステータスを `要件確定` に変更。
-
 ---
 
 ## Phase 2: 技術設計
 
-### Step 4: コードベース調査（file-finder エージェント）
+### Step 7: コードベース調査（file-finder エージェント）
 
 ```
 技術設計に入る前に、関連する既存コードを調査します。
@@ -105,10 +218,11 @@ git checkout -b feature/{機能名}/design
   - 機能名/キーワード: {Phase1で決まった機能名}
   - 検索範囲: src/app/api/, src/components/, src/hooks/, src/types/
   - 検索目的: 技術設計のための既存コード調査
+  - **レポート保存先**: `docs/steering/{YYYYMMDD}-{feature-name}/reports/file-finder.md`
 
-調査結果を表示後、設計の検討に進む。
+調査結果を `reports/file-finder.md` に保存し、設計の検討に進む。
 
-### Step 5: 技術設計の検討
+### Step 8: 技術設計の検討
 
 ```
 技術設計を検討しましょう。以下の観点で考えていきます:
@@ -128,7 +242,7 @@ git checkout -b feature/{機能名}/design
 
 決定後、`design.md` を作成（テンプレート: `.claude/skills/add-feature/templates/design-template.md`）
 
-### Step 6: 影響範囲分析（impact-analyzer エージェント）
+### Step 9: 影響範囲分析（impact-analyzer エージェント）
 
 ```
 設計内容をもとに、既存コードへの影響を分析します。
@@ -139,10 +253,11 @@ git checkout -b feature/{機能名}/design
   - 変更内容: {技術設計で決まった変更概要}
   - 変更対象ファイル: {新規作成・修正予定のファイルパス}
   - 分析観点: DBスキーマ変更、API変更、型変更など該当する観点
+  - **レポート保存先**: `docs/steering/{YYYYMMDD}-{feature-name}/reports/impact-analyzer.md`
 
-分析結果を `design.md` の「7. 影響範囲」「8. リスクと代替案」セクションに反映。
+分析結果を `reports/impact-analyzer.md` に保存し、`design.md` の「7. 影響範囲」「8. リスクと代替案」セクションにも反映。
 
-### Step 7: テストケース設計
+### Step 10: テストケース設計
 
 ```
 技術設計に基づいて、テストケースを設計しましょう。
@@ -168,7 +283,7 @@ git checkout -b feature/{機能名}/design
 
 ## Phase 3: 実装計画
 
-### Step 8: 実装計画の策定
+### Step 11: 実装計画の策定
 
 ```
 実装計画を策定しましょう。
@@ -188,7 +303,7 @@ D. **複合ページ**: 複数機能を持つページ追加
 - C → `.claude/skills/add-feature/templates/tasklist-fullstack.md`
 - D → `.claude/skills/add-feature/templates/tasklist-complex.md`
 
-### Step 9: 最終確認と実装開始
+### Step 12: 最終確認と実装開始
 
 すべてのファイルが揃ったら:
 
@@ -255,7 +370,7 @@ EOF
 
 ## Phase 4: TDD実装・検証
 
-### Step 10: TDDサイクル - Red Phase（テスト作成）
+### Step 13: TDDサイクル - Red Phase（テスト作成）
 
 ```
 🔴 **Red Phase**: まずテストを書きます。
@@ -273,7 +388,7 @@ tasklist.md の最初の実装タスクに対応するテストファイルを�
 4. `npm run test:watch` でテスト失敗を確認
 ```
 
-### Step 11: TDDサイクル - Green Phase（最小実装）
+### Step 14: TDDサイクル - Green Phase（最小実装）
 
 ```
 🟢 **Green Phase**: テストを通す最小限のコードを実装します。
@@ -282,7 +397,7 @@ design.md に従いつつ、まずはテストを通すことを優先してく�
 完璧な実装でなくてOKです。
 ```
 
-### Step 12: TDDサイクル - Refactor Phase（リファクタリング）
+### Step 15: TDDサイクル - Refactor Phase（リファクタリング）
 
 ```
 🔵 **Refactor Phase**: コードを改善します。
@@ -295,9 +410,9 @@ design.md に従いつつ、まずはテストを通すことを優先してく�
 を行います。リファクタリング後もテストがパスすることを確認してください。
 ```
 
-### Step 13: TDDサイクル繰り返し
+### Step 16: TDDサイクル繰り返し
 
-`tasklist.md` の残りのタスクに対して、Step 10-12 を繰り返す。
+`tasklist.md` の残りのタスクに対して、Step 13-15 を繰り返す。
 各タスク完了時に `progress.md` のチェックを更新。
 
 **TDDサイクルの凡例**:
@@ -382,17 +497,20 @@ EOF
 )"
 ```
 
-### Step 14-18: 検証
+### Step 17-21: 検証
 
-以下のエージェントを順次実行し、問題があれば修正:
+以下のエージェントを順次実行し、問題があれば修正。各エージェントの結果は `reports/` ディレクトリに保存:
 
-| Step | エージェント | 確認内容 |
-|------|-------------|----------|
-| 14 | build-executor | ビルドエラー（`npm run build:local`） |
-| 15 | test-runner | テスト・Lint（`npm run test && npm run lint`） |
-| 16 | code-reviewer | コード品質（認証、バリデーション、型安全性） |
-| 17 | security-checker | セキュリティ（認証・認可、インジェクション） |
-| 18 | review-docs | ドキュメント整合性 |
+| Step | エージェント | 確認内容 | レポート保存先 |
+|------|-------------|----------|---------------|
+| 17 | build-executor | ビルドエラー（`npm run build:local`） | `reports/build-executor.md` |
+| 18 | test-runner | テスト・Lint（`npm run test && npm run lint`） | `reports/test-runner.md` |
+| 19 | code-reviewer | コード品質（認証、バリデーション、型安全性） | `reports/code-reviewer.md` |
+| 20 | security-checker | セキュリティ（認証・認可、インジェクション） | `reports/security-checker.md` |
+| 21 | review-docs | ドキュメント整合性 | `reports/review-docs.md` |
+
+**各エージェント呼び出し時の共通パラメータ**:
+- レポート保存先: `docs/steering/{YYYYMMDD}-{feature-name}/reports/{agent-name}.md`
 
 #### 🚀 リリースPR作成
 
@@ -442,10 +560,10 @@ EOF
 
 | ファイル | 初期値 | 主な遷移 |
 |----------|--------|----------|
-| progress.md | Phase 1 | Phase 1 → 2（Step 4）→ 3（Step 8）→ 4（Step 10）→ 完了（Step 18） |
-| requirements.md | 作成中 | → 要件確定（Step 3） |
-| design.md | 設計中 | → 設計確定（Step 7） |
-| tasklist.md | 計画中 | → 実装中（Step 10）→ 完了（Step 18） |
+| progress.md | Phase 1 | Phase 1 → 2（Step 7）→ 3（Step 11）→ 4（Step 13）→ 完了（Step 21） |
+| requirements.md | 作成中 | → 要件確定（Step 6） |
+| design.md | 設計中 | → 設計確定（Step 10） |
+| tasklist.md | 計画中 | → 実装中（Step 13）→ 完了（Step 21） |
 
 ---
 
@@ -469,5 +587,5 @@ PR分割フローの詳細は [docs/branching-strategy.md](/docs/branching-strat
 ## エラーハンドリング
 
 - **ビルド/テスト失敗**: エラーを修正して再実行。3回失敗でユーザーに相談
-- **レビューで Critical**: 即座に修正し Step 14 から再検証
+- **レビューで Critical**: 即座に修正し Step 17 から再検証
 - **レビューで Warning**: ユーザーに修正要否を確認

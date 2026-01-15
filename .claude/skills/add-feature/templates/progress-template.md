@@ -7,21 +7,27 @@
 
 ---
 
-## Phase 1: 要件ヒアリング
+## Phase 1: 対話的な要件ヒアリング
 
-- [ ] Step 1: 機能概要のヒアリング
-  - [ ] 機能名を確認
-  - [ ] 解決したい課題を確認
-  - [ ] 期待する結果を確認
-- [ ] Step 2: ステアリングディレクトリの作成
+- [ ] Step 1: 初期入力の受け取り
+  - [ ] ユーザーの自由入力を受け取り
+- [ ] Step 2: 初期入力の解釈と確認
+  - [ ] AIが内容を解釈・要約
+  - [ ] 最初の深掘り質問を実施
+- [ ] Step 3: 一問一答の深掘り
+  - [ ] ユースケースの確認
+  - [ ] 技術的な方向性の確認
+  - [ ] 期待値・優先度の確認
+- [ ] Step 4: 中間確認
+  - [ ] 「ここまでの理解」を提示
+  - [ ] ユーザーの承認を取得
+- [ ] Step 5: 終了判定と仕様確定
+  - [ ] 要件サマリーを提示
+  - [ ] ユーザーの「確定」を取得
+- [ ] Step 6: ステアリングディレクトリの作成
   - [ ] ディレクトリ作成
   - [ ] progress.md 作成
-  - [ ] requirements.md 作成
-  - [ ] 「背景と課題」「期待する結果」セクション記入
-- [ ] Step 3: ゴールと成功指標の明確化
-  - [ ] ゴール/非ゴールを確認
-  - [ ] 成功指標を確認
-  - [ ] requirements.md 更新
+  - [ ] requirements.md 作成・記入
   - [ ] ステータスを「要件確定」に変更
 
 ### 🚀 ブランチ準備（大規模機能の場合）
@@ -32,19 +38,21 @@
 
 ## Phase 2: 技術設計
 
-- [ ] Step 4: コードベース調査
+- [ ] Step 7: コードベース調査
   - [ ] 🔍 file-finder エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/file-finder.md` に保存
   - [ ] 調査結果をユーザーに報告
-- [ ] Step 5: 技術設計の検討
+- [ ] Step 8: 技術設計の検討
   - [ ] データ設計（DBスキーマ）の検討
   - [ ] API設計（エンドポイント）の検討
   - [ ] UI設計（コンポーネント構成）の検討
   - [ ] design.md 作成
-- [ ] Step 6: 影響範囲分析
+- [ ] Step 9: 影響範囲分析
   - [ ] 🔍 impact-analyzer エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/impact-analyzer.md` に保存
   - [ ] design.md「影響範囲」セクション記入
   - [ ] design.md「リスクと代替案」セクション記入
-- [ ] Step 7: テストケース設計
+- [ ] Step 10: テストケース設計
   - [ ] テスト対象の特定（API/フック/コンポーネント/ユーティリティ）
   - [ ] 正常系・異常系テストケースの設計
   - [ ] モック戦略の決定
@@ -54,10 +62,10 @@
 
 ## Phase 3: 実装計画
 
-- [ ] Step 8: 実装計画の策定
+- [ ] Step 11: 実装計画の策定
   - [ ] 機能タイプ（A/B/C/D）を確認
   - [ ] 該当テンプレートで tasklist.md 作成
-- [ ] Step 9: 最終確認
+- [ ] Step 12: 最終確認
   - [ ] サマリーを表示
   - [ ] 実装開始の確認
 
@@ -70,7 +78,7 @@
 
 ## Phase 4: TDD実装・検証
 
-- [ ] Step 10-13: TDDサイクル実装
+- [ ] Step 13-16: TDDサイクル実装
   - [ ] 🔴 テスト作成（Red Phase）- テストが失敗することを確認
   - [ ] 🟢 最小実装（Green Phase）- テストがパスすることを確認
   - [ ] 🔵 リファクタリング（Refactor Phase）- テストを維持しながら改善
@@ -86,21 +94,26 @@
 - [ ] `gh pr create` でフロントエンドPRを作成
 - [ ] PR URL: #___
 
-- [ ] Step 14: ビルド確認
+- [ ] Step 17: ビルド確認
   - [ ] 🔧 build-executor エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/build-executor.md` に保存
   - [ ] エラーがあれば修正
-- [ ] Step 15: テスト・Lint
+- [ ] Step 18: テスト・Lint
   - [ ] 🧪 test-runner エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/test-runner.md` に保存
   - [ ] 全テストがパスすることを確認
   - [ ] Lintエラー・警告を解消
-- [ ] Step 16: コードレビュー
+- [ ] Step 19: コードレビュー
   - [ ] 🔍 code-reviewer エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/code-reviewer.md` に保存
   - [ ] Critical Issues を解消
-- [ ] Step 17: セキュリティチェック
+- [ ] Step 20: セキュリティチェック
   - [ ] 🔒 security-checker エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/security-checker.md` に保存
   - [ ] 脆弱性があれば修正
-- [ ] Step 18: ドキュメント整合性
+- [ ] Step 21: ドキュメント整合性
   - [ ] 📝 review-docs エージェント実行（独立コンテキスト）
+  - [ ] レポートを `reports/review-docs.md` に保存
   - [ ] 関連ドキュメントを更新
 
 ### 🚀 リリースPR作成
@@ -115,6 +128,14 @@
 - [ ] requirements.md（Phase 1 完了時）
 - [ ] design.md（Phase 2 完了時）
 - [ ] tasklist.md（Phase 3 完了時）
+- [ ] reports/（エージェントレポート）
+  - [ ] file-finder.md（Step 7）
+  - [ ] impact-analyzer.md（Step 9）
+  - [ ] build-executor.md（Step 17）
+  - [ ] test-runner.md（Step 18）
+  - [ ] code-reviewer.md（Step 19）
+  - [ ] security-checker.md（Step 20）
+  - [ ] review-docs.md（Step 21）
 
 ---
 
