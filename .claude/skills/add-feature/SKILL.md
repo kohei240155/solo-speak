@@ -1,4 +1,5 @@
 ---
+name: add-feature
 description: 新機能追加のワークフロー（対話形式で要件定義→設計→実装）
 ---
 
