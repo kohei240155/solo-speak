@@ -34,6 +34,7 @@ npm run lint                     # ESLint実行
 
 ## 必須ルール
 
+- **配色**: グレーと白を基本とした配色を維持すること。派手な色やカラフルなデザインは避け、現在のシンプルで落ち着いたUIを保つ
 - `npm install` では必ず `--legacy-peer-deps` を使用
 - `.env` ファイルはコミット禁止（`.env.local` を使用）
 - `.env.local` と `.env.production` の内容は変更禁止
