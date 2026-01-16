@@ -29,10 +29,36 @@
 	},
 	"common": {
 		"backToHome": "Retour à l'Accueil",
-		"loginRequired": "Vous devez vous connecter pour utiliser cette fonctionnalité"
+		"loginRequired": "Vous devez vous connecter pour utiliser cette fonctionnalité",
+		"cancel": "Annuler",
+		"saving": "Enregistrement"
 	},
 	"phrase": {
 		"noPhrasesYet": "Aucune phrase n'a encore été enregistrée",
+		"add": {
+			"title": "Ajouter une Phrase",
+			"description": "L'IA vous aide à créer des phrases utiles pour parler",
+			"dailyLimitReached": "Limite quotidienne atteinte",
+			"remainingCount": "{{count}} restantes aujourd'hui",
+			"generationMethod": "Méthode de Génération",
+			"manualInput": "Saisie Manuelle",
+			"autoGenerate": "Génération IA",
+			"situationTitle": "Situation",
+			"desiredPhraseTitle": "Ce que vous voulez dire",
+			"generating": "Génération",
+			"generateButton": "Générer une Phrase"
+		},
+		"randomMode": {
+			"title": "Phrase Générée",
+			"description": "Enregistrez la phrase si elle vous plaît",
+			"translation": "Traduction",
+			"save": "Enregistrer la Phrase"
+		},
+		"generatedPhrases": {
+			"title": "Phrases Générées",
+			"description": "Choisissez et enregistrez une phrase qui vous plaît",
+			"select": "Enregistrer Cette Phrase"
+		},
 		"placeholders": {
 			"phraseInput": "Exemple : Où êtes-vous allé récemment ?",
 			"situationInput": "Exemple : En commandant au restaurant"
@@ -239,6 +265,16 @@
 		"addError": "Erreur lors de l'ajout de la situation",
 		"deleteSuccess": "Situation supprimée avec succès",
 		"deleteError": "Erreur lors de la suppression de la situation",
+		"addModal": {
+			"title": "Ajouter une Situation",
+			"description": "Vous pouvez générer des expressions adaptées à la situation",
+			"addButton": "Ajouter"
+		},
+		"deleteModal": {
+			"title": "Supprimer la Situation",
+			"deleting": "Suppression",
+			"deleteButton": "Supprimer"
+		},
 		"delete": {
 			"confirmMessage": "Êtes-vous sûr de vouloir supprimer cette situation ?",
 			"warningMessage": "Cette action ne peut pas être annulée."

@@ -29,10 +29,36 @@
 	},
 	"common": {
 		"backToHome": "返回首页",
-		"loginRequired": "您需要登录才能使用此功能"
+		"loginRequired": "您需要登录才能使用此功能",
+		"cancel": "取消",
+		"saving": "保存中"
 	},
 	"phrase": {
 		"noPhrasesYet": "尚未注册句子",
+		"add": {
+			"title": "添加句子",
+			"description": "AI帮助您创建实用的口语句子",
+			"dailyLimitReached": "已达到每日限制",
+			"remainingCount": "今日剩余{{count}}次",
+			"generationMethod": "生成方式",
+			"manualInput": "手动输入",
+			"autoGenerate": "AI生成",
+			"situationTitle": "场景",
+			"desiredPhraseTitle": "想说的内容",
+			"generating": "生成中",
+			"generateButton": "生成句子"
+		},
+		"randomMode": {
+			"title": "生成的句子",
+			"description": "如果喜欢请保存句子",
+			"translation": "翻译",
+			"save": "保存句子"
+		},
+		"generatedPhrases": {
+			"title": "生成的句子",
+			"description": "选择并保存您喜欢的句子",
+			"select": "保存此句子"
+		},
 		"placeholders": {
 			"phraseInput": "示例：你最近去哪里了？",
 			"situationInput": "示例：在餐厅点餐时"
@@ -239,6 +265,16 @@
 		"addError": "添加场景时出错",
 		"deleteSuccess": "场景删除成功",
 		"deleteError": "删除场景时出错",
+		"addModal": {
+			"title": "添加场景",
+			"description": "您可以生成适合场景的表达方式",
+			"addButton": "添加"
+		},
+		"deleteModal": {
+			"title": "删除场景",
+			"deleting": "删除中",
+			"deleteButton": "删除"
+		},
 		"delete": {
 			"confirmMessage": "您确定要删除此场景吗？",
 			"warningMessage": "此操作无法撤消。"

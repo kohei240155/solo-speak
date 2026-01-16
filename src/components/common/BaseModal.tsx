@@ -1,7 +1,7 @@
 "use client";
 
 import Modal from "react-modal";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { MdClose } from "react-icons/md";
 
 // React Modalのアプリルート要素を設定
@@ -18,9 +18,11 @@ export interface BaseModalProps {
 	onClose: () => void;
 	children: ReactNode;
 	title?: string;
+	titleIcon?: React.ReactNode;
 	width?: string;
 	showCloseButton?: boolean;
 	closeOnOverlayClick?: boolean;
+	variant?: "white" | "gray";
 	titleButton?: {
 		icon: React.ComponentType<{ className?: string }>;
 		onClick: () => void;
@@ -32,12 +34,26 @@ export default function BaseModal({
 	onClose,
 	children,
 	title,
+	titleIcon,
 	width = "500px",
 	showCloseButton = true,
 	closeOnOverlayClick = true,
+	variant = "white",
 	titleButton,
 }: BaseModalProps) {
 	const prevIsOpenRef = useRef(false);
+	const [isAnimated, setIsAnimated] = useState(false);
+
+	// アニメーション制御
+	useEffect(() => {
+		if (isOpen) {
+			// モーダルが開いた後、少し遅れてアニメーションを開始
+			const timer = setTimeout(() => setIsAnimated(true), 10);
+			return () => clearTimeout(timer);
+		} else {
+			setIsAnimated(false);
+		}
+	}, [isOpen]);
 
 	// Escキーでモーダルを閉じる
 	useEffect(() => {
@@ -111,8 +127,8 @@ export default function BaseModal({
 			right: 0,
 			bottom: 0,
 			overflow: "hidden",
-			opacity: isOpen ? 1 : 0,
-			transition: "opacity 400ms ease-out",
+			opacity: isAnimated ? 1 : 0,
+			transition: "opacity 300ms ease-out",
 		},
 		content: {
 			position: "relative" as const,
@@ -121,13 +137,16 @@ export default function BaseModal({
 			right: "auto",
 			bottom: "auto",
 			border: "none",
-			borderRadius: "0.5rem",
+			borderRadius: "1.5rem",
 			boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
 			padding: 0,
 			margin: 0,
 			maxHeight: "90vh",
 			overflow: "auto",
-			backgroundColor: "white",
+			backgroundColor: variant === "gray" ? "#f3f4f6" : "white",
+			transform: isAnimated ? "translateY(0)" : "translateY(80px)",
+			opacity: isAnimated ? 1 : 0,
+			transition: "transform 400ms cubic-bezier(0.32, 0.72, 0, 1), opacity 300ms ease-out",
 		},
 	};
 
@@ -141,19 +160,11 @@ export default function BaseModal({
 			shouldCloseOnOverlayClick={closeOnOverlayClick}
 		>
 			<div
-				className={`relative bg-white rounded-lg w-[90vw] sm:w-auto transition-all duration-500 ease-out transform ${
-					isOpen
-						? "opacity-100 scale-100 translate-y-0"
-						: "opacity-0 scale-95 translate-y-4"
-				}`}
+				className={`relative rounded-3xl w-[90vw] sm:w-auto ${variant === "gray" ? "bg-gray-100" : "bg-white"}`}
 				style={{
 					maxWidth: `min(90vw, ${width})`,
 					width: `min(90vw, ${width})`,
 					overflowX: "hidden",
-					transform: isOpen
-						? "translateY(0px) scale(1)"
-						: "translateY(20px) scale(0.98)",
-					transitionDelay: "100ms",
 				}}
 			>
 				{/* 閉じるボタン */}
@@ -170,6 +181,9 @@ export default function BaseModal({
 				{title && (
 					<div className="p-6 pb-0">
 						<div className="flex items-center pr-8">
+							{titleIcon && (
+								<span className="mr-2 flex items-center">{titleIcon}</span>
+							)}
 							<h2 className="text-xl md:text-2xl font-bold text-gray-900">
 								{title}
 							</h2>

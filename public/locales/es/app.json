@@ -29,10 +29,36 @@
 	},
 	"common": {
 		"backToHome": "Volver al Inicio",
-		"loginRequired": "Necesita iniciar sesión para usar esta función"
+		"loginRequired": "Necesita iniciar sesión para usar esta función",
+		"cancel": "Cancelar",
+		"saving": "Guardando"
 	},
 	"phrase": {
 		"noPhrasesYet": "Aún no se han registrado frases",
+		"add": {
+			"title": "Agregar Frase",
+			"description": "La IA te ayuda a crear frases útiles para hablar",
+			"dailyLimitReached": "Límite diario alcanzado",
+			"remainingCount": "{{count}} restantes hoy",
+			"generationMethod": "Método de Generación",
+			"manualInput": "Entrada Manual",
+			"autoGenerate": "Generación IA",
+			"situationTitle": "Situación",
+			"desiredPhraseTitle": "Lo que quieres decir",
+			"generating": "Generando",
+			"generateButton": "Generar Frase"
+		},
+		"randomMode": {
+			"title": "Frase Generada",
+			"description": "Guarda la frase si te gusta",
+			"translation": "Traducción",
+			"save": "Guardar Frase"
+		},
+		"generatedPhrases": {
+			"title": "Frases Generadas",
+			"description": "Elige y guarda una frase que te guste",
+			"select": "Guardar Esta Frase"
+		},
 		"placeholders": {
 			"phraseInput": "Ejemplo: ¿Dónde has estado últimamente?",
 			"situationInput": "Ejemplo: Al ordenar en un restaurante"
@@ -239,6 +265,16 @@
 		"addError": "Error al agregar la situación",
 		"deleteSuccess": "Situación eliminada exitosamente",
 		"deleteError": "Error al eliminar la situación",
+		"addModal": {
+			"title": "Agregar Situación",
+			"description": "Puedes generar expresiones adaptadas a la situación",
+			"addButton": "Agregar"
+		},
+		"deleteModal": {
+			"title": "Eliminar Situación",
+			"deleting": "Eliminando",
+			"deleteButton": "Eliminar"
+		},
 		"delete": {
 			"confirmMessage": "¿Está seguro de que desea eliminar esta situación?",
 			"warningMessage": "Esta acción no se puede deshacer."
