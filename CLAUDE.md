@@ -40,6 +40,7 @@ npm run lint                     # ESLint実行
 - `.env.local` と `.env.production` の内容は変更禁止
 - APIルートでは必ず `authenticateRequest()` で認証（Stripe Webhookを除く）
 - 複数ステップのDB操作はPrismaトランザクションを使用
+- **コミットメッセージ・PRタイトルは日本語で記述**
 
 ### 自動実行禁止事項（重要）
 
