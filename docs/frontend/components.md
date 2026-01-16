@@ -433,7 +433,7 @@ interface GeneratedVariationsProps {
 import RandomGeneratedVariations from "@/components/phrase/RandomGeneratedVariations";
 
 interface RandomGeneratedVariationsProps {
-  randomGeneratedVariations: RandomPhraseVariation[];
+  randomGeneratedVariations: PhraseVariation[];
   isRandomSaving: boolean;
   error: string;
   onSave: () => void;

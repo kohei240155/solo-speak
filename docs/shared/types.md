@@ -232,16 +232,16 @@ interface RemainingGenerationsResponse {
   remainingGenerations: number;
 }
 
-// ランダム生成フレーズ
-interface RandomPhraseVariation {
-  original: string;      // フレーズ本文（学習中の言語）
-  translation: string;   // 母国語訳
-  explanation: string;   // 表現の解説
+// ランダムフレーズ生成リクエスト
+interface RandomGeneratePhraseRequestBody {
+  nativeLanguage: string;
+  learningLanguage: string;
+  selectedContext?: string | null;
 }
 
-// ランダムフレーズ生成レスポンス
+// ランダムフレーズ生成レスポンス（既存のPhraseVariationを再利用）
 interface RandomGeneratePhraseResponseData {
-  variations: RandomPhraseVariation[];
+  variations: PhraseVariation[];
 }
 ```
 

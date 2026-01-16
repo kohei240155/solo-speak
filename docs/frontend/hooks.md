@@ -336,7 +336,7 @@ await handleSelectVariation(generatedVariations[0], 0);
 | `handleGeneratePhrase` | `() => Promise<void>` | フレーズ生成 |
 | `handleSelectVariation` | `(v, i) => Promise<void>` | バリエーション保存 |
 | `randomMode` | `boolean` | ランダムモードの状態 |
-| `randomGeneratedVariations` | `RandomPhraseVariation[]` | ランダム生成されたフレーズ |
+| `randomGeneratedVariations` | `PhraseVariation[]` | ランダム生成されたフレーズ |
 | `isRandomLoading` | `boolean` | ランダム生成中 |
 | `isRandomSaving` | `boolean` | ランダムフレーズ保存中 |
 | `handleToggleRandomMode` | `() => void` | ランダムモード切り替え |
