@@ -29,10 +29,36 @@
 	},
 	"common": {
 		"backToHome": "กลับสู่หน้าแรก",
-		"loginRequired": "คุณต้องเข้าสู่ระบบเพื่อใช้ฟังก์ชันนี้"
+		"loginRequired": "คุณต้องเข้าสู่ระบบเพื่อใช้ฟังก์ชันนี้",
+		"cancel": "ยกเลิก",
+		"saving": "กำลังบันทึก"
 	},
 	"phrase": {
 		"noPhrasesYet": "ยังไม่มีการลงทะเบียนประโยค",
+		"add": {
+			"title": "เพิ่มประโยค",
+			"description": "AI ช่วยคุณสร้างประโยคที่เป็นประโยชน์สำหรับการพูด",
+			"dailyLimitReached": "ถึงขีดจำกัดรายวันแล้ว",
+			"remainingCount": "เหลืออีก {{count}} ครั้งวันนี้",
+			"generationMethod": "วิธีการสร้าง",
+			"manualInput": "ป้อนเอง",
+			"autoGenerate": "สร้างด้วย AI",
+			"situationTitle": "สถานการณ์",
+			"desiredPhraseTitle": "สิ่งที่คุณต้องการพูด",
+			"generating": "กำลังสร้าง",
+			"generateButton": "สร้างประโยค"
+		},
+		"randomMode": {
+			"title": "ประโยคที่สร้างขึ้น",
+			"description": "บันทึกประโยคถ้าคุณชอบ",
+			"translation": "คำแปล",
+			"save": "บันทึกประโยค"
+		},
+		"generatedPhrases": {
+			"title": "ประโยคที่สร้างขึ้น",
+			"description": "เลือกและบันทึกประโยคที่คุณชอบ",
+			"select": "บันทึกประโยคนี้"
+		},
 		"placeholders": {
 			"phraseInput": "ตัวอย่าง: คุณไปที่ไหนมาเมื่อเร็วๆ นี้?",
 			"situationInput": "ตัวอย่าง: เมื่อสั่งอาหารที่ร้านอาหาร"
@@ -239,6 +265,16 @@
 		"addError": "เกิดข้อผิดพลาดในการเพิ่มสถานการณ์",
 		"deleteSuccess": "ลบสถานการณ์สำเร็จแล้ว",
 		"deleteError": "เกิดข้อผิดพลาดในการลบสถานการณ์",
+		"addModal": {
+			"title": "เพิ่มสถานการณ์",
+			"description": "คุณสามารถสร้างสำนวนที่เหมาะกับสถานการณ์",
+			"addButton": "เพิ่ม"
+		},
+		"deleteModal": {
+			"title": "ลบสถานการณ์",
+			"deleting": "กำลังลบ",
+			"deleteButton": "ลบ"
+		},
 		"delete": {
 			"confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบสถานการณ์นี้?",
 			"warningMessage": "ไม่สามารถยกเลิกการกระทำนี้ได้"

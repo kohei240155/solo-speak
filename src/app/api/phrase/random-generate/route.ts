@@ -4,45 +4,52 @@ import { authenticateRequest } from "@/utils/api-helpers";
 import { getTranslation, getLocaleFromRequest } from "@/utils/api-i18n";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { prisma } from "@/utils/prisma";
-import { getPhraseGenerationPrompt } from "@/prompts/phraseGeneration";
+import { getRandomPhraseGenerationPrompt } from "@/prompts/randomPhraseGeneration";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
+import {
+	EXPRESSION_PATTERNS,
+	TOPICS,
+} from "@/constants/expressionPatterns";
 import type { PhraseVariation } from "@/types/phrase";
 
-const generatePhraseSchema = z.object({
+const randomGeneratePhraseSchema = z.object({
 	nativeLanguage: z.string().min(1),
 	learningLanguage: z.string().min(1),
-	desiredPhrase: z.string().min(1).max(100),
 	selectedContext: z.string().nullable().optional(),
 });
 
 // Structured Outputs用のレスポンススキーマ
-const phraseVariationsSchema = z.object({
+const randomPhraseVariationsSchema = z.object({
 	variations: z
 		.array(
 			z.object({
 				original: z
 					.string()
 					.max(200)
-					.describe("自然な話し言葉の表現（200文字以内）"),
-				translation: z
-					.string()
-					.describe("母国語への翻訳"),
+					.describe("学習言語での自然な表現（200文字以内）"),
+				translation: z.string().describe("ユーザーの母国語での翻訳"),
 				explanation: z
 					.string()
-					.describe("他の表現との違いを示すニュアンスの説明（30-50文字程度）"),
+					.describe("表現の解説（構文パターンと応用ヒント、必ず2文）"),
 			}),
 		)
-		.length(3)
-		.describe("同じ意味を持つ3つの異なる表現パターン"),
+		.length(1)
+		.describe("構文パターンに基づく1つの表現"),
 });
 
-interface GeneratePhraseResponse {
-	variations: PhraseVariation[];
+/**
+ * ランダムに構文パターンとトピックを選択する
+ */
+function getRandomElements(situation?: string) {
+	const patternIndex = Math.floor(Math.random() * EXPRESSION_PATTERNS.length);
+	const pattern = EXPRESSION_PATTERNS[patternIndex];
+	const topic = situation || TOPICS[Math.floor(Math.random() * TOPICS.length)];
+	return { pattern, topic };
 }
 
-/** フレーズ生成APIエンドポイント
+/** ランダムフレーズ生成APIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
- * @returns GeneratePhraseResponse - 生成されたフレーズのバリエーション
+ * @returns RandomGeneratePhraseResponse - 生成されたランダムフレーズ
  */
 export async function POST(request: NextRequest) {
 	try {
@@ -56,8 +63,8 @@ export async function POST(request: NextRequest) {
 		}
 
 		const body = await request.json();
-		const { nativeLanguage, learningLanguage, desiredPhrase, selectedContext } =
-			generatePhraseSchema.parse(body);
+		const { nativeLanguage, learningLanguage, selectedContext } =
+			randomGeneratePhraseSchema.parse(body);
 
 		const userId = authResult.user.id;
 
@@ -89,17 +96,19 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		// ランダムに構文パターンとトピックを選択
+		const elements = getRandomElements(selectedContext || undefined);
+
 		// ChatGPT APIに送信するプロンプトを構築
 		const nativeLanguageName =
 			LANGUAGE_NAMES[nativeLanguage as LanguageCode] || nativeLanguage;
 		const learningLanguageName =
 			LANGUAGE_NAMES[learningLanguage as LanguageCode] || learningLanguage;
 
-		const prompt = getPhraseGenerationPrompt(
+		const prompt = getRandomPhraseGenerationPrompt(
 			nativeLanguageName,
-			desiredPhrase,
-			selectedContext || undefined,
 			learningLanguageName,
+			elements,
 		);
 
 		const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -116,17 +125,23 @@ export async function POST(request: NextRequest) {
 						content: prompt,
 					},
 				],
-				temperature: 0.7,
-				max_tokens: 1000,
+				temperature: 0.8, // 多様性のため少し高めに設定
+				max_tokens: 1500,
 				// Structured Outputs使用
 				response_format: zodResponseFormat(
-					phraseVariationsSchema,
-					"phrase_variations",
+					randomPhraseVariationsSchema,
+					"random_phrase_variations",
 				),
 			}),
 		});
 
 		if (!response.ok) {
+			const errorData = await response.text().catch(() => "Unknown error");
+			console.error(
+				"[random-generate] OpenAI API error:",
+				response.status,
+				errorData,
+			);
 			return NextResponse.json(
 				{ error: getTranslation(locale, "phrase.messages.generationFailed") },
 				{ status: 500 },
@@ -144,11 +159,11 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Structured Outputsなので直接パースできる
-		const parsedResponse = phraseVariationsSchema.parse(
+		const parsedResponse = randomPhraseVariationsSchema.parse(
 			JSON.parse(generatedContent),
 		);
 
-		// レスポンス形式を既存のインターフェースに変換
+		// レスポンス形式を変換
 		const variations: PhraseVariation[] = parsedResponse.variations.map(
 			(variation) => ({
 				original: variation.original,
@@ -156,10 +171,6 @@ export async function POST(request: NextRequest) {
 				explanation: variation.explanation,
 			}),
 		);
-
-		const result: GeneratePhraseResponse = {
-			variations,
-		};
 
 		// フレーズ生成が成功した場合、生成回数を減らす
 		try {
@@ -171,18 +182,25 @@ export async function POST(request: NextRequest) {
 					lastPhraseGenerationDate: new Date(),
 				},
 			});
-		} catch {
+		} catch (updateError) {
 			// エラーがあっても生成は完了しているため、カウント更新エラーを警告レベルで扱う
+			console.warn(
+				"[random-generate] Failed to update remainingPhraseGenerations:",
+				updateError,
+			);
 		}
-		return NextResponse.json(result);
+
+		return NextResponse.json({ variations });
 	} catch (error) {
 		if (error instanceof z.ZodError) {
+			console.error("[random-generate] Validation error:", error.issues);
 			return NextResponse.json(
 				{ error: "Invalid request data", details: error.issues },
 				{ status: 400 },
 			);
 		}
 
+		console.error("[random-generate] Unexpected error:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
 			{ status: 500 },

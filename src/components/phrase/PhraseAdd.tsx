@@ -3,6 +3,7 @@ import { SituationResponse } from "@/types/situation";
 import dynamic from "next/dynamic";
 import { BsPlusSquare } from "react-icons/bs";
 import { AiOutlineClose, AiOutlineQuestionCircle } from "react-icons/ai";
+import { IoLocationOutline, IoFlash, IoChatbubbleOutline } from "react-icons/io5";
 import { useState } from "react";
 import AddContextModal from "@/components/modals/AddContextModal";
 import BaseModal from "@/components/common/BaseModal";
@@ -16,6 +17,14 @@ const GeneratedVariations = dynamic(() => import("./GeneratedVariations"), {
 	ssr: false,
 });
 
+// RandomGeneratedVariationsコンポーネントを動的インポート
+const RandomGeneratedVariations = dynamic(
+	() => import("./RandomGeneratedVariations"),
+	{
+		ssr: false,
+	},
+);
+
 interface PhraseAddProps {
 	remainingGenerations: number;
 	hasActiveSubscription?: boolean;
@@ -25,6 +34,7 @@ interface PhraseAddProps {
 	isSaving: boolean;
 	generatedVariations: PhraseVariation[];
 	editingVariations: { [key: number]: string };
+	editingTranslations: { [key: number]: string };
 	savingVariationIndex: number | null;
 	error: string;
 	selectedContext: "friend" | "sns" | string | null;
@@ -32,10 +42,18 @@ interface PhraseAddProps {
 	onPhraseChange: (value: string) => void;
 	onGeneratePhrase: () => void;
 	onEditVariation: (index: number, newText: string) => void;
+	onEditTranslation: (index: number, newText: string) => void;
 	onSelectVariation: (variation: PhraseVariation, index: number) => void;
 	onContextChange?: (context: string | null) => void;
 	addSituation: (name: string) => Promise<void>;
 	deleteSituation: (id: string) => Promise<void>;
+	// Random Mode props
+	isRandomMode: boolean;
+	randomGeneratedVariations: PhraseVariation[];
+	isRandomSaving: boolean;
+	onToggleRandomMode: (enabled: boolean) => void;
+	onRandomGenerate: () => void;
+	onSaveRandomPhrase: () => void;
 }
 
 export default function PhraseAdd({
@@ -48,6 +66,7 @@ export default function PhraseAdd({
 	isSaving,
 	generatedVariations,
 	editingVariations,
+	editingTranslations,
 	savingVariationIndex,
 	error,
 	selectedContext,
@@ -55,10 +74,18 @@ export default function PhraseAdd({
 	onPhraseChange,
 	onGeneratePhrase,
 	onEditVariation,
+	onEditTranslation,
 	onSelectVariation,
 	onContextChange,
 	addSituation,
 	deleteSituation,
+	// Random Mode
+	isRandomMode,
+	randomGeneratedVariations,
+	isRandomSaving,
+	onToggleRandomMode,
+	onRandomGenerate,
+	onSaveRandomPhrase,
 }: PhraseAddProps) {
 	const { t } = useTranslation("app");
 
@@ -84,6 +111,21 @@ export default function PhraseAdd({
 			generatedVariations.length === 0
 		);
 	};
+
+	// ランダム生成ボタンが有効かどうかを判定する関数
+	const isRandomGenerateButtonEnabled = () => {
+		return (
+			!isLoading &&
+			!isRandomSaving &&
+			remainingGenerations > 0 &&
+			randomGeneratedVariations.length === 0
+		);
+	};
+
+	// 生成結果が表示中かどうか
+	const hasGeneratedResults = isRandomMode
+		? randomGeneratedVariations.length > 0
+		: generatedVariations.length > 0;
 
 	// シチュエーション追加のハンドラー
 	const handleAddContext = async (contextName: string) => {
@@ -130,8 +172,8 @@ export default function PhraseAdd({
 			{/* Add Phrase見出しとLeft情報 */}
 			<div className="flex justify-between items-center mb-2">
 				<div className="flex items-center gap-2">
-					<h2 className="text-xl md:text-2xl font-bold text-gray-900">
-						Add Phrase
+					<h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+						{t("phrase.add.title")}
 					</h2>
 					<button
 						onClick={() => setShowHelpModal(true)}
@@ -140,10 +182,17 @@ export default function PhraseAdd({
 						<AiOutlineQuestionCircle size={20} />
 					</button>
 				</div>
-				<div className="text-sm text-gray-600">
-					Left: {remainingGenerations} / 5
+				<div
+					className={`text-sm ${remainingGenerations === 0 ? "text-red-500 font-medium" : "text-gray-600"}`}
+				>
+					{remainingGenerations === 0
+						? t("phrase.add.dailyLimitReached")
+						: t("phrase.add.remainingCount", { count: remainingGenerations })}
 				</div>
 			</div>
+			<p className="text-xs sm:text-sm text-gray-500 mb-6">
+				{t("phrase.add.description")}
+			</p>
 
 			{/* SUBSCRIPTION_DISABLED: サブスクリプション状態の表示を一時的に無効化 */}
 			{/* <div className="mb-4">
@@ -152,7 +201,7 @@ export default function PhraseAdd({
             <p className="text-gray-700 font-medium text-sm mb-2">
               {t('subscription.subscriptionRequired')}
             </p>
-            <a 
+            <a
               href="/settings?tab=subscription"
               className="inline-block px-4 py-2 text-white text-sm rounded-md transition-colors"
               style={{ backgroundColor: '#616161' }}
@@ -169,18 +218,64 @@ export default function PhraseAdd({
         )}
       </div> */}
 
-			{/* Options section */}
+			{/* Random Mode Toggle - ピル型セグメントボタン */}
 			<div className="mb-4">
-				<div className="flex flex-col gap-2">
-					<h3 className="text-lg font-semibold text-gray-900">Situation</h3>
+				<div className="flex items-center gap-2 mb-2">
+					<IoFlash className="w-5 h-5 text-gray-600" />
+					<h3 className="text-lg font-semibold text-gray-900">{t("phrase.add.generationMethod")}</h3>
+				</div>
+				<div className="relative inline-flex self-start rounded-full p-1 bg-gray-100">
+					{/* スライディング背景 */}
+					<div
+						className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-sm transition-all duration-300 ease-out"
+						style={{
+							left: isRandomMode ? "calc(50% + 2px)" : "4px",
+						}}
+					/>
+					<button
+						onClick={() => !hasGeneratedResults && onToggleRandomMode(false)}
+						disabled={hasGeneratedResults}
+						className={`relative z-10 w-28 py-1.5 text-sm font-semibold rounded-full transition-colors duration-300 text-center ${
+							!isRandomMode
+								? "text-gray-900"
+								: hasGeneratedResults
+									? "text-gray-400 cursor-not-allowed"
+									: "text-gray-500"
+						}`}
+					>
+						{t("phrase.add.manualInput")}
+					</button>
+					<button
+						onClick={() => !hasGeneratedResults && onToggleRandomMode(true)}
+						disabled={hasGeneratedResults}
+						className={`relative z-10 w-28 py-1.5 text-sm font-semibold rounded-full transition-colors duration-300 text-center ${
+							isRandomMode
+								? "text-gray-900"
+								: hasGeneratedResults
+									? "text-gray-400 cursor-not-allowed"
+									: "text-gray-500"
+						}`}
+					>
+						{t("phrase.add.autoGenerate")}
+					</button>
+				</div>
+			</div>
+
+			{/* Options section */}
+			<div className={isRandomMode ? "mb-8" : "mb-4"}>
+				<div className="flex flex-col gap-3">
+					<div className="flex items-center gap-2">
+						<IoLocationOutline className="w-5 h-5 text-gray-600" />
+						<h3 className="text-lg font-semibold text-gray-900">{t("phrase.add.situationTitle")}</h3>
+					</div>
 
 					{/* シチュエーション表示エリア全体を囲む */}
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-3">
 						<button
 							onClick={() => setIsAddContextModalOpen(true)}
-							disabled={generatedVariations.length > 0}
+							disabled={hasGeneratedResults}
 							className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-								generatedVariations.length > 0
+								hasGeneratedResults
 									? "text-gray-400 cursor-not-allowed"
 									: "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
 							}`}
@@ -188,12 +283,12 @@ export default function PhraseAdd({
 							<BsPlusSquare size={16} />
 						</button>
 
-						<ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1">
+						<ScrollableContainer className="flex gap-1.5 overflow-x-auto overflow-y-hidden min-w-0 flex-1 pl-1">
 							{situations.map((situation: SituationResponse) => (
 								<button
 									key={situation.id}
 									onClick={() => {
-										if (generatedVariations.length === 0 && onContextChange) {
+										if (!hasGeneratedResults && onContextChange) {
 											onContextChange(
 												selectedContext === situation.name
 													? null
@@ -201,32 +296,26 @@ export default function PhraseAdd({
 											);
 										}
 									}}
-									disabled={generatedVariations.length > 0}
-									className={`px-3 py-1 rounded-full text-sm font-medium transition-all border flex items-center gap-1.5 flex-shrink-0 ${
+									disabled={hasGeneratedResults}
+									className={`px-3 py-1.5 rounded-full text-sm font-medium border flex items-center gap-1.5 flex-shrink-0 transition-all duration-300 ease-out ${
 										selectedContext === situation.name
-											? "text-white border-transparent shadow-sm"
-											: generatedVariations.length > 0
+											? "text-white border-transparent shadow-md scale-105 bg-[#616161]"
+											: hasGeneratedResults
 												? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-												: "bg-white text-gray-700 hover:bg-gray-100 border-gray-200 hover:border-gray-300"
+												: "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:shadow-sm active:scale-95"
 									}`}
-									style={{
-										backgroundColor:
-											selectedContext === situation.name
-												? "#616161"
-												: undefined,
-									}}
 								>
 									<span className="whitespace-nowrap">{situation.name}</span>
 									<AiOutlineClose
 										size={14}
-										className={`flex-shrink-0 font-bold ${
+										className={`flex-shrink-0 font-bold transition-colors duration-300 ${
 											selectedContext === situation.name
 												? "text-white"
 												: "text-gray-700"
 										}`}
 										onClick={(e) => {
 											e.stopPropagation();
-											if (generatedVariations.length === 0) {
+											if (!hasGeneratedResults) {
 												handleDeleteSituation(situation.id);
 											}
 										}}
@@ -238,100 +327,93 @@ export default function PhraseAdd({
 				</div>
 			</div>
 
-			{/* フレーズ入力エリア */}
-			<div className="mb-6">
-				<div className="mb-2">
-					<h3 className="text-lg font-semibold text-gray-900">Phrase</h3>
+			{/* フレーズ入力エリア（通常モードのみ表示） */}
+			{!isRandomMode && (
+				<div className="mb-6">
+					<div className="flex items-center gap-2 mb-2">
+						<IoChatbubbleOutline className="w-5 h-5 text-gray-600" />
+						<h3 className="text-lg font-semibold text-gray-900">{t("phrase.add.desiredPhraseTitle")}</h3>
+					</div>
+					<textarea
+						value={desiredPhrase}
+						onChange={(e) => onPhraseChange(e.target.value)}
+						onFocus={scrollPreservation.onFocus}
+						onBlur={scrollPreservation.onBlur}
+						placeholder={t("phrase.placeholders.phraseInput")}
+						className={`w-full border rounded-xl px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-400 transition-all duration-200 focus:ring-2 focus:ring-gray-400 ${
+							phraseValidationError && desiredPhrase.trim().length > 0
+								? "border-gray-400"
+								: "border-gray-300"
+						} ${generatedVariations.length > 0 ? "bg-gray-50 text-gray-500" : ""}`}
+						rows={3}
+						disabled={isSaving || generatedVariations.length > 0}
+					/>
+
+					{/* 100文字を超えた場合のバリデーションメッセージ */}
+					{desiredPhrase.length > 100 && (
+						<div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
+							<p className="text-sm text-gray-600">
+								{t("phrase.validation.maxLength100", {
+									count: desiredPhrase.length,
+								})}
+							</p>
+						</div>
+					)}
 				</div>
-				<textarea
-					value={desiredPhrase}
-					onChange={(e) => onPhraseChange(e.target.value)}
-					onFocus={scrollPreservation.onFocus}
-					onBlur={scrollPreservation.onBlur}
-					placeholder={t("phrase.placeholders.phraseInput")}
-					className={`w-full border rounded-md px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 ${
-						phraseValidationError && desiredPhrase.trim().length > 0
-							? "border-gray-400"
-							: "border-gray-300"
+			)}
+
+			{/* AI Suggest / Random Generate ボタン */}
+			{isRandomMode ? (
+				<button
+					disabled={!isRandomGenerateButtonEnabled() || isLoading}
+					className={`w-full mt-4 py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
+						isLoading
+							? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
+							: !isRandomGenerateButtonEnabled()
+								? "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
+								: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
 					}`}
-					rows={3}
-					disabled={isSaving}
-				/>
-
-				{/* 100文字を超えた場合のバリデーションメッセージ */}
-				{desiredPhrase.length > 100 && (
-					<div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-50">
-						<p className="text-sm text-gray-600">
-							{t("phrase.validation.maxLength100", {
-								count: desiredPhrase.length,
-							})}
-						</p>
-					</div>
-				)}
-			</div>
-
-			{/* AI Suggest ボタン */}
-			<button
-				disabled={
-					isLoading ||
-					isSaving ||
-					!desiredPhrase.trim() ||
-					remainingGenerations <= 0 ||
-					desiredPhrase.length > 100 ||
-					generatedVariations.length > 0
-				}
-				className={`w-full text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed transition-all duration-300 relative ${
-					isLoading ? "animate-pulse" : ""
-				}`}
-				style={{
-					backgroundColor:
-						isLoading ||
-						isSaving ||
-						!desiredPhrase.trim() ||
-						remainingGenerations <= 0 ||
-						desiredPhrase.length > 100 ||
-						generatedVariations.length > 0
-							? "#9CA3AF"
-							: "#616161",
-					boxShadow: isLoading ? "0 0 15px rgba(97, 97, 97, 0.4)" : undefined,
-				}}
-				onMouseEnter={(e) => {
-					if (isGenerateButtonEnabled() && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#525252";
-						e.currentTarget.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.1)";
-					}
-				}}
-				onMouseLeave={(e) => {
-					if (isGenerateButtonEnabled() && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#616161";
-						e.currentTarget.style.boxShadow = "none";
-					}
-				}}
-				onClick={(e) => {
-					if (!isGenerateButtonEnabled() || !e.currentTarget) {
-						return;
-					}
-
-					// より控えめなクリック効果
-					e.currentTarget.style.transform = "scale(0.98)";
-					setTimeout(() => {
-						if (e.currentTarget) {
-							e.currentTarget.style.transform = "scale(1)";
-						}
-					}, 150);
-
-					onGeneratePhrase();
-				}}
-			>
-				{isLoading ? (
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-						AI Suggest
-					</div>
-				) : (
-					"AI Suggest"
-				)}
-			</button>
+					onClick={onRandomGenerate}
+				>
+					{isLoading ? (
+						<div className="flex items-center justify-center gap-3">
+							<span>{t("phrase.add.generating")}</span>
+							<span className="flex gap-1">
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+							</span>
+						</div>
+					) : (
+						t("phrase.add.generateButton")
+					)}
+				</button>
+			) : (
+				<button
+					disabled={!isGenerateButtonEnabled() || isLoading}
+					className={`w-full py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
+						isLoading
+							? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
+							: !isGenerateButtonEnabled()
+								? "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
+								: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
+					}`}
+					onClick={onGeneratePhrase}
+				>
+					{isLoading ? (
+						<div className="flex items-center justify-center gap-3">
+							<span>{t("phrase.add.generating")}</span>
+							<span className="flex gap-1">
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+							</span>
+						</div>
+					) : (
+						t("phrase.add.generateButton")
+					)}
+				</button>
+			)}
 
 			{/* エラー表示 */}
 			{error && !isLoading && (
@@ -340,7 +422,7 @@ export default function PhraseAdd({
 					{/* SUBSCRIPTION_DISABLED: Basicプラン関連のエラーメッセージを一時的に無効化 */}
 					{/* {error.includes('Basicプラン') && (
             <div className="mt-2">
-              <a 
+              <a
                 href="/settings?tab=subscription"
                 className="text-sm text-gray-600 hover:text-gray-800 underline"
               >
@@ -351,17 +433,31 @@ export default function PhraseAdd({
 				</div>
 			)}
 
-			{/* 生成結果 */}
-			<GeneratedVariations
-				generatedVariations={generatedVariations}
-				editingVariations={editingVariations}
-				isSaving={isSaving}
-				savingVariationIndex={savingVariationIndex}
-				desiredPhrase={desiredPhrase}
-				onEditVariation={onEditVariation}
-				onSelectVariation={onSelectVariation}
-				error={error}
-			/>
+			{/* 生成結果（通常モード） */}
+			{!isRandomMode && (
+				<GeneratedVariations
+					generatedVariations={generatedVariations}
+					editingVariations={editingVariations}
+					editingTranslations={editingTranslations}
+					isSaving={isSaving}
+					savingVariationIndex={savingVariationIndex}
+					desiredPhrase={desiredPhrase}
+					onEditVariation={onEditVariation}
+					onEditTranslation={onEditTranslation}
+					onSelectVariation={onSelectVariation}
+					error={error}
+				/>
+			)}
+
+			{/* 生成結果（ランダムモード） */}
+			{isRandomMode && (
+				<RandomGeneratedVariations
+					randomGeneratedVariations={randomGeneratedVariations}
+					isRandomSaving={isRandomSaving}
+					error={error}
+					onSave={onSaveRandomPhrase}
+				/>
+			)}
 
 			{/* シチュエーション追加モーダル */}
 			<AddContextModal
@@ -374,47 +470,50 @@ export default function PhraseAdd({
 			<BaseModal
 				isOpen={!!deletingSituationId}
 				onClose={handleCancelDelete}
-				title="Delete Situation"
+				variant="gray"
+				width="480px"
 			>
-				{/* 確認メッセージ */}
-				<div className="mb-6">
-					<p className="text-gray-700">
+				<div className="bg-white rounded-[20px] p-5 -m-5">
+					{/* タイトル */}
+					<div className="flex items-center mb-4">
+						<IoLocationOutline className="w-6 h-6 text-gray-600 mr-2" />
+						<h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t("situation.deleteModal.title")}</h2>
+					</div>
+
+					{/* 確認メッセージ */}
+					<p className="text-sm text-gray-500 mb-7">
 						{t("situation.delete.confirmMessage")}
-						<br />
 						{t("situation.delete.warningMessage")}
 					</p>
-				</div>
 
-				{/* ボタン */}
-				<div className="flex gap-3">
-					<button
-						onClick={handleCancelDelete}
-						disabled={isDeleting}
-						className="flex-1 bg-white border py-2 px-4 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-						style={{
-							borderColor: "#616161",
-							color: "#616161",
-						}}
-					>
-						Cancel
-					</button>
-					<button
-						onClick={handleConfirmDelete}
-						disabled={isDeleting}
-						className="flex-1 text-white py-2 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-						style={{
-							backgroundColor: isDeleting ? "#FCA5A5" : "#DC2626",
-						}}
-					>
-						{isDeleting ? (
-							<div className="flex items-center justify-center">
-								<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-								Deleting...
-							</div>
-						) : (
-							"Delete"
-						)}
-					</button>
+					{/* ボタン */}
+					<div className="flex gap-3">
+						<button
+							onClick={handleCancelDelete}
+							disabled={isDeleting}
+							className="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							{t("common.cancel")}
+						</button>
+						<button
+							onClick={handleConfirmDelete}
+							disabled={isDeleting}
+							className={`flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 text-white active:scale-[0.98] disabled:cursor-not-allowed ${
+								isDeleting
+									? "bg-gray-400"
+									: "bg-red-500 hover:bg-red-600"
+							}`}
+						>
+							{isDeleting ? (
+								<div className="flex items-center justify-center gap-2">
+									<div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+									<span>{t("situation.deleteModal.deleting")}</span>
+								</div>
+							) : (
+								t("situation.deleteModal.deleteButton")
+							)}
+						</button>
+					</div>
 				</div>
 			</BaseModal>
 

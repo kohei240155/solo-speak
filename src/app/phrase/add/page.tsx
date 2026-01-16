@@ -39,11 +39,18 @@ export default function PhraseAddPage() {
 		isSaving,
 		savingVariationIndex,
 		editingVariations,
+		editingTranslations,
 		phraseValidationError,
 		selectedContext,
 
+		// Random Mode State
+		isRandomMode,
+		randomGeneratedVariations,
+		isRandomSaving,
+
 		// Handlers - PhraseAddコンポーネントで使用
 		handleEditVariation,
+		handleEditTranslation,
 		handlePhraseChange,
 		handleGeneratePhrase,
 		handleSelectVariation,
@@ -51,6 +58,11 @@ export default function PhraseAddPage() {
 		addSituation,
 		deleteSituation,
 		refetchPhraseList,
+
+		// Random Mode Handlers
+		handleToggleRandomMode,
+		handleRandomGenerate,
+		handleSaveRandomPhrase,
 	} = usePhraseManager();
 
 	// Modal functionality
@@ -63,7 +75,7 @@ export default function PhraseAddPage() {
 	// ページ離脱時の警告処理をオーバーライド
 	useEffect(() => {
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-			if (generatedVariations.length > 0) {
+			if (generatedVariations.length > 0 || randomGeneratedVariations.length > 0) {
 				e.preventDefault();
 				e.returnValue = t("confirm.unsavedPhrase");
 				return t("confirm.unsavedPhrase");
@@ -74,7 +86,7 @@ export default function PhraseAddPage() {
 		return () => {
 			window.removeEventListener("beforeunload", handleBeforeUnload);
 		};
-	}, [generatedVariations.length, t]);
+	}, [generatedVariations.length, randomGeneratedVariations.length, t]);
 
 	// 認証ローディング中は何も表示しない
 	if (authLoading) {
@@ -110,7 +122,7 @@ export default function PhraseAddPage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6">
 					{isInitializing ? (
 						<div
 							className="flex items-center justify-center"
@@ -131,6 +143,7 @@ export default function PhraseAddPage() {
 							isSaving={isSaving}
 							generatedVariations={generatedVariations}
 							editingVariations={editingVariations}
+							editingTranslations={editingTranslations}
 							savingVariationIndex={savingVariationIndex}
 							error={error}
 							selectedContext={selectedContext}
@@ -138,10 +151,18 @@ export default function PhraseAddPage() {
 							onPhraseChange={handlePhraseChange}
 							onGeneratePhrase={handleGeneratePhrase}
 							onEditVariation={handleEditVariation}
+							onEditTranslation={handleEditTranslation}
 							onSelectVariation={handleSelectVariation}
 							onContextChange={handleContextChange}
 							addSituation={addSituation}
 							deleteSituation={deleteSituation}
+							// Random Mode
+							isRandomMode={isRandomMode}
+							randomGeneratedVariations={randomGeneratedVariations}
+							isRandomSaving={isRandomSaving}
+							onToggleRandomMode={handleToggleRandomMode}
+							onRandomGenerate={handleRandomGenerate}
+							onSaveRandomPhrase={handleSaveRandomPhrase}
 						/>
 					)}
 				</div>

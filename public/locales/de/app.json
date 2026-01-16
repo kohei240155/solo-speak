@@ -29,10 +29,36 @@
 	},
 	"common": {
 		"backToHome": "Zurück zur Startseite",
-		"loginRequired": "Sie müssen sich anmelden, um diese Funktion zu verwenden"
+		"loginRequired": "Sie müssen sich anmelden, um diese Funktion zu verwenden",
+		"cancel": "Abbrechen",
+		"saving": "Speichern"
 	},
 	"phrase": {
 		"noPhrasesYet": "Es wurden noch keine Phrasen registriert",
+		"add": {
+			"title": "Phrase hinzufügen",
+			"description": "KI unterstützt Sie bei der Erstellung nützlicher Phrasen für das Sprechen",
+			"dailyLimitReached": "Tageslimit erreicht",
+			"remainingCount": "Heute noch {{count}} übrig",
+			"generationMethod": "Generierungsmethode",
+			"manualInput": "Manuelle Eingabe",
+			"autoGenerate": "KI-Generierung",
+			"situationTitle": "Situation",
+			"desiredPhraseTitle": "Was Sie sagen möchten",
+			"generating": "Generiere",
+			"generateButton": "Phrase generieren"
+		},
+		"randomMode": {
+			"title": "Generierte Phrase",
+			"description": "Speichern Sie die Phrase, wenn sie Ihnen gefällt",
+			"translation": "Übersetzung",
+			"save": "Phrase speichern"
+		},
+		"generatedPhrases": {
+			"title": "Generierte Phrasen",
+			"description": "Wählen und speichern Sie eine Phrase, die Ihnen gefällt",
+			"select": "Diese Phrase speichern"
+		},
 		"placeholders": {
 			"phraseInput": "Beispiel: Wo warst du in letzter Zeit?",
 			"situationInput": "Beispiel: Bei der Bestellung im Restaurant"
@@ -239,6 +265,16 @@
 		"addError": "Fehler beim Hinzufügen der Situation aufgetreten",
 		"deleteSuccess": "Situation erfolgreich gelöscht",
 		"deleteError": "Fehler beim Löschen der Situation aufgetreten",
+		"addModal": {
+			"title": "Situation hinzufügen",
+			"description": "Sie können auf die Situation zugeschnittene Ausdrücke generieren",
+			"addButton": "Hinzufügen"
+		},
+		"deleteModal": {
+			"title": "Situation löschen",
+			"deleting": "Löschen",
+			"deleteButton": "Löschen"
+		},
 		"delete": {
 			"confirmMessage": "Sind Sie sicher, dass Sie diese Situation löschen möchten?",
 			"warningMessage": "Diese Aktion kann nicht rückgängig gemacht werden."

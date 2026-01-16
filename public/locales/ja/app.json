@@ -29,10 +29,25 @@
 	},
 	"common": {
 		"backToHome": "ホームに戻る",
-		"loginRequired": "この機能を利用するにはログインが必要です"
+		"loginRequired": "この機能を利用するにはログインが必要です",
+		"cancel": "キャンセル",
+		"saving": "保存中"
 	},
 	"phrase": {
 		"noPhrasesYet": "まだフレーズが登録されていません",
+		"add": {
+			"title": "Add Phrase",
+			"description": "AIがスピーキングに役立つフレーズの作成をサポートします",
+			"dailyLimitReached": "本日の生成上限に達しました",
+			"remainingCount": "本日あと{{count}}回",
+			"generationMethod": "生成方法",
+			"manualInput": "自分で入力",
+			"autoGenerate": "AIにおまかせ",
+			"situationTitle": "使う場面",
+			"desiredPhraseTitle": "話したいこと",
+			"generating": "生成中",
+			"generateButton": "フレーズを生成"
+		},
 		"placeholders": {
 			"phraseInput": "例：最近どこに行きましたか？",
 			"situationInput": "例：レストランの注文で"
@@ -57,7 +72,19 @@
 			"nextPhraseError": "次のフレーズの取得に失敗しました",
 			"dailyLimitExceeded": "本日の生成回数を超過しました。明日再度お試しください。",
 			"generationFailed": "フレーズの生成に失敗しました",
-			"generationError": "フレーズの生成中にエラーが発生しました"
+			"generationError": "フレーズの生成中にエラーが発生しました",
+			"phrasesCount": "件"
+		},
+		"randomMode": {
+			"title": "生成されたフレーズ",
+			"description": "気に入ったらフレーズを保存しましょう",
+			"translation": "翻訳",
+			"save": "フレーズを保存"
+		},
+		"generatedPhrases": {
+			"title": "生成されたフレーズ",
+			"description": "気に入ったフレーズを1つ選んで保存できます",
+			"select": "このフレーズを保存"
 		},
 		"delete": {
 			"confirmMessage": "このフレーズを削除してもよろしいですか？",
@@ -239,6 +266,16 @@
 		"addError": "シチュエーションの追加中にエラーが発生しました",
 		"deleteSuccess": "シチュエーションを削除しました",
 		"deleteError": "シチュエーションの削除中にエラーが発生しました",
+		"addModal": {
+			"title": "場面を追加",
+			"description": "場面に合った表現を生成できるようになります",
+			"addButton": "追加"
+		},
+		"deleteModal": {
+			"title": "場面を削除",
+			"deleting": "削除中",
+			"deleteButton": "削除"
+		},
 		"delete": {
 			"confirmMessage": "このシチュエーションを削除してもよろしいですか？",
 			"warningMessage": "この操作は取り消すことができません。"

@@ -1,6 +1,6 @@
 import BaseModal from "../common/BaseModal";
 import { useTranslation } from "@/hooks/ui/useTranslation";
-import { AiOutlineCaretRight } from "react-icons/ai";
+import { IoTimeOutline, IoInfiniteOutline } from "react-icons/io5";
 
 interface PhraseGenerationHelpModalProps {
 	isOpen: boolean;
@@ -18,48 +18,51 @@ export default function PhraseGenerationHelpModal({
 			isOpen={isOpen}
 			onClose={onClose}
 			title={t("phraseGeneration.help.title")}
-			width="500px"
+			width="420px"
+			variant="gray"
 		>
-			<div className="mb-6">
-				<div className="space-y-4">
-					<div>
-						<div className="flex items-center mb-2">
-							<AiOutlineCaretRight className="w-4 h-4 mr-1 text-gray-600" />
-							<h3 className="text-lg font-semibold text-gray-900">
+			<div className="space-y-3 mb-6">
+				{/* リセット時間カード */}
+				<div className="bg-white rounded-xl p-4 shadow-sm">
+					<div className="flex items-start gap-3">
+						<div className="flex-shrink-0 w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+							<IoTimeOutline className="w-5 h-5 text-gray-600" />
+						</div>
+						<div className="flex-1 min-w-0">
+							<h3 className="text-sm font-semibold text-gray-900 mb-1">
 								{t("phraseGeneration.help.resetTime.title")}
 							</h3>
+							<p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+								{t("phraseGeneration.help.resetTime.description")}
+							</p>
 						</div>
-						<p className="text-gray-700 leading-relaxed ml-5 pr-4 whitespace-pre-line">
-							{t("phraseGeneration.help.resetTime.description")}
-						</p>
 					</div>
+				</div>
 
-					<div>
-						<div className="flex items-center mb-2">
-							<AiOutlineCaretRight className="w-4 h-4 mr-1 text-gray-600" />
-							<h3 className="text-lg font-semibold text-gray-900">
+				{/* 生成回数カード */}
+				<div className="bg-white rounded-xl p-4 shadow-sm">
+					<div className="flex items-start gap-3">
+						<div className="flex-shrink-0 w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+							<IoInfiniteOutline className="w-5 h-5 text-gray-600" />
+						</div>
+						<div className="flex-1 min-w-0">
+							<h3 className="text-sm font-semibold text-gray-900 mb-1">
 								{t("phraseGeneration.help.dailyLimit.title")}
 							</h3>
+							<p className="text-sm text-gray-600 leading-relaxed">
+								{t("phraseGeneration.help.dailyLimit.description")}
+							</p>
 						</div>
-						<p className="text-gray-700 leading-relaxed ml-5 pr-4">
-							{t("phraseGeneration.help.dailyLimit.description")}
-						</p>
 					</div>
 				</div>
 			</div>
 
-			<div className="flex justify-end">
-				<button
-					onClick={onClose}
-					className="bg-white border py-2 px-6 rounded-md font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-					style={{
-						borderColor: "#616161",
-						color: "#616161",
-					}}
-				>
-					Close
-				</button>
-			</div>
+			<button
+				onClick={onClose}
+				className="w-full py-3 px-6 rounded-xl font-medium transition-all duration-200 bg-[#616161] text-white hover:bg-[#525252] active:scale-[0.98]"
+			>
+				OK
+			</button>
 		</BaseModal>
 	);
 }

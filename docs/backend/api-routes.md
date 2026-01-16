@@ -294,6 +294,7 @@ interface ApiErrorResponse {
 | `src/app/api/phrase/route.ts` | フレーズ一覧・作成（GET/POST） |
 | `src/app/api/phrase/[id]/route.ts` | フレーズ更新・削除（PUT/DELETE） |
 | `src/app/api/phrase/generate/route.ts` | AIフレーズ生成 |
+| `src/app/api/phrase/random-generate/route.ts` | AIランダムフレーズ生成 |
 | `src/app/api/ranking/speech/add/route.ts` | ランキング取得 |
 
 ---

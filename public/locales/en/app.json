@@ -29,10 +29,25 @@
 	},
 	"common": {
 		"backToHome": "Back to Home",
-		"loginRequired": "You need to login to use this feature"
+		"loginRequired": "You need to login to use this feature",
+		"cancel": "Cancel",
+		"saving": "Saving"
 	},
 	"phrase": {
 		"noPhrasesYet": "No phrases have been registered yet",
+		"add": {
+			"title": "Add Phrase",
+			"description": "AI supports you in creating useful phrases for speaking",
+			"dailyLimitReached": "Daily generation limit reached",
+			"remainingCount": "{{count}} left today",
+			"generationMethod": "Generation Method",
+			"manualInput": "Manual Input",
+			"autoGenerate": "AI Generate",
+			"situationTitle": "Situation",
+			"desiredPhraseTitle": "What You Want to Say",
+			"generating": "Generating",
+			"generateButton": "Generate Phrase"
+		},
 		"placeholders": {
 			"phraseInput": "Example: Where have you been recently?",
 			"situationInput": "Example: Ordering at a restaurant"
@@ -57,7 +72,19 @@
 			"nextPhraseError": "Failed to get next phrase",
 			"dailyLimitExceeded": "You have exceeded today's generation limit. Please try again tomorrow.",
 			"generationFailed": "Failed to generate phrases",
-			"generationError": "Error occurred during phrase generation"
+			"generationError": "Error occurred during phrase generation",
+			"phrasesCount": " phrases"
+		},
+		"randomMode": {
+			"title": "Generated Phrase",
+			"description": "Save the phrase if you like it",
+			"translation": "Translation",
+			"save": "Save Phrase"
+		},
+		"generatedPhrases": {
+			"title": "Generated Phrases",
+			"description": "Choose and save one phrase you like",
+			"select": "Save This Phrase"
 		},
 		"delete": {
 			"confirmMessage": "Are you sure you want to delete this phrase?",
@@ -239,6 +266,16 @@
 		"addError": "Error occurred while adding situation",
 		"deleteSuccess": "Situation deleted successfully",
 		"deleteError": "Error occurred while deleting situation",
+		"addModal": {
+			"title": "Add Situation",
+			"description": "You can generate expressions tailored to the situation",
+			"addButton": "Add"
+		},
+		"deleteModal": {
+			"title": "Delete Situation",
+			"deleting": "Deleting",
+			"deleteButton": "Delete"
+		},
 		"delete": {
 			"confirmMessage": "Are you sure you want to delete this situation?",
 			"warningMessage": "This action cannot be undone."
