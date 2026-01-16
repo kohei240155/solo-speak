@@ -9,7 +9,7 @@ Solo SpeakはNext.js 15のApp Routerを使用したフルスタックアプリ�
 ```
 src/
 ├── app/                           # Next.js App Router
-│   └── api/                       # APIルート（49エンドポイント）
+│   └── api/                       # APIルート（50エンドポイント）
 │       ├── phrase/route.ts        # GET/POST /api/phrase
 │       ├── phrase/[id]/route.ts   # GET/PUT/DELETE /api/phrase/[id]
 │       ├── phrase/generate/route.ts # POST AI翻訳生成

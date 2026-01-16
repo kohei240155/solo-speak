@@ -423,6 +423,39 @@ interface GeneratedVariationsProps {
 
 ---
 
+### RandomGeneratedVariations
+
+**ファイル**: `src/components/phrase/RandomGeneratedVariations.tsx`
+
+ランダム生成されたフレーズの表示・保存。AIが生成した1つのランダムフレーズを表示し、保存機能を提供。
+
+```typescript
+import RandomGeneratedVariations from "@/components/phrase/RandomGeneratedVariations";
+
+interface RandomGeneratedVariationsProps {
+  randomGeneratedVariations: RandomPhraseVariation[];
+  isRandomSaving: boolean;
+  error: string;
+  onSave: () => void;
+}
+
+// 使用例
+<RandomGeneratedVariations
+  randomGeneratedVariations={[
+    {
+      original: "I've been meaning to tell you...",
+      translation: "ずっと言おうと思ってたんだけど...",
+      explanation: "「ずっと〜しようと思っていた」という意図を伝える表現。"
+    }
+  ]}
+  isRandomSaving={isSaving}
+  error={error}
+  onSave={() => handleSaveRandomPhrase()}
+/>
+```
+
+---
+
 ## スピーチコンポーネント (speech/)
 
 ### SpeechList

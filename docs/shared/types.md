@@ -231,6 +231,18 @@ interface SpeakPhraseResponse {
 interface RemainingGenerationsResponse {
   remainingGenerations: number;
 }
+
+// ランダム生成フレーズ
+interface RandomPhraseVariation {
+  original: string;      // フレーズ本文（学習中の言語）
+  translation: string;   // 母国語訳
+  explanation: string;   // 表現の解説
+}
+
+// ランダムフレーズ生成レスポンス
+interface RandomGeneratePhraseResponseData {
+  variations: RandomPhraseVariation[];
+}
 ```
 
 ### speech.ts

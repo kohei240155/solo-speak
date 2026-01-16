@@ -335,6 +335,13 @@ await handleSelectVariation(generatedVariations[0], 0);
 | `situations` | `Situation[]` | シチュエーション一覧 |
 | `handleGeneratePhrase` | `() => Promise<void>` | フレーズ生成 |
 | `handleSelectVariation` | `(v, i) => Promise<void>` | バリエーション保存 |
+| `randomMode` | `boolean` | ランダムモードの状態 |
+| `randomGeneratedVariations` | `RandomPhraseVariation[]` | ランダム生成されたフレーズ |
+| `isRandomLoading` | `boolean` | ランダム生成中 |
+| `isRandomSaving` | `boolean` | ランダムフレーズ保存中 |
+| `handleToggleRandomMode` | `() => void` | ランダムモード切り替え |
+| `handleRandomGenerate` | `() => Promise<void>` | ランダムフレーズ生成 |
+| `handleSaveRandomPhrase` | `() => Promise<void>` | ランダムフレーズ保存 |
 
 ---
 
