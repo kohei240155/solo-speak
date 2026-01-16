@@ -41,7 +41,7 @@ export default function AddContextModal({
 			variant="gray"
 			width="480px"
 		>
-			<div className="bg-white rounded-2xl p-5 -m-4">
+			<div className="bg-white rounded-[20px] p-5 -m-5">
 				{/* タイトル */}
 				<div className="flex items-center mb-4">
 					<IoLocationOutline className="w-6 h-6 text-gray-600 mr-2" />
