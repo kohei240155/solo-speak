@@ -12,9 +12,6 @@ import {
 } from "@/constants/expressionPatterns";
 import type { PhraseVariation } from "@/types/phrase";
 
-// 定数
-const VARIATION_COUNT = 1;
-
 const randomGeneratePhraseSchema = z.object({
 	nativeLanguage: z.string().min(1),
 	learningLanguage: z.string().min(1),
@@ -36,7 +33,7 @@ const randomPhraseVariationsSchema = z.object({
 					.describe("表現の解説（構文パターンと応用ヒント、必ず2文）"),
 			}),
 		)
-		.length(VARIATION_COUNT)
+		.length(1)
 		.describe("構文パターンに基づく1つの表現"),
 });
 
