@@ -222,12 +222,8 @@ export interface RemainingGenerationsResponse {
 
 // === ランダムフレーズ生成API関連の型定義 ===
 
-// ランダム生成フレーズの型
-export interface RandomPhraseVariation {
-	original: string; // フレーズ本文（学習中の言語）
-	translation: string; // 日本語訳
-	explanation: string; // 説明（表現の解説含む）
-}
+// ランダム生成フレーズの型（PhraseVariationの全フィールドを必須化）
+export type RandomPhraseVariation = Required<PhraseVariation>;
 
 // ランダムフレーズ生成リクエストボディの型
 export interface RandomGeneratePhraseRequestBody {
