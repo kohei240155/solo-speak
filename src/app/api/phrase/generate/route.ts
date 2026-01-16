@@ -23,6 +23,9 @@ const phraseVariationsSchema = z.object({
 					.string()
 					.max(200)
 					.describe("自然な話し言葉の表現（200文字以内）"),
+				translation: z
+					.string()
+					.describe("母国語への翻訳"),
 				explanation: z
 					.string()
 					.describe("他の表現との違いを示すニュアンスの説明（30-50文字程度）"),
@@ -34,6 +37,7 @@ const phraseVariationsSchema = z.object({
 
 interface PhraseVariation {
 	original: string;
+	translation?: string;
 	explanation?: string;
 }
 
@@ -153,6 +157,7 @@ export async function POST(request: NextRequest) {
 		const variations: PhraseVariation[] = parsedResponse.variations.map(
 			(variation) => ({
 				original: variation.original,
+				translation: variation.translation,
 				explanation: variation.explanation,
 			}),
 		);

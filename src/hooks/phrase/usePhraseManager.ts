@@ -7,6 +7,8 @@ import {
 	CreatePhraseResponseData,
 	GeneratePhraseRequestBody,
 	CreatePhraseRequestBody,
+	RandomPhraseVariation,
+	RandomGeneratePhraseRequestBody,
 } from "@/types/phrase";
 import {
 	useLanguages,
@@ -58,6 +60,9 @@ export const usePhraseManager = () => {
 	const [editingVariations, setEditingVariations] = useState<{
 		[key: number]: string;
 	}>({});
+	const [editingTranslations, setEditingTranslations] = useState<{
+		[key: number]: string;
+	}>({});
 
 	// バリデーション用state
 	const [phraseValidationError, setPhraseValidationError] = useState("");
@@ -66,6 +71,13 @@ export const usePhraseManager = () => {
 	const [showAddToHomeScreenModal, setShowAddToHomeScreenModal] =
 		useState(false);
 	const [userSettingsInitialized, setUserSettingsInitialized] = useState(false);
+
+	// ランダム生成モード用state
+	const [isRandomMode, setIsRandomMode] = useState(false);
+	const [randomGeneratedVariations, setRandomGeneratedVariations] = useState<
+		RandomPhraseVariation[]
+	>([]);
+	const [isRandomSaving, setIsRandomSaving] = useState(false);
 
 	// ユーザー設定が読み込まれた時の初期化
 	useEffect(() => {
@@ -241,10 +253,22 @@ export const usePhraseManager = () => {
 		[validateVariation],
 	);
 
+	// 翻訳編集ハンドラー
+	const handleEditTranslation = useCallback(
+		(index: number, newText: string) => {
+			setEditingTranslations((prev) => ({
+				...prev,
+				[index]: newText,
+			}));
+		},
+		[],
+	);
+
 	// バリエーション選択ハンドラー
 	const handleSelectVariation = useCallback(
 		async (variation: PhraseVariation, index: number) => {
 			const textToSave = editingVariations[index] || variation.original;
+			const translationToSave = editingTranslations[index] || variation.translation || desiredPhrase;
 
 			if (!validateVariation(textToSave)) {
 				return;
@@ -257,7 +281,7 @@ export const usePhraseManager = () => {
 				const requestBody: CreatePhraseRequestBody = {
 					languageCode: learningLanguage,
 					original: textToSave,
-					translation: desiredPhrase,
+					translation: translationToSave,
 					explanation: variation.explanation || "",
 				};
 				const response = await api.post<CreatePhraseResponseData>(
@@ -269,6 +293,7 @@ export const usePhraseManager = () => {
 					setGeneratedVariations([]);
 					setDesiredPhrase("");
 					setEditingVariations({});
+					setEditingTranslations({});
 					setSelectedContext(null);
 					setError("");
 					setPhraseValidationError("");
@@ -292,6 +317,7 @@ export const usePhraseManager = () => {
 		},
 		[
 			editingVariations,
+			editingTranslations,
 			desiredPhrase,
 			learningLanguage,
 			validateVariation,
@@ -299,6 +325,103 @@ export const usePhraseManager = () => {
 			t,
 		],
 	);
+
+	// ランダムモード切り替えハンドラー
+	const handleToggleRandomMode = useCallback((enabled: boolean) => {
+		setIsRandomMode(enabled);
+		// モード切り替え時に生成結果をクリア
+		setGeneratedVariations([]);
+		setRandomGeneratedVariations([]);
+		setError("");
+	}, []);
+
+	// ランダムフレーズ生成ハンドラー
+	const handleRandomGenerate = useCallback(async () => {
+		// 残り回数チェック
+		if (remainingGenerations <= 0) {
+			setError(t("phrase.messages.dailyLimitExceeded"));
+			return;
+		}
+
+		setIsLoading(true);
+		setError("");
+
+		try {
+			const requestBody: RandomGeneratePhraseRequestBody = {
+				nativeLanguage,
+				learningLanguage,
+				selectedContext: selectedContext || undefined,
+			};
+
+			const response = await api.post<{
+				variations: RandomPhraseVariation[];
+				error?: string;
+			}>("/api/phrase/random-generate", requestBody);
+
+			if (response.variations && response.variations.length > 0) {
+				setRandomGeneratedVariations(response.variations);
+
+				// 残り生成回数を更新
+				mutateGenerations();
+			} else {
+				setError(response.error || t("phrase.messages.generationFailed"));
+			}
+		} catch (error) {
+			if (
+				error instanceof Error &&
+				error.message?.includes("remainingGenerations")
+			) {
+				setError(t("phrase.messages.dailyLimitExceeded"));
+				mutateGenerations();
+			} else {
+				setError(t("phrase.messages.generationError"));
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	}, [
+		nativeLanguage,
+		learningLanguage,
+		selectedContext,
+		mutateGenerations,
+		remainingGenerations,
+		t,
+	]);
+
+	// ランダムフレーズの保存ハンドラー
+	const handleSaveRandomPhrase = useCallback(async () => {
+		if (randomGeneratedVariations.length === 0) {
+			return;
+		}
+
+		setIsRandomSaving(true);
+
+		try {
+			const variation = randomGeneratedVariations[0];
+			const requestBody: CreatePhraseRequestBody = {
+				languageCode: learningLanguage,
+				original: variation.original,
+				translation: variation.translation,
+				explanation: variation.explanation,
+			};
+			await api.post<CreatePhraseResponseData>("/api/phrase", requestBody);
+
+			flushSync(() => {
+				setRandomGeneratedVariations([]);
+				setSelectedContext(null);
+				setError("");
+			});
+
+			// Phrase Listのキャッシュを無効化
+			refetchPhraseList();
+
+			toast.success(t("phrase.messages.saveSuccess"));
+		} catch {
+			toast.error(t("phrase.messages.saveError"));
+		} finally {
+			setIsRandomSaving(false);
+		}
+	}, [randomGeneratedVariations, learningLanguage, refetchPhraseList, t]);
 
 	// 学習言語変更ハンドラー
 	const handleLearningLanguageChange = useCallback((language: string) => {
@@ -341,8 +464,8 @@ export const usePhraseManager = () => {
 
 	// 未保存変更チェック
 	const checkUnsavedChanges = useCallback(() => {
-		return generatedVariations.length > 0;
-	}, [generatedVariations]);
+		return generatedVariations.length > 0 || randomGeneratedVariations.length > 0;
+	}, [generatedVariations, randomGeneratedVariations]);
 
 	// ホーム画面追加モーダルを閉じるハンドラー
 	const closeAddToHomeScreenModal = useCallback(() => {
@@ -364,15 +487,22 @@ export const usePhraseManager = () => {
 		isSaving,
 		savingVariationIndex,
 		editingVariations,
+		editingTranslations,
 		phraseValidationError,
 		selectedContext,
 		availablePhraseCount: availablePhraseCount || 0,
 		showAddToHomeScreenModal,
 
+		// Random Mode State
+		isRandomMode,
+		randomGeneratedVariations,
+		isRandomSaving,
+
 		// Handlers
 		handlePhraseChange,
 		handleGeneratePhrase,
 		handleEditVariation,
+		handleEditTranslation,
 		handleSelectVariation,
 		handleLearningLanguageChange,
 		handleContextChange,
@@ -381,5 +511,10 @@ export const usePhraseManager = () => {
 		checkUnsavedChanges,
 		closeAddToHomeScreenModal,
 		refetchPhraseList,
+
+		// Random Mode Handlers
+		handleToggleRandomMode,
+		handleRandomGenerate,
+		handleSaveRandomPhrase,
 	};
 };

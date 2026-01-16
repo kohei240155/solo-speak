@@ -3,6 +3,7 @@ import { ApiSuccessResponse, CommonApiErrorResponse } from "./api";
 
 export interface PhraseVariation {
 	original: string;
+	translation?: string;
 	explanation?: string;
 }
 
@@ -217,4 +218,25 @@ export interface PhraseDetailResponse {
 // 残りのフレーズ生成回数レスポンス型
 export interface RemainingGenerationsResponse {
 	remainingGenerations: number;
+}
+
+// === ランダムフレーズ生成API関連の型定義 ===
+
+// ランダム生成フレーズの型
+export interface RandomPhraseVariation {
+	original: string; // フレーズ本文（学習中の言語）
+	translation: string; // 日本語訳
+	explanation: string; // 説明（表現の解説含む）
+}
+
+// ランダムフレーズ生成リクエストボディの型
+export interface RandomGeneratePhraseRequestBody {
+	nativeLanguage: string;
+	learningLanguage: string;
+	selectedContext?: string | null;
+}
+
+// ランダムフレーズ生成レスポンスの型
+export interface RandomGeneratePhraseResponseData {
+	variations: RandomPhraseVariation[];
 }
