@@ -340,7 +340,7 @@ export default function PhraseAdd({
 						onFocus={scrollPreservation.onFocus}
 						onBlur={scrollPreservation.onBlur}
 						placeholder={t("phrase.placeholders.phraseInput")}
-						className={`w-full border rounded-xl px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-300 transition-all duration-200 focus:ring-2 focus:ring-gray-400 ${
+						className={`w-full border rounded-xl px-3 py-3 text-sm resize-none focus:outline-none text-gray-900 placeholder-gray-400 transition-all duration-200 focus:ring-2 focus:ring-gray-400 ${
 							phraseValidationError && desiredPhrase.trim().length > 0
 								? "border-gray-400"
 								: "border-gray-300"
