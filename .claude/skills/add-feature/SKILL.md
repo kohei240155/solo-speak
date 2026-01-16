@@ -1,11 +1,31 @@
 ---
 name: add-feature
-description: 新機能追加のワークフロー（対話形式で要件定義→設計→実装）
+description: 新機能の要件定義・設計・タスクリスト作成まで行うコマンド
 ---
 
 # Add Feature Command
 
-新機能の設計を対話形式で進め、ステアリングファイル群を生成するコマンドです。
+新機能の実装に向けて、対話形式で以下を行うコマンドです:
+
+1. **要件定義**: ユーザーとの対話で要件を明確化
+2. **技術設計**: DB・API・UI の設計を決定
+3. **タスクリスト作成**: TDD実装のためのタスク一覧を作成
+
+**このコマンドは設計まで。実装は `/implement-feature` で行います。**
+
+## 実行条件
+
+**Planモードでは実行不可**
+
+このスキルはファイル作成・Git操作を伴うため、Planモードでは実行できません。
+Planモード中に実行された場合は、以下のメッセージを表示して終了:
+
+```
+このコマンドはPlanモードでは実行できません。
+Planモードを終了してから再度実行してください。
+```
+
+---
 
 ## 出力ファイル
 
@@ -16,13 +36,8 @@ docs/steering/{YYYYMMDD}-{feature-name}/
 ├── design.md         # 技術設計（Phase 2で作成）
 ├── tasklist.md       # タスクリスト（Phase 3で作成）
 └── reports/          # サブエージェントのレポート
-    ├── file-finder.md      # コードベース調査結果（Step 7）
-    ├── impact-analyzer.md  # 影響範囲分析結果（Step 9）
-    ├── build-executor.md   # ビルド結果（Step 17）
-    ├── test-runner.md      # テスト・Lint結果（Step 18）
-    ├── code-reviewer.md    # コードレビュー結果（Step 19）
-    ├── security-checker.md # セキュリティチェック結果（Step 20）
-    └── review-docs.md      # ドキュメント整合性結果（Step 21）
+    ├── file-finder.md      # コードベース調査結果（Step 8）
+    └── impact-analyzer.md  # 影響範囲分析結果（Step 10）
 ```
 
 命名例: `docs/steering/20260113-bookmark-feature/`
@@ -35,14 +50,13 @@ CLAUDE.md の「実装ワークフロー」セクションに記載の例外条�
 
 ---
 
-## 再開時の処理
+## 開始前の準備
 
-コマンド実行時、`docs/steering/` 内に進行中のディレクトリがあるか確認する。
+main ブランチが最新であることを確認:
 
-- `archive/` は除外、`progress.md` のステータスが「完了」以外を「進行中」と判定
-- 進行中がある場合: ユーザーに再開 or 新規開始を確認
-- 進行中がない場合: Phase 1 Step 1 から開始
-- 次のステップは `progress.md` の最初の `- [ ]` 項目で判定
+```bash
+git checkout main && git pull origin main
+```
 
 ---
 
@@ -189,29 +203,31 @@ D. まだわからない
    - `progress.md`（テンプレート: `.claude/skills/add-feature/templates/progress-template.md`）
    - `requirements.md`（テンプレート: `.claude/skills/add-feature/templates/requirements-template.md`）
 4. 対話で得た内容を `requirements.md` に反映
-5. `progress.md` の Phase 1 チェックを更新
-6. ステータスを `要件確定` に変更
 
-#### 🚀 ブランチ準備（大規模機能の場合）
+### Step 7: requirements.md のレビュー
 
-200行超の変更が見込まれる場合、リリースブランチを作成:
+`requirements.md` の内容をユーザーに提示してレビューを依頼:
 
-```bash
-git checkout main && git pull origin main
-git checkout -b release/{機能名}
-git push -u origin release/{機能名}
-git checkout -b feature/{機能名}/design
 ```
+要件定義ドキュメントを作成しました。
+
+📄 **ファイル**: `docs/steering/{YYYYMMDD}-{feature-name}/requirements.md`
+
+内容を確認してください。修正が必要な場合はお知らせください。
+問題なければ「承認」と入力してください。
+```
+
+ユーザーが「承認」と回答したら、技術設計に進む。
 
 ---
 
 ## Phase 2: 技術設計
 
-### Step 7: コードベース調査（file-finder エージェント）
+### Step 8: コードベース調査（file-finder エージェント）
 
 ```
 技術設計に入る前に、関連する既存コードを調査します。
-🔍 **file-finder エージェントを実行します（独立コンテキスト）**
+**file-finder エージェントを実行します（独立コンテキスト）**
 ```
 
 → file-finder エージェントへの入力:
@@ -222,7 +238,7 @@ git checkout -b feature/{機能名}/design
 
 調査結果を `reports/file-finder.md` に保存し、設計の検討に進む。
 
-### Step 8: 技術設計の検討
+### Step 9: 技術設計の検討
 
 ```
 技術設計を検討しましょう。以下の観点で考えていきます:
@@ -242,11 +258,11 @@ git checkout -b feature/{機能名}/design
 
 決定後、`design.md` を作成（テンプレート: `.claude/skills/add-feature/templates/design-template.md`）
 
-### Step 9: 影響範囲分析（impact-analyzer エージェント）
+### Step 10: 影響範囲分析（impact-analyzer エージェント）
 
 ```
 設計内容をもとに、既存コードへの影響を分析します。
-🔍 **impact-analyzer エージェントを実行します（独立コンテキスト）**
+**impact-analyzer エージェントを実行します（独立コンテキスト）**
 ```
 
 → impact-analyzer エージェントへの入力:
@@ -257,7 +273,7 @@ git checkout -b feature/{機能名}/design
 
 分析結果を `reports/impact-analyzer.md` に保存し、`design.md` の「7. 影響範囲」「8. リスクと代替案」セクションにも反映。
 
-### Step 10: テストケース設計
+### Step 11: テストケース設計
 
 ```
 技術設計に基づいて、テストケースを設計しましょう。
@@ -279,11 +295,26 @@ git checkout -b feature/{機能名}/design
 
 決定後、`design.md` の「6. テスト戦略」セクションを詳細に記入。
 
+### Step 12: design.md のレビュー
+
+`design.md` の内容をユーザーに提示してレビューを依頼:
+
+```
+技術設計ドキュメントを作成しました。
+
+📄 **ファイル**: `docs/steering/{YYYYMMDD}-{feature-name}/design.md`
+
+内容を確認してください。修正が必要な場合はお知らせください。
+問題なければ「承認」と入力してください。
+```
+
+ユーザーが「承認」と回答したら、実装計画に進む。
+
 ---
 
 ## Phase 3: 実装計画
 
-### Step 11: 実装計画の策定
+### Step 13: 実装計画の策定
 
 ```
 実装計画を策定しましょう。
@@ -303,12 +334,12 @@ D. **複合ページ**: 複数機能を持つページ追加
 - C → `.claude/skills/add-feature/templates/tasklist-fullstack.md`
 - D → `.claude/skills/add-feature/templates/tasklist-complex.md`
 
-### Step 12: 最終確認と実装開始
+### Step 14: 最終確認と実装開始案内
 
 すべてのファイルが揃ったら:
 
 ```
-ステアリングファイルが完成しました！
+設計ドキュメントが完成しました！
 
 📁 **ステアリングディレクトリ**: `docs/steering/{YYYYMMDD}-{feature-name}/`
 
@@ -326,233 +357,34 @@ D. **複合ページ**: 複数機能を持つページ追加
 - **変更ファイル数**: {概算}
 - **影響範囲**: {低/中/高}
 
-### 推奨エージェントフロー
-file-finder → impact-analyzer → [実装] → test-runner → code-reviewer
-
 ---
 
-実装を開始しますか？
 ```
 
-#### 📝 設計PR作成（大規模機能の場合）
+### Step 15: ブランチ作成とコミット
 
-設計ドキュメントが完成したら、設計PRを作成:
+設計ドキュメントをバージョン管理に登録:
 
-```bash
-git add docs/steering/{YYYYMMDD}-{機能名}/
-git commit -m "docs({機能名}): add design documents"
-git push -u origin feature/{機能名}/design
+1. フィーチャーブランチを作成:
+   ```bash
+   git checkout -b feature/{YYYYMMDD}-{feature-name}
+   ```
 
-gh pr create \
-  --base release/{機能名} \
-  --title "📝 [{機能名}] 設計ドキュメント" \
-  --body "$(cat <<'EOF'
-## 概要
-{機能名}の設計ドキュメントを追加
+2. ステアリングディレクトリをコミット:
+   ```bash
+   git add docs/steering/{YYYYMMDD}-{feature-name}/
+   git commit -m "docs: add steering documents for {feature-name}"
+   ```
 
-## 変更種別
-- [x] 📝 設計ドキュメント
+3. 完了メッセージを表示:
+   ```
+   ✅ 設計フェーズが完了しました！
 
-## 含まれるファイル
-- requirements.md（要件定義）
-- design.md（技術設計）
-- tasklist.md（実装計画）
+   📁 **ブランチ**: `feature/{YYYYMMDD}-{feature-name}`
+   📄 **コミット済み**: ステアリングドキュメント一式
 
-## レビュー観点
-- [ ] 要件の妥当性
-- [ ] 技術設計の実現可能性
-- [ ] タスク分解の粒度
-EOF
-)"
-```
-
----
-
-## Phase 4: TDD実装・検証
-
-### Step 13: TDDサイクル - Red Phase（テスト作成）
-
-```
-🔴 **Red Phase**: まずテストを書きます。
-
-tasklist.md の最初の実装タスクに対応するテストファイルを作成します。
-テストは失敗する状態（Red）で開始します。
-
-**テストファイル作成手順**:
-1. design.md の「6. テスト戦略」に記載したテストケースを確認
-2. 対象ファイルと同階層にテストファイルを作成
-   - コンポーネント: `ComponentName.test.tsx`
-   - フック: `useHookName.test.ts`
-   - APIルート: `route.test.ts`
-3. テストケースを実装
-4. `npm run test:watch` でテスト失敗を確認
-```
-
-### Step 14: TDDサイクル - Green Phase（最小実装）
-
-```
-🟢 **Green Phase**: テストを通す最小限のコードを実装します。
-
-design.md に従いつつ、まずはテストを通すことを優先してください。
-完璧な実装でなくてOKです。
-```
-
-### Step 15: TDDサイクル - Refactor Phase（リファクタリング）
-
-```
-🔵 **Refactor Phase**: コードを改善します。
-
-テストがパスした状態を維持しながら:
-- 重複の除去
-- 命名の改善
-- パフォーマンス最適化
-
-を行います。リファクタリング後もテストがパスすることを確認してください。
-```
-
-### Step 16: TDDサイクル繰り返し
-
-`tasklist.md` の残りのタスクに対して、Step 13-15 を繰り返す。
-各タスク完了時に `progress.md` のチェックを更新。
-
-**TDDサイクルの凡例**:
-- 🔴 Red: テスト作成（失敗するテスト）
-- 🟢 Green: 最小実装（テストをパス）
-- 🔵 Refactor: コード改善（テスト維持）
-
-#### 🔧 バックエンドPR作成（大規模機能の場合）
-
-バックエンド実装が完了したら、バックエンドPRを作成:
-
-```bash
-git checkout release/{機能名}
-git pull origin release/{機能名}
-git checkout -b feature/{機能名}/backend
-
-# 実装をコミット
-git add src/app/api/ src/types/ prisma/ __tests__/api/
-git commit -m "feat({機能名}): implement backend API"
-git push -u origin feature/{機能名}/backend
-
-gh pr create \
-  --base release/{機能名} \
-  --title "🔧 [{機能名}] バックエンド実装" \
-  --body "$(cat <<'EOF'
-## 概要
-{機能名}のバックエンド実装
-
-## 変更種別
-- [x] 🔧 バックエンド（API/DB）
-
-## 含まれるファイル
-- APIルート
-- 型定義・Zodスキーマ
-- DBスキーマ（該当する場合）
-- APIテスト
-
-## レビュー観点
-- [ ] 認証・認可の適切性
-- [ ] バリデーションの網羅性
-- [ ] エラーハンドリング
-- [ ] セキュリティ（OWASP Top 10）
-EOF
-)"
-```
-
-#### 🎨 フロントエンドPR作成（大規模機能の場合）
-
-フロントエンド実装が完了したら、フロントエンドPRを作成:
-
-```bash
-git checkout release/{機能名}
-git pull origin release/{機能名}
-git checkout -b feature/{機能名}/frontend
-
-# 実装をコミット
-git add src/hooks/ src/components/ __tests__/components/
-git commit -m "feat({機能名}): implement frontend UI"
-git push -u origin feature/{機能名}/frontend
-
-gh pr create \
-  --base release/{機能名} \
-  --title "🎨 [{機能名}] フロントエンド実装" \
-  --body "$(cat <<'EOF'
-## 概要
-{機能名}のフロントエンド実装
-
-## 変更種別
-- [x] 🎨 フロントエンド（UI/フック）
-
-## 含まれるファイル
-- カスタムフック
-- UIコンポーネント
-- コンポーネントテスト
-
-## レビュー観点
-- [ ] パフォーマンス（不要な再レンダリング）
-- [ ] アクセシビリティ
-- [ ] レスポンシブ対応
-- [ ] エラー状態の表示
-EOF
-)"
-```
-
-### Step 17-21: 検証
-
-以下のエージェントを順次実行し、問題があれば修正。各エージェントの結果は `reports/` ディレクトリに保存:
-
-| Step | エージェント | 確認内容 | レポート保存先 |
-|------|-------------|----------|---------------|
-| 17 | build-executor | ビルドエラー（`npm run build:local`） | `reports/build-executor.md` |
-| 18 | test-runner | テスト・Lint（`npm run test && npm run lint`） | `reports/test-runner.md` |
-| 19 | code-reviewer | コード品質（認証、バリデーション、型安全性） | `reports/code-reviewer.md` |
-| 20 | security-checker | セキュリティ（認証・認可、インジェクション） | `reports/security-checker.md` |
-| 21 | review-docs | ドキュメント整合性 | `reports/review-docs.md` |
-
-**各エージェント呼び出し時の共通パラメータ**:
-- レポート保存先: `docs/steering/{YYYYMMDD}-{feature-name}/reports/{agent-name}.md`
-
-#### 🚀 リリースPR作成
-
-すべての検証が完了したら、リリースPRを作成:
-
-```bash
-git checkout release/{機能名}
-git pull origin release/{機能名}
-
-# progress.md を完了状態に更新
-git add docs/steering/{YYYYMMDD}-{機能名}/progress.md
-git commit -m "docs({機能名}): mark as completed"
-git push origin release/{機能名}
-
-gh pr create \
-  --base main \
-  --title "🚀 [{機能名}] リリース" \
-  --body "$(cat <<'EOF'
-## 概要
-{機能名}の全実装をmainにマージ
-
-## 変更種別
-- [x] 🔗 統合・検証
-
-## 含まれるPR
-- #XXX 設計ドキュメント
-- #XXX バックエンド実装
-- #XXX フロントエンド実装
-
-## 検証状況
-- [x] ビルド通過
-- [x] テスト通過
-- [x] セキュリティチェック通過
-- [x] ドキュメント整合性確認
-
-## 設計ドキュメント
-- `docs/steering/{YYYYMMDD}-{機能名}/`
-EOF
-)"
-```
-
-**小規模変更時（〜200行）**: PR分割不要。直接 `main` へPRを作成。
+   実装を開始する場合は `/implement-feature` を実行してください。
+   ```
 
 ---
 
@@ -560,32 +392,18 @@ EOF
 
 | ファイル | 初期値 | 主な遷移 |
 |----------|--------|----------|
-| progress.md | Phase 1 | Phase 1 → 2（Step 7）→ 3（Step 11）→ 4（Step 13）→ 完了（Step 21） |
-| requirements.md | 作成中 | → 要件確定（Step 6） |
-| design.md | 設計中 | → 設計確定（Step 10） |
-| tasklist.md | 計画中 | → 実装中（Step 13）→ 完了（Step 21） |
-
----
-
-## ブランチ戦略について
-
-PR分割フローの詳細は [docs/branching-strategy.md](/docs/branching-strategy.md) を参照。
+| progress.md | Phase 1 | Phase 1 → 2（Step 7承認後）→ 3（Step 12承認後）→ 完了（Step 15） |
+| requirements.md | 作成中 | → 要件確定（Step 7承認後） |
+| design.md | 設計中 | → 設計確定（Step 12承認後） |
+| tasklist.md | 計画中 | → 計画確定（Step 15） |
 
 ---
 
 ## 注意事項
 
-- ディレクトリは Step 2 で即座に作成し、以降のファイルは随時追加・更新する
+- ディレクトリは Step 6 で即座に作成し、以降のファイルは随時追加・更新する
 - 各ステップでユーザーの回答を待ってから次に進む
 - 既存のコードパターンに従った設計を提案する
 - 技術的な判断が必要な場合は、CLAUDE.md を参照する
 - 対話が中断されても、途中まで入力した内容はファイルに保存されている
-- 完了後、`mv docs/steering/{dir} docs/steering/archive/` でアーカイブ
-
----
-
-## エラーハンドリング
-
-- **ビルド/テスト失敗**: エラーを修正して再実行。3回失敗でユーザーに相談
-- **レビューで Critical**: 即座に修正し Step 17 から再検証
-- **レビューで Warning**: ユーザーに修正要否を確認
+- 設計完了後、実装は `/implement-feature` で行う
