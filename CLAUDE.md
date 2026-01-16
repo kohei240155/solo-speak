@@ -58,16 +58,24 @@ npm run lint                     # ESLint実行
 
 機能追加・バグ修正・既存機能修正を依頼された場合は、対応するコマンドを使用すること。
 
-| 指示のタイプ | コマンド          | 詳細                                               |
-| ------------ | ----------------- | -------------------------------------------------- |
-| 新機能追加   | `/add-feature`    | [SKILL.md](.claude/skills/add-feature/SKILL.md)    |
-| バグ修正     | `/fix-bug`        | [SKILL.md](.claude/skills/fix-bug/SKILL.md)        |
-| 既存機能修正 | `/modify-feature` | [SKILL.md](.claude/skills/modify-feature/SKILL.md) |
+| 指示のタイプ | コマンド              | 詳細                                                       |
+| ------------ | --------------------- | ---------------------------------------------------------- |
+| 新機能追加   | `/add-feature`        | [SKILL.md](.claude/skills/add-feature/SKILL.md)            |
+| 設計済み実装 | `/implement-feature`  | [SKILL.md](.claude/skills/implement-feature/SKILL.md)      |
+| 実装検証     | `/verify-feature`     | [SKILL.md](.claude/skills/verify-feature/SKILL.md)         |
+| PR作成       | `/create-pr`          | [SKILL.md](.claude/skills/create-pr/SKILL.md)              |
+| バグ修正     | `/fix-bug`            | [SKILL.md](.claude/skills/fix-bug/SKILL.md)                |
+| 既存機能修正 | `/modify-feature`     | [SKILL.md](.claude/skills/modify-feature/SKILL.md)         |
+
+**新機能追加のワークフロー**:
+```
+/add-feature → /implement-feature → /verify-feature → 修正 → /verify-feature → /create-pr
+```
 
 **例外**: ユーザーが「設計不要」と明示、または1ファイル以内の小規模変更はスキップ可。
 スキップ時は「設計ドキュメントなしで実装を進めてよいですか？」と確認すること。
 
-**進捗管理**: `/add-feature`、`/fix-bug`、`/modify-feature` で実装中は、`docs/steering/{機能名}/progress.md` のチェックリストを都度更新すること。タスク完了時にチェックを入れ、進捗状況を常に最新に保つ。
+**進捗管理**: すべてのスキルで TodoWrite を使用してタスク管理を行う。
 
 ## 詳細ドキュメント
 
