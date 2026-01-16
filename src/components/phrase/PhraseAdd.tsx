@@ -1,4 +1,4 @@
-import { PhraseVariation, RandomPhraseVariation } from "@/types/phrase";
+import { PhraseVariation } from "@/types/phrase";
 import { SituationResponse } from "@/types/situation";
 import dynamic from "next/dynamic";
 import { BsPlusSquare } from "react-icons/bs";
@@ -49,7 +49,7 @@ interface PhraseAddProps {
 	deleteSituation: (id: string) => Promise<void>;
 	// Random Mode props
 	isRandomMode: boolean;
-	randomGeneratedVariations: RandomPhraseVariation[];
+	randomGeneratedVariations: PhraseVariation[];
 	isRandomSaving: boolean;
 	onToggleRandomMode: (enabled: boolean) => void;
 	onRandomGenerate: () => void;

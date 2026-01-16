@@ -7,7 +7,6 @@ import {
 	CreatePhraseResponseData,
 	GeneratePhraseRequestBody,
 	CreatePhraseRequestBody,
-	RandomPhraseVariation,
 	RandomGeneratePhraseRequestBody,
 } from "@/types/phrase";
 import {
@@ -75,7 +74,7 @@ export const usePhraseManager = () => {
 	// ランダム生成モード用state
 	const [isRandomMode, setIsRandomMode] = useState(false);
 	const [randomGeneratedVariations, setRandomGeneratedVariations] = useState<
-		RandomPhraseVariation[]
+		PhraseVariation[]
 	>([]);
 	const [isRandomSaving, setIsRandomSaving] = useState(false);
 
@@ -354,7 +353,7 @@ export const usePhraseManager = () => {
 			};
 
 			const response = await api.post<{
-				variations: RandomPhraseVariation[];
+				variations: PhraseVariation[];
 				error?: string;
 			}>("/api/phrase/random-generate", requestBody);
 

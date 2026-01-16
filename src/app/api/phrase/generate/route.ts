@@ -6,6 +6,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { prisma } from "@/utils/prisma";
 import { getPhraseGenerationPrompt } from "@/prompts/phraseGeneration";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
+import type { PhraseVariation } from "@/types/phrase";
 
 const generatePhraseSchema = z.object({
 	nativeLanguage: z.string().min(1),
@@ -34,12 +35,6 @@ const phraseVariationsSchema = z.object({
 		.length(3)
 		.describe("同じ意味を持つ3つの異なる表現パターン"),
 });
-
-interface PhraseVariation {
-	original: string;
-	translation?: string;
-	explanation?: string;
-}
 
 interface GeneratePhraseResponse {
 	variations: PhraseVariation[];

@@ -10,7 +10,7 @@ import {
 	EXPRESSION_PATTERNS,
 	TOPICS,
 } from "@/constants/expressionPatterns";
-import type { RandomPhraseVariation } from "@/types/phrase";
+import type { PhraseVariation } from "@/types/phrase";
 
 // 定数
 const VARIATION_COUNT = 1;
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
 		);
 
 		// レスポンス形式を変換
-		const variations: RandomPhraseVariation[] = parsedResponse.variations.map(
+		const variations: PhraseVariation[] = parsedResponse.variations.map(
 			(variation) => ({
 				original: variation.original,
 				translation: variation.translation,

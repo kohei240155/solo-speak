@@ -3,8 +3,8 @@ import { ApiSuccessResponse, CommonApiErrorResponse } from "./api";
 
 export interface PhraseVariation {
 	original: string;
-	translation?: string;
-	explanation?: string;
+	translation: string;
+	explanation: string;
 }
 
 // 再エクスポート（後方互換性のため）
@@ -222,9 +222,6 @@ export interface RemainingGenerationsResponse {
 
 // === ランダムフレーズ生成API関連の型定義 ===
 
-// ランダム生成フレーズの型（PhraseVariationの全フィールドを必須化）
-export type RandomPhraseVariation = Required<PhraseVariation>;
-
 // ランダムフレーズ生成リクエストボディの型
 export interface RandomGeneratePhraseRequestBody {
 	nativeLanguage: string;
@@ -234,5 +231,5 @@ export interface RandomGeneratePhraseRequestBody {
 
 // ランダムフレーズ生成レスポンスの型
 export interface RandomGeneratePhraseResponseData {
-	variations: RandomPhraseVariation[];
+	variations: PhraseVariation[];
 }

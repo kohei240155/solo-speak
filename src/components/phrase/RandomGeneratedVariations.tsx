@@ -1,10 +1,10 @@
-import { RandomPhraseVariation } from "@/types/phrase";
+import { PhraseVariation } from "@/types/phrase";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { IoSparkles } from "react-icons/io5";
 import { useState, useEffect } from "react";
 
 interface RandomGeneratedVariationsProps {
-	randomGeneratedVariations: RandomPhraseVariation[];
+	randomGeneratedVariations: PhraseVariation[];
 	isRandomSaving: boolean;
 	error: string;
 	onSave: () => void;
