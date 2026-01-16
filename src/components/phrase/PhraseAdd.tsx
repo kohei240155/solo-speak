@@ -283,7 +283,7 @@ export default function PhraseAdd({
 							<BsPlusSquare size={16} />
 						</button>
 
-						<ScrollableContainer className="flex gap-1.5 overflow-x-auto min-w-0 flex-1 pl-1">
+						<ScrollableContainer className="flex gap-1.5 overflow-x-auto overflow-y-hidden min-w-0 flex-1 pl-1">
 							{situations.map((situation: SituationResponse) => (
 								<button
 									key={situation.id}
