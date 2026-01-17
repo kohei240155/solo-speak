@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "모국어와 기본 학습 언어는 서로 다르게 선택해야 합니다."
 		},
+		"timezone": {
+			"title": "타임존",
+			"description": "설정한 타임존의 자정에 일일 이용 제한이 리셋됩니다.",
+			"selectLabel": "타임존 선택",
+			"detectButton": "자동 감지",
+			"detectedTimezone": "감지된 타임존",
+			"saveButton": "타임존 저장",
+			"saving": "저장 중...",
+			"saveSuccess": "타임존이 저장되었습니다",
+			"saveError": "타임존 저장에 실패했습니다",
+			"invalidTimezone": "유효하지 않은 타임존입니다"
+		},
 		"withdrawal": {
 			"button": "계정 삭제",
 			"title": "계정 삭제 확인",
@@ -95,7 +107,7 @@
 			"title": "문장 생성 안내",
 			"resetTime": {
 				"title": "리셋 시간",
-				"description": "매일 UTC 0시에 리셋됩니다.\n• 일본: 오전 9시\n• 미국 동부: 오후 8시/7시\n• 미국 서부: 오후 5시/4시\n※ 서머타임/표준시 적용"
+				"description": "설정한 타임존의 자정에 리셋됩니다.\n타임존은 설정 화면에서 변경할 수 있습니다."
 			},
 			"dailyLimit": {
 				"title": "1일 이용 제한",

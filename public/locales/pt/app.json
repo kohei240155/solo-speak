@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "O idioma nativo e o idioma de aprendizado padrão devem ser diferentes"
 		},
+		"timezone": {
+			"title": "Fuso Horário",
+			"description": "Seus limites diários são reiniciados à meia-noite no seu fuso horário selecionado.",
+			"selectLabel": "Selecionar Fuso Horário",
+			"detectButton": "Detectar",
+			"detectedTimezone": "Fuso horário detectado",
+			"saveButton": "Salvar Fuso Horário",
+			"saving": "Salvando...",
+			"saveSuccess": "Fuso horário salvo com sucesso",
+			"saveError": "Falha ao salvar o fuso horário",
+			"invalidTimezone": "Fuso horário inválido"
+		},
 		"withdrawal": {
 			"button": "Excluir Conta",
 			"title": "Confirmação de Exclusão da Conta",
@@ -95,7 +107,7 @@
 			"title": "Sobre a Geração de Frases",
 			"resetTime": {
 				"title": "Hora de Reinicialização",
-				"description": "Reinicializado diariamente às 0:00 UTC.\n• Japão: 9:00\n• Costa Leste dos EUA: 20:00/19:00\n• Costa Oeste dos EUA: 17:00/16:00\n※ Horário de verão/inverno"
+				"description": "Reinicia à meia-noite no seu fuso horário.\nVocê pode alterar seu fuso horário nas Configurações."
 			},
 			"dailyLimit": {
 				"title": "Limite de Uso Diário",

@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "母语和默认学习语言必须不同"
 		},
+		"timezone": {
+			"title": "时区",
+			"description": "每日限制在您设置的时区午夜重置。",
+			"selectLabel": "选择时区",
+			"detectButton": "自动检测",
+			"detectedTimezone": "检测到的时区",
+			"saveButton": "保存时区",
+			"saving": "保存中...",
+			"saveSuccess": "时区已成功保存",
+			"saveError": "保存时区失败",
+			"invalidTimezone": "无效的时区"
+		},
 		"withdrawal": {
 			"button": "删除账户",
 			"title": "删除账户确认",
@@ -95,7 +107,7 @@
 			"title": "关于句子生成",
 			"resetTime": {
 				"title": "重置时间",
-				"description": "每天UTC 0:00重置。\n• 日本：9:00\n• 美国东海岸：20:00/19:00\n• 美国西海岸：17:00/16:00\n※ 夏令时/冬令时"
+				"description": "在您设置的时区午夜重置。\n您可以在设置中更改时区。"
 			},
 			"dailyLimit": {
 				"title": "每日使用限制",
