@@ -205,6 +205,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		setHasRedirected(false);
 	}, [user?.id]);
 
+	// タイムゾーンがnullの場合、ブラウザから自動検出して保存
+	useEffect(() => {
+		if (!userSettings || userSettings.timezone !== null) return;
+		if (!session?.access_token) return;
+
+		const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+		fetch("/api/user/settings", {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${session.access_token}`,
+			},
+			body: JSON.stringify({ timezone: browserTimezone }),
+		})
+			.then(() => {
+				refreshUserSettings();
+			})
+			.catch(() => {
+				// タイムゾーン自動設定は補助機能のため、エラー時は次回ログイン時に再試行
+			});
+	}, [userSettings, session?.access_token, refreshUserSettings]);
+
 	const signOut = async () => {
 		try {
 			// ユーザー設定キャッシュをクリア
