@@ -40,6 +40,7 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 				userData.defaultLearningLanguageId || "",
 			);
 			setValue("email", userData.email || "");
+			setValue("timezone", userData.timezone || "UTC");
 		} catch (error) {
 			// 404エラー（初回ユーザー）かApiErrorかをチェック
 			const is404Error =
@@ -81,6 +82,15 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 				}
 				if (user?.email) {
 					setValue("email", user.email);
+				}
+
+				// ブラウザのタイムゾーンを自動検出して設定
+				try {
+					const detectedTimezone =
+						Intl.DateTimeFormat().resolvedOptions().timeZone;
+					setValue("timezone", detectedTimezone || "UTC");
+				} catch {
+					setValue("timezone", "UTC");
 				}
 			} else {
 				// その他のエラーの場合のみエラーメッセージを設定

@@ -57,6 +57,7 @@ export default function UserSettingsPage() {
 			nativeLanguageId: "",
 			defaultLearningLanguageId: "",
 			email: "",
+			timezone: "",
 		},
 	});
 
@@ -117,7 +118,7 @@ export default function UserSettingsPage() {
 
 					{/* User Tab Content */}
 					{/* {activeTab === 'user' && (
-            <UserSettingsForm 
+            <UserSettingsForm
               register={register}
               errors={errors}
               setValue={setValue}
