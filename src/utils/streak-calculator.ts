@@ -3,12 +3,15 @@
  * 前日までの連続日数をベースに、当日のアクティビティを加算して計算する
  */
 
+import { getLocalDateString } from "./timezone";
+
 /**
  * 前日までのStreak日数を計算し、当日のアクティビティがあれば加算する
  * @param dates - アクティビティが記録された日付の配列（YYYY-MM-DD形式）
+ * @param timezone - ユーザーのタイムゾーン（デフォルト: UTC）
  * @returns Streak日数
  */
-export function calculateStreak(dates: string[]): number {
+export function calculateStreak(dates: string[], timezone: string = "UTC"): number {
 	if (dates.length === 0) {
 		return 0;
 	}
@@ -16,20 +19,20 @@ export function calculateStreak(dates: string[]): number {
 	// 重複を除去してソート
 	const uniqueDates = [...new Set(dates)].sort();
 
-	// 今日と昨日の日付を取得
-	const today = new Date();
-	const todayStr = today.toISOString().split("T")[0];
+	// 今日と昨日の日付をユーザーのタイムゾーンで取得
+	const now = new Date();
+	const todayStr = getLocalDateString(now, timezone);
 
-	const yesterday = new Date(today);
+	const yesterday = new Date(now);
 	yesterday.setDate(yesterday.getDate() - 1);
-	const yesterdayStr = yesterday.toISOString().split("T")[0];
+	const yesterdayStr = getLocalDateString(yesterday, timezone);
 
 	// 昨日から遡って連続日数を計算（前日までのStreak）
 	let baseStreak = 0;
 	const checkDate = new Date(yesterdayStr);
 
 	while (true) {
-		const checkDateStr = checkDate.toISOString().split("T")[0];
+		const checkDateStr = getLocalDateString(checkDate, timezone);
 
 		if (uniqueDates.includes(checkDateStr)) {
 			baseStreak++;
@@ -49,13 +52,13 @@ export function calculateStreak(dates: string[]): number {
 }
 
 /**
- * 日付文字列の配列をUTC基準でYYYY-MM-DD形式に変換
+ * 日付文字列の配列をYYYY-MM-DD形式に変換
  * @param dateObjects - Dateオブジェクトの配列
+ * @param timezone - ユーザーのタイムゾーン（デフォルト: UTC）
  * @returns YYYY-MM-DD形式の日付文字列配列
  */
-export function formatDatesToStrings(dateObjects: Date[]): string[] {
+export function formatDatesToStrings(dateObjects: Date[], timezone: string = "UTC"): string[] {
 	return dateObjects.map((date) => {
-		// UTC日付をそのまま使用
-		return new Date(date).toISOString().split("T")[0];
+		return getLocalDateString(new Date(date), timezone);
 	});
 }
