@@ -3,6 +3,7 @@ import { authenticateRequest } from "@/utils/api-helpers";
 import { prisma } from "@/utils/prisma";
 import { ApiErrorResponse } from "@/types/api";
 import { UserDailyResetResponse } from "@/types/user";
+import { canReset } from "@/utils/timezone";
 
 /** * ユーザーの1日ごとの音読練習回数をリセットするAPIエンドポイント
  * @param request - Next.jsのリクエストオブジェクト
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
 			where: { id: userId },
 			select: {
 				lastDailySpeakCountResetDate: true,
+				timezone: true,
 			},
 		});
 
@@ -33,33 +35,14 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json(errorResponse, { status: 404 });
 		}
 
-		// UTC基準での日付比較
-		const now = new Date();
-		const todayUTC = new Date(
-			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-		);
+		const userTimezone = user.timezone || "UTC";
 
 		let shouldReset = false;
 		let resetCount = 0;
 
-		// lastDailySpeakCountResetDateが存在しない、または今日より前の場合のみリセット
-		if (!user.lastDailySpeakCountResetDate) {
-			// 初回の場合は必ずリセット
+		// ユーザーのローカルタイムゾーン基準 + 20時間ルールでリセット判定
+		if (canReset(userTimezone, user.lastDailySpeakCountResetDate)) {
 			shouldReset = true;
-		} else {
-			const lastResetDateUTC = new Date(user.lastDailySpeakCountResetDate);
-			const lastResetDayUTC = new Date(
-				Date.UTC(
-					lastResetDateUTC.getUTCFullYear(),
-					lastResetDateUTC.getUTCMonth(),
-					lastResetDateUTC.getUTCDate(),
-				),
-			);
-
-			// 最後のリセット日が今日より前の場合のみリセット（UTC基準）
-			if (lastResetDayUTC.getTime() < todayUTC.getTime()) {
-				shouldReset = true;
-			}
 		}
 
 		if (shouldReset) {

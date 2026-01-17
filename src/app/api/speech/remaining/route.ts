@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest, createErrorResponse } from "@/utils/api-helpers";
 import { RemainingSpeechCountResponse } from "@/types/speech";
 import { prisma } from "@/utils/prisma";
+import { canReset } from "@/utils/timezone";
 
 /**
  * ユーザーの残りのスピーチ回数を取得
@@ -24,6 +25,7 @@ export async function GET(request: NextRequest) {
 			select: {
 				remainingSpeechCount: true,
 				lastSpeechCountResetDate: true,
+				timezone: true,
 			},
 		});
 
@@ -33,15 +35,11 @@ export async function GET(request: NextRequest) {
 
 		let remainingSpeechCount = user.remainingSpeechCount;
 		const lastResetDate = user.lastSpeechCountResetDate;
+		const userTimezone = user.timezone || "UTC";
 
-		// 日付リセットロジック（UTC基準）
-		const now = new Date();
-		const todayUTC = new Date(
-			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-		);
-
-		if (!lastResetDate) {
-			// 初回の場合は1回に設定
+		// 日付リセットロジック（ユーザーのローカルタイムゾーン基準 + 20時間ルール）
+		if (canReset(userTimezone, lastResetDate)) {
+			// リセット実行
 			remainingSpeechCount = 1;
 			await prisma.user.update({
 				where: { id: userId },
@@ -50,27 +48,6 @@ export async function GET(request: NextRequest) {
 					lastSpeechCountResetDate: new Date(),
 				},
 			});
-		} else {
-			const lastResetDateUTC = new Date(lastResetDate);
-			const lastResetDayUTC = new Date(
-				Date.UTC(
-					lastResetDateUTC.getUTCFullYear(),
-					lastResetDateUTC.getUTCMonth(),
-					lastResetDateUTC.getUTCDate(),
-				),
-			);
-
-			// 最後のリセット日が今日より前の場合のリセット処理（UTC基準）
-			if (lastResetDayUTC.getTime() < todayUTC.getTime()) {
-				remainingSpeechCount = 1;
-				await prisma.user.update({
-					where: { id: userId },
-					data: {
-						remainingSpeechCount: 1,
-						lastSpeechCountResetDate: new Date(),
-					},
-				});
-			}
 		}
 
 		const result: RemainingSpeechCountResponse = {
