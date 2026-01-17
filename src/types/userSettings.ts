@@ -10,6 +10,7 @@ export const userSetupSchema = z.object({
 		.string()
 		.min(1, "Default Learning Language is required"),
 	email: z.string().email("Please enter a valid email address"),
+	timezone: z.string().optional(),
 });
 
 export type UserSetupFormData = z.infer<typeof userSetupSchema>;
@@ -26,6 +27,7 @@ export interface UserSettingsResponse {
 	nativeLanguage?: { id: string; name: string; code: string } | null;
 	defaultLearningLanguage?: { id: string; name: string; code: string } | null;
 	email?: string | null;
+	timezone?: string | null;
 }
 
 // ユーザー設定更新リクエスト型
@@ -35,6 +37,7 @@ export interface UserSettingsUpdateRequest {
 	nativeLanguageId?: string;
 	defaultLearningLanguageId?: string;
 	email?: string;
+	timezone?: string;
 }
 
 // ユーザー設定作成リクエスト型

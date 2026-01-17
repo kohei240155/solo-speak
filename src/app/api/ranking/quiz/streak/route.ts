@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
 				username: true,
 				iconUrl: true,
 				createdAt: true,
+				timezone: true,
 				phrases: {
 					where: {
 						languageId: languageRecord.id,
@@ -83,15 +84,16 @@ export async function GET(request: NextRequest) {
 			},
 		});
 
-		// 各ユーザーのStreak を計算
+		// 各ユーザーのStreak を計算（各ユーザーのタイムゾーンを使用）
 		const streakData = users.map((userData) => {
+			const userTimezone = userData.timezone || "UTC";
 			// 全ての quiz 結果の日付を集める
 			const allQuizDates = userData.phrases.flatMap((phrase) =>
 				phrase.quizResults.map((result) => result.date),
 			);
 
-			const dateStrings = formatDatesToStrings(allQuizDates);
-			const streakDays = calculateStreak(dateStrings);
+			const dateStrings = formatDatesToStrings(allQuizDates, userTimezone);
+			const streakDays = calculateStreak(dateStrings, userTimezone);
 
 			return {
 				userId: userData.id,
@@ -147,8 +149,7 @@ export async function GET(request: NextRequest) {
 			topUsers,
 			currentUser,
 		});
-	} catch (error) {
-		console.error("Quiz streak ranking error:", error);
+	} catch {
 		return NextResponse.json(
 			{
 				success: false,

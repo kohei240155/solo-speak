@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "Muttersprache und Standard-Lernsprache müssen unterschiedlich sein"
 		},
+		"timezone": {
+			"title": "Zeitzone",
+			"description": "Ihre täglichen Limits werden um Mitternacht in Ihrer ausgewählten Zeitzone zurückgesetzt.",
+			"selectLabel": "Zeitzone auswählen",
+			"detectButton": "Erkennen",
+			"detectedTimezone": "Erkannte Zeitzone",
+			"saveButton": "Zeitzone speichern",
+			"saving": "Speichern...",
+			"saveSuccess": "Zeitzone erfolgreich gespeichert",
+			"saveError": "Fehler beim Speichern der Zeitzone",
+			"invalidTimezone": "Ungültige Zeitzone"
+		},
 		"withdrawal": {
 			"button": "Konto löschen",
 			"title": "Bestätigung der Kontolöschung",
@@ -95,7 +107,7 @@
 			"title": "Über Phrasengenerierung",
 			"resetTime": {
 				"title": "Zurücksetzungszeit",
-				"description": "Täglich um 0:00 UTC zurückgesetzt.\n• Japan: 9:00 Uhr\n• US-Ostküste: 20:00/19:00 Uhr\n• US-Westküste: 17:00/16:00 Uhr\n※ Sommer-/Winterzeit"
+				"description": "Wird um Mitternacht in Ihrer Zeitzone zurückgesetzt.\nSie können Ihre Zeitzone in den Einstellungen ändern."
 			},
 			"dailyLimit": {
 				"title": "Tägliches Nutzungslimit",

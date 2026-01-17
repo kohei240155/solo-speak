@@ -22,6 +22,7 @@ model User {
   lastDailySpeakCountResetDate DateTime? @map("last_daily_speak_count_reset_date")
   remainingSpeechCount       Int         @default(0) @map("remaining_speech_count")
   lastSpeechCountResetDate   DateTime?   @map("last_speech_count_reset_date")
+  timezone                   String?
   createdAt                  DateTime    @default(now()) @map("created_at")
   updatedAt                  DateTime    @updatedAt @map("updated_at")
   deletedAt                  DateTime?   @map("deleted_at")

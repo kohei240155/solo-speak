@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest, createErrorResponse } from "@/utils/api-helpers";
 import { prisma } from "@/utils/prisma";
 import { RemainingGenerationsResponse } from "@/types/phrase";
+import { canReset } from "@/utils/timezone";
 
 /** * ユーザーの残りのフレーズ生成回数を取得
  * @param request - Next.jsのリクエストオブジェクト
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
 			select: {
 				remainingPhraseGenerations: true,
 				lastPhraseGenerationDate: true,
+				timezone: true,
 			},
 		});
 
@@ -32,15 +34,11 @@ export async function GET(request: NextRequest) {
 
 		let remainingGenerations = user.remainingPhraseGenerations;
 		const lastGenerationDate = user.lastPhraseGenerationDate;
+		const userTimezone = user.timezone || "UTC";
 
-		// 日付リセットロジック（UTC基準）
-		const now = new Date();
-		const todayUTC = new Date(
-			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-		);
-
-		if (!lastGenerationDate) {
-			// 初回の場合は5回に設定
+		// 日付リセットロジック（ユーザーのローカルタイムゾーン基準 + 20時間ルール）
+		if (canReset(userTimezone, lastGenerationDate)) {
+			// リセット実行
 			remainingGenerations = 5;
 			await prisma.user.update({
 				where: { id: userId },
@@ -49,27 +47,6 @@ export async function GET(request: NextRequest) {
 					lastPhraseGenerationDate: new Date(),
 				},
 			});
-		} else {
-			const lastGenerationDateUTC = new Date(lastGenerationDate);
-			const lastGenerationDayUTC = new Date(
-				Date.UTC(
-					lastGenerationDateUTC.getUTCFullYear(),
-					lastGenerationDateUTC.getUTCMonth(),
-					lastGenerationDateUTC.getUTCDate(),
-				),
-			);
-
-			// 最後の生成日が今日より前の場合のリセット処理（UTC基準）
-			if (lastGenerationDayUTC.getTime() < todayUTC.getTime()) {
-				remainingGenerations = 5;
-				await prisma.user.update({
-					where: { id: userId },
-					data: {
-						remainingPhraseGenerations: 5,
-						lastPhraseGenerationDate: new Date(),
-					},
-				});
-			}
 		}
 
 		const result: RemainingGenerationsResponse = {

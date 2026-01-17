@@ -5,13 +5,80 @@ import {
 	UseFormWatch,
 	UseFormHandleSubmit,
 } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { UserSetupFormData, Language } from "@/types/userSettings";
 import { useUserSettingsSubmit } from "@/hooks/data/useUserSettingsSubmit";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import ImageUpload from "@/components/common/ImageUpload";
 import WithdrawalModal from "@/components/modals/WithdrawalModal";
 import { IoExitOutline } from "react-icons/io5";
+
+/**
+ * よく使われるタイムゾーンのリスト
+ */
+const COMMON_TIMEZONES = [
+	// Asia
+	"Asia/Tokyo",
+	"Asia/Seoul",
+	"Asia/Shanghai",
+	"Asia/Hong_Kong",
+	"Asia/Singapore",
+	"Asia/Bangkok",
+	"Asia/Jakarta",
+	"Asia/Kolkata",
+	"Asia/Dubai",
+	// Pacific
+	"Pacific/Auckland",
+	"Pacific/Fiji",
+	"Pacific/Honolulu",
+	// Australia
+	"Australia/Sydney",
+	"Australia/Melbourne",
+	"Australia/Perth",
+	// Europe
+	"Europe/London",
+	"Europe/Paris",
+	"Europe/Berlin",
+	"Europe/Moscow",
+	// Americas
+	"America/New_York",
+	"America/Chicago",
+	"America/Denver",
+	"America/Los_Angeles",
+	"America/Anchorage",
+	"America/Toronto",
+	"America/Vancouver",
+	"America/Sao_Paulo",
+	"America/Mexico_City",
+	// Africa
+	"Africa/Cairo",
+	"Africa/Johannesburg",
+	// UTC
+	"UTC",
+];
+
+/**
+ * タイムゾーン名を表示用にフォーマット
+ */
+function formatTimezoneDisplay(timezone: string): string {
+	try {
+		const now = new Date();
+		const formatter = new Intl.DateTimeFormat("en-US", {
+			timeZone: timezone,
+			timeZoneName: "longOffset",
+		});
+		const parts = formatter.formatToParts(now);
+		const offsetPart = parts.find((p) => p.type === "timeZoneName");
+		const offset = offsetPart?.value || "";
+
+		// 地域名を読みやすく変換
+		const displayName = timezone.replace(/_/g, " ").replace(/\//g, " / ");
+
+		return `${displayName} (${offset})`;
+	} catch {
+		return timezone;
+	}
+}
 
 interface UserSettingsFormProps {
 	register: UseFormRegister<UserSetupFormData>;
@@ -52,7 +119,41 @@ export default function UserSettingsForm({
 	const watchIconUrl = watch("iconUrl");
 	const watchNativeLanguageId = watch("nativeLanguageId");
 	const watchDefaultLearningLanguageId = watch("defaultLearningLanguageId");
+	const watchTimezone = watch("timezone");
 	const isDisabled = dataLoading || submitting || submittingProp;
+
+	// ブラウザで検出したタイムゾーン
+	const detectedTimezone = useMemo(() => {
+		try {
+			return Intl.DateTimeFormat().resolvedOptions().timeZone;
+		} catch {
+			return "UTC";
+		}
+	}, []);
+
+	// タイムゾーンリストをオフセット順にソート
+	const sortedTimezones = useMemo(() => {
+		const now = new Date();
+
+		return [...COMMON_TIMEZONES].sort((a, b) => {
+			try {
+				const offsetA = new Date(
+					now.toLocaleString("en-US", { timeZone: a })
+				).getTime();
+				const offsetB = new Date(
+					now.toLocaleString("en-US", { timeZone: b })
+				).getTime();
+				return offsetA - offsetB;
+			} catch {
+				return 0;
+			}
+		});
+	}, []);
+
+	// 自動検出ボタンのハンドラー
+	const handleDetectTimezone = () => {
+		setValue("timezone", detectedTimezone);
+	};
 
 	// 実際に使用するsubmitting状態を統一
 	const actualSubmitting = submitting || submittingProp;
@@ -245,6 +346,59 @@ export default function UserSettingsForm({
 					/>
 					{errors.email && (
 						<p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+					)}
+				</div>
+
+				{/* Timezone */}
+				<div>
+					<label
+						htmlFor="timezone"
+						className="block text-gray-700 mb-2 text-base md:text-lg font-bold"
+					>
+						{t("settings.timezone.title")}
+					</label>
+					<p className="text-gray-600 text-sm mb-2">
+						{t("settings.timezone.description")}
+					</p>
+					<div className="flex gap-2">
+						<div className="relative flex-1">
+							<select
+								id="timezone"
+								{...register("timezone")}
+								className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-600" : ""}`}
+								disabled={isDisabled}
+							>
+								{sortedTimezones.map((tz) => (
+									<option key={tz} value={tz}>
+										{formatTimezoneDisplay(tz)}
+									</option>
+								))}
+							</select>
+							<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+								<svg
+									className="fill-current h-4 w-4"
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 20 20"
+								>
+									<path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+								</svg>
+							</div>
+						</div>
+						<button
+							type="button"
+							onClick={handleDetectTimezone}
+							disabled={isDisabled}
+							className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+							title={t("settings.timezone.detectButton")}
+						>
+							{t("settings.timezone.detectButton")}
+						</button>
+					</div>
+					{detectedTimezone !== watchTimezone && (
+						<p className="text-gray-500 text-xs mt-1">
+							{t("settings.timezone.detectedTimezone")}:{" "}
+							{formatTimezoneDisplay(detectedTimezone)}
+						</p>
 					)}
 				</div>
 

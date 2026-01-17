@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "La langue maternelle et la langue d'apprentissage par défaut doivent être différentes"
 		},
+		"timezone": {
+			"title": "Fuseau Horaire",
+			"description": "Vos limites quotidiennes sont réinitialisées à minuit dans votre fuseau horaire sélectionné.",
+			"selectLabel": "Sélectionner le Fuseau Horaire",
+			"detectButton": "Détecter",
+			"detectedTimezone": "Fuseau horaire détecté",
+			"saveButton": "Enregistrer le Fuseau Horaire",
+			"saving": "Enregistrement...",
+			"saveSuccess": "Fuseau horaire enregistré avec succès",
+			"saveError": "Erreur lors de l'enregistrement du fuseau horaire",
+			"invalidTimezone": "Fuseau horaire invalide"
+		},
 		"withdrawal": {
 			"button": "Supprimer le Compte",
 			"title": "Confirmation de Suppression du Compte",
@@ -95,7 +107,7 @@
 			"title": "À Propos de la Génération de Phrases",
 			"resetTime": {
 				"title": "Heure de Réinitialisation",
-				"description": "Réinitialisé quotidiennement à 0h00 UTC.\n• Japon : 9h00\n• Côte Est des États-Unis : 20h00/19h00\n• Côte Ouest des États-Unis : 17h00/16h00\n※ Heure d'été/d'hiver"
+				"description": "Réinitialisé à minuit dans votre fuseau horaire.\nVous pouvez modifier votre fuseau horaire dans les Paramètres."
 			},
 			"dailyLimit": {
 				"title": "Limite d'Utilisation Quotidienne",

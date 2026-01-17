@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
 				username: true,
 				iconUrl: true,
 				createdAt: true,
+				timezone: true,
 				speeches: {
 					where: {
 						learningLanguageId: languageRecord.id,
@@ -79,15 +80,16 @@ export async function GET(request: NextRequest) {
 			},
 		});
 
-		// 各ユーザーのStreak を計算
+		// 各ユーザーのStreak を計算（各ユーザーのタイムゾーンを使用）
 		const streakData = users.map((userData) => {
+			const userTimezone = userData.timezone || "UTC";
 			// 全ての練習日付を集める（重複は削除される）
 			const allPracticeDates = userData.speeches
 				.map((speech) => speech.lastPracticedAt)
 				.filter((date): date is Date => date !== null);
 
-			const dateStrings = formatDatesToStrings(allPracticeDates);
-			const streakDays = calculateStreak(dateStrings);
+			const dateStrings = formatDatesToStrings(allPracticeDates, userTimezone);
+			const streakDays = calculateStreak(dateStrings, userTimezone);
 
 			return {
 				userId: userData.id,
@@ -143,8 +145,7 @@ export async function GET(request: NextRequest) {
 			topUsers,
 			currentUser,
 		});
-	} catch (error) {
-		console.error("Speech streak ranking error:", error);
+	} catch {
 		return NextResponse.json(
 			{
 				success: false,

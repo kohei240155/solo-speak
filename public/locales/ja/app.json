@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "母国語とデフォルト学習言語は異なる言語を選択してください"
 		},
+		"timezone": {
+			"title": "タイムゾーン",
+			"description": "設定したタイムゾーンの午前0時に1日の利用制限がリセットされます。",
+			"selectLabel": "タイムゾーンを選択",
+			"detectButton": "自動検出",
+			"detectedTimezone": "検出されたタイムゾーン",
+			"saveButton": "タイムゾーンを保存",
+			"saving": "保存中...",
+			"saveSuccess": "タイムゾーンを保存しました",
+			"saveError": "タイムゾーンの保存に失敗しました",
+			"invalidTimezone": "無効なタイムゾーンです"
+		},
 		"withdrawal": {
 			"button": "退会する",
 			"title": "アカウント削除の確認",
@@ -96,7 +108,7 @@
 			"title": "フレーズ生成について",
 			"resetTime": {
 				"title": "リセット時間",
-				"description": "毎日UTC 0時にリセットされます。\n• 日本： 午前9時\n• アメリカ東海岸： 午後8時/7時\n• アメリカ西海岸： 午後5時/4時\n※ 夏時間/冬時間"
+				"description": "設定したタイムゾーンの午前0時にリセットされます。\nタイムゾーンは設定画面で変更できます。"
 			},
 			"dailyLimit": {
 				"title": "1日の利用制限",

@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "El idioma nativo y el idioma de aprendizaje predeterminado deben ser diferentes"
 		},
+		"timezone": {
+			"title": "Zona Horaria",
+			"description": "Los límites diarios se reinician a medianoche en su zona horaria seleccionada.",
+			"selectLabel": "Seleccionar Zona Horaria",
+			"detectButton": "Detectar",
+			"detectedTimezone": "Zona horaria detectada",
+			"saveButton": "Guardar Zona Horaria",
+			"saving": "Guardando...",
+			"saveSuccess": "Zona horaria guardada exitosamente",
+			"saveError": "Error al guardar la zona horaria",
+			"invalidTimezone": "Zona horaria inválida"
+		},
 		"withdrawal": {
 			"button": "Eliminar Cuenta",
 			"title": "Confirmación de Eliminación de Cuenta",
@@ -95,7 +107,7 @@
 			"title": "Acerca de la Generación de Frases",
 			"resetTime": {
 				"title": "Hora de Reinicio",
-				"description": "Se reinicia diariamente a las 0:00 UTC.\n• Japón: 9:00 AM\n• Costa Este de EE.UU.: 8:00/7:00 PM\n• Costa Oeste de EE.UU.: 5:00/4:00 PM\n※ Horario de verano/invierno"
+				"description": "Se reinicia a medianoche en su zona horaria.\nPuede cambiar su zona horaria en Configuración."
 			},
 			"dailyLimit": {
 				"title": "Límite de Uso Diario",

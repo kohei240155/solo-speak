@@ -56,6 +56,7 @@ export async function getUserSettings(
 		nativeLanguageId: user.nativeLanguageId,
 		defaultLearningLanguageId: user.defaultLearningLanguageId,
 		email: user.email,
+		timezone: user.timezone,
 		nativeLanguage: user.nativeLanguage
 			? {
 					id: user.nativeLanguage.id,
@@ -95,6 +96,7 @@ export async function createUserSettings(
 				iconUrl: iconUrl,
 				nativeLanguageId: userData.nativeLanguageId,
 				defaultLearningLanguageId: userData.defaultLearningLanguageId,
+				timezone: userData.timezone || "UTC",
 			},
 			include: {
 				nativeLanguage: true,
@@ -121,6 +123,7 @@ export async function createUserSettings(
 			nativeLanguageId: result.nativeLanguageId,
 			defaultLearningLanguageId: result.defaultLearningLanguageId,
 			email: result.email,
+			timezone: result.timezone,
 			nativeLanguage: result.nativeLanguage
 				? {
 						id: result.nativeLanguage.id,
@@ -176,6 +179,7 @@ export async function updateUserSettings(
 			iconUrl: userData.iconUrl,
 			nativeLanguageId: userData.nativeLanguageId,
 			defaultLearningLanguageId: userData.defaultLearningLanguageId,
+			timezone: userData.timezone,
 		},
 		include: {
 			nativeLanguage: true,
@@ -203,6 +207,7 @@ export async function updateUserSettings(
 		nativeLanguageId: result.nativeLanguageId,
 		defaultLearningLanguageId: result.defaultLearningLanguageId,
 		email: result.email,
+		timezone: result.timezone,
 		nativeLanguage: result.nativeLanguage
 			? {
 					id: result.nativeLanguage.id,

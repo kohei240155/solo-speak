@@ -55,6 +55,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 		const user = authResult.user;
 
+		// ユーザー情報を取得してタイムゾーンを取得
+		const userData = await prisma.user.findUnique({
+			where: { id: user.id },
+			select: { timezone: true },
+		});
+		const userTimezone = userData?.timezone || "UTC";
+
 		// 言語コードから言語IDを取得
 		const languageRecord = await prisma.language.findFirst({
 			where: {
@@ -248,21 +255,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			}),
 		);
 
-		// Streak計算
+		// Streak計算（ユーザーのタイムゾーンを使用）
 		const phraseDates = formatDatesToStrings(
 			phrasesForStreak.map((p: { createdAt: Date }) => p.createdAt),
+			userTimezone,
 		);
-		const phraseStreak = calculateStreak(phraseDates);
+		const phraseStreak = calculateStreak(phraseDates, userTimezone);
 
 		const speakDates = formatDatesToStrings(
 			speakLogsForStreak.map((log: { date: Date }) => log.date),
+			userTimezone,
 		);
-		const speakStreak = calculateStreak(speakDates);
+		const speakStreak = calculateStreak(speakDates, userTimezone);
 
 		const quizDates = formatDatesToStrings(
 			quizLogsForStreak.map((log: { date: Date }) => log.date),
+			userTimezone,
 		);
-		const quizStreak = calculateStreak(quizDates);
+		const quizStreak = calculateStreak(quizDates, userTimezone);
 
 		// Speech Review Streak計算
 		const speechReviewDates = formatDatesToStrings(
@@ -271,8 +281,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 					(speech: { lastPracticedAt: Date | null }) => speech.lastPracticedAt,
 				)
 				.filter((date): date is Date => date !== null),
+			userTimezone,
 		);
-		const speechReviewStreak = calculateStreak(speechReviewDates);
+		const speechReviewStreak = calculateStreak(speechReviewDates, userTimezone);
 
 		const responseData: DashboardData = {
 			totalPhraseCount,

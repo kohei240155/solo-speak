@@ -9,6 +9,18 @@
 		"validation": {
 			"sameLanguageError": "Native language and default learning language must be different"
 		},
+		"timezone": {
+			"title": "Timezone",
+			"description": "Your daily limits reset at midnight in your selected timezone.",
+			"selectLabel": "Select Timezone",
+			"detectButton": "Detect",
+			"detectedTimezone": "Detected timezone",
+			"saveButton": "Save Timezone",
+			"saving": "Saving...",
+			"saveSuccess": "Timezone saved successfully",
+			"saveError": "Failed to save timezone",
+			"invalidTimezone": "Invalid timezone"
+		},
 		"withdrawal": {
 			"button": "Delete Account",
 			"title": "Confirm Account Deletion",
@@ -96,7 +108,7 @@
 			"title": "About Phrase Generation",
 			"resetTime": {
 				"title": "Reset Time",
-				"description": "Daily reset at UTC 0:00\n• Japan： 9:00 AM\n• US East Coast： 8:00/7:00 PM\n• US West Coast： 5:00/4:00 PM\n※ DST/Standard Time"
+				"description": "Resets at midnight in your timezone.\nYou can change your timezone in Settings."
 			},
 			"dailyLimit": {
 				"title": "Daily Usage Limit",
