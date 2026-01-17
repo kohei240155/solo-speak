@@ -74,8 +74,8 @@
 			},
 			"q2": {
 				"question": "Quand le nombre de générations de phrases est-il réinitialisé ?",
-				"answer": "Il est réinitialisé à 0h00 UTC (Temps Universel Coordonné).",
-				"answerDetail": "À l'heure du Japon, il est réinitialisé à 9h00 (heure d'hiver) ou 8h00 (heure d'été). À l'heure de Vancouver, il est réinitialisé à 16h00 (heure d'hiver) ou 17h00 (heure d'été)."
+				"answer": "Il est réinitialisé à minuit dans votre fuseau horaire.",
+				"answerDetail": "Après vous être connecté, vous pouvez définir votre fuseau horaire dans la page Paramètres."
 			},
 			"q3": {
 				"question": "Solo Speak est-il gratuit ?",

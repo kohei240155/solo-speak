@@ -74,8 +74,8 @@
 			},
 			"q2": {
 				"question": "Wann wird die Anzahl der Phrasengenerierungen zurückgesetzt?",
-				"answer": "Sie wird um 0:00 UTC (Koordinierte Weltzeit) zurückgesetzt.",
-				"answerDetail": "In der japanischen Zeit wird sie um 9:00 Uhr (Winterzeit) oder 8:00 Uhr (Sommerzeit) zurückgesetzt. In der Vancouverer Zeit wird sie um 16:00 Uhr (Winterzeit) oder 17:00 Uhr (Sommerzeit) zurückgesetzt."
+				"answer": "Sie wird um Mitternacht in Ihrer Zeitzone zurückgesetzt.",
+				"answerDetail": "Nach der Anmeldung können Sie Ihre Zeitzone auf der Einstellungsseite festlegen."
 			},
 			"q3": {
 				"question": "Ist Solo Speak kostenlos nutzbar?",

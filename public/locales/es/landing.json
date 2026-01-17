@@ -74,8 +74,8 @@
 			},
 			"q2": {
 				"question": "¿Cuándo se reinicia el número de generaciones de frases?",
-				"answer": "Se reinicia a las 0:00 UTC (Tiempo Universal Coordinado).",
-				"answerDetail": "En hora de Japón se reinicia a las 9:00 AM (horario de invierno) o 8:00 AM (horario de verano). En hora de Vancouver se reinicia a las 4:00 PM (horario de invierno) o 5:00 PM (horario de verano)."
+				"answer": "Se reinicia a medianoche en su zona horaria.",
+				"answerDetail": "Después de iniciar sesión, puede configurar su zona horaria en la página de Configuración."
 			},
 			"q3": {
 				"question": "¿Es Solo Speak gratuito?",
