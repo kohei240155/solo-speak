@@ -14,6 +14,7 @@ import {
 } from "@/utils/database-helpers";
 import { prisma } from "@/utils/prisma";
 import { ApiErrorResponse } from "@/types/api";
+import { isValidTimezone } from "@/utils/timezone";
 
 // ユーザー設定取得
 export async function GET(request: NextRequest) {
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
 			nativeLanguageId,
 			defaultLearningLanguageId,
 			email,
+			timezone,
 		} = body;
 
 		// 必須フィールドのバリデーション
@@ -73,6 +75,14 @@ export async function POST(request: NextRequest) {
 		if (!requiredValidation.isValid) {
 			const errorResponse: ApiErrorResponse = {
 				error: requiredValidation.error || "Required fields validation failed",
+			};
+			return NextResponse.json(errorResponse, { status: 400 });
+		}
+
+		// タイムゾーンのバリデーション
+		if (timezone && !isValidTimezone(timezone)) {
+			const errorResponse: ApiErrorResponse = {
+				error: "Invalid timezone format",
 			};
 			return NextResponse.json(errorResponse, { status: 400 });
 		}
@@ -97,7 +107,7 @@ export async function POST(request: NextRequest) {
 			if (!nativeLanguage) {
 				return NextResponse.json(
 					{
-						error: `Native language with ID '${nativeLanguageId}' not found. Please select a valid language.`,
+						error: "Invalid native language selection. Please select a valid language.",
 					},
 					{ status: 400 },
 				);
@@ -106,7 +116,7 @@ export async function POST(request: NextRequest) {
 			if (!learningLanguage) {
 				return NextResponse.json(
 					{
-						error: `Learning language with ID '${defaultLearningLanguageId}' not found. Please select a valid language.`,
+						error: "Invalid learning language selection. Please select a valid language.",
 					},
 					{ status: 400 },
 				);
@@ -130,6 +140,7 @@ export async function POST(request: NextRequest) {
 				iconUrl,
 				nativeLanguageId,
 				defaultLearningLanguageId,
+				timezone,
 			});
 		} else {
 			result = await createUserSettings(authResult.user, {
@@ -138,6 +149,7 @@ export async function POST(request: NextRequest) {
 				nativeLanguageId,
 				defaultLearningLanguageId,
 				email,
+				timezone,
 			});
 		}
 
@@ -162,6 +174,7 @@ export async function PUT(request: NextRequest) {
 			nativeLanguageId,
 			defaultLearningLanguageId,
 			email,
+			timezone,
 		} = body;
 
 		// ユーザー名のバリデーション
@@ -186,11 +199,20 @@ export async function PUT(request: NextRequest) {
 			}
 		}
 
+		// タイムゾーンのバリデーション
+		if (timezone && !isValidTimezone(timezone)) {
+			const errorResponse: ApiErrorResponse = {
+				error: "Invalid timezone format",
+			};
+			return NextResponse.json(errorResponse, { status: 400 });
+		}
+
 		const updatedUser = await updateUserSettings(authResult.user.id, {
 			username,
 			iconUrl,
 			nativeLanguageId,
 			defaultLearningLanguageId,
+			timezone,
 		});
 
 		return NextResponse.json(updatedUser);
