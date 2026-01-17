@@ -603,6 +603,7 @@ const userSetupSchema = z.object({
   nativeLanguageId: z.string().min(1, "Native Language is required"),
   defaultLearningLanguageId: z.string().min(1, "Default Learning Language is required"),
   email: z.string().email("Please enter a valid email address"),
+  timezone: z.string().optional(), // IANA形式のタイムゾーン（例: "Asia/Tokyo"）
 });
 
 type UserSetupFormData = z.infer<typeof userSetupSchema>;
@@ -616,6 +617,7 @@ interface UserSettingsResponse {
   nativeLanguage?: { id: string; name: string; code: string } | null;
   defaultLearningLanguage?: { id: string; name: string; code: string } | null;
   email?: string | null;
+  timezone?: string | null; // ユーザーのタイムゾーン（例: "Asia/Tokyo"）
 }
 
 // 更新リクエスト
@@ -625,6 +627,7 @@ interface UserSettingsUpdateRequest {
   nativeLanguageId?: string;
   defaultLearningLanguageId?: string;
   email?: string;
+  timezone?: string; // タイムゾーン更新（IANA形式）
 }
 
 // 作成リクエスト
