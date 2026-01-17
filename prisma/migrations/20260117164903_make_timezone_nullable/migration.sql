@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "users" ALTER COLUMN "timezone" DROP NOT NULL,
+ALTER COLUMN "timezone" DROP DEFAULT;
