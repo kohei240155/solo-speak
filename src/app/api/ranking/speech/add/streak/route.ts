@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
 				username: true,
 				iconUrl: true,
 				createdAt: true,
+				timezone: true,
 				speeches: {
 					where: {
 						learningLanguageId: languageRecord.id,
@@ -73,15 +74,16 @@ export async function GET(request: NextRequest) {
 			},
 		});
 
-		// 各ユーザーのStreak を計算
+		// 各ユーザーのStreak を計算（各ユーザーのタイムゾーンを使用）
 		const streakData = users.map((userData) => {
+			const userTimezone = userData.timezone || "UTC";
 			// 全ての登録日付を集める
 			const allCreationDates = userData.speeches.map(
 				(speech) => speech.createdAt,
 			);
 
-			const dateStrings = formatDatesToStrings(allCreationDates);
-			const streakDays = calculateStreak(dateStrings);
+			const dateStrings = formatDatesToStrings(allCreationDates, userTimezone);
+			const streakDays = calculateStreak(dateStrings, userTimezone);
 
 			return {
 				userId: userData.id,
@@ -137,13 +139,11 @@ export async function GET(request: NextRequest) {
 			topUsers,
 			currentUser,
 		});
-	} catch (error) {
-		console.error("Speech add streak ranking error:", error);
+	} catch {
 		return NextResponse.json(
 			{
 				success: false,
 				error: "Internal server error",
-				details: error instanceof Error ? error.message : "Unknown error",
 			},
 			{ status: 500 },
 		);

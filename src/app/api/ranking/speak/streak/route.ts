@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
 				username: true,
 				iconUrl: true,
 				createdAt: true,
+				timezone: true,
 				phrases: {
 					where: {
 						languageId: languageRecord.id,
@@ -83,15 +84,16 @@ export async function GET(request: NextRequest) {
 			},
 		});
 
-		// 各ユーザーのStreak を計算
+		// 各ユーザーのStreak を計算（各ユーザーのタイムゾーンを使用）
 		const streakData = users.map((userData) => {
+			const userTimezone = userData.timezone || "UTC";
 			// 全ての speak ログの日付を集める
 			const allSpeakDates = userData.phrases.flatMap((phrase) =>
 				phrase.speakLogs.map((log) => log.date),
 			);
 
-			const dateStrings = formatDatesToStrings(allSpeakDates);
-			const streakDays = calculateStreak(dateStrings);
+			const dateStrings = formatDatesToStrings(allSpeakDates, userTimezone);
+			const streakDays = calculateStreak(dateStrings, userTimezone);
 
 			return {
 				userId: userData.id,
@@ -147,8 +149,7 @@ export async function GET(request: NextRequest) {
 			topUsers,
 			currentUser,
 		});
-	} catch (error) {
-		console.error("Speak streak ranking error:", error);
+	} catch {
 		return NextResponse.json(
 			{
 				success: false,
