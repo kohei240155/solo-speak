@@ -1,43 +1,68 @@
-# ビルド実行結果
+# ビルド検証レポート
 
 ## 実行コマンド
-```bash
-npm run build:local
-```
+`npm run build:local`
 
 ## 結果
-**成功**
+✅ 成功
 
-## ビルド詳細
-- **Next.js Version**: 15.3.6
+## 詳細
+
+### ビルド出力要約
+
+```
+Next.js 15.3.6
+- Environments: .env.local, .env.production, .env
+✓ Compiled successfully in 5.0s
+✓ Linting and checking validity of types
+✓ Generating static pages (59/59)
+```
+
+### ビルド統計
+
+- **静的ページ**: 59ページ
+- **動的APIルート**: 50エンドポイント
 - **コンパイル時間**: 5.0秒
-- **静的ページ生成**: 59/59ページ
-- **TypeScriptエラー**: 0件
-- **ESLintエラー**: 0件
+- **型チェック**: エラーなし
+- **ESLint**: エラーなし
 
-## 生成されたルート
-- 合計67ルート（59ページ + 8 APIルート）
-- すべてのページが正常にビルドされました
-- 静的コンテンツのプリレンダリングが完了しました
+### 生成されたルート
 
-## 主要な確認項目
-- ✅ TypeScript型チェック: 正常
-- ✅ ESLintチェック: 正常
-- ✅ 静的ページ生成: 完了（59/59）
-- ✅ APIルート: すべて正常に登録
-- ✅ `.next`ディレクトリ生成: 成功
+すべてのルートが正常に生成されました：
 
-## タイムゾーン対応リセット機能の関連ファイル
-以下の変更ファイルがすべてビルドに含まれました:
-- `src/app/api/user/settings/route.ts`
-- `src/app/api/user/reset-daily-speak-count/route.ts`
-- `src/app/settings/page.tsx`
-- `src/types/userSettings.ts`
-- `src/contexts/AuthContext.tsx`
-- `src/utils/timezone.ts`（新規）
-- `src/components/settings/TimezoneSettings.tsx`（新規）
+- ルートページ（/）: 192 kB First Load JS
+- ダッシュボード: 181 kB First Load JS
+- 設定ページ: 215 kB First Load JS（新タイムゾーン設定を含む）
+- フレーズ関連ページ: 正常
+- スピーチ関連ページ: 正常
+- ランキングページ: 正常
+- API Routes: 全50エンドポイント正常
+
+### Prismaクライアント
+
+```
+✔ Generated Prisma Client (v6.11.1) in 64ms
+```
+
+スキーマ変更（timezone、dailySpeakResetTime追加）が正常に反映されました。
 
 ## 最終結果
-**✅ ビルド成功**
 
-タイムゾーン対応リセット機能の実装に関するTypeScriptエラーは検出されず、ビルドは正常に完了しました。
+✅ **ビルド成功**
+
+タイムゾーン対応リセット機能の実装による変更は、すべてビルドを通過しました。
+
+### 確認された内容
+
+1. TypeScriptコンパイル: エラーなし
+2. ESLintチェック: エラーなし
+3. 型定義の整合性: 問題なし
+4. Prismaスキーマ: 正常に生成
+5. Next.jsルート生成: 全59ページ成功
+6. APIエンドポイント: 全50ルート正常
+
+### 注意事項
+
+- 本番環境へのデプロイ前に `prisma migrate deploy` の実行が必要です
+- タイムゾーン設定UIは `/settings` ページに正常に統合されています
+- API Routes（設定取得/更新、ダッシュボード、リセット、ランキング等）はすべて正常にビルドされました
