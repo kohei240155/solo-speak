@@ -61,6 +61,7 @@ Prismaスキーマに基づいた完全なデータベース構造図です。
 │ lastDailySpeakCountResetDate datetime?           │
 │ remainingSpeechCount        int                  │
 │ lastSpeechCountResetDate    datetime?            │
+│ timezone                    string?              │
 │ createdAt                   datetime             │
 │ updatedAt                   datetime             │
 │ deletedAt                   datetime?            │
