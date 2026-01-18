@@ -84,6 +84,8 @@ export const queryKeys = {
 		["speechReviewRanking", userId, language, period] as const,
 	speechReviewStreakRanking: (userId: string, language: string) =>
 		["speechReviewStreakRanking", userId, language] as const,
+	practiceRanking: (userId: string, language: string, period: string) =>
+		["practiceRanking", userId, language, period] as const,
 };
 
 // ユーザー設定を取得するフック
@@ -980,6 +982,81 @@ export function useSpeechReviewStreakRanking(language?: string) {
 			iconUrl: data.currentUser.iconUrl,
 			totalCount: data.currentUser.streakDays,
 			rank: data.currentUser.rank,
+		};
+	}
+
+	return {
+		rankingData: transformedData,
+		currentUser,
+		isLoading,
+		error,
+		message: undefined,
+		refetch,
+	};
+}
+
+// Practiceランキングを取得するフック
+export function usePracticeRanking(
+	language?: string,
+	period?: "daily" | "weekly" | "total",
+) {
+	const { user } = useAuth();
+
+	const url =
+		language && period
+			? `/api/ranking/practice?language=${language}&period=${period}`
+			: null;
+
+	const { data, error, isLoading, refetch } = useQuery({
+		queryKey:
+			user?.id && language && period
+				? queryKeys.practiceRanking(user.id, language, period)
+				: [],
+		queryFn: async () =>
+			fetcher<{
+				success: boolean;
+				rankings: Array<{
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				}>;
+				userRank: {
+					rank: number;
+					userId: string;
+					username: string;
+					iconUrl: string | null;
+					count: number;
+				} | null;
+			}>(url!),
+		enabled: !!user?.id && !!url,
+		staleTime: 2 * 60 * 1000, // 2分
+	});
+
+	// データを統一形式に変換
+	let transformedData: UnifiedRankingUser[] = [];
+
+	if (data?.success && data.rankings) {
+		transformedData = data.rankings.map((rankUser) => ({
+			userId: rankUser.userId,
+			username: rankUser.username,
+			iconUrl: rankUser.iconUrl,
+			totalCount: rankUser.count,
+			rank: rankUser.rank,
+		}));
+	}
+
+	// currentUserも統一形式に変換
+	let currentUser: UnifiedRankingUser | null = null;
+
+	if (data?.success && data.userRank) {
+		currentUser = {
+			userId: data.userRank.userId,
+			username: data.userRank.username,
+			iconUrl: data.userRank.iconUrl,
+			totalCount: data.userRank.count,
+			rank: data.userRank.rank,
 		};
 	}
 

@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { LANGUAGE_NAMES, type LanguageCode } from "@/constants/languages";
 import { useTranslation } from "./useTranslation";
 
-type RankingType = "phrase" | "speak" | "quiz" | "speech";
+type RankingType = "phrase" | "speak" | "quiz" | "speech" | "practice";
 type TabType = "Daily" | "Weekly" | "Total" | "Streak";
 
 export const useShareStreak = () => {
