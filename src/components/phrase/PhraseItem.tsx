@@ -44,15 +44,18 @@ const PhraseItem = memo(
 			[phrase.createdAt],
 		);
 
+		// Speakモードの場合のみカードクリックで遷移
+		const handleCardClick = phraseMode === "speak" ? () => onSpeak(phrase.id) : undefined;
+
 		return (
 			<div
-				className="pl-4 pr-6 py-4 bg-white shadow-md relative cursor-pointer"
+				className={`pl-4 pr-6 py-4 bg-white shadow-md relative ${phraseMode === "speak" ? "cursor-pointer" : ""}`}
 				style={{
 					borderLeft: `4px solid ${borderColor}`,
 					borderRadius: "5px",
 					minHeight: "120px",
 				}}
-				onClick={() => onSpeak(phrase.id)}
+				onClick={handleCardClick}
 			>
 				<div className="flex justify-between mb-2">
 					<div
