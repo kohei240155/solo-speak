@@ -11,6 +11,10 @@ src/hooks/
 ├── phrase/           # フレーズ関連
 │   ├── usePhraseList.ts    # フレーズリスト管理
 │   └── usePhraseManager.ts # フレーズ生成・保存
+├── practice/         # Practice（発話練習）関連
+│   ├── usePracticeSession.ts  # セッション管理
+│   ├── usePracticeAnswer.ts   # 回答送信
+│   └── useSpeechRecognition.ts # 音声認識
 ├── speech/           # スピーチ関連
 │   ├── useSpeechList.ts    # スピーチリスト管理
 │   └── useSaveSpeech.ts    # スピーチ保存
@@ -583,6 +587,11 @@ import { usePhraseManager } from "@/hooks/phrase/usePhraseManager";
 import { useSpeechList } from "@/hooks/speech/useSpeechList";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
 
+// Practice
+import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
+import { usePracticeAnswer } from "@/hooks/practice/usePracticeAnswer";
+import { useSpeechRecognition } from "@/hooks/practice/useSpeechRecognition";
+
 // UI
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { useTextToSpeech } from "@/hooks/ui/useTextToSpeech";
@@ -733,6 +742,182 @@ resetSession();
 
 ---
 
+## Practice関連 (practice/)
+
+### usePracticeSession
+
+**ファイル**: `src/hooks/practice/usePracticeSession.ts`
+
+Practiceセッション管理フック。フレーズ取得、進捗管理、統計記録機能を提供。
+
+```typescript
+import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
+
+const {
+  // セッション状態
+  sessionState,
+  phrases,
+  currentIndex,
+  currentPhrase,
+  totalCount,
+  isLoading,
+  error,
+
+  // 操作関数
+  startSession,
+  goToNext,
+  handleSkip,
+  handleFinish,
+  resetSession,
+} = usePracticeSession();
+
+// セッション開始
+const success = await startSession({
+  mode: "normal",        // "normal" | "review"
+  languageId: "en",
+  questionCount: 5,      // 0 = 全て
+});
+
+// 次のフレーズへ
+goToNext();
+
+// スキップ
+handleSkip();
+
+// 練習終了
+handleFinish();
+
+// セッションリセット
+resetSession();
+```
+
+**戻り値:**
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| `sessionState` | `PracticeSessionState \| null` | セッション状態 |
+| `phrases` | `PracticePhrase[]` | フレーズ一覧 |
+| `currentIndex` | `number` | 現在のインデックス |
+| `currentPhrase` | `PracticePhrase \| null` | 現在のフレーズ |
+| `totalCount` | `number` | 総フレーズ数 |
+| `isLoading` | `boolean` | ローディング中 |
+| `error` | `string \| null` | エラーメッセージ |
+| `startSession` | `(config) => Promise<boolean>` | セッション開始 |
+| `goToNext` | `() => void` | 次のフレーズへ |
+| `handleSkip` | `() => void` | スキップ |
+| `handleFinish` | `() => void` | 練習終了 |
+| `resetSession` | `() => void` | セッションリセット |
+
+---
+
+### usePracticeAnswer
+
+**ファイル**: `src/hooks/practice/usePracticeAnswer.ts`
+
+Practice回答送信フック。類似度判定、差分計算、結果取得機能を提供。
+
+```typescript
+import { usePracticeAnswer } from "@/hooks/practice/usePracticeAnswer";
+
+const {
+  result,
+  isSubmitting,
+  error,
+  submitAnswer,
+  clearResult,
+} = usePracticeAnswer();
+
+// 回答送信
+const response = await submitAnswer({
+  phraseId: "phrase-123",
+  transcript: "Hello world",
+  mode: "normal",
+});
+
+// response: PostPracticeAnswerResponse
+// {
+//   success: true,
+//   correct: true,
+//   similarity: 0.95,
+//   expectedText: "Hello, world!",
+//   diffResult: [{ type: "equal", value: "Hello" }, ...],
+//   newCorrectCount: 3,
+//   isMastered: false,
+// }
+
+// 結果クリア
+clearResult();
+```
+
+**戻り値:**
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| `result` | `PostPracticeAnswerResponse \| null` | 回答結果 |
+| `isSubmitting` | `boolean` | 送信中 |
+| `error` | `string \| null` | エラーメッセージ |
+| `submitAnswer` | `(req) => Promise<Response>` | 回答送信 |
+| `clearResult` | `() => void` | 結果クリア |
+
+---
+
+### useSpeechRecognition
+
+**ファイル**: `src/hooks/practice/useSpeechRecognition.ts`
+
+音声認識フック。Web Speech APIを使用した音声認識と録音機能を提供。
+
+```typescript
+import { useSpeechRecognition } from "@/hooks/practice/useSpeechRecognition";
+
+const {
+  isRecording,
+  transcript,
+  error,
+  isSupported,
+  startRecording,
+  stopRecording,
+  resetTranscript,
+} = useSpeechRecognition({
+  language: "en-US",  // BCP-47言語コード
+  continuous: true,   // 継続認識
+  interimResults: true, // 中間結果
+});
+
+// 録音開始
+startRecording();
+
+// 録音停止（認識テキストを返す）
+const recognizedText = stopRecording();
+
+// トランスクリプトリセット
+resetTranscript();
+
+// ブラウザサポート確認
+if (!isSupported) {
+  console.log("音声認識はサポートされていません");
+}
+```
+
+**戻り値:**
+
+| プロパティ | 型 | 説明 |
+|-----------|-----|------|
+| `isRecording` | `boolean` | 録音中かどうか |
+| `transcript` | `string` | 認識テキスト |
+| `error` | `string \| null` | エラーメッセージ |
+| `isSupported` | `boolean` | ブラウザサポート |
+| `startRecording` | `() => void` | 録音開始 |
+| `stopRecording` | `() => string` | 録音停止（テキスト返却） |
+| `resetTranscript` | `() => void` | トランスクリプトリセット |
+
+**注意事項:**
+- Web Speech APIはChrome、Safari、Edgeでサポート
+- HTTPSが必要（localhostは例外）
+- マイクへのアクセス許可が必要
+
+---
+
 ## 認証 (contexts/)
 
 ### useAuth
@@ -785,6 +970,7 @@ await signOut();
 | `src/hooks/api/useApi.ts` | APIユーティリティ関数 |
 | `src/hooks/api/useReactQueryApi.ts` | React Queryフック群 |
 | `src/hooks/phrase/` | フレーズ関連フック |
+| `src/hooks/practice/` | Practice（発話練習）関連フック |
 | `src/hooks/speech/` | スピーチ関連フック |
 | `src/hooks/quiz/` | クイズ関連フック |
 | `src/hooks/speak/` | スピーキング関連フック |

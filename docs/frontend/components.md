@@ -10,6 +10,7 @@ src/components/
 ├── modals/         # モーダル
 ├── navigation/     # ナビゲーション
 ├── phrase/         # フレーズ関連
+├── practice/       # Practice（発話練習）
 ├── quiz/           # クイズ
 ├── settings/       # 設定
 ├── speak/          # スピーキング
@@ -567,6 +568,142 @@ interface QuizPracticeProps {
 
 ---
 
+## Practiceコンポーネント (practice/)
+
+### PracticePractice
+
+**ファイル**: `src/components/practice/PracticePractice.tsx`
+
+Practice練習画面。音声認識、録音制御、結果表示機能を提供。
+
+```typescript
+import PracticePractice from "@/components/practice/PracticePractice";
+
+interface PracticePracticeProps {
+  phrase: PracticePhrase;
+  currentIndex: number;
+  totalCount: number;
+  mode: PracticeMode;
+  isRecording: boolean;
+  transcript: string;
+  onStartRecording: () => void;
+  onStopRecording: () => string;
+  onSubmitAnswer: (recognizedText: string) => Promise<void>;
+  onSkip: () => void;
+  onNext: () => void;
+  onFinish: () => void;
+  result: PracticeResultState | null;
+  learningLanguage?: string;
+}
+
+// 使用例
+<PracticePractice
+  phrase={currentPhrase}
+  currentIndex={currentIndex}
+  totalCount={totalCount}
+  mode="normal"
+  isRecording={isRecording}
+  transcript={transcript}
+  onStartRecording={startRecording}
+  onStopRecording={stopRecording}
+  onSubmitAnswer={submitAnswer}
+  onSkip={handleSkip}
+  onNext={handleNext}
+  onFinish={handleFinish}
+  result={practiceResult}
+  learningLanguage="en"
+/>
+```
+
+---
+
+### PracticeResult
+
+**ファイル**: `src/components/practice/PracticeResult.tsx`
+
+Practice結果表示。正解/不正解、一致度、差分ハイライト、音声再生機能。
+
+```typescript
+import PracticeResult from "@/components/practice/PracticeResult";
+
+interface PracticeResultProps {
+  result: PracticeResultState;
+  expectedText: string;
+  learningLanguage?: string;
+  onNext: () => void;
+  onFinish: () => void;
+  isLast: boolean;
+}
+
+// 使用例
+<PracticeResult
+  result={practiceResult}
+  expectedText={phrase.original}
+  learningLanguage="en"
+  onNext={handleNext}
+  onFinish={handleFinish}
+  isLast={currentIndex === totalCount - 1}
+/>
+```
+
+---
+
+### PracticeModeModal
+
+**ファイル**: `src/components/practice/PracticeModeModal.tsx`
+
+Practiceモード選択モーダル。通常モード/復習モード、言語選択、出題数選択。
+
+```typescript
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
+
+interface PracticeModeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onStartPractice: (config: PracticeConfig) => void;
+  languages: LanguageInfo[];
+  defaultLanguageId?: string;
+}
+
+// 使用例
+<PracticeModeModal
+  isOpen={showPracticeModeModal}
+  onClose={() => setShowPracticeModeModal(false)}
+  onStartPractice={(config) => startPracticeSession(config)}
+  languages={languages}
+  defaultLanguageId={defaultLearningLanguageId}
+/>
+```
+
+---
+
+### DiffHighlight
+
+**ファイル**: `src/components/practice/DiffHighlight.tsx`
+
+テキスト差分のハイライト表示。期待されるテキストと認識テキストの差分を色分け表示。
+
+```typescript
+import DiffHighlight from "@/components/practice/DiffHighlight";
+
+interface DiffHighlightProps {
+  diffResult: DiffResult[];
+  className?: string;
+}
+
+// 使用例
+<DiffHighlight
+  diffResult={[
+    { type: "equal", value: "Hello " },
+    { type: "delete", value: "world" },
+    { type: "insert", value: "there" },
+  ]}
+  className="text-lg"
+/>
+```
+
+---
+
 ## スピーキングコンポーネント (speak/)
 
 ### SpeakPractice
@@ -686,12 +823,14 @@ import SubscriptionTab from "@/components/settings/SubscriptionTab";
 
 **ファイル**: `src/components/navigation/PhraseTabNavigation.tsx`
 
-フレーズページのタブナビゲーション（生成、リスト、クイズ、スピーキング）。
+フレーズページのタブナビゲーション（生成、リスト、クイズ、スピーキング、Practice）。
 
 ```typescript
 import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 
+// activeTab: "add" | "list" | "quiz" | "speak" | "practice"
 <PhraseTabNavigation activeTab="list" />
+<PhraseTabNavigation activeTab="practice" />
 ```
 
 ---
@@ -787,6 +926,9 @@ import { MdClose, MdEdit, MdDelete, MdPlayArrow } from "react-icons/md";
 | `useModalManager` | `src/hooks/ui/useModalManager.ts` | モーダル状態管理 |
 | `usePhraseList` | `src/hooks/phrase/usePhraseList.ts` | フレーズ一覧 |
 | `useSpeechList` | `src/hooks/speech/useSpeechList.ts` | スピーチ一覧 |
+| `usePracticeSession` | `src/hooks/practice/usePracticeSession.ts` | Practiceセッション管理 |
+| `usePracticeAnswer` | `src/hooks/practice/usePracticeAnswer.ts` | Practice回答送信 |
+| `useSpeechRecognition` | `src/hooks/practice/useSpeechRecognition.ts` | 音声認識 |
 
 ---
 

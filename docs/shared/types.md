@@ -18,6 +18,7 @@
 | `common.ts` | 言語共通基本型 | 言語選択全般 |
 | `language.ts` | 言語API型 | 言語一覧取得 |
 | `speak.ts` | Speak練習設定型 | 音読練習モード |
+| `practice.ts` | Practice練習設定型 | 発話練習モード |
 | `userSettings.ts` | ユーザー設定型 | 設定画面 |
 | `user.ts` | ユーザー型 | ユーザー操作 |
 
@@ -439,6 +440,144 @@ interface SpeakStreakRankingResponseData { /* ... */ }
 interface QuizStreakRankingResponseData { /* ... */ }
 ```
 
+### practice.ts
+
+Practice（発話練習）機能で使用。音声認識を使ってフレーズを練習し、5回正解でマスター判定。
+
+#### データ型
+
+```typescript
+// 練習モード
+type PracticeMode = "normal" | "review";
+
+// 練習対象フレーズ
+interface PracticePhrase {
+  id: string;
+  original: string;
+  translation: string;
+  practiceCorrectCount: number;
+  createdAt: string;
+}
+
+// 差分情報（ハイライト用）
+interface DiffResult {
+  type: "equal" | "insert" | "delete";
+  value: string;
+}
+
+// Practice設定（モーダルで選択）
+interface PracticeConfig {
+  mode: PracticeMode;
+  languageId: string;
+  questionCount?: number; // 0 = 全て、未指定はデフォルト値
+}
+
+// Practiceセッションの状態
+interface PracticeSessionState {
+  mode: PracticeMode;
+  phrases: PracticePhrase[];
+  currentIndex: number;
+  isRecording: boolean;
+  result: PracticeResultState | null;
+  userAudioBlob: Blob | null;
+}
+
+// 練習結果の状態
+interface PracticeResultState {
+  correct: boolean;
+  similarity: number;
+  transcript: string;
+  diffResult: DiffResult[];
+  newCorrectCount: number;
+  isMastered: boolean;
+}
+```
+
+#### リクエスト型
+
+```typescript
+// GET /api/phrase/practice クエリパラメータ
+interface GetPracticePhrasesQuery {
+  languageId: string;
+  mode: PracticeMode;
+}
+
+// POST /api/phrase/practice/answer リクエスト
+interface PostPracticeAnswerRequest {
+  phraseId: string;
+  transcript: string;
+  mode: PracticeMode;
+}
+
+// GET /api/ranking/practice クエリパラメータ
+interface GetPracticeRankingQuery {
+  languageId: string;
+  type: PracticeRankingType;
+  period: PracticeRankingPeriod;
+}
+
+type PracticeRankingType = "master" | "total";
+type PracticeRankingPeriod = "daily" | "total";
+```
+
+#### レスポンス型
+
+```typescript
+// GET /api/phrase/practice レスポンス
+interface GetPracticePhrasesResponse {
+  success: true;
+  phrases: PracticePhrase[];
+  totalCount: number;
+}
+
+// POST /api/phrase/practice/answer レスポンス
+interface PostPracticeAnswerResponse {
+  success: true;
+  correct: boolean;
+  similarity: number;
+  expectedText: string;
+  diffResult: DiffResult[];
+  newCorrectCount: number;
+  isMastered: boolean;
+}
+
+// ランキングエントリ
+interface PracticeRankingEntry {
+  rank: number;
+  userId: string;
+  username: string;
+  iconUrl: string | null;
+  count: number;
+  createdAt: string;
+}
+
+// GET /api/ranking/practice レスポンス
+interface GetPracticeRankingResponse {
+  success: true;
+  rankings: PracticeRankingEntry[];
+  userRanking: {
+    rank: number;
+    count: number;
+  } | null;
+}
+```
+
+#### 定数
+
+```typescript
+// マスター判定の閾値
+const PRACTICE_MASTERY_COUNT = 5;
+
+// 1セッションあたりのデフォルト出題数
+const PRACTICE_DEFAULT_SESSION_SIZE = 5;
+
+// 出題数の選択肢
+const PRACTICE_SESSION_SIZE_OPTIONS = [5, 10, 15, 0] as const; // 0 = 全て
+
+// 正解判定の一致率閾値
+const PRACTICE_SIMILARITY_THRESHOLD = 0.9;
+```
+
 ### situation.ts
 
 シチュエーション（コンテキスト）選択で使用。
@@ -618,6 +757,10 @@ interface UserSettingsResponse {
   defaultLearningLanguage?: { id: string; name: string; code: string } | null;
   email?: string | null;
   timezone?: string | null; // ユーザーのタイムゾーン（例: "Asia/Tokyo"）
+  // Practice関連
+  phraseMode?: string | null;           // "speak" | "quiz" | "practice"
+  practiceIncludeExisting?: boolean | null;  // 既存フレーズを練習に含めるか
+  practiceStartDate?: string | null;    // Practice開始日（既存フレーズ除外の基準日）
 }
 
 // 更新リクエスト
@@ -628,6 +771,9 @@ interface UserSettingsUpdateRequest {
   defaultLearningLanguageId?: string;
   email?: string;
   timezone?: string; // タイムゾーン更新（IANA形式）
+  // Practice関連
+  phraseMode?: string;           // "speak" | "quiz" | "practice"
+  practiceIncludeExisting?: boolean;  // 既存フレーズを練習に含めるか
 }
 
 // 作成リクエスト
@@ -741,6 +887,18 @@ import {
 
 // === クイズ ===
 import { QuizConfig, QuizSession, QuizModeState } from "@/types/quiz";
+
+// === Practice ===
+import {
+  PracticeMode,
+  PracticePhrase,
+  PracticeConfig,
+  DiffResult,
+  GetPracticePhrasesResponse,
+  PostPracticeAnswerResponse,
+  PRACTICE_MASTERY_COUNT,
+  PRACTICE_SIMILARITY_THRESHOLD
+} from "@/types/practice";
 
 // === ランキング ===
 import { RankingUser, UnifiedRankingUser } from "@/types/ranking";
