@@ -41,6 +41,7 @@ npm run lint                     # ESLint実行
 - APIルートでは必ず `authenticateRequest()` で認証（Stripe Webhookを除く）
 - 複数ステップのDB操作はPrismaトランザクションを使用
 - **コミットメッセージ・PRタイトルは日本語で記述**
+- **ビルド実行**: 毎回の修正ごとにビルドを実行しない。ビルドはユーザーから依頼された場合のみ実行すること
 
 ### 自動実行禁止事項（重要）
 
@@ -59,17 +60,18 @@ npm run lint                     # ESLint実行
 
 機能追加・バグ修正・既存機能修正を依頼された場合は、対応するコマンドを使用すること。
 
-| 指示のタイプ         | コマンド                    | 詳細                                                                     |
-| -------------------- | --------------------------- | ------------------------------------------------------------------------ |
-| 新機能追加           | `/add-feature`              | [SKILL.md](.claude/skills/add-feature/SKILL.md)                          |
-| 設計済み実装         | `/implement-feature`        | [SKILL.md](.claude/skills/implement-feature/SKILL.md)                    |
-| 実装検証             | `/verify-feature`           | [SKILL.md](.claude/skills/verify-feature/SKILL.md)                       |
-| PR作成               | `/create-pr`                | [SKILL.md](.claude/skills/create-pr/SKILL.md)                            |
-| バグ修正             | `/fix-bug`                  | [SKILL.md](.claude/skills/fix-bug/SKILL.md)                              |
-| 既存機能修正         | `/modify-feature`           | [SKILL.md](.claude/skills/modify-feature/SKILL.md)                       |
-| レビューチェックリスト | `/generate-review-checklist` | [SKILL.md](.claude/skills/generate-review-checklist/SKILL.md)            |
+| 指示のタイプ           | コマンド                     | 詳細                                                          |
+| ---------------------- | ---------------------------- | ------------------------------------------------------------- |
+| 新機能追加             | `/add-feature`               | [SKILL.md](.claude/skills/add-feature/SKILL.md)               |
+| 設計済み実装           | `/implement-feature`         | [SKILL.md](.claude/skills/implement-feature/SKILL.md)         |
+| 実装検証               | `/verify-feature`            | [SKILL.md](.claude/skills/verify-feature/SKILL.md)            |
+| PR作成                 | `/create-pr`                 | [SKILL.md](.claude/skills/create-pr/SKILL.md)                 |
+| バグ修正               | `/fix-bug`                   | [SKILL.md](.claude/skills/fix-bug/SKILL.md)                   |
+| 既存機能修正           | `/modify-feature`            | [SKILL.md](.claude/skills/modify-feature/SKILL.md)            |
+| レビューチェックリスト | `/generate-review-checklist` | [SKILL.md](.claude/skills/generate-review-checklist/SKILL.md) |
 
 **新機能追加のワークフロー**:
+
 ```
 /add-feature → /implement-feature → /verify-feature → 修正 → /verify-feature → /create-pr
 ```

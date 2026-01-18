@@ -11,6 +11,7 @@ import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechAdd, { CorrectionResult } from "@/components/speech/SpeechAdd";
 import SpeechResult from "@/components/speech/SpeechResult";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
+import FadeIn from "@/components/common/FadeIn";
 import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
 import { saveSpeech } from "@/hooks/speech/useSaveSpeech";
 import toast, { Toaster } from "react-hot-toast";
@@ -160,7 +161,7 @@ export default function SpeechAddPage() {
 					isShowingResult={showResult}
 				/>
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+				<FadeIn className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					{showResult && correctionResult ? (
 						<SpeechResult
 							title={correctionResult.title}
@@ -188,7 +189,7 @@ export default function SpeechAddPage() {
 							onCorrectionComplete={handleCorrectionComplete}
 						/>
 					)}
-				</div>
+				</FadeIn>
 			</div>
 			{/* Review Mode モーダル */}
 			<ReviewModeModal

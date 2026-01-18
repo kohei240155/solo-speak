@@ -33,6 +33,16 @@
 			"error": "Falha ao excluir a conta. Por favor, tente novamente mais tarde.",
 			"emailNotFound": "Endereço de email registrado não encontrado",
 			"emailMismatch": "O endereço de email inserido não corresponde ao endereço registrado"
+		},
+		"phraseMode": {
+			"title": "Modo de Prática de Frases",
+			"description": "Escolha como você deseja praticar suas frases.",
+			"practiceMode": "Modo Mais Recente (Recomendado)",
+			"speakQuizMode": "Modo Antigo"
+		},
+		"practiceIncludeExisting": {
+			"title": "Incluir frases existentes na prática",
+			"description": "Quando habilitado, as frases registradas antes de selecionar o modo mais recente também serão incluídas na prática."
 		}
 	},
 	"confirm": {
@@ -292,6 +302,30 @@
 			"warningMessage": "Esta ação não pode ser desfeita."
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "Configurações de Prática",
+			"selectLanguage": "Idioma de Aprendizado",
+			"chooseLanguage": "Selecionar idioma",
+			"languageDescription": "Selecione o idioma que deseja praticar.",
+			"selectMode": "Modo",
+			"modeDescription": "O modo normal mostra frases não aprendidas, o modo revisão mostra frases dominadas.",
+			"normalMode": "Normal",
+			"normalModeDesc": "Pratique frases que ainda não foram dominadas",
+			"reviewMode": "Revisão",
+			"reviewModeDesc": "Pratique frases dominadas novamente",
+			"selectQuestionCount": "Quantidade de Perguntas",
+			"questionCountDescription": "Defina o número de frases por sessão.",
+			"questionCount": "{{count}} perguntas",
+			"allQuestions": "Todas",
+			"start": "Iniciar Prática"
+		},
+		"messages": {
+			"noPhrasesAvailable": "Não há frases disponíveis para prática. Por favor, adicione algumas frases primeiro.",
+			"languageNotFound": "Idioma selecionado não encontrado.",
+			"startError": "Falha ao iniciar a prática. Por favor, tente novamente."
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "O título deve ter no máximo 50 caracteres",
@@ -367,6 +401,36 @@
 			"B": "Pode falar fluentemente olhando partes do roteiro",
 			"C": "Pode falar fluentemente olhando para o roteiro",
 			"D": "Ainda não revisado"
+		},
+		"practice": {
+			"speechUnavailable": "Reconhecimento de voz não disponível",
+			"useChromeOrEdge": "Por favor, use Chrome ou Edge para a melhor experiência.",
+			"progress": "{{current}} de {{total}}",
+			"correctCount": "{{count}}/{{total}} corretas",
+			"toMaster": "Mais {{remaining}} para aprender",
+			"correctCountLabel": "Respostas corretas: {{count}}",
+			"translatePrompt": "Traduza para o idioma de aprendizado",
+			"processing": "Processando...",
+			"checkingAnswer": "Verificando sua resposta...",
+			"listening": "Toque para terminar",
+			"tapToSpeak": "Toque para falar no idioma de aprendizado",
+			"finishSession": "Finalizar sessão",
+			"skipPhrase": "Pular esta frase",
+			"noSpeechDetected": "Nenhuma voz detectada. Toque no microfone e tente novamente.",
+			"mastered": "Dominado!",
+			"correct": "Correto!",
+			"passed": "Aprovado!",
+			"phraseMastered": "Frase dominada ({{count}}/{{total}})",
+			"almostThere": "Quase lá!",
+			"keepGoing": "Continue assim!",
+			"letsPractice": "Vamos praticar!",
+			"keepPracticing": "Continue praticando!",
+			"passRequirement": "É necessária uma taxa de correspondência de 90% para passar",
+			"hearCorrect": "Ouvir correta",
+			"myRecording": "Minha gravação",
+			"continue": "Continuar",
+			"correctAnswer": "RESPOSTA CORRETA",
+			"youSaid": "VOCÊ DISSE"
 		}
 	}
 }

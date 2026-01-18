@@ -3,6 +3,7 @@ import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { useState, useEffect } from "react";
 import { IoSparkles, IoBulbOutline } from "react-icons/io5";
+import PracticeButton, { BounceDots } from "@/components/common/PracticeButton";
 
 interface GeneratedVariationsProps {
 	generatedVariations: PhraseVariation[];
@@ -134,35 +135,24 @@ export default function GeneratedVariations({
 
 					{/* Selectボタン */}
 					<div className="mt-4">
-						<button
+						<PracticeButton
+							onClick={() => onSelectVariation(variation, index)}
 							disabled={
 								isSaving ||
 								desiredPhrase.length > 100 ||
 								(editingVariations[index] || variation.original).length > 200
 							}
-							className={`w-full py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
-								isSaving && savingVariationIndex === index
-									? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
-									: desiredPhrase.length > 100 ||
-										  (editingVariations[index] || variation.original).length > 200
-										? "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
-										: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
-							}`}
-							onClick={() => onSelectVariation(variation, index)}
-						>
-							{isSaving && savingVariationIndex === index ? (
+							isLoading={isSaving && savingVariationIndex === index}
+							loadingContent={
 								<div className="flex items-center justify-center gap-3">
 									<span>{t("common.saving")}</span>
-									<span className="flex gap-1">
-										<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-										<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-										<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-									</span>
+									<BounceDots />
 								</div>
-							) : (
-								t("phrase.generatedPhrases.select")
-							)}
-						</button>
+							}
+							variant="primary"
+						>
+							{t("phrase.generatedPhrases.select")}
+						</PracticeButton>
 					</div>
 				</div>
 			))}

@@ -1,5 +1,26 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "@/hooks/ui/useTranslation";
+import { IoSparkles, IoPlay } from "react-icons/io5";
+
+// バウンスドットアニメーション（PracticeButtonと同じ）
+function BounceDots() {
+	return (
+		<span className="flex gap-1">
+			<span
+				className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"
+				style={{ animationDelay: "0ms" }}
+			/>
+			<span
+				className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"
+				style={{ animationDelay: "150ms" }}
+			/>
+			<span
+				className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"
+				style={{ animationDelay: "300ms" }}
+			/>
+		</span>
+	);
+}
 
 interface AIDemoProps {
 	visibleSections: Set<string>;
@@ -41,8 +62,7 @@ export default function AIDemo({ visibleSections }: AIDemoProps) {
 		>
 			<div className="lg:w-1/2 space-y-8">
 				<div
-					className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6"
-					style={{ backgroundColor: "#616161" }}
+					className="inline-flex items-center justify-center w-16 h-16 text-white rounded-2xl text-2xl font-bold mb-6 bg-gray-900"
 				>
 					{t("home.solutions.feature1.number")}
 				</div>
@@ -60,26 +80,9 @@ export default function AIDemo({ visibleSections }: AIDemoProps) {
 						{/* 入力フィールド */}
 						<div className="relative">
 							<div className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300">
-								<div className="flex items-center justify-between">
-									<span className="text-gray-900 font-semibold text-lg">
-										{t("home.solutions.feature1.demo.input")}
-									</span>
-									<div className="flex items-center space-x-2">
-										<svg
-											className="w-5 h-5 text-gray-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-											/>
-										</svg>
-									</div>
-								</div>
+								<span className="text-gray-900 font-semibold text-lg">
+									{t("home.solutions.feature1.demo.input")}
+								</span>
 							</div>
 							{/* 下向き矢印 */}
 							<div className="flex justify-center mt-4">
@@ -102,40 +105,18 @@ export default function AIDemo({ visibleSections }: AIDemoProps) {
 						{/* 生成ボタン */}
 						<div className="flex justify-center py-1">
 							<button
-								className={`text-white py-3 w-full rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ${
-									isDemoActive
-										? "animate-pulse cursor-not-allowed opacity-75"
-										: ""
-								}`}
-								style={{
-									backgroundColor: isDemoActive ? "#9ca3af" : "#616161",
-									boxShadow: isDemoActive
-										? "0 0 8px rgba(156, 163, 175, 0.2)"
-										: "0 0 8px rgba(97, 97, 97, 0.2)",
-								}}
-								onMouseEnter={(e) => {
-									if (!isDemoActive) {
-										e.currentTarget.style.backgroundColor = "#525252";
-										e.currentTarget.style.boxShadow =
-											"0 6px 20px rgba(0, 0, 0, 0.1)";
-									}
-								}}
-								onMouseLeave={(e) => {
-									if (!isDemoActive) {
-										e.currentTarget.style.backgroundColor = "#616161";
-										e.currentTarget.style.boxShadow =
-											"0 0 8px rgba(97, 97, 97, 0.2)";
-									}
-								}}
+								className={`text-white h-12 w-full rounded-2xl font-medium transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed bg-gray-900 hover:bg-gray-800 shadow-[0_2px_6px_rgba(0,0,0,0.2)]`}
 								onClick={handleAISuggestClick}
 								disabled={isDemoActive || showTranslation}
 							>
-								<div className="flex items-center justify-center">
-									{isDemoActive && (
-										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-									)}
-									AI Suggest
-								</div>
+								{isDemoActive ? (
+									<div className="flex items-center justify-center gap-3">
+										<span>{t("home.solutions.feature1.demo.generating")}</span>
+										<BounceDots />
+									</div>
+								) : (
+									t("home.solutions.feature1.demo.button")
+								)}
 							</button>
 						</div>
 						{/* 下向き矢印 - 翻訳表示完了時に表示 */}
@@ -161,9 +142,18 @@ export default function AIDemo({ visibleSections }: AIDemoProps) {
 						<div
 							className={`relative transition-all duration-500 ${showTranslation ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-4"}`}
 						>
-							<div className="space-y-3">
+							{/* ヘッダー */}
+							<div className="mb-4">
+								<div className="flex items-center gap-2">
+									<IoSparkles className="w-5 h-5 text-gray-600" />
+									<span className="text-lg font-semibold text-gray-900">
+										{t("home.solutions.feature1.demo.resultsTitle")}
+									</span>
+								</div>
+							</div>
+
+							<div className="space-y-4">
 								{(() => {
-									// 個別のキーで各翻訳を取得
 									const output1 = t("home.solutions.feature1.demo.outputs.0");
 									const output2 = t("home.solutions.feature1.demo.outputs.1");
 									const output3 = t("home.solutions.feature1.demo.outputs.2");
@@ -173,30 +163,23 @@ export default function AIDemo({ visibleSections }: AIDemoProps) {
 									return outputs.map((output: string, index: number) => (
 										<div
 											key={index}
-											className="bg-white border-2 border-gray-300 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all duration-300"
+											className={`rounded-xl p-4 shadow-md transition-all duration-200 cursor-pointer hover:shadow-lg hover:scale-[1.02] ${
+												index === 0
+													? "bg-gray-100 border-2 border-gray-400"
+													: "bg-white border border-gray-100 hover:bg-gray-50"
+											}`}
 										>
-											<div className="flex items-center justify-between">
-												<span className="text-gray-900 font-semibold text-lg">
-													{output}
+											{/* フレーズ番号 */}
+											<div className="mb-2 flex items-center gap-2">
+												<IoPlay className="w-4 h-4 text-gray-600" />
+												<span className="text-base font-bold text-gray-800">
+													Phrase {index + 1}
 												</span>
-												<div className="flex items-center space-x-2">
-													{index === 0 && (
-														<svg
-															className="w-5 h-5 text-green-400"
-															fill="none"
-															stroke="currentColor"
-															viewBox="0 0 24 24"
-														>
-															<path
-																strokeLinecap="round"
-																strokeLinejoin="round"
-																strokeWidth={2}
-																d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-															/>
-														</svg>
-													)}
-												</div>
 											</div>
+											{/* フレーズテキスト */}
+											<p className="font-medium leading-relaxed text-gray-900">
+												{output}
+											</p>
 										</div>
 									));
 								})()}

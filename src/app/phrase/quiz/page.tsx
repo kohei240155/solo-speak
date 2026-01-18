@@ -3,9 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
 import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
+import type { PracticeConfig } from "@/types/practice";
 import QuizPractice from "@/components/quiz/QuizPractice";
 import AllDoneScreen from "@/components/common/AllDoneScreen";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -20,9 +23,13 @@ import { Toaster } from "react-hot-toast";
 
 export default function PhraseQuizPage() {
 	const { loading: authLoading } = useAuthGuard();
+	const { userSettings } = useAuth();
 	const { learningLanguage, languages } = usePhraseSettings();
 	const router = useRouter();
 	const { t } = useTranslation("app");
+
+	// ユーザー設定からphraseModeを取得（デフォルトはpractice）
+	const phraseMode = (userSettings?.phraseMode as "speak" | "quiz" | "practice") || "practice";
 
 	// Phrase Listのキャッシュ無効化用
 	const { refetch: refetchPhraseList } = useInfinitePhrases(learningLanguage);
@@ -86,6 +93,30 @@ export default function PhraseQuizPage() {
 		useSpeakModal();
 
 	const [showQuizModal, setShowQuizModal] = useState(false);
+
+	// Practice Modal
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	// 学習言語IDを取得
+	const learningLanguageId = languages.find(
+		(l) => l.code === learningLanguage
+	)?.id;
+
+	const openPracticeModal = () => setShowPracticeModal(true);
+	const closePracticeModal = () => setShowPracticeModal(false);
+
+	const handlePracticeStart = (config: PracticeConfig) => {
+		// セッショントークンを生成してsessionStorageに保存
+		const sessionToken = crypto.randomUUID();
+		sessionStorage.setItem("practiceSessionToken", sessionToken);
+
+		const params = new URLSearchParams({
+			languageId: config.languageId,
+			mode: config.mode,
+			sessionToken,
+		});
+		router.push(`/phrase/practice?${params.toString()}`);
+	};
 
 	// APIを1回だけコールするためのフラグ
 	const hasStartedQuizRef = useRef(false);
@@ -217,8 +248,10 @@ export default function PhraseQuizPage() {
 					onQuizModalOpen={
 						quizMode.active ? undefined : () => setShowQuizModal(true)
 					}
+					onPracticeModalOpen={openPracticeModal}
 					checkUnsavedChanges={checkUnsavedChanges}
 					onCacheInvalidate={refetchPhraseList}
+					phraseMode={phraseMode}
 				/>
 
 				{/* コンテンツエリア */}
@@ -266,6 +299,15 @@ export default function PhraseQuizPage() {
 				onStart={handleQuizStartWithModal}
 				languages={languages}
 				defaultLearningLanguage={learningLanguage}
+			/>
+
+			{/* Practice Mode モーダル */}
+			<PracticeModeModal
+				isOpen={showPracticeModal}
+				onClose={closePracticeModal}
+				onStart={handlePracticeStart}
+				languages={languages}
+				defaultLanguageId={learningLanguageId}
 			/>
 
 			<Toaster />

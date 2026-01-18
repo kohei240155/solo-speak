@@ -10,27 +10,31 @@ datasource db {
 }
 
 model User {
-  id                         String      @id @default(cuid())
-  username                   String?
-  iconUrl                    String?     @map("icon_url")
-  nativeLanguageId           String?     @map("native_language_id")
-  defaultLearningLanguageId  String?     @map("default_learning_language_id")
-  email                      String      @unique
-  stripeCustomerId           String?     @map("stripe_customer_id")
-  remainingPhraseGenerations Int         @default(0) @map("remaining_phrase_generations")
-  lastPhraseGenerationDate   DateTime?   @map("last_phrase_generation_date")
-  lastDailySpeakCountResetDate DateTime? @map("last_daily_speak_count_reset_date")
-  remainingSpeechCount       Int         @default(0) @map("remaining_speech_count")
-  lastSpeechCountResetDate   DateTime?   @map("last_speech_count_reset_date")
-  timezone                   String?
-  createdAt                  DateTime    @default(now()) @map("created_at")
-  updatedAt                  DateTime    @updatedAt @map("updated_at")
-  deletedAt                  DateTime?   @map("deleted_at")
-  phrases                    Phrase[]
-  situations                 Situation[]
-  defaultLearningLanguage    Language?   @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
-  nativeLanguage             Language?   @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
-  speeches                   Speech[]
+  id                           String        @id @default(cuid())
+  username                     String?
+  iconUrl                      String?       @map("icon_url")
+  nativeLanguageId             String?       @map("native_language_id")
+  defaultLearningLanguageId    String?       @map("default_learning_language_id")
+  email                        String        @unique
+  stripeCustomerId             String?       @map("stripe_customer_id")
+  remainingPhraseGenerations   Int           @default(0) @map("remaining_phrase_generations")
+  lastPhraseGenerationDate     DateTime?     @map("last_phrase_generation_date")
+  lastDailySpeakCountResetDate DateTime?     @map("last_daily_speak_count_reset_date")
+  remainingSpeechCount         Int           @default(0) @map("remaining_speech_count")
+  lastSpeechCountResetDate     DateTime?     @map("last_speech_count_reset_date")
+  timezone                     String?
+  phraseMode                   String        @default("practice") @map("phrase_mode")
+  practiceIncludeExisting      Boolean       @default(true) @map("practice_include_existing")
+  practiceStartDate            DateTime?     @map("practice_start_date")
+  createdAt                    DateTime      @default(now()) @map("created_at")
+  updatedAt                    DateTime      @updatedAt @map("updated_at")
+  deletedAt                    DateTime?     @map("deleted_at")
+  phrases                      Phrase[]
+  situations                   Situation[]
+  defaultLearningLanguage      Language?     @relation("UserLearningLanguage", fields: [defaultLearningLanguageId], references: [id])
+  nativeLanguage               Language?     @relation("UserNativeLanguage", fields: [nativeLanguageId], references: [id])
+  speeches                     Speech[]
+  practiceLogs                 PracticeLog[]
 
   @@map("users")
 }
@@ -65,31 +69,35 @@ model PhraseLevel {
 }
 
 model Phrase {
-  id                 String       @id @default(cuid())
-  userId             String       @map("user_id")
-  languageId         String       @map("language_id")
-  original           String
-  translation        String
-  explanation        String?
-  totalSpeakCount    Int          @default(0) @map("total_speak_count")
-  dailySpeakCount    Int          @default(0) @map("daily_speak_count")
-  lastSpeakDate      DateTime?    @map("last_speak_date")
-  lastQuizDate       DateTime?    @map("last_quiz_date")
-  sessionSpoken      Boolean      @default(false) @map("session_spoken")
-  correctQuizCount   Int          @default(0) @map("correct_quiz_count")
-  incorrectQuizCount Int          @default(0) @map("incorrect_quiz_count")
-  phraseLevelId      String       @map("phrase_level_id")
-  speechId           String?      @map("speech_id")
-  speechOrder        Int?         @map("speech_order")
-  createdAt          DateTime     @default(now()) @map("created_at")
-  updatedAt          DateTime     @updatedAt @map("updated_at")
-  deletedAt          DateTime?    @map("deleted_at")
-  language           Language     @relation(fields: [languageId], references: [id])
-  phraseLevel        PhraseLevel  @relation(fields: [phraseLevelId], references: [id])
-  user               User         @relation(fields: [userId], references: [id])
-  speech             Speech?      @relation("SpeechPhrases", fields: [speechId], references: [id])
-  quizResults        QuizResult[]
-  speakLogs          SpeakLog[]
+  id                     String        @id @default(cuid())
+  userId                 String        @map("user_id")
+  languageId             String        @map("language_id")
+  original               String
+  translation            String
+  explanation            String?
+  totalSpeakCount        Int           @default(0) @map("total_speak_count")
+  dailySpeakCount        Int           @default(0) @map("daily_speak_count")
+  lastSpeakDate          DateTime?     @map("last_speak_date")
+  lastQuizDate           DateTime?     @map("last_quiz_date")
+  sessionSpoken          Boolean       @default(false) @map("session_spoken")
+  correctQuizCount       Int           @default(0) @map("correct_quiz_count")
+  incorrectQuizCount     Int           @default(0) @map("incorrect_quiz_count")
+  practiceCorrectCount   Int           @default(0) @map("practice_correct_count")
+  practiceIncorrectCount Int           @default(0) @map("practice_incorrect_count")
+  lastPracticeDate       DateTime?     @map("last_practice_date")
+  phraseLevelId          String        @map("phrase_level_id")
+  speechId               String?       @map("speech_id")
+  speechOrder            Int?          @map("speech_order")
+  createdAt              DateTime      @default(now()) @map("created_at")
+  updatedAt              DateTime      @updatedAt @map("updated_at")
+  deletedAt              DateTime?     @map("deleted_at")
+  language               Language      @relation(fields: [languageId], references: [id])
+  phraseLevel            PhraseLevel   @relation(fields: [phraseLevelId], references: [id])
+  user                   User          @relation(fields: [userId], references: [id])
+  speech                 Speech?       @relation("SpeechPhrases", fields: [speechId], references: [id])
+  quizResults            QuizResult[]
+  speakLogs              SpeakLog[]
+  practiceLogs           PracticeLog[]
 
   @@index([userId, languageId, createdAt(sort: Desc)], map: "idx_phrases_user_language_created")
   @@index([userId, createdAt(sort: Desc)], map: "idx_phrases_user_created")
@@ -194,4 +202,23 @@ model SpeechStatus {
   speeches    Speech[]
 
   @@map("speech_statuses")
+}
+
+model PracticeLog {
+  id           String   @id @default(cuid())
+  phraseId     String   @map("phrase_id")
+  userId       String   @map("user_id")
+  correct      Boolean
+  similarity   Float
+  transcript   String?
+  practiceDate DateTime @map("practice_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  phrase Phrase @relation(fields: [phraseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phraseId])
+  @@index([userId])
+  @@index([userId, practiceDate])
+  @@map("practice_logs")
 }

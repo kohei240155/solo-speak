@@ -2,6 +2,7 @@ import { PhraseVariation } from "@/types/phrase";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { IoSparkles } from "react-icons/io5";
 import { useState, useEffect } from "react";
+import PracticeButton, { BounceDots } from "@/components/common/PracticeButton";
 
 interface RandomGeneratedVariationsProps {
 	randomGeneratedVariations: PhraseVariation[];
@@ -82,28 +83,20 @@ export default function RandomGeneratedVariations({
 
 			{/* Saveボタン */}
 			<div className="mt-6">
-				<button
-					disabled={isRandomSaving}
-					className={`w-full py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
-						isRandomSaving
-							? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
-							: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
-					}`}
+				<PracticeButton
 					onClick={onSave}
-				>
-					{isRandomSaving ? (
+					disabled={isRandomSaving}
+					isLoading={isRandomSaving}
+					loadingContent={
 						<div className="flex items-center justify-center gap-3">
 							<span>{t("common.saving")}</span>
-							<span className="flex gap-1">
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-							</span>
+							<BounceDots />
 						</div>
-					) : (
-						t("phrase.randomMode.save")
-					)}
-				</button>
+					}
+					variant="primary"
+				>
+					{t("phrase.randomMode.save")}
+				</PracticeButton>
 			</div>
 
 			{/* エラーメッセージ */}

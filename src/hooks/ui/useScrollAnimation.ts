@@ -12,7 +12,6 @@ export const useScrollAnimation = () => {
 				"solutions-section",
 				"feature-1",
 				"feature-2",
-				"feature-3",
 				"faq-section",
 				"cta-section",
 			];

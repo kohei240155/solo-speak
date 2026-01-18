@@ -138,6 +138,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 			createdAt: phrase.createdAt.toISOString(),
 			practiceCount: phrase.totalSpeakCount,
 			correctAnswers: phrase.correctQuizCount,
+			practiceCorrectCount: phrase.practiceCorrectCount,
 			language: {
 				name: phrase.language.name,
 				code: phrase.language.code,
@@ -266,6 +267,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 			createdAt: phrase.createdAt.toISOString(),
 			practiceCount: phrase.totalSpeakCount,
 			correctAnswers: phrase.correctQuizCount,
+			practiceCorrectCount: phrase.practiceCorrectCount,
 			language: {
 				name: phrase.language.name,
 				code: phrase.language.code,

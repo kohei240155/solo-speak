@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
+import type { PracticeConfig } from "@/types/practice";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/utils/api";
@@ -39,6 +41,9 @@ export default function SpeakPage() {
 	const { languages } = useLanguages();
 	const { userSettings } = useAuth(); // AuthContextから直接ユーザー設定を取得
 
+	// ユーザー設定からphraseModeを取得（デフォルトはpractice）
+	const phraseMode = (userSettings?.phraseMode as "speak" | "quiz" | "practice") || "practice";
+
 	// URLパラメータから取得
 	const languageId = params.id as string;
 
@@ -52,6 +57,30 @@ export default function SpeakPage() {
 	// Speak modal functionality
 	const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
 		useSpeakModal();
+
+	// Practice Modal
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	// 学習言語IDを取得
+	const learningLanguageId = languages?.find(
+		(l) => l.code === learningLanguage
+	)?.id;
+
+	const openPracticeModal = () => setShowPracticeModal(true);
+	const closePracticeModal = () => setShowPracticeModal(false);
+
+	const handlePracticeStart = (config: PracticeConfig) => {
+		// セッショントークンを生成してsessionStorageに保存
+		const sessionToken = crypto.randomUUID();
+		sessionStorage.setItem("practiceSessionToken", sessionToken);
+
+		const params = new URLSearchParams({
+			languageId: config.languageId,
+			mode: config.mode,
+			sessionToken,
+		});
+		router.push(`/phrase/practice?${params.toString()}`);
+	};
 
 	useEffect(() => {
 		setLearningLanguage(languageId);
@@ -244,6 +273,8 @@ export default function SpeakPage() {
 					<PhraseTabNavigation
 						activeTab="Speak"
 						onSpeakModalOpen={openSpeakModal}
+						onPracticeModalOpen={openPracticeModal}
+						phraseMode={phraseMode}
 					/>
 
 					{/* ローディング表示エリア */}
@@ -274,6 +305,8 @@ export default function SpeakPage() {
 					<PhraseTabNavigation
 						activeTab="Speak"
 						onSpeakModalOpen={openSpeakModal}
+						onPracticeModalOpen={openPracticeModal}
+						phraseMode={phraseMode}
 					/>
 
 					{/* エラー表示エリア */}
@@ -309,6 +342,8 @@ export default function SpeakPage() {
 				<PhraseTabNavigation
 					activeTab="Speak"
 					onSpeakModalOpen={openSpeakModal}
+					onPracticeModalOpen={openPracticeModal}
+					phraseMode={phraseMode}
 				/>
 
 				{/* コンテンツエリア */}
@@ -425,6 +460,15 @@ export default function SpeakPage() {
 				defaultLearningLanguage={
 					userSettings?.defaultLearningLanguage?.code || learningLanguage
 				}
+			/>
+
+			{/* Practice Mode モーダル */}
+			<PracticeModeModal
+				isOpen={showPracticeModal}
+				onClose={closePracticeModal}
+				onStart={handlePracticeStart}
+				languages={languages || []}
+				defaultLanguageId={learningLanguageId}
 			/>
 
 			{/* Toaster for notifications */}

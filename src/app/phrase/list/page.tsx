@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
 import { usePhraseList } from "@/hooks/phrase/usePhraseList";
 import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { useQuizModal } from "@/hooks/quiz/useQuizModal";
@@ -10,10 +12,15 @@ import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 import PhraseList from "@/components/phrase/PhraseList";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import FadeIn from "@/components/common/FadeIn";
+import type { PracticeConfig } from "@/types/practice";
 
 export default function PhraseListPage() {
 	const { loading: authLoading } = useAuthGuard();
+	const { userSettings } = useAuth();
+	const router = useRouter();
 
 	const {
 		learningLanguage,
@@ -28,12 +35,42 @@ export default function PhraseListPage() {
 		refreshPhrases,
 	} = usePhraseList();
 
+	// ユーザー設定からphraseModeを取得（デフォルトはpractice）
+	const phraseMode = (userSettings?.phraseMode as "speak" | "quiz" | "practice") || "practice";
+
+	// 学習言語IDを取得
+	const learningLanguageId = languages.find(
+		(l) => l.code === learningLanguage
+	)?.id;
+
 	// Modal functionality
 	const { showSpeakModal, openSpeakModal, closeSpeakModal, handleSpeakStart } =
 		useSpeakModal();
 
 	const { showQuizModal, openQuizModal, closeQuizModal, handleQuizStart } =
 		useQuizModal();
+
+	// Practice Modal
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	const openPracticeModal = () => setShowPracticeModal(true);
+	const closePracticeModal = () => setShowPracticeModal(false);
+
+	const handlePracticeStart = (config: PracticeConfig) => {
+		// セッショントークンを生成してsessionStorageに保存
+		const sessionToken = crypto.randomUUID();
+		sessionStorage.setItem("practiceSessionToken", sessionToken);
+
+		const params = new URLSearchParams({
+			languageId: config.languageId,
+			mode: config.mode,
+			sessionToken,
+		});
+		if (config.questionCount !== undefined) {
+			params.set("questionCount", config.questionCount.toString());
+		}
+		router.push(`/phrase/practice?${params.toString()}`);
+	};
 
 	// 無限スクロール
 	useEffect(() => {
@@ -84,18 +121,23 @@ export default function PhraseListPage() {
 					activeTab="List"
 					onSpeakModalOpen={openSpeakModal}
 					onQuizModalOpen={openQuizModal}
+					onPracticeModalOpen={openPracticeModal}
+					phraseMode={phraseMode}
 				/>
 
 				{/* コンテンツエリア */}
-				<PhraseList
-					savedPhrases={savedPhrases}
-					isLoadingPhrases={isLoadingPhrases}
-					isLoadingMore={isLoadingMore}
-					languages={languages}
-					nativeLanguage={nativeLanguage}
-					learningLanguage={learningLanguage}
-					onRefreshPhrases={refreshPhrases}
-				/>
+				<FadeIn>
+					<PhraseList
+						savedPhrases={savedPhrases}
+						isLoadingPhrases={isLoadingPhrases}
+						isLoadingMore={isLoadingMore}
+						languages={languages}
+						nativeLanguage={nativeLanguage}
+						learningLanguage={learningLanguage}
+						onRefreshPhrases={refreshPhrases}
+						phraseMode={phraseMode}
+					/>
+				</FadeIn>
 			</div>
 
 			{/* Speak Mode モーダル */}
@@ -114,6 +156,15 @@ export default function PhraseListPage() {
 				onStart={handleQuizStart}
 				languages={languages}
 				defaultLearningLanguage={learningLanguage}
+			/>
+
+			{/* Practice Mode モーダル */}
+			<PracticeModeModal
+				isOpen={showPracticeModal}
+				onClose={closePracticeModal}
+				onStart={handlePracticeStart}
+				languages={languages}
+				defaultLanguageId={learningLanguageId}
 			/>
 		</div>
 	);

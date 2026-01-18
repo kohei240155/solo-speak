@@ -15,6 +15,7 @@ interface PhraseItemProps {
 	onSpeak: (phraseId: string) => void;
 	onDelete: (phraseId: string) => void;
 	onExplanation: (phrase: SavedPhrase) => void;
+	phraseMode?: "speak" | "quiz" | "practice";
 }
 
 const PhraseItem = memo(
@@ -26,6 +27,7 @@ const PhraseItem = memo(
 		onSpeak,
 		onDelete,
 		onExplanation,
+		phraseMode = "practice",
 	}: PhraseItemProps) => {
 		const borderColor = useMemo(
 			() => getPhraseLevelColorByCorrectAnswers(phrase.correctAnswers || 0),
@@ -42,15 +44,18 @@ const PhraseItem = memo(
 			[phrase.createdAt],
 		);
 
+		// Speakモードの場合のみカードクリックで遷移
+		const handleCardClick = phraseMode === "speak" ? () => onSpeak(phrase.id) : undefined;
+
 		return (
 			<div
-				className="pl-4 pr-6 py-4 bg-white shadow-md relative cursor-pointer"
+				className={`pl-4 pr-6 py-4 bg-white shadow-md relative ${phraseMode === "speak" ? "cursor-pointer" : ""}`}
 				style={{
 					borderLeft: `4px solid ${borderColor}`,
 					borderRadius: "5px",
 					minHeight: "120px",
 				}}
-				onClick={() => onSpeak(phrase.id)}
+				onClick={handleCardClick}
 			>
 				<div className="flex justify-between mb-2">
 					<div
@@ -115,14 +120,25 @@ const PhraseItem = memo(
 				</div>
 				<div className="flex items-center justify-between text-xs text-gray-900">
 					<div className="flex items-center space-x-4">
-						<span className="flex items-center">
-							<RiSpeakLine className="w-4 h-4 mr-1" />
-							{phrase.practiceCount || 0}
-						</span>
-						<span className="flex items-center">
-							<IoCheckboxOutline className="w-4 h-4 mr-1" />
-							{phrase.correctAnswers || 0}
-						</span>
+						{phraseMode === "practice" ? (
+							<>
+								<span className="flex items-center">
+									<IoCheckboxOutline className="w-4 h-4 mr-1" />
+									{phrase.practiceCorrectCount || 0}/5
+								</span>
+							</>
+						) : (
+							<>
+								<span className="flex items-center">
+									<RiSpeakLine className="w-4 h-4 mr-1" />
+									{phrase.practiceCount || 0}
+								</span>
+								<span className="flex items-center">
+									<IoCheckboxOutline className="w-4 h-4 mr-1" />
+									{phrase.correctAnswers || 0}
+								</span>
+							</>
+						)}
 					</div>
 					<div className="flex items-center">
 						<BiCalendarAlt className="w-4 h-4 mr-1" />

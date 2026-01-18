@@ -101,6 +101,15 @@ export interface ApiErrorResponse {
 |---------------|---------|-------------|
 | `/api/dashboard` | GET | [get-dashboard.md](dashboard/get-dashboard.md) |
 
+### Practice API
+
+| エンドポイント | メソッド | ドキュメント |
+|---------------|---------|-------------|
+| `/api/phrase/practice` | GET | [get-phrase-practice.md](phrase/get-phrase-practice.md) |
+| `/api/phrase/practice/answer` | POST | [post-phrase-practice-answer.md](phrase/post-phrase-practice-answer.md) |
+| `/api/phrase/practice/stats` | GET | [get-phrase-practice-stats.md](phrase/get-phrase-practice-stats.md) |
+| `/api/ranking/practice` | GET | [get-ranking-practice.md](ranking/get-ranking-practice.md) |
+
 ### Ranking API
 
 | エンドポイント | メソッド | ドキュメント |
@@ -151,4 +160,5 @@ export interface ApiErrorResponse {
 | `src/types/api.ts` | `ApiErrorResponse` 等 |
 | `src/types/phrase.ts` | フレーズ関連の型 |
 | `src/types/speech.ts` | スピーチ関連の型 |
+| `src/types/practice.ts` | Practice関連の型 |
 | `src/prompts/` | AIプロンプト |

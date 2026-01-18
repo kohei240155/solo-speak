@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ 独り言トレーニング /",
-			"title": "フレーズ暗記の\n決定版",
+			"title": "スピーキング学習の\n決定版",
 			"cta": {
 				"desktop": "今すぐはじめる →"
 			},
 			"features": {
-				"aiGeneration": "AIが自然なフレーズを生成！",
-				"practiceSupport": "自分だけのフレーズ集を作れる！",
-				"quizFunction": "これで日常会話ができるようになる！"
+				"aiGeneration": "言いたいことをAIが翻訳",
+				"practiceSupport": "声に出して何度も繰り返し練習",
+				"quizFunction": "実際の会話で使える表現が身につく"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "知りたかったフレーズを、AIが自然な表現で翻訳。オリジナルのフレーズ集だからこそ、すぐに効果を実感できます。また、生成された3つの候補から、好みの表現を選べます。",
 				"demo": {
 					"input": "日本にはどのぐらい住んでいるの？",
+					"button": "フレーズを生成",
+					"generating": "生成中",
+					"resultsTitle": "生成されたフレーズ",
 					"outputs": [
 						"How long have you been living in Japan?",
 						"How long have you lived in Japan?",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "音読回数カウント機能で\n\"覚えるまで\"徹底サポート",
-				"description": "言語は「知った」だけでは話せません。1つのフレーズに対して1日10回、合計50回を目安に口から自然に出てくるまで徹底的に音読します。",
+				"title": "「使えるようになる」まで\n徹底サポート",
+				"description": "音声認識を使った練習で、フレーズが口から自然に出るまで練習します。一致率と差分を可視化して、改善点が一目でわかります。",
 				"demo": {
 					"input": "How long have you been living in Japan?",
 					"output": "日本にはどのぐらい住んでいるの？",
-					"todayLabel": "Today:",
-					"totalLabel": "Total:",
-					"goalAchieved": "目標達成！",
-					"goalAchievedMessage": "10回の音読が完了しました"
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "クイズ機能で「瞬発力」を\nチェック",
-				"description": "音読で暗記したフレーズが、実際の会話で使えるかどうか。クイズ機能を使って覚えたフレーズを即答できれば、実際の会話でもスラスラ話せます。",
-				"demo": {
-					"input": "How long have you been living in Japan?",
-					"output": "日本にはどのぐらい住んでいるの？"
+					"recording": "録音中...",
+					"tapToSpeak": "タップして話す",
+					"processing": "処理中...",
+					"notSupported": "お使いのブラウザは音声認識に対応していません",
+					"expectedLabel": "正解",
+					"yourSpeechLabel": "あなたの発話",
+					"passed": "合格！",
+					"almostThere": "もう少し！",
+					"passRequirement": "90%以上で合格です",
+					"hearCorrect": "正解を聞く",
+					"myRecording": "自分の録音",
+					"tryAgain": "もう一度"
 				}
 			}
 		},

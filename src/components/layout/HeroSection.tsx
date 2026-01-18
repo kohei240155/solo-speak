@@ -112,8 +112,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 							<div className="space-y-4">
 								<div className="flex items-start text-left">
 									<BsCheckSquareFill
-										className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-										style={{ color: "#616161" }}
+										className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 									/>
 									<span className="text-md md:text-xl text-gray-800 font-medium">
 										{t("home.hero.features.aiGeneration")}
@@ -122,8 +121,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 								<div className="flex items-start text-left">
 									<BsCheckSquareFill
-										className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-										style={{ color: "#616161" }}
+										className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 									/>
 									<span className="text-md md:text-xl text-gray-800 font-medium">
 										{t("home.hero.features.practiceSupport")}
@@ -132,8 +130,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 								<div className="flex items-start text-left">
 									<BsCheckSquareFill
-										className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-										style={{ color: "#616161" }}
+										className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 									/>
 									<span className="text-md md:text-xl text-gray-800 font-medium">
 										{t("home.hero.features.quizFunction")}
@@ -144,21 +141,15 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 						{/* CTA */}
 						<div
-							className={`inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-1000 group cursor-pointer shadow-lg mt-6 ease-out ${
+							className={`inline-flex items-center px-6 py-3 rounded-xl text-white transition-all duration-1000 group cursor-pointer shadow-lg mt-6 ease-out bg-gray-900 hover:bg-gray-800 ${
 								animationStarted
 									? "opacity-100 translate-y-0"
 									: "opacity-0 translate-y-8"
 							}`}
-							style={{ backgroundColor: "#616161", transitionDelay: "200ms" }}
-							onMouseEnter={(e) => {
-								e.currentTarget.style.backgroundColor = "#525252";
-							}}
-							onMouseLeave={(e) => {
-								e.currentTarget.style.backgroundColor = "#616161";
-							}}
+							style={{ transitionDelay: "200ms" }}
 							onClick={onGetStartedClick}
 						>
-							<span className="font-semibold text-sm group-hover:text-gray-100 transition-colors duration-300">
+							<span className="font-semibold text-sm transition-colors duration-300">
 								{t("home.hero.cta.desktop")}
 							</span>
 						</div>
@@ -214,8 +205,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 								<div className="space-y-4">
 									<div className="flex items-start text-left">
 										<BsCheckSquareFill
-											className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-											style={{ color: "#616161" }}
+											className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 										/>
 										<span className="text-xl text-gray-800 font-medium">
 											{t("home.hero.features.aiGeneration")}
@@ -224,8 +214,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 									<div className="flex items-start text-left">
 										<BsCheckSquareFill
-											className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-											style={{ color: "#616161" }}
+											className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 										/>
 										<span className="text-xl text-gray-800 font-medium">
 											{t("home.hero.features.practiceSupport")}
@@ -234,8 +223,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 									<div className="flex items-start text-left">
 										<BsCheckSquareFill
-											className="w-5 h-5 mr-4 flex-shrink-0 mt-1"
-											style={{ color: "#616161" }}
+											className="w-5 h-5 mr-4 flex-shrink-0 mt-1 text-gray-900"
 										/>
 										<span className="text-xl text-gray-800 font-medium">
 											{t("home.hero.features.quizFunction")}
@@ -246,21 +234,15 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 
 							{/* CTA */}
 							<div
-								className={`inline-flex items-center px-6 py-3 rounded-xl border border-gray-300 text-white transition-all duration-1000 group cursor-pointer shadow-lg ease-out ${
+								className={`inline-flex items-center px-6 py-3 rounded-xl text-white transition-all duration-1000 group cursor-pointer shadow-lg ease-out bg-gray-900 hover:bg-gray-800 ${
 									animationStarted
 										? "opacity-100 translate-y-0"
 										: "opacity-0 translate-y-8"
 								}`}
-								style={{ backgroundColor: "#616161", transitionDelay: "200ms" }}
-								onMouseEnter={(e) => {
-									e.currentTarget.style.backgroundColor = "#525252";
-								}}
-								onMouseLeave={(e) => {
-									e.currentTarget.style.backgroundColor = "#616161";
-								}}
+								style={{ transitionDelay: "200ms" }}
 								onClick={onGetStartedClick}
 							>
-								<span className="font-semibold text-base group-hover:text-gray-100 transition-colors duration-300">
+								<span className="font-semibold text-base transition-colors duration-300">
 									{t("home.hero.cta.desktop")}
 								</span>
 							</div>

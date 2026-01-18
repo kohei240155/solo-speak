@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import BaseModal from "../common/BaseModal";
+import PracticeButton from "../common/PracticeButton";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { IoLocationOutline } from "react-icons/io5";
 
@@ -75,23 +76,23 @@ export default function AddContextModal({
 
 				{/* ボタン */}
 				<div className="flex gap-3">
-					<button
-						onClick={handleCancel}
-						className="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 active:scale-[0.98]"
-					>
-						{t("common.cancel")}
-					</button>
-					<button
-						onClick={handleSubmit}
-						disabled={!isValid}
-						className={`flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 ${
-							isValid
-								? "bg-[#616161] text-white hover:bg-[#525252] active:scale-[0.98]"
-								: "bg-gray-300 text-gray-500 cursor-not-allowed"
-						}`}
-					>
-						{t("situation.addModal.addButton")}
-					</button>
+					<div className="flex-1">
+						<PracticeButton
+							onClick={handleCancel}
+							variant="secondary"
+						>
+							{t("common.cancel")}
+						</PracticeButton>
+					</div>
+					<div className="flex-1">
+						<PracticeButton
+							onClick={handleSubmit}
+							disabled={!isValid}
+							variant="primary"
+						>
+							{t("situation.addModal.addButton")}
+						</PracticeButton>
+					</div>
 				</div>
 			</div>
 		</BaseModal>

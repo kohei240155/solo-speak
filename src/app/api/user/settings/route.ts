@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
 			defaultLearningLanguageId,
 			email,
 			timezone,
+			phraseMode,
+			practiceIncludeExisting,
 		} = body;
 
 		// 必須フィールドのバリデーション
@@ -141,6 +143,8 @@ export async function POST(request: NextRequest) {
 				nativeLanguageId,
 				defaultLearningLanguageId,
 				timezone,
+				phraseMode,
+				practiceIncludeExisting,
 			});
 		} else {
 			result = await createUserSettings(authResult.user, {
@@ -150,6 +154,8 @@ export async function POST(request: NextRequest) {
 				defaultLearningLanguageId,
 				email,
 				timezone,
+				phraseMode,
+				practiceIncludeExisting,
 			});
 		}
 
@@ -175,6 +181,8 @@ export async function PUT(request: NextRequest) {
 			defaultLearningLanguageId,
 			email,
 			timezone,
+			phraseMode,
+			practiceIncludeExisting,
 		} = body;
 
 		// ユーザー名のバリデーション
@@ -213,6 +221,8 @@ export async function PUT(request: NextRequest) {
 			nativeLanguageId,
 			defaultLearningLanguageId,
 			timezone,
+			phraseMode,
+			practiceIncludeExisting,
 		});
 
 		return NextResponse.json(updatedUser);

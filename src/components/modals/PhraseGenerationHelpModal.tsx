@@ -1,4 +1,5 @@
 import BaseModal from "../common/BaseModal";
+import PracticeButton from "../common/PracticeButton";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { IoTimeOutline, IoInfiniteOutline } from "react-icons/io5";
 
@@ -57,12 +58,9 @@ export default function PhraseGenerationHelpModal({
 				</div>
 			</div>
 
-			<button
-				onClick={onClose}
-				className="w-full py-3 px-6 rounded-xl font-medium transition-all duration-200 bg-[#616161] text-white hover:bg-[#525252] active:scale-[0.98]"
-			>
+			<PracticeButton onClick={onClose} variant="primary">
 				OK
-			</button>
+			</PracticeButton>
 		</BaseModal>
 	);
 }

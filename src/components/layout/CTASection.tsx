@@ -55,17 +55,10 @@ export default function CTASection({
 					</p>
 
 					<div
-						className="inline-flex items-center px-10 py-5 rounded-2xl border border-gray-300 text-white transition-all duration-300 group cursor-pointer shadow-lg"
-						style={{ backgroundColor: "#616161" }}
-						onMouseEnter={(e) => {
-							e.currentTarget.style.backgroundColor = "#525252";
-						}}
-						onMouseLeave={(e) => {
-							e.currentTarget.style.backgroundColor = "#616161";
-						}}
+						className="inline-flex items-center px-10 py-5 rounded-2xl text-white transition-all duration-300 group cursor-pointer shadow-lg bg-gray-900 hover:bg-gray-800"
 						onClick={onGetStartedClick}
 					>
-						<span className="font-bold text-xl group-hover:text-gray-100 transition-colors duration-300">
+						<span className="font-bold text-xl transition-colors duration-300">
 							{t("home.cta.button")}
 						</span>
 					</div>

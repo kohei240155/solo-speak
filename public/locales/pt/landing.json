@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ Treinamento de Monólogo /",
-			"title": "A Ferramenta Definitiva\npara Memorizar Frases",
+			"title": "A Ferramenta Definitiva\npara Aprender a Falar",
 			"cta": {
 				"desktop": "Começar Agora →"
 			},
 			"features": {
-				"aiGeneration": "A IA gera frases naturais!",
-				"practiceSupport": "Crie sua própria coleção de frases!",
-				"quizFunction": "Isso o ajudará a ter conversas cotidianas!"
+				"aiGeneration": "A IA traduz o que você quer dizer",
+				"practiceSupport": "Pratique em voz alta repetidamente",
+				"quizFunction": "Domine expressões úteis para conversas reais"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "A IA traduz as frases que você queria saber em expressões naturais. Como é sua coleção original de frases, você pode sentir imediatamente os benefícios. Você também pode escolher sua expressão preferida dentre três opções geradas.",
 				"demo": {
 					"input": "Há quanto tempo você mora no Japão?",
+					"button": "Gerar Frase",
+					"generating": "Gerando",
+					"resultsTitle": "Frases Geradas",
 					"outputs": [
 						"How long have you been living in Japan?",
 						"How long have you lived in Japan?",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "Função de contagem de leitura\npara suporte completo \"até memorizar\"",
-				"description": "Um idioma não pode ser falado apenas \"conhecendo-o\". Almeje 10 leituras por dia por frase, com um total de 50 leituras, até que saia naturalmente da sua boca através de repetição completa.",
+				"title": "Suporte total até você\n\"poder usar\"",
+				"description": "Pratique com reconhecimento de voz até que as frases saiam naturalmente. Visualize a taxa de correspondência e diferenças para ver as áreas de melhoria de relance.",
 				"demo": {
 					"input": "How long have you been living in Japan?",
 					"output": "Há quanto tempo você mora no Japão?",
-					"todayLabel": "Hoje:",
-					"totalLabel": "Total:",
-					"goalAchieved": "Objetivo Alcançado!",
-					"goalAchievedMessage": "10 leituras concluídas"
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "Verifique sua \"reação instantânea\"\ncom funcionalidades de quiz",
-				"description": "Se as frases memorizadas através da prática de leitura em voz alta podem ser usadas em conversas reais. Se você conseguir responder instantaneamente às frases memorizadas usando a funcionalidade de quiz, também conseguirá falar fluentemente em conversas reais.",
-				"demo": {
-					"input": "How long have you been living in Japan?",
-					"output": "Há quanto tempo você mora no Japão?"
+					"recording": "Gravando...",
+					"tapToSpeak": "Toque para falar",
+					"processing": "Processando...",
+					"notSupported": "Seu navegador não suporta reconhecimento de voz",
+					"expectedLabel": "Esperado",
+					"yourSpeechLabel": "Sua fala",
+					"passed": "Aprovado!",
+					"almostThere": "Quase lá!",
+					"passRequirement": "90% ou mais para aprovar",
+					"hearCorrect": "Ouvir correto",
+					"myRecording": "Minha gravação",
+					"tryAgain": "Tentar novamente"
 				}
 			}
 		},

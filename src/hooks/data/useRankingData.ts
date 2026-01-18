@@ -10,6 +10,7 @@ import {
 	useSpeechAddStreakRanking,
 	useSpeechReviewRanking,
 	useSpeechReviewStreakRanking,
+	usePracticeRanking,
 } from "@/hooks/api";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
 
@@ -23,7 +24,7 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 	});
 	const [activeTab, setActiveTab] = useState("Total"); // 初期値はTotal（phraseのデフォルト）
 	const [activeRankingType, setActiveRankingType] = useState<
-		"phrase" | "speak" | "quiz" | "speech"
+		"phrase" | "speak" | "quiz" | "speech" | "practice"
 	>("phrase");
 
 	// APIフックを使用してデータを取得
@@ -34,6 +35,10 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 		activeRankingType === "phrase" || activeRankingType === "speech"
 			? "total"
 			: (activeTab.toLowerCase() as "daily" | "weekly" | "total");
+	// useRankingはpractice以外のタイプでのみ使用
+	const normalRankingType = activeRankingType !== "practice"
+		? activeRankingType
+		: undefined;
 	const {
 		rankingData: normalRankingData,
 		currentUser: normalCurrentUser,
@@ -41,7 +46,7 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 		error: normalError,
 		message: normalMessage,
 		refetch: normalRefetch,
-	} = useRanking(activeRankingType, selectedLanguage, period);
+	} = useRanking(normalRankingType, selectedLanguage, period);
 
 	// Phrase Streakランキングデータを取得
 	const {
@@ -126,6 +131,19 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 			: undefined,
 	);
 
+	// Practice ランキングデータを取得
+	const practicePeriod = activeTab.toLowerCase() as "daily" | "weekly" | "total";
+	const {
+		rankingData: practiceRankingData,
+		currentUser: practiceCurrentUser,
+		isLoading: practiceIsLoading,
+		error: practiceError,
+		refetch: practiceRefetch,
+	} = usePracticeRanking(
+		activeRankingType === "practice" ? selectedLanguage : undefined,
+		activeRankingType === "practice" ? practicePeriod : undefined,
+	);
+
 	// 表示するデータを決定
 	const isPhraseStreakTab =
 		activeRankingType === "phrase" && activeTab === "Streak";
@@ -149,6 +167,7 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 		activeRankingType === "speech" &&
 		speechMode === "review" &&
 		activeTab === "Streak";
+	const isPracticeTab = activeRankingType === "practice";
 
 	let rankingData, currentUser, isLoading, error, message;
 
@@ -194,6 +213,12 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 		isLoading = speechReviewStreakIsLoading;
 		error = speechReviewStreakError;
 		message = undefined;
+	} else if (isPracticeTab) {
+		rankingData = practiceRankingData;
+		currentUser = practiceCurrentUser;
+		isLoading = practiceIsLoading;
+		error = practiceError;
+		message = undefined;
 	} else {
 		rankingData = normalRankingData;
 		currentUser = normalCurrentUser;
@@ -224,12 +249,12 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 
 	// ランキングタイプ変更ハンドラー
 	const handleRankingTypeChange = (
-		type: "phrase" | "speak" | "quiz" | "speech",
+		type: "phrase" | "speak" | "quiz" | "speech" | "practice",
 	) => {
 		setActiveRankingType(type);
 
 		// ランキングタイプ変更時に適切なタブを設定
-		// PhraseとSpeech Addの場合はTotal、それ以外はDaily
+		// Phrase、Speech Addの場合はTotal、それ以外はDaily
 		if (type === "phrase" || (type === "speech" && speechMode === "add")) {
 			setActiveTab("Total");
 		} else {
@@ -253,6 +278,8 @@ export const useRankingData = (speechMode?: "add" | "review") => {
 			speechReviewRefetch();
 		} else if (isSpeechReviewStreakTab) {
 			speechReviewStreakRefetch();
+		} else if (isPracticeTab) {
+			practiceRefetch();
 		} else {
 			normalRefetch();
 		}

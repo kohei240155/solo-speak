@@ -41,6 +41,15 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 			);
 			setValue("email", userData.email || "");
 			setValue("timezone", userData.timezone || "UTC");
+			// Practice関連設定
+			setValue(
+				"phraseMode",
+				(userData.phraseMode as "speak" | "quiz" | "practice") || "practice",
+			);
+			setValue(
+				"practiceIncludeExisting",
+				userData.practiceIncludeExisting ?? true,
+			);
 		} catch (error) {
 			// 404エラー（初回ユーザー）かApiErrorかをチェック
 			const is404Error =
@@ -92,6 +101,10 @@ export function useUserSettings(setValue: UseFormSetValue<UserSetupFormData>) {
 				} catch {
 					setValue("timezone", "UTC");
 				}
+
+				// Practice関連のデフォルト値を設定
+				setValue("phraseMode", "practice");
+				setValue("practiceIncludeExisting", true);
 			} else {
 				// その他のエラーの場合のみエラーメッセージを設定
 				setIsUserSetupComplete(false);

@@ -7,6 +7,7 @@ import { IoLocationOutline, IoFlash, IoChatbubbleOutline } from "react-icons/io5
 import { useState } from "react";
 import AddContextModal from "@/components/modals/AddContextModal";
 import BaseModal from "@/components/common/BaseModal";
+import PracticeButton, { BounceDots } from "@/components/common/PracticeButton";
 import PhraseGenerationHelpModal from "@/components/modals/PhraseGenerationHelpModal";
 import { useScrollPreservation } from "@/hooks/ui/useScrollPreservation";
 import ScrollableContainer from "@/components/common/ScrollableContainer";
@@ -363,57 +364,39 @@ export default function PhraseAdd({
 			)}
 
 			{/* AI Suggest / Random Generate ボタン */}
-			{isRandomMode ? (
-				<button
-					disabled={!isRandomGenerateButtonEnabled() || isLoading}
-					className={`w-full mt-4 py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
-						isLoading
-							? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
-							: !isRandomGenerateButtonEnabled()
-								? "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
-								: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
-					}`}
-					onClick={onRandomGenerate}
-				>
-					{isLoading ? (
-						<div className="flex items-center justify-center gap-3">
-							<span>{t("phrase.add.generating")}</span>
-							<span className="flex gap-1">
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-							</span>
-						</div>
-					) : (
-						t("phrase.add.generateButton")
-					)}
-				</button>
-			) : (
-				<button
-					disabled={!isGenerateButtonEnabled() || isLoading}
-					className={`w-full py-3 sm:py-4 px-6 rounded-xl font-medium transition-all duration-300 border ${
-						isLoading
-							? "bg-[#8a8a8a] text-white border-transparent cursor-wait"
-							: !isGenerateButtonEnabled()
-								? "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
-								: "bg-[#616161] text-white border-transparent hover:bg-[#525252] hover:shadow-lg active:scale-[0.98]"
-					}`}
-					onClick={onGeneratePhrase}
-				>
-					{isLoading ? (
-						<div className="flex items-center justify-center gap-3">
-							<span>{t("phrase.add.generating")}</span>
-							<span className="flex gap-1">
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-								<span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-							</span>
-						</div>
-					) : (
-						t("phrase.add.generateButton")
-					)}
-				</button>
-			)}
+			<div className={isRandomMode ? "mt-4" : ""}>
+				{isRandomMode ? (
+					<PracticeButton
+						onClick={onRandomGenerate}
+						disabled={!isRandomGenerateButtonEnabled()}
+						isLoading={isLoading}
+						loadingContent={
+							<div className="flex items-center justify-center gap-3">
+								<span>{t("phrase.add.generating")}</span>
+								<BounceDots />
+							</div>
+						}
+						variant="primary"
+					>
+						{t("phrase.add.generateButton")}
+					</PracticeButton>
+				) : (
+					<PracticeButton
+						onClick={onGeneratePhrase}
+						disabled={!isGenerateButtonEnabled()}
+						isLoading={isLoading}
+						loadingContent={
+							<div className="flex items-center justify-center gap-3">
+								<span>{t("phrase.add.generating")}</span>
+								<BounceDots />
+							</div>
+						}
+						variant="primary"
+					>
+						{t("phrase.add.generateButton")}
+					</PracticeButton>
+				)}
+			</div>
 
 			{/* エラー表示 */}
 			{error && !isLoading && (
@@ -488,31 +471,25 @@ export default function PhraseAdd({
 
 					{/* ボタン */}
 					<div className="flex gap-3">
-						<button
-							onClick={handleCancelDelete}
-							disabled={isDeleting}
-							className="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							{t("common.cancel")}
-						</button>
-						<button
-							onClick={handleConfirmDelete}
-							disabled={isDeleting}
-							className={`flex-1 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl text-sm sm:text-base font-medium transition-all duration-200 text-white active:scale-[0.98] disabled:cursor-not-allowed ${
-								isDeleting
-									? "bg-gray-400"
-									: "bg-red-500 hover:bg-red-600"
-							}`}
-						>
-							{isDeleting ? (
-								<div className="flex items-center justify-center gap-2">
-									<div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-									<span>{t("situation.deleteModal.deleting")}</span>
-								</div>
-							) : (
-								t("situation.deleteModal.deleteButton")
-							)}
-						</button>
+						<div className="flex-1">
+							<PracticeButton
+								onClick={handleCancelDelete}
+								disabled={isDeleting}
+								variant="secondary"
+							>
+								{t("common.cancel")}
+							</PracticeButton>
+						</div>
+						<div className="flex-1">
+							<PracticeButton
+								onClick={handleConfirmDelete}
+								disabled={isDeleting}
+								isLoading={isDeleting}
+								variant="danger"
+							>
+								{t("situation.deleteModal.deleteButton")}
+							</PracticeButton>
+						</div>
 					</div>
 				</div>
 			</BaseModal>

@@ -29,6 +29,7 @@ generator client {
 | Phrase | 学習フレーズ |
 | QuizResult | クイズ結果 |
 | SpeakLog | 発話ログ |
+| PracticeLog | Practice練習ログ |
 | Situation | シチュエーション |
 | Speech | スピーチ |
 | SpeechFeedback | スピーチフィードバック |
@@ -38,17 +39,50 @@ generator client {
 ### 主要リレーション
 
 ```
-User (1) ───► (n) Phrase, Speech, Situation
+User (1) ───► (n) Phrase, Speech, Situation, PracticeLog
 User (n) ◄───► (1) Language [native, learning]
 
 Phrase (n) ◄──► (1) User, Language, PhraseLevel
 Phrase (n) ◄──► (0..1) Speech
-Phrase (1) ──► (n) QuizResult, SpeakLog
+Phrase (1) ──► (n) QuizResult, SpeakLog, PracticeLog
 
 Speech (n) ◄──► (1) User, SpeechStatus
 Speech (n) ◄──► (1) Language [learning, native]
 Speech (1) ──► (n) SpeechFeedback, SpeechPlan, Phrase
 ```
+
+### Practice関連フィールド
+
+**Userテーブル:**
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `phraseMode` | `String` | フレーズ練習モード（"speak" / "quiz" / "practice"） |
+| `practiceIncludeExisting` | `Boolean` | 既存フレーズをPracticeに含めるか |
+| `practiceStartDate` | `DateTime?` | Practice開始日（既存フレーズ除外の基準日） |
+
+**Phraseテーブル:**
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `practiceCorrectCount` | `Int` | Practice正解回数 |
+| `practiceIncorrectCount` | `Int` | Practice不正解回数 |
+| `lastPracticeDate` | `DateTime?` | 最終Practice日時 |
+
+**PracticeLogテーブル:**
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `id` | `String` | 主キー |
+| `phraseId` | `String` | フレーズID（外部キー） |
+| `userId` | `String` | ユーザーID（外部キー） |
+| `correct` | `Boolean` | 正解/不正解 |
+| `similarity` | `Float` | 一致率（0.0〜1.0） |
+| `transcript` | `String?` | 認識テキスト |
+| `practiceDate` | `DateTime` | 練習日時 |
+| `createdAt` | `DateTime` | 作成日時 |
+
+**インデックス:**
+- `idx_practice_logs_phrase_id`: phraseIdによる検索最適化
+- `idx_practice_logs_user_id`: userIdによる検索最適化
+- `idx_practice_logs_user_practice_date`: ユーザー別日付範囲クエリ最適化
 
 ---
 

@@ -10,6 +10,7 @@ src/components/
 ├── modals/         # モーダル
 ├── navigation/     # ナビゲーション
 ├── phrase/         # フレーズ関連
+├── practice/       # Practice（発話練習）
 ├── quiz/           # クイズ
 ├── settings/       # 設定
 ├── speak/          # スピーキング
@@ -567,6 +568,190 @@ interface QuizPracticeProps {
 
 ---
 
+## Practiceコンポーネント (practice/)
+
+### PracticePractice
+
+**ファイル**: `src/components/practice/PracticePractice.tsx`
+
+Practice練習画面。音声認識、録音制御、結果表示機能を提供。
+
+```typescript
+import PracticePractice from "@/components/practice/PracticePractice";
+
+interface PracticePracticeProps {
+  phrase: PracticePhrase;
+  currentIndex: number;
+  totalCount: number;
+  mode: PracticeMode;
+  isRecording: boolean;
+  transcript: string;
+  onStartRecording: () => void;
+  onStopRecording: () => string;
+  onSubmitAnswer: (recognizedText: string) => Promise<void>;
+  onSkip: () => void;
+  onNext: () => void;
+  onFinish: () => void;
+  result: PracticeResultState | null;
+  learningLanguage?: string;
+}
+
+// 使用例
+<PracticePractice
+  phrase={currentPhrase}
+  currentIndex={currentIndex}
+  totalCount={totalCount}
+  mode="normal"
+  isRecording={isRecording}
+  transcript={transcript}
+  onStartRecording={startRecording}
+  onStopRecording={stopRecording}
+  onSubmitAnswer={submitAnswer}
+  onSkip={handleSkip}
+  onNext={handleNext}
+  onFinish={handleFinish}
+  result={practiceResult}
+  learningLanguage="en"
+/>
+```
+
+---
+
+### PracticeResult
+
+**ファイル**: `src/components/practice/PracticeResult.tsx`
+
+Practice結果表示。正解/不正解、一致度、差分ハイライト、音声再生機能。
+
+```typescript
+import PracticeResult from "@/components/practice/PracticeResult";
+
+interface PracticeResultProps {
+  result: PracticeResultState;
+  expectedText: string;
+  learningLanguage?: string;
+  onNext: () => void;
+  onFinish: () => void;
+  isLast: boolean;
+}
+
+// 使用例
+<PracticeResult
+  result={practiceResult}
+  expectedText={phrase.original}
+  learningLanguage="en"
+  onNext={handleNext}
+  onFinish={handleFinish}
+  isLast={currentIndex === totalCount - 1}
+/>
+```
+
+---
+
+### PracticeModeModal
+
+**ファイル**: `src/components/practice/PracticeModeModal.tsx`
+
+Practiceモード選択モーダル。通常モード/復習モード、言語選択、出題数選択。
+
+```typescript
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
+
+interface PracticeModeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onStartPractice: (config: PracticeConfig) => void;
+  languages: LanguageInfo[];
+  defaultLanguageId?: string;
+}
+
+// 使用例
+<PracticeModeModal
+  isOpen={showPracticeModeModal}
+  onClose={() => setShowPracticeModeModal(false)}
+  onStartPractice={(config) => startPracticeSession(config)}
+  languages={languages}
+  defaultLanguageId={defaultLearningLanguageId}
+/>
+```
+
+---
+
+### DiffHighlight
+
+**ファイル**: `src/components/practice/DiffHighlight.tsx`
+
+テキスト差分のハイライト表示。期待されるテキストと認識テキストの差分を色分け表示。
+
+```typescript
+import DiffHighlight from "@/components/practice/DiffHighlight";
+
+interface DiffHighlightProps {
+  diffResult: DiffResult[];
+  className?: string;
+}
+
+// 使用例
+<DiffHighlight
+  diffResult={[
+    { type: "equal", value: "Hello " },
+    { type: "delete", value: "world" },
+    { type: "insert", value: "there" },
+  ]}
+  className="text-lg"
+/>
+```
+
+---
+
+### StarProgress
+
+**ファイル**: `src/components/practice/StarProgress.tsx`
+
+Practice正解回数を星で表示するコンポーネント。通常モードでは星を5個並べ、復習モードでは「★×数字」形式で表示。
+
+```typescript
+import StarProgress from "@/components/practice/StarProgress";
+
+interface StarProgressProps {
+  current: number;        // 現在の正解回数
+  total: number;          // 最大値（通常5）
+  mode: PracticeMode;     // "normal" | "review"
+  className?: string;
+}
+
+// 通常モード: ★★★☆☆ のように表示
+<StarProgress current={3} total={5} mode="normal" />
+
+// 復習モード: ★×7 のように表示
+<StarProgress current={7} total={5} mode="review" />
+```
+
+---
+
+### PracticeHelpModal
+
+**ファイル**: `src/components/practice/PracticeHelpModal.tsx`
+
+Practiceのルール説明モーダル。1日1回ルール、90%クリア条件、5回マスター条件を説明。
+
+```typescript
+import PracticeHelpModal from "@/components/practice/PracticeHelpModal";
+
+interface PracticeHelpModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// 使用例
+<PracticeHelpModal
+  isOpen={showHelpModal}
+  onClose={() => setShowHelpModal(false)}
+/>
+```
+
+---
+
 ## スピーキングコンポーネント (speak/)
 
 ### SpeakPractice
@@ -686,12 +871,14 @@ import SubscriptionTab from "@/components/settings/SubscriptionTab";
 
 **ファイル**: `src/components/navigation/PhraseTabNavigation.tsx`
 
-フレーズページのタブナビゲーション（生成、リスト、クイズ、スピーキング）。
+フレーズページのタブナビゲーション（生成、リスト、クイズ、スピーキング、Practice）。
 
 ```typescript
 import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 
+// activeTab: "add" | "list" | "quiz" | "speak" | "practice"
 <PhraseTabNavigation activeTab="list" />
+<PhraseTabNavigation activeTab="practice" />
 ```
 
 ---
@@ -758,6 +945,40 @@ export default function Component({ data, onAction, isLoading = false }: Compone
 
 ---
 
+### FadeIn
+
+**ファイル**: `src/components/common/FadeIn.tsx`
+
+コンテンツをふわっとフェードインさせるアニメーションコンポーネント。ページ遷移やタブ切り替え時に使用。
+
+```typescript
+import FadeIn from "@/components/common/FadeIn";
+
+interface FadeInProps {
+  children: ReactNode;
+  className?: string;
+}
+
+// 基本使用
+<FadeIn>
+  <div>コンテンツがふわっと表示されます</div>
+</FadeIn>
+
+// クラス名指定
+<FadeIn className="bg-white rounded-lg p-4">
+  <div>背景付きでフェードイン</div>
+</FadeIn>
+
+// タブ切り替え時のアニメーション（keyでリマウント）
+<FadeIn key={activeTab}>
+  <TabContent />
+</FadeIn>
+```
+
+**動作**: マウント時に opacity: 0 → 1、translateY: 8px → 0 のアニメーションを0.3秒で実行。
+
+---
+
 ## よく使うインポート
 
 ```typescript
@@ -787,6 +1008,9 @@ import { MdClose, MdEdit, MdDelete, MdPlayArrow } from "react-icons/md";
 | `useModalManager` | `src/hooks/ui/useModalManager.ts` | モーダル状態管理 |
 | `usePhraseList` | `src/hooks/phrase/usePhraseList.ts` | フレーズ一覧 |
 | `useSpeechList` | `src/hooks/speech/useSpeechList.ts` | スピーチ一覧 |
+| `usePracticeSession` | `src/hooks/practice/usePracticeSession.ts` | Practiceセッション管理 |
+| `usePracticeAnswer` | `src/hooks/practice/usePracticeAnswer.ts` | Practice回答送信 |
+| `useSpeechRecognition` | `src/hooks/practice/useSpeechRecognition.ts` | 音声認識 |
 
 ---
 
