@@ -52,9 +52,10 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// フレーズ取得
+		// フレーズ取得（言語情報を含める）
 		const phrase = await prisma.phrase.findUnique({
 			where: { id: phraseId },
+			include: { language: true },
 		});
 
 		if (!phrase) {
@@ -84,8 +85,12 @@ export async function POST(request: NextRequest) {
 		const similarity = calculateSimilarity(transcript, phrase.original);
 		const correct = similarity >= PRACTICE_SIMILARITY_THRESHOLD;
 
-		// 差分計算
-		const diffResult = calculateDiff(transcript, phrase.original);
+		// 差分計算（言語コードを渡して言語に応じた処理を行う）
+		const diffResult = calculateDiff(
+			transcript,
+			phrase.original,
+			phrase.language?.code
+		);
 
 		// 今日すでに正解済みかチェック
 		const todayString = getLocalDateString(new Date(), timezone);
