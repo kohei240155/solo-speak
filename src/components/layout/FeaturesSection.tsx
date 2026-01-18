@@ -48,12 +48,12 @@ export default function FeaturesSection({
 					>
 						<div className="flex items-start gap-4">
 							<div
-								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out ${
+								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out bg-gray-900 ${
 									visibleSections.has("features-section")
 										? "opacity-100 translate-x-0"
 										: "opacity-0 -translate-x-16"
 								}`}
-								style={{ backgroundColor: "#616161", transitionDelay: "600ms" }}
+								style={{ transitionDelay: "600ms" }}
 							>
 								<svg
 									className="w-4 h-4 text-white"
@@ -100,12 +100,12 @@ export default function FeaturesSection({
 					>
 						<div className="flex items-start gap-4">
 							<div
-								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out ${
+								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out bg-gray-900 ${
 									visibleSections.has("features-section")
 										? "opacity-100 translate-x-0"
 										: "opacity-0 -translate-x-16"
 								}`}
-								style={{ backgroundColor: "#616161", transitionDelay: "800ms" }}
+								style={{ transitionDelay: "800ms" }}
 							>
 								<svg
 									className="w-4 h-4 text-white"
@@ -152,15 +152,12 @@ export default function FeaturesSection({
 					>
 						<div className="flex items-start gap-4">
 							<div
-								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out ${
+								className={`w-6 h-6 rounded flex items-center justify-center mt-1 flex-shrink-0 transition-all duration-1000 ease-out bg-gray-900 ${
 									visibleSections.has("features-section")
 										? "opacity-100 translate-x-0"
 										: "opacity-0 -translate-x-16"
 								}`}
-								style={{
-									backgroundColor: "#616161",
-									transitionDelay: "1000ms",
-								}}
+								style={{ transitionDelay: "1000ms" }}
 							>
 								<svg
 									className="w-4 h-4 text-white"

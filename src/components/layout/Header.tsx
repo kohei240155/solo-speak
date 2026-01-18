@@ -249,14 +249,7 @@ const Header = memo(function Header() {
 
 								<button
 									onClick={handleLoginClick}
-									className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-[100px] flex items-center justify-center h-[40px]"
-									style={{ backgroundColor: "#616161" }}
-									onMouseEnter={(e) => {
-										e.currentTarget.style.backgroundColor = "#525252";
-									}}
-									onMouseLeave={(e) => {
-										e.currentTarget.style.backgroundColor = "#616161";
-									}}
+									className="text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 w-[100px] flex items-center justify-center h-[40px] bg-gray-900 hover:bg-gray-800"
 								>
 									Login
 								</button>
@@ -304,14 +297,7 @@ const Header = memo(function Header() {
 
 								<button
 									onClick={handleLoginClick}
-									className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center w-[85px] h-[40px]"
-									style={{ backgroundColor: "#616161" }}
-									onMouseEnter={(e) => {
-										e.currentTarget.style.backgroundColor = "#525252";
-									}}
-									onMouseLeave={(e) => {
-										e.currentTarget.style.backgroundColor = "#616161";
-									}}
+									className="text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center w-[85px] h-[40px] bg-gray-900 hover:bg-gray-800"
 								>
 									Login
 								</button>

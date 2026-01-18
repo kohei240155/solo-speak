@@ -1,7 +1,6 @@
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import AIDemo from "./AIDemo";
 import SpeakingDemo from "./SpeakingDemo";
-import QuizDemo from "./QuizDemo";
 
 interface SolutionsSectionProps {
 	visibleSections: Set<string>;
@@ -46,9 +45,6 @@ export default function SolutionsSection({
 
 					{/* 発話練習デモ */}
 					<SpeakingDemo visibleSections={visibleSections} />
-
-					{/* クイズ機能デモ */}
-					<QuizDemo visibleSections={visibleSections} />
 				</div>
 			</div>
 		</section>
