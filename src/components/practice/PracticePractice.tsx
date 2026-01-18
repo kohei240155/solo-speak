@@ -8,6 +8,7 @@ import { useSpeechRecognition } from "@/hooks/practice/useSpeechRecognition";
 import { usePracticeAnswer } from "@/hooks/practice/usePracticeAnswer";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import PracticeResult from "./PracticeResult";
+import StarProgress from "./StarProgress";
 import type { PracticePhrase, PracticeMode } from "@/types/practice";
 import type { PracticeSession } from "@/hooks/practice/usePracticeSession";
 import { PRACTICE_MASTERY_COUNT } from "@/types/practice";
@@ -37,7 +38,6 @@ export default function PracticePractice({
 		isRecording,
 		isProcessing,
 		isSupported,
-		transcript,
 		audioBlob,
 		startRecording,
 		stopRecording,
@@ -141,17 +141,11 @@ export default function PracticePractice({
 							total: session.phrases.length,
 						})}
 					</span>
-					<span className="text-sm text-gray-400">
-						{session.mode === "normal"
-							? t("speech.practice.toMaster", {
-									remaining:
-										PRACTICE_MASTERY_COUNT -
-										currentPhrase.practiceCorrectCount,
-								})
-							: t("speech.practice.correctCountLabel", {
-									count: currentPhrase.practiceCorrectCount,
-								})}
-					</span>
+					<StarProgress
+						current={currentPhrase.practiceCorrectCount}
+						total={PRACTICE_MASTERY_COUNT}
+						mode={session.mode}
+					/>
 				</div>
 				<div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
 					<div
@@ -182,15 +176,6 @@ export default function PracticePractice({
 				<p className="text-2xl sm:text-3xl font-semibold text-gray-900 text-center leading-relaxed">
 					{currentPhrase.translation}
 				</p>
-
-				{/* 認識テキスト（スペースを常に確保） */}
-				<div className="mt-8 h-12">
-					{transcript && !isProcessing && !isSubmitting && (
-						<div className="px-5 py-3 bg-gray-50 rounded-2xl">
-							<p className="text-gray-600 text-center">&quot;{transcript}&quot;</p>
-						</div>
-					)}
-				</div>
 			</div>
 
 			{/* フッター: 録音ボタン */}
@@ -209,34 +194,36 @@ export default function PracticePractice({
 				{/* 録音ボタン */}
 				<div className="flex flex-col items-center">
 					{isRecording ? (
-						<>
-							<button
-								onClick={handleStopRecording}
-								className="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-transform duration-200 hover:scale-105 active:scale-95"
-							>
-								<IoStop className="w-8 h-8" />
-							</button>
-							<p className="mt-4 text-sm text-gray-500 animate-pulse">
-								{t("speech.practice.listening")}
-							</p>
-						</>
+						<button
+							onClick={handleStopRecording}
+							className="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-transform duration-200 hover:scale-105 active:scale-95"
+						>
+							<IoStop className="w-8 h-8" />
+						</button>
 					) : isProcessing || isSubmitting ? (
 						<div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center">
 							<div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
 						</div>
 					) : (
-						<>
-							<button
-								onClick={handleStartRecording}
-								className="w-20 h-20 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg shadow-gray-900/30 transition-transform duration-200 hover:scale-105 active:scale-95"
-							>
-								<FaMicrophone className="w-7 h-7" />
-							</button>
-							<p className="mt-4 text-sm text-gray-400">
+						<button
+							onClick={handleStartRecording}
+							className="w-20 h-20 rounded-full bg-gray-900 text-white flex items-center justify-center shadow-lg shadow-gray-900/30 transition-transform duration-200 hover:scale-105 active:scale-95"
+						>
+							<FaMicrophone className="w-7 h-7" />
+						</button>
+					)}
+					{/* ボタン下のテキスト（高さを固定してずれを防止） */}
+					<div className="mt-4 h-5">
+						{isRecording ? (
+							<p className="text-sm text-gray-500 animate-pulse">
+								{t("speech.practice.listening")}
+							</p>
+						) : !isProcessing && !isSubmitting ? (
+							<p className="text-sm text-gray-400">
 								{t("speech.practice.tapToSpeak")}
 							</p>
-						</>
-					)}
+						) : null}
+					</div>
 				</div>
 
 				{/* スキップボタン（右側に配置） */}
