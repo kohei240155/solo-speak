@@ -44,37 +44,18 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({
 	children,
 }) => {
-	// 初期言語設定を日本語に固定（Top画面の初期表示は必ず日本語）
-	const [locale, setLocaleState] = useState<string>(() => {
-		if (typeof window !== "undefined") {
-			// クライアントサイドでは保存された値を優先、なければ日本語に設定
-			const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
-			if (savedLocale && AVAILABLE_LOCALES.includes(savedLocale)) {
-				return savedLocale;
-			}
-
-			// 保存された設定がない場合は日本語を設定
-			return DEFAULT_LOCALE;
-		}
-		return DEFAULT_LOCALE;
-	});
+	// SSR/クライアント両方で同じ初期値を使用してハイドレーションエラーを防ぐ
+	const [locale, setLocaleState] = useState<string>(DEFAULT_LOCALE);
 	const [isLoadingLocale] = useState(false); // 初期状態はfalse、ロードは不要
 	const [isUserLanguageMode, setIsUserLanguageMode] = useState(false); // ユーザー言語モードフラグ
 
-	// 初期言語設定（日本語優先）
+	// クライアントサイドでlocalStorageから言語設定を読み込む（ハイドレーション後）
 	useEffect(() => {
-		// クライアントサイドでの調整
-		if (typeof window !== "undefined") {
-			const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
-			if (!savedLocale) {
-				// 保存された設定がない場合は日本語を設定して保存
-				if (locale !== DEFAULT_LOCALE) {
-					setLocaleState(DEFAULT_LOCALE);
-					setStoredDisplayLanguage(DEFAULT_LOCALE);
-				}
-			}
+		const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+		if (savedLocale && AVAILABLE_LOCALES.includes(savedLocale)) {
+			setLocaleState(savedLocale);
 		}
-	}, [locale]);
+	}, []);
 
 	// 外部からの言語変更イベントを監視（AuthContextからの通知）
 	useEffect(() => {

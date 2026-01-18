@@ -15,7 +15,7 @@ interface CustomSelectProps {
 	options: SelectOption[];
 	onChange: (value: string) => void;
 	placeholder?: string;
-	size?: "sm" | "lg";
+	size?: "sm" | "lg" | "header";
 }
 
 export default function CustomSelect({
@@ -103,9 +103,12 @@ export default function CustomSelect({
 	};
 
 	// サイズに応じたスタイル
-	const buttonSizeStyles = size === "lg"
-		? "px-4 py-1 text-base md:text-lg min-w-[140px] md:min-w-[160px]"
-		: "px-3 py-2 text-sm";
+	const buttonSizeStyles =
+		size === "lg"
+			? "px-4 py-1 text-base md:text-lg min-w-[140px] md:min-w-[160px]"
+			: size === "header"
+				? "px-3 h-[40px] text-sm min-w-[120px]"
+				: "px-3 py-2 text-sm";
 
 	const iconSizeStyles = size === "lg" ? "w-5 h-5" : "w-4 h-4";
 
