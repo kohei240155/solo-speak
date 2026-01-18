@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ 혼잣말 트레이닝 /",
-			"title": "문장 암기의\n결정판",
+			"title": "스피킹 학습의\n결정판",
 			"cta": {
 				"desktop": "지금 시작하기 →"
 			},
 			"features": {
-				"aiGeneration": "AI가 자연스러운 문장을 생성!",
-				"practiceSupport": "나만의 문장집을 만들 수 있어요!",
-				"quizFunction": "이제 일상 대화도 할 수 있게 됩니다!"
+				"aiGeneration": "말하고 싶은 것을 AI가 번역",
+				"practiceSupport": "소리 내어 반복 연습",
+				"quizFunction": "실제 대화에서 쓸 수 있는 표현을 익힌다"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "원하는 문장을 AI가 자연스러운 표현으로 번역합니다. 오직 나만의 문장집이기에 즉시 효과를 느낄 수 있습니다. 생성된 3가지 표현 중 원하는 것을 선택하세요.",
 				"demo": {
 					"input": "일본에는 얼마나 살고 있어요?",
+					"button": "문장 생성",
+					"generating": "생성 중",
+					"resultsTitle": "생성된 문장",
 					"outputs": [
 						"How long have you been living in Japan?",
 						"How long have you lived in Japan?",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "읽기 횟수 카운트 기능으로\n\"외울 때까지\" 철저 지원",
-				"description": "언어는 알기만 해서는 말할 수 없습니다. 한 문장을 하루 10번, 총 50번 읽으며 자연스럽게 나올 때까지 연습하세요.",
+				"title": "\"사용할 수 있을 때까지\"\n철저 지원",
+				"description": "음성 인식을 사용한 연습으로 문장이 자연스럽게 나올 때까지 연습합니다. 일치율과 차이를 시각화하여 개선점이 한눈에 보입니다.",
 				"demo": {
 					"input": "How long have you been living in Japan?",
 					"output": "일본에는 얼마나 살고 있어요?",
-					"todayLabel": "오늘:",
-					"totalLabel": "총합:",
-					"goalAchieved": "목표 달성!",
-					"goalAchievedMessage": "10회 읽기를 완료했습니다."
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "퀴즈 기능으로\n\"순발력\" 점검",
-				"description": "낭독으로 외운 문장이 실제 대화에서 바로 나오는지 확인하세요. 퀴즈에서 즉답할 수 있다면 실제 대화에서도 술술 말할 수 있습니다.",
-				"demo": {
-					"input": "How long have you been living in Japan?",
-					"output": "일본에는 얼마나 살고 있어요?"
+					"recording": "녹음 중...",
+					"tapToSpeak": "탭하여 발화",
+					"processing": "처리 중...",
+					"notSupported": "브라우저가 음성 인식을 지원하지 않습니다",
+					"expectedLabel": "정답",
+					"yourSpeechLabel": "당신의 발화",
+					"passed": "합격!",
+					"almostThere": "조금만 더!",
+					"passRequirement": "90% 이상이면 합격",
+					"hearCorrect": "정답 듣기",
+					"myRecording": "내 녹음",
+					"tryAgain": "다시 시도"
 				}
 			}
 		},

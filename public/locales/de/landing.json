@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ Monolog-Training /",
-			"title": "Die ultimative\nPhrasen-Memo-App",
+			"title": "Die ultimative\nSprech-Lern-App",
 			"cta": {
 				"desktop": "Jetzt starten →"
 			},
 			"features": {
-				"aiGeneration": "KI generiert natürliche Phrasen!",
-				"practiceSupport": "Erstellen Sie Ihre eigene Phrasensammlung!",
-				"quizFunction": "Damit können Sie alltägliche Gespräche führen!"
+				"aiGeneration": "KI übersetzt, was Sie sagen möchten",
+				"practiceSupport": "Üben Sie laut und wiederholt",
+				"quizFunction": "Beherrschen Sie Ausdrücke für echte Gespräche"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "Die KI übersetzt die Phrasen, die Sie wissen wollten, in natürliche Ausdrücke. Da es Ihre ursprüngliche Phrasensammlung ist, können Sie sofort die Wirkung spüren. Außerdem können Sie Ihren bevorzugten Ausdruck aus drei generierten Optionen wählen.",
 				"demo": {
 					"input": "Wie lange lebst du schon in Japan?",
+					"button": "Phrase generieren",
+					"generating": "Generieren",
+					"resultsTitle": "Generierte Phrasen",
 					"outputs": [
 						"How long have you been living in Japan?",
 						"How long have you lived in Japan?",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "Lautzählungs-Funktion für\ngründliche Unterstützung \"bis zum Auswendiglernen\"",
-				"description": "Sprache kann nicht gesprochen werden, nur weil man sie \"kennt\". Streben Sie 10 Wiederholungen pro Tag für eine Phrase an, insgesamt 50 Wiederholungen, bis sie natürlich aus dem Mund kommt durch gründliche Wiederholung.",
+				"title": "Volle Unterstützung bis Sie\n\"es verwenden können\"",
+				"description": "Üben Sie mit Spracherkennung, bis die Phrasen natürlich kommen. Visualisieren Sie die Übereinstimmungsrate und Unterschiede, um Verbesserungsbereiche auf einen Blick zu sehen.",
 				"demo": {
 					"input": "How long have you been living in Japan?",
 					"output": "Wie lange lebst du schon in Japan?",
-					"todayLabel": "Heute:",
-					"totalLabel": "Gesamt:",
-					"goalAchieved": "Ziel erreicht!",
-					"goalAchievedMessage": "10 Wiederholungen abgeschlossen"
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "Überprüfen Sie Ihre \"Spontanreaktion\"\nmit Quiz-Funktionen",
-				"description": "Ob durch Lautleseübung einprägte Phrasen in echten Gesprächen verwendet werden können. Wenn Sie mit der Quiz-Funktion sofort auf einprägte Phrasen antworten können, können Sie auch in echten Gesprächen fließend sprechen.",
-				"demo": {
-					"input": "How long have you been living in Japan?",
-					"output": "Wie lange lebst du schon in Japan?"
+					"recording": "Aufnahme...",
+					"tapToSpeak": "Tippen zum Sprechen",
+					"processing": "Verarbeitung...",
+					"notSupported": "Ihr Browser unterstützt keine Spracherkennung",
+					"expectedLabel": "Erwartet",
+					"yourSpeechLabel": "Ihre Sprache",
+					"passed": "Bestanden!",
+					"almostThere": "Fast geschafft!",
+					"passRequirement": "90% oder mehr zum Bestehen",
+					"hearCorrect": "Richtig hören",
+					"myRecording": "Meine Aufnahme",
+					"tryAgain": "Nochmal versuchen"
 				}
 			}
 		},

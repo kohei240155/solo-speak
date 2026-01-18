@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ 独白训练 /",
-			"title": "记忆句子的\n终极工具",
+			"title": "口语学习的\n终极工具",
 			"cta": {
 				"desktop": "立即开始 →"
 			},
 			"features": {
-				"aiGeneration": "AI生成自然句子！",
-				"practiceSupport": "创建您自己的句子集！",
-				"quizFunction": "帮助您进行日常对话！"
+				"aiGeneration": "AI翻译您想说的话",
+				"practiceSupport": "大声反复练习发音",
+				"quizFunction": "掌握实际对话中能用的表达"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "AI将您想知道的句子翻译成自然表达。因为这是您原创的句子集，所以可以立即感受到好处。您还可以从生成的3个选项中选择您喜欢的表达。",
 				"demo": {
 					"input": "你在日本住了多久？",
+					"button": "生成句子",
+					"generating": "生成中",
+					"resultsTitle": "生成的句子",
 					"outputs": [
 						"How long have you been living in Japan?",
 						"How long have you lived in Japan?",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "阅读计数功能\n全面支持\"直到记住\"",
-				"description": "语言不能仅仅通过\"知道\"来说。目标是每天每个句子阅读10次，总共50次，通过彻底重复，直到自然地从你的嘴里说出。",
+				"title": "全面支持直到\n\"能够使用\"",
+				"description": "通过语音识别进行练习，直到短语能自然脱口而出。可视化匹配率和差异，让改进点一目了然。",
 				"demo": {
 					"input": "How long have you been living in Japan?",
 					"output": "你在日本住了多久？",
-					"todayLabel": "今天：",
-					"totalLabel": "总计：",
-					"goalAchieved": "达成目标！",
-					"goalAchievedMessage": "完成10次阅读"
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "通过测验功能\n检查您的\"即时反应\"",
-				"description": "如果通过朗读练习记住的句子可以在实际对话中使用。如果您可以使用测验功能即时回答记住的句子，您也可以在实际对话中流利地说话。",
-				"demo": {
-					"input": "How long have you been living in Japan?",
-					"output": "你在日本住了多久？"
+					"recording": "录音中...",
+					"tapToSpeak": "点击发音",
+					"processing": "处理中...",
+					"notSupported": "您的浏览器不支持语音识别",
+					"expectedLabel": "正确答案",
+					"yourSpeechLabel": "您的发音",
+					"passed": "通过！",
+					"almostThere": "差一点！",
+					"passRequirement": "90%以上通过",
+					"hearCorrect": "听正确发音",
+					"myRecording": "我的录音",
+					"tryAgain": "再试一次"
 				}
 			}
 		},

@@ -2,14 +2,14 @@
 	"home": {
 		"hero": {
 			"subtitle": "\\ Solo Practice Training /",
-			"title": "The Ultimate\nPhrase Memorization Tool",
+			"title": "The Ultimate\nSpeaking Learning Tool",
 			"cta": {
 				"desktop": "Get Started →"
 			},
 			"features": {
-				"aiGeneration": "AI generates natural phrases!",
-				"practiceSupport": "Create your own phrase collection!",
-				"quizFunction": "This will help you have daily conversations!"
+				"aiGeneration": "AI translates what you want to say",
+				"practiceSupport": "Practice speaking out loud repeatedly",
+				"quizFunction": "Master expressions you can use in real conversations"
 			}
 		},
 		"features": {
@@ -35,6 +35,9 @@
 				"description": "AI translates the phrases you wanted to know into natural expressions. Because it's your original phrase collection, you can immediately feel the benefits. You can also choose your preferred expression from three generated options.",
 				"demo": {
 					"input": "How long have you been living in Japan?",
+					"button": "Generate Phrase",
+					"generating": "Generating",
+					"resultsTitle": "Generated Phrases",
 					"outputs": [
 						"日本にはどのぐらい住んでいるの？",
 						"日本に住んで何年になりますか？",
@@ -44,24 +47,23 @@
 			},
 			"feature2": {
 				"number": "02",
-				"title": "Reading count feature provides\nthorough support \"until you memorize\"",
-				"description": "Language can't be spoken just by \"knowing\" it. Aim for 10 readings per day per phrase, with a total of 50 readings, until it comes out naturally from your mouth through thorough repetition.",
+				"title": "Full support until you\n\"can actually use it\"",
+				"description": "Practice with speech recognition until phrases come out naturally. Visualize match rate and differences to see improvement areas at a glance.",
 				"demo": {
 					"input": "日本にはどのぐらい住んでいるの？",
 					"output": "How long have you been living in Japan?",
-					"todayLabel": "Today:",
-					"totalLabel": "Total:",
-					"goalAchieved": "Goal Achieved!",
-					"goalAchievedMessage": "10 readings completed"
-				}
-			},
-			"feature3": {
-				"number": "03",
-				"title": "Check your \"instant response\"\nwith quiz features",
-				"description": "Whether phrases memorized through reading practice can be used in actual conversations. If you can instantly respond to memorized phrases using the quiz feature, you'll be able to speak fluently in actual conversations too.",
-				"demo": {
-					"input": "日本にはどのぐらい住んでいるの？",
-					"output": "How long have you been living in Japan?"
+					"recording": "Recording...",
+					"tapToSpeak": "Tap to speak",
+					"processing": "Processing...",
+					"notSupported": "Speech recognition is not supported in your browser",
+					"expectedLabel": "Expected",
+					"yourSpeechLabel": "Your speech",
+					"passed": "Passed!",
+					"almostThere": "Almost there!",
+					"passRequirement": "90% or higher to pass",
+					"hearCorrect": "Hear correct",
+					"myRecording": "My recording",
+					"tryAgain": "Try again"
 				}
 			}
 		},
