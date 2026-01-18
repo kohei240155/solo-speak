@@ -12,7 +12,9 @@ import { api } from "@/utils/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { IoGlobeOutline, IoSwapHorizontalOutline, IoListOutline } from "react-icons/io5";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { IconType } from "react-icons";
+import PracticeHelpModal from "./PracticeHelpModal";
 
 interface ConfigItem {
 	id: string;
@@ -49,6 +51,7 @@ export default function PracticeModeModal({
 	const [selectedMode, setSelectedMode] = useState<PracticeMode>("normal");
 	const [questionCount, setQuestionCount] = useState<number>(PRACTICE_DEFAULT_SESSION_SIZE);
 	const [isLoading, setIsLoading] = useState(false);
+	const [showHelpModal, setShowHelpModal] = useState(false);
 
 	// デフォルト言語のコードを取得
 	const defaultLanguageCode = languages.find(
@@ -172,7 +175,16 @@ export default function PracticeModeModal({
 			onClose={onClose}
 			title={t("practice.modal.title")}
 			variant="gray"
+			titleButton={{
+				icon: AiOutlineQuestionCircle,
+				onClick: () => setShowHelpModal(true),
+			}}
 		>
+			{/* 説明文 */}
+			<p className="text-sm text-gray-500 mb-4">
+				{t("practice.modal.description")}
+			</p>
+
 			{/* 設定項目 */}
 			<div className="space-y-4 mb-8">
 				{configItems.map((item) => {
@@ -221,6 +233,12 @@ export default function PracticeModeModal({
 			>
 				{t("practice.modal.start")}
 			</PracticeButton>
+
+			{/* ヘルプモーダル */}
+			<PracticeHelpModal
+				isOpen={showHelpModal}
+				onClose={() => setShowHelpModal(false)}
+			/>
 		</BaseModal>
 	);
 }

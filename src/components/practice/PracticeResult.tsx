@@ -6,6 +6,7 @@ import { FaMicrophone } from "react-icons/fa";
 import { useTextToSpeech } from "@/hooks/ui/useTextToSpeech";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import DiffHighlight from "./DiffHighlight";
+import StarProgress from "./StarProgress";
 import PracticeButton from "@/components/common/PracticeButton";
 import type { PracticeResultState, PracticeMode } from "@/types/practice";
 import { PRACTICE_MASTERY_COUNT } from "@/types/practice";
@@ -96,16 +97,11 @@ export default function PracticeResult({
 							total: totalPhrases,
 						})}
 					</span>
-					<span className="text-sm text-gray-400">
-						{mode === "normal"
-							? t("speech.practice.toMaster", {
-									remaining:
-										PRACTICE_MASTERY_COUNT - result.newCorrectCount,
-								})
-							: t("speech.practice.correctCountLabel", {
-									count: result.newCorrectCount,
-								})}
-					</span>
+					<StarProgress
+						current={result.newCorrectCount}
+						total={PRACTICE_MASTERY_COUNT}
+						mode={mode}
+					/>
 				</div>
 				<div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
 					<div
