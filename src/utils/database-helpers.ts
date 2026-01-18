@@ -57,6 +57,9 @@ export async function getUserSettings(
 		defaultLearningLanguageId: user.defaultLearningLanguageId,
 		email: user.email,
 		timezone: user.timezone,
+		phraseMode: user.phraseMode,
+		practiceIncludeExisting: user.practiceIncludeExisting,
+		practiceStartDate: user.practiceStartDate?.toISOString() || null,
 		nativeLanguage: user.nativeLanguage
 			? {
 					id: user.nativeLanguage.id,
@@ -97,6 +100,8 @@ export async function createUserSettings(
 				nativeLanguageId: userData.nativeLanguageId,
 				defaultLearningLanguageId: userData.defaultLearningLanguageId,
 				timezone: userData.timezone || "UTC",
+				phraseMode: userData.phraseMode || "practice",
+				practiceIncludeExisting: userData.practiceIncludeExisting ?? true,
 			},
 			include: {
 				nativeLanguage: true,
@@ -124,6 +129,9 @@ export async function createUserSettings(
 			defaultLearningLanguageId: result.defaultLearningLanguageId,
 			email: result.email,
 			timezone: result.timezone,
+			phraseMode: result.phraseMode,
+			practiceIncludeExisting: result.practiceIncludeExisting,
+			practiceStartDate: result.practiceStartDate?.toISOString() || null,
 			nativeLanguage: result.nativeLanguage
 				? {
 						id: result.nativeLanguage.id,
@@ -180,6 +188,8 @@ export async function updateUserSettings(
 			nativeLanguageId: userData.nativeLanguageId,
 			defaultLearningLanguageId: userData.defaultLearningLanguageId,
 			timezone: userData.timezone,
+			phraseMode: userData.phraseMode,
+			practiceIncludeExisting: userData.practiceIncludeExisting,
 		},
 		include: {
 			nativeLanguage: true,
@@ -208,6 +218,9 @@ export async function updateUserSettings(
 		defaultLearningLanguageId: result.defaultLearningLanguageId,
 		email: result.email,
 		timezone: result.timezone,
+		phraseMode: result.phraseMode,
+		practiceIncludeExisting: result.practiceIncludeExisting,
+		practiceStartDate: result.practiceStartDate?.toISOString() || null,
 		nativeLanguage: result.nativeLanguage
 			? {
 					id: result.nativeLanguage.id,
