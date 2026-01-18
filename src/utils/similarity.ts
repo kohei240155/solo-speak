@@ -12,8 +12,9 @@
 export function normalizeText(text: string): string {
 	return text
 		.toLowerCase()
-		.replace(/[.,!?;:'"()[\]{}]/g, "") // 句読点を削除
-		.replace(/['']/g, "") // アポストロフィを削除
+		// 多言語句読点を削除（ASCII、日本語、中国語、韓国語、タイ語、欧州言語、全角記号）
+		.replace(/[.,!?;:'"()[\]{}。、！？「」『』【】（）：；．，·¿¡«»・ฯ]/g, "")
+		.replace(/['''""]/g, "") // 引用符を削除
 		.replace(/\s+/g, " ") // 連続する空白を1つに
 		.trim();
 }
