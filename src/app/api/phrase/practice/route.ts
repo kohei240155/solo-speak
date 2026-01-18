@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/utils/prisma";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { getLocalDateString } from "@/utils/timezone";
-import type { PracticeMode } from "@/types/practice";
 import { PRACTICE_MASTERY_COUNT, PRACTICE_DEFAULT_SESSION_SIZE } from "@/types/practice";
+
+// Zodスキーマ定義
+const practiceQuerySchema = z.object({
+	languageId: z.string().min(1, "languageId parameter is required"),
+	mode: z.enum(["normal", "review"], {
+		errorMap: () => ({ message: 'mode parameter must be "normal" or "review"' }),
+	}),
+	questionCount: z.coerce.number().optional(),
+});
 
 /**
  * GET /api/phrase/practice
@@ -18,28 +27,22 @@ export async function GET(request: NextRequest) {
 		}
 
 		const { searchParams } = new URL(request.url);
-		const languageId = searchParams.get("languageId");
-		const mode = searchParams.get("mode") as PracticeMode | null;
-		const questionCountParam = searchParams.get("questionCount");
+
+		// Zodバリデーション
+		const parseResult = practiceQuerySchema.safeParse({
+			languageId: searchParams.get("languageId"),
+			mode: searchParams.get("mode"),
+			questionCount: searchParams.get("questionCount"),
+		});
+
+		if (!parseResult.success) {
+			const errorMessage = parseResult.error.issues[0]?.message || "Invalid parameters";
+			return NextResponse.json({ error: errorMessage }, { status: 400 });
+		}
+
+		const { languageId, mode, questionCount: parsedQuestionCount } = parseResult.data;
 		// 0 = 全て、未指定 = デフォルト値
-		const questionCount = questionCountParam !== null
-			? parseInt(questionCountParam, 10)
-			: PRACTICE_DEFAULT_SESSION_SIZE;
-
-		// バリデーション
-		if (!languageId) {
-			return NextResponse.json(
-				{ error: "languageId parameter is required" },
-				{ status: 400 }
-			);
-		}
-
-		if (!mode || (mode !== "normal" && mode !== "review")) {
-			return NextResponse.json(
-				{ error: 'mode parameter must be "normal" or "review"' },
-				{ status: 400 }
-			);
-		}
+		const questionCount = parsedQuestionCount ?? PRACTICE_DEFAULT_SESSION_SIZE;
 
 		// ユーザー情報取得（Practice設定含む）
 		let user = await prisma.user.findUnique({

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/utils/prisma";
 import { authenticateRequest } from "@/utils/api-helpers";
+
+// Zodスキーマ定義
+const rankingPracticeQuerySchema = z.object({
+	language: z.string().min(1, "language parameter is required"),
+	period: z.enum(["daily", "weekly", "total"], {
+		errorMap: () => ({ message: 'period parameter must be "daily", "weekly", or "total"' }),
+	}),
+});
 
 /**
  * 今週のUTC月曜日00:00を取得
@@ -38,23 +47,19 @@ export async function GET(request: NextRequest) {
 		}
 
 		const { searchParams } = new URL(request.url);
-		const languageCode = searchParams.get("language");
-		const period = searchParams.get("period");
 
-		// バリデーション
-		if (!languageCode) {
-			return NextResponse.json(
-				{ error: "language parameter is required" },
-				{ status: 400 }
-			);
+		// Zodバリデーション
+		const parseResult = rankingPracticeQuerySchema.safeParse({
+			language: searchParams.get("language"),
+			period: searchParams.get("period"),
+		});
+
+		if (!parseResult.success) {
+			const errorMessage = parseResult.error.issues[0]?.message || "Invalid parameters";
+			return NextResponse.json({ error: errorMessage }, { status: 400 });
 		}
 
-		if (!period || !["daily", "weekly", "total"].includes(period)) {
-			return NextResponse.json(
-				{ error: 'period parameter must be "daily", "weekly", or "total"' },
-				{ status: 400 }
-			);
-		}
+		const { language: languageCode, period } = parseResult.data;
 
 		// 言語コードから言語を取得
 		const language = await prisma.language.findFirst({

@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/utils/prisma";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { getLocalDateString } from "@/utils/timezone";
+
+// Zodスキーマ定義
+const practiceStatsQuerySchema = z.object({
+	languageId: z.string().min(1, "languageId is required"),
+});
 
 /**
  * GET /api/phrase/practice/stats
@@ -24,16 +30,18 @@ export async function GET(request: NextRequest) {
 
 		const userId = authResult.user.id;
 
-		// クエリパラメータから言語IDを取得
+		// クエリパラメータをZodでバリデーション
 		const { searchParams } = new URL(request.url);
-		const languageId = searchParams.get("languageId");
+		const parseResult = practiceStatsQuerySchema.safeParse({
+			languageId: searchParams.get("languageId"),
+		});
 
-		if (!languageId) {
-			return NextResponse.json(
-				{ error: "languageId is required" },
-				{ status: 400 }
-			);
+		if (!parseResult.success) {
+			const errorMessage = parseResult.error.issues[0]?.message || "Invalid parameters";
+			return NextResponse.json({ error: errorMessage }, { status: 400 });
 		}
+
+		const { languageId } = parseResult.data;
 
 		// ユーザー情報取得（タイムゾーン用）
 		const user = await prisma.user.findUnique({

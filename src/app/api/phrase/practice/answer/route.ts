@@ -1,14 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/utils/prisma";
 import { authenticateRequest } from "@/utils/api-helpers";
 import { getLocalDateString } from "@/utils/timezone";
 import { calculateSimilarity } from "@/utils/similarity";
 import { calculateDiff } from "@/utils/diff";
-import type { PracticeMode } from "@/types/practice";
 import {
 	PRACTICE_MASTERY_COUNT,
 	PRACTICE_SIMILARITY_THRESHOLD,
 } from "@/types/practice";
+
+// Zodスキーマ定義
+const practiceAnswerSchema = z.object({
+	phraseId: z.string().min(1, "phraseId is required"),
+	transcript: z.string({ required_error: "transcript is required" }),
+	mode: z.enum(["normal", "review"], {
+		errorMap: () => ({ message: 'mode must be "normal" or "review"' }),
+	}),
+});
 
 /**
  * POST /api/phrase/practice/answer
@@ -22,35 +31,16 @@ export async function POST(request: NextRequest) {
 			return authResult.error;
 		}
 
-		// リクエストボディをパース
+		// リクエストボディをパース & Zodバリデーション
 		const body = await request.json();
-		const { phraseId, transcript, mode } = body as {
-			phraseId?: string;
-			transcript?: string;
-			mode?: PracticeMode;
-		};
+		const parseResult = practiceAnswerSchema.safeParse(body);
 
-		// バリデーション
-		if (!phraseId) {
-			return NextResponse.json(
-				{ error: "phraseId is required" },
-				{ status: 400 }
-			);
+		if (!parseResult.success) {
+			const errorMessage = parseResult.error.issues[0]?.message || "Invalid parameters";
+			return NextResponse.json({ error: errorMessage }, { status: 400 });
 		}
 
-		if (transcript === undefined || transcript === null) {
-			return NextResponse.json(
-				{ error: "transcript is required" },
-				{ status: 400 }
-			);
-		}
-
-		if (!mode || (mode !== "normal" && mode !== "review")) {
-			return NextResponse.json(
-				{ error: 'mode must be "normal" or "review"' },
-				{ status: 400 }
-			);
-		}
+		const { phraseId, transcript, mode } = parseResult.data;
 
 		// フレーズ取得（言語情報を含める）
 		const phrase = await prisma.phrase.findUnique({
