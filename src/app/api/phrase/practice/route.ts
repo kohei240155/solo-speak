@@ -11,7 +11,11 @@ const practiceQuerySchema = z.object({
 	mode: z.enum(["normal", "review"], {
 		errorMap: () => ({ message: 'mode parameter must be "normal" or "review"' }),
 	}),
-	questionCount: z.coerce.number().optional(),
+	// nullや空文字をundefinedに変換してから数値に変換（null→0の変換を防ぐ）
+	questionCount: z.preprocess(
+		(val) => (val === null || val === "") ? undefined : val,
+		z.coerce.number().optional()
+	),
 });
 
 /**
