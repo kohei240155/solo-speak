@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { DEFAULT_LANGUAGE } from "@/constants/languages";
 import BaseModal from "../common/BaseModal";
+import PracticeButton from "../common/PracticeButton";
 import { Language } from "@/types/phrase";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 
@@ -180,33 +181,14 @@ export default function ModeModal({
 			))}
 
 			{/* Start ボタン */}
-			<button
+			<PracticeButton
 				onClick={handleStart}
 				disabled={isLoading}
-				className="w-full text-white py-3 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-				style={{
-					backgroundColor: isLoading ? "#9CA3AF" : "#616161",
-				}}
-				onMouseEnter={(e) => {
-					if (!isLoading && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#525252";
-					}
-				}}
-				onMouseLeave={(e) => {
-					if (!isLoading && e.currentTarget) {
-						e.currentTarget.style.backgroundColor = "#616161";
-					}
-				}}
+				isLoading={isLoading}
+				variant="primary"
 			>
-				{isLoading ? (
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-						Loading...
-					</div>
-				) : (
-					config.startButtonText || "Start"
-				)}
-			</button>
+				{config.startButtonText || "Start"}
+			</PracticeButton>
 		</BaseModal>
 	);
 }

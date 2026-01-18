@@ -402,6 +402,61 @@ export default function UserSettingsForm({
 					)}
 				</div>
 
+				{/* Phrase Mode */}
+				<div>
+					<label
+						htmlFor="phraseMode"
+						className="block text-gray-700 mb-2 text-base md:text-lg font-bold"
+					>
+						{t("settings.phraseMode.title")}
+					</label>
+					<p className="text-gray-600 text-sm mb-2">
+						{t("settings.phraseMode.description")}
+					</p>
+					<div className="relative">
+						<select
+							id="phraseMode"
+							{...register("phraseMode")}
+							className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-gray-900 ${isDisabled ? "bg-gray-100 cursor-not-allowed text-gray-600" : ""}`}
+							disabled={isDisabled}
+						>
+							<option value="practice">
+								{t("settings.phraseMode.practiceMode")}
+							</option>
+							<option value="speak">
+								{t("settings.phraseMode.speakQuizMode")}
+							</option>
+						</select>
+						<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+							<svg
+								className="fill-current h-4 w-4"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+							>
+								<path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+							</svg>
+						</div>
+					</div>
+				</div>
+
+				{/* Practice Include Existing */}
+				<div>
+					<label className="flex items-center cursor-pointer">
+						<input
+							type="checkbox"
+							{...register("practiceIncludeExisting")}
+							className="w-4 h-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+							disabled={isDisabled}
+						/>
+						<span className="ml-3 text-gray-700 text-base md:text-lg font-bold">
+							{t("settings.practiceIncludeExisting.title")}
+						</span>
+					</label>
+					<p className="text-gray-600 text-sm mt-1 ml-7">
+						{t("settings.practiceIncludeExisting.description")}
+					</p>
+				</div>
+
 				{/* Save Button */}
 				<div className="pt-4">
 					<button

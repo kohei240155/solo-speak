@@ -20,6 +20,7 @@ interface PhraseListProps {
 	languages?: LanguageInfo[];
 	onRefreshPhrases?: () => void;
 	onUpdatePhrase?: (phrase: PhraseData) => void;
+	phraseMode?: "speak" | "quiz" | "practice";
 }
 
 export default function PhraseList({
@@ -31,6 +32,7 @@ export default function PhraseList({
 	isLoadingPhrases = false,
 	isLoadingMore = false,
 	languages = [],
+	phraseMode = "practice",
 }: PhraseListProps) {
 	const { t } = useTranslation("app");
 	const router = useRouter();
@@ -127,6 +129,7 @@ export default function PhraseList({
 						onSpeak={handleSpeak}
 						onDelete={handleDelete}
 						onExplanation={handleExplanation}
+						phraseMode={phraseMode}
 					/>
 				))}
 
