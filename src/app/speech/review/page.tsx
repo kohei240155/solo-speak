@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
 import SpeechReview from "@/components/speech/SpeechReview";
+import FadeIn from "@/components/common/FadeIn";
 import { useReviewSpeech } from "@/hooks/speech/useReviewSpeech";
 import { usePageLeaveWarning } from "@/hooks/ui/usePageLeaveWarning";
 import { useTranslation } from "@/hooks/ui/useTranslation";
@@ -133,7 +134,7 @@ function SpeechReviewPage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+				<FadeIn className="bg-white rounded-lg shadow-md p-4 sm:p-6">
 					{speech ? (
 						<SpeechReview
 							speech={speech}
@@ -155,7 +156,7 @@ function SpeechReviewPage() {
 							/>
 						</div>
 					)}
-				</div>
+				</FadeIn>
 			</div>
 
 			{/* Review Mode モーダル */}

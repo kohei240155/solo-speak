@@ -75,14 +75,14 @@ export default function SpeechTabNavigation({
 				<button
 					key={tab.key}
 					onClick={() => handleTabClick(tab)}
-					className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
+					className={`flex-1 py-2.5 text-base md:text-lg border border-gray-300 ${
 						index === 0 ? "rounded-l-[20px]" : ""
 					} ${index === tabs.length - 1 ? "rounded-r-[20px]" : ""} ${
 						index > 0 ? "border-l-0" : ""
 					} ${
 						activeTab === tab.key
-							? "bg-gray-200 text-gray-700 font-bold cursor-default"
-							: "bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50"
+							? "bg-gray-200 text-gray-800 font-bold cursor-default"
+							: "bg-white text-gray-700 font-medium cursor-pointer hover:bg-gray-50"
 					}`}
 				>
 					{tab.label}

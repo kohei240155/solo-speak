@@ -8,6 +8,7 @@ import LanguageSelector from "@/components/common/LanguageSelector";
 import SpeechTabNavigation from "@/components/navigation/SpeechTabNavigation";
 import SpeechList from "@/components/speech/SpeechList";
 import ReviewModeModal from "@/components/modals/ReviewModeModal";
+import FadeIn from "@/components/common/FadeIn";
 import { Toaster } from "react-hot-toast";
 
 export default function SpeechListPage() {
@@ -88,13 +89,15 @@ export default function SpeechListPage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<SpeechList
-					speeches={savedSpeeches}
-					isLoadingSpeeches={isLoadingSpeeches}
-					isLoadingMore={isLoadingMore}
-					learningLanguage={learningLanguage}
-					onRefreshSpeeches={refreshSpeeches}
-				/>
+				<FadeIn>
+					<SpeechList
+						speeches={savedSpeeches}
+						isLoadingSpeeches={isLoadingSpeeches}
+						isLoadingMore={isLoadingMore}
+						learningLanguage={learningLanguage}
+						onRefreshSpeeches={refreshSpeeches}
+					/>
+				</FadeIn>
 			</div>
 
 			{/* Review Mode モーダル */}
