@@ -33,6 +33,16 @@
 			"error": "Failed to delete account. Please try again later.",
 			"emailNotFound": "Registered email address not found",
 			"emailMismatch": "The entered email address does not match the registered email address"
+		},
+		"phraseMode": {
+			"title": "Phrase Practice Mode",
+			"description": "Choose how you want to practice your phrases.",
+			"practiceMode": "Latest Mode (Recommended)",
+			"speakQuizMode": "Legacy Mode"
+		},
+		"practiceIncludeExisting": {
+			"title": "Include existing phrases in practice",
+			"description": "When enabled, phrases registered before selecting the latest mode will also be included in practice."
 		}
 	},
 	"confirm": {
@@ -293,6 +303,30 @@
 			"warningMessage": "This action cannot be undone."
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "Select Practice Mode",
+			"selectLanguage": "Learning Language",
+			"chooseLanguage": "Select language",
+			"languageDescription": "Select the language you want to practice.",
+			"selectMode": "Mode",
+			"modeDescription": "Normal mode shows unlearned phrases, Review mode shows mastered phrases.",
+			"normalMode": "Normal",
+			"normalModeDesc": "Practice phrases that haven't been mastered yet",
+			"reviewMode": "Review",
+			"reviewModeDesc": "Practice mastered phrases again",
+			"selectQuestionCount": "Question Count",
+			"questionCountDescription": "Set the number of phrases per session.",
+			"questionCount": "{{count}} questions",
+			"allQuestions": "All",
+			"start": "Start"
+		},
+		"messages": {
+			"noPhrasesAvailable": "No phrases available for practice. Please add some phrases first.",
+			"languageNotFound": "Selected language not found.",
+			"startError": "Failed to start practice. Please try again."
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "Title must be within 50 characters",
@@ -368,6 +402,36 @@
 			"B": "Can speak fluently by looking at parts of the script",
 			"C": "Can speak fluently by looking at the script",
 			"D": "Not yet reviewed"
+		},
+		"practice": {
+			"speechUnavailable": "Speech Recognition Unavailable",
+			"useChromeOrEdge": "Please use Chrome or Edge for the best experience.",
+			"progress": "{{current}} of {{total}}",
+			"correctCount": "{{count}}/{{total}} correct",
+			"toMaster": "{{remaining}} more to learn",
+			"correctCountLabel": "Correct count: {{count}}",
+			"translatePrompt": "Translate to the learning language",
+			"processing": "Processing...",
+			"checkingAnswer": "Checking your answer...",
+			"listening": "Tap to finish",
+			"tapToSpeak": "Tap to speak in learning language",
+			"finishSession": "Finish session",
+			"skipPhrase": "Skip this phrase",
+			"noSpeechDetected": "No speech detected. Tap the mic and try again.",
+			"mastered": "Mastered!",
+			"correct": "Correct!",
+			"passed": "Passed!",
+			"phraseMastered": "Phrase mastered ({{count}}/{{total}})",
+			"almostThere": "Almost there!",
+			"keepGoing": "Keep going!",
+			"letsPractice": "Let's practice!",
+			"keepPracticing": "Keep practicing!",
+			"passRequirement": "90% match rate required to pass",
+			"hearCorrect": "Hear correct",
+			"myRecording": "My recording",
+			"continue": "Continue",
+			"correctAnswer": "CORRECT ANSWER",
+			"youSaid": "YOU SAID"
 		}
 	}
 }

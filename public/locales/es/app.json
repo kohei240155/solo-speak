@@ -33,6 +33,16 @@
 			"error": "Error al eliminar la cuenta. Por favor intente más tarde.",
 			"emailNotFound": "Dirección de correo electrónico registrada no encontrada",
 			"emailMismatch": "La dirección de correo electrónico ingresada no coincide con la dirección registrada"
+		},
+		"phraseMode": {
+			"title": "Modo de Práctica de Frases",
+			"description": "Elija cómo desea practicar sus frases.",
+			"practiceMode": "Modo Más Reciente (Recomendado)",
+			"speakQuizMode": "Modo Antiguo"
+		},
+		"practiceIncludeExisting": {
+			"title": "Incluir frases existentes en la práctica",
+			"description": "Cuando está habilitado, las frases registradas antes de seleccionar el modo más reciente también se incluirán en la práctica."
 		}
 	},
 	"confirm": {
@@ -292,6 +302,27 @@
 			"warningMessage": "Esta acción no se puede deshacer."
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "Configuración de Práctica",
+			"selectLanguage": "Idioma de Aprendizaje",
+			"chooseLanguage": "Seleccionar idioma",
+			"selectMode": "Modo",
+			"normalMode": "Normal",
+			"normalModeDesc": "Practica frases que aún no has dominado",
+			"reviewMode": "Repaso",
+			"reviewModeDesc": "Practica frases dominadas nuevamente",
+			"selectQuestionCount": "Cantidad de Preguntas",
+			"questionCount": "{{count}} preguntas",
+			"allQuestions": "Todas",
+			"start": "Iniciar Práctica"
+		},
+		"messages": {
+			"noPhrasesAvailable": "No hay frases disponibles para practicar. Por favor, añade algunas frases primero.",
+			"languageNotFound": "Idioma seleccionado no encontrado.",
+			"startError": "Error al iniciar la práctica. Por favor, inténtalo de nuevo."
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "El título debe tener un máximo de 50 caracteres",
@@ -367,6 +398,32 @@
 			"B": "Puede hablar con fluidez mirando partes del guión",
 			"C": "Puede hablar con fluidez mirando el guión",
 			"D": "Aún no revisado"
+		},
+		"practice": {
+			"speechUnavailable": "Reconocimiento de voz no disponible",
+			"useChromeOrEdge": "Por favor, use Chrome o Edge para la mejor experiencia.",
+			"progress": "{{current}} de {{total}}",
+			"correctCount": "{{count}}/{{total}} correctas",
+			"toMaster": "{{remaining}} más para aprender",
+			"correctCountLabel": "Respuestas correctas: {{count}}",
+			"translatePrompt": "Traduce al idioma de aprendizaje",
+			"processing": "Procesando...",
+			"checkingAnswer": "Verificando tu respuesta...",
+			"listening": "Toca para terminar",
+			"tapToSpeak": "Toca para hablar en el idioma de aprendizaje",
+			"finishSession": "Finalizar sesión",
+			"skipPhrase": "Saltar esta frase",
+			"noSpeechDetected": "No se detectó voz. Toca el micrófono e intenta de nuevo.",
+			"mastered": "¡Dominado!",
+			"correct": "¡Correcto!",
+			"phraseMastered": "Frase dominada ({{count}}/{{total}})",
+			"almostThere": "Casi lo logras",
+			"keepPracticing": "¡Sigue practicando!",
+			"hearCorrect": "Escuchar correcta",
+			"myRecording": "Mi grabación",
+			"continue": "Continuar",
+			"correctAnswer": "RESPUESTA CORRECTA",
+			"youSaid": "DIJISTE"
 		}
 	}
 }

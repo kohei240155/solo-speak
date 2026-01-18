@@ -33,6 +33,16 @@
 			"error": "Erreur lors de la suppression du compte. Veuillez réessayer plus tard.",
 			"emailNotFound": "Adresse email enregistrée introuvable",
 			"emailMismatch": "L'adresse email saisie ne correspond pas à l'adresse enregistrée"
+		},
+		"phraseMode": {
+			"title": "Mode de Pratique des Phrases",
+			"description": "Choisissez comment vous voulez pratiquer vos phrases.",
+			"practiceMode": "Mode Actuel (Recommandé)",
+			"speakQuizMode": "Mode Ancien"
+		},
+		"practiceIncludeExisting": {
+			"title": "Inclure les phrases existantes dans la pratique",
+			"description": "Lorsqu'activé, les phrases enregistrées avant la sélection du mode actuel seront également incluses dans la pratique."
 		}
 	},
 	"confirm": {
@@ -292,6 +302,27 @@
 			"warningMessage": "Cette action ne peut pas être annulée."
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "Paramètres de Pratique",
+			"selectLanguage": "Langue d'Apprentissage",
+			"chooseLanguage": "Sélectionner une langue",
+			"selectMode": "Mode",
+			"normalMode": "Normal",
+			"normalModeDesc": "Pratiquez les phrases qui n'ont pas encore été maîtrisées",
+			"reviewMode": "Révision",
+			"reviewModeDesc": "Pratiquez à nouveau les phrases maîtrisées",
+			"selectQuestionCount": "Nombre de Questions",
+			"questionCount": "{{count}} questions",
+			"allQuestions": "Toutes",
+			"start": "Commencer la Pratique"
+		},
+		"messages": {
+			"noPhrasesAvailable": "Aucune phrase disponible pour la pratique. Veuillez d'abord ajouter des phrases.",
+			"languageNotFound": "Langue sélectionnée introuvable.",
+			"startError": "Échec du démarrage de la pratique. Veuillez réessayer."
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "Le titre doit comporter un maximum de 50 caractères",
@@ -367,6 +398,32 @@
 			"B": "Peut parler couramment en regardant des parties du script",
 			"C": "Peut parler couramment en regardant le script",
 			"D": "Pas encore révisé"
+		},
+		"practice": {
+			"speechUnavailable": "Reconnaissance vocale non disponible",
+			"useChromeOrEdge": "Veuillez utiliser Chrome ou Edge pour une meilleure expérience.",
+			"progress": "{{current}} sur {{total}}",
+			"correctCount": "{{count}}/{{total}} correct",
+			"toMaster": "Encore {{remaining}} pour apprendre",
+			"correctCountLabel": "Réponses correctes: {{count}}",
+			"translatePrompt": "Traduisez dans la langue d'apprentissage",
+			"processing": "Traitement en cours...",
+			"checkingAnswer": "Vérification de votre réponse...",
+			"listening": "Appuyez pour terminer",
+			"tapToSpeak": "Appuyez pour parler dans la langue d'apprentissage",
+			"finishSession": "Terminer la session",
+			"skipPhrase": "Passer cette phrase",
+			"noSpeechDetected": "Aucune voix détectée. Appuyez sur le micro et réessayez.",
+			"mastered": "Maîtrisé !",
+			"correct": "Correct !",
+			"phraseMastered": "Phrase maîtrisée ({{count}}/{{total}})",
+			"almostThere": "Presque",
+			"keepPracticing": "Continuez à pratiquer !",
+			"hearCorrect": "Écouter la correction",
+			"myRecording": "Mon enregistrement",
+			"continue": "Continuer",
+			"correctAnswer": "RÉPONSE CORRECTE",
+			"youSaid": "VOUS AVEZ DIT"
 		}
 	}
 }

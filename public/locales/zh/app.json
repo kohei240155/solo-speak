@@ -33,6 +33,16 @@
 			"error": "删除账户失败。请稍后再试。",
 			"emailNotFound": "未找到注册的电子邮件地址",
 			"emailMismatch": "输入的电子邮件地址与注册地址不匹配"
+		},
+		"phraseMode": {
+			"title": "短语练习模式",
+			"description": "选择您想要如何练习短语。",
+			"practiceMode": "最新模式（推荐）",
+			"speakQuizMode": "旧模式"
+		},
+		"practiceIncludeExisting": {
+			"title": "在练习中出题现有短语",
+			"description": "启用时，选择最新模式前注册的短语也会在练习中出题。"
 		}
 	},
 	"confirm": {
@@ -292,6 +302,27 @@
 			"warningMessage": "此操作无法撤消。"
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "练习设置",
+			"selectLanguage": "学习语言",
+			"chooseLanguage": "选择语言",
+			"selectMode": "模式",
+			"normalMode": "普通",
+			"normalModeDesc": "练习尚未掌握的短语",
+			"reviewMode": "复习",
+			"reviewModeDesc": "重新练习已掌握的短语",
+			"selectQuestionCount": "题目数量",
+			"questionCount": "{{count}}题",
+			"allQuestions": "全部",
+			"start": "开始练习"
+		},
+		"messages": {
+			"noPhrasesAvailable": "没有可用于练习的短语。请先添加一些短语。",
+			"languageNotFound": "未找到所选语言。",
+			"startError": "练习启动失败。请重试。"
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "标题必须在50个字符以内",
@@ -367,6 +398,32 @@
 			"B": "看部分稿件即可流利表达",
 			"C": "看稿件即可流利表达",
 			"D": "尚未复习"
+		},
+		"practice": {
+			"speechUnavailable": "语音识别不可用",
+			"useChromeOrEdge": "请使用Chrome或Edge以获得最佳体验。",
+			"progress": "{{current}} / {{total}}",
+			"correctCount": "{{count}}/{{total}} 正确",
+			"toMaster": "还需{{remaining}}次即可习得",
+			"correctCountLabel": "正确次数: {{count}}",
+			"translatePrompt": "翻译成学习语言",
+			"processing": "处理中...",
+			"checkingAnswer": "正在检查您的答案...",
+			"listening": "点击结束",
+			"tapToSpeak": "点击用学习语言说话",
+			"finishSession": "结束练习",
+			"skipPhrase": "跳过此短语",
+			"noSpeechDetected": "未检测到语音。请点击麦克风重试。",
+			"mastered": "已掌握！",
+			"correct": "正确！",
+			"phraseMastered": "短语已掌握 ({{count}}/{{total}})",
+			"almostThere": "快要成功了",
+			"keepPracticing": "继续练习！",
+			"hearCorrect": "听正确答案",
+			"myRecording": "我的录音",
+			"continue": "继续",
+			"correctAnswer": "正确答案",
+			"youSaid": "您说的"
 		}
 	}
 }

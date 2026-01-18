@@ -33,6 +33,16 @@
 			"error": "ไม่สามารถลบบัญชีได้ กรุณาลองใหม่อีกครั้งในภายหลัง",
 			"emailNotFound": "ไม่พบที่อยู่อีเมลที่ลงทะเบียนไว้",
 			"emailMismatch": "ที่อยู่อีเมลที่ป้อนไม่ตรงกับที่อยู่ที่ลงทะเบียนไว้"
+		},
+		"phraseMode": {
+			"title": "โหมดฝึกประโยค",
+			"description": "เลือกวิธีที่คุณต้องการฝึกประโยคของคุณ",
+			"practiceMode": "โหมดล่าสุด (แนะนำ)",
+			"speakQuizMode": "โหมดเก่า"
+		},
+		"practiceIncludeExisting": {
+			"title": "รวมประโยคที่มีอยู่ในการฝึก",
+			"description": "เมื่อเปิดใช้งาน ประโยคที่ลงทะเบียนก่อนเลือกโหมดล่าสุดจะถูกรวมในการฝึกด้วย"
 		}
 	},
 	"confirm": {
@@ -292,6 +302,27 @@
 			"warningMessage": "ไม่สามารถยกเลิกการกระทำนี้ได้"
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "การตั้งค่าฝึกหัด",
+			"selectLanguage": "ภาษาที่เรียน",
+			"chooseLanguage": "เลือกภาษา",
+			"selectMode": "โหมด",
+			"normalMode": "ปกติ",
+			"normalModeDesc": "ฝึกประโยคที่ยังไม่เชี่ยวชาญ",
+			"reviewMode": "ทบทวน",
+			"reviewModeDesc": "ฝึกประโยคที่เชี่ยวชาญแล้วอีกครั้ง",
+			"selectQuestionCount": "จำนวนคำถาม",
+			"questionCount": "{{count}} คำถาม",
+			"allQuestions": "ทั้งหมด",
+			"start": "เริ่มฝึกหัด"
+		},
+		"messages": {
+			"noPhrasesAvailable": "ไม่มีประโยคสำหรับฝึกหัด กรุณาเพิ่มประโยคก่อน",
+			"languageNotFound": "ไม่พบภาษาที่เลือก",
+			"startError": "ไม่สามารถเริ่มฝึกหัดได้ กรุณาลองอีกครั้ง"
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "ชื่อเรื่องต้องไม่เกิน 50 ตัวอักษร",
@@ -367,6 +398,32 @@
 			"B": "สามารถพูดได้คล่องโดยดูบางส่วนของสคริปต์",
 			"C": "สามารถพูดได้คล่องโดยดูสคริปต์",
 			"D": "ยังไม่ได้ทบทวน"
+		},
+		"practice": {
+			"speechUnavailable": "การรู้จำเสียงไม่พร้อมใช้งาน",
+			"useChromeOrEdge": "กรุณาใช้ Chrome หรือ Edge เพื่อประสบการณ์ที่ดีที่สุด",
+			"progress": "{{current}} จาก {{total}}",
+			"correctCount": "{{count}}/{{total}} ถูกต้อง",
+			"toMaster": "เหลืออีก {{remaining}} ครั้งเพื่อเรียนรู้",
+			"correctCountLabel": "จำนวนที่ถูกต้อง: {{count}}",
+			"translatePrompt": "แปลเป็นภาษาที่เรียน",
+			"processing": "กำลังประมวลผล...",
+			"checkingAnswer": "กำลังตรวจคำตอบ...",
+			"listening": "แตะเพื่อจบ",
+			"tapToSpeak": "แตะเพื่อพูดในภาษาที่เรียน",
+			"finishSession": "จบเซสชัน",
+			"skipPhrase": "ข้ามประโยคนี้",
+			"noSpeechDetected": "ไม่พบเสียง แตะไมโครโฟนแล้วลองอีกครั้ง",
+			"mastered": "เชี่ยวชาญแล้ว!",
+			"correct": "ถูกต้อง!",
+			"phraseMastered": "เชี่ยวชาญประโยคแล้ว ({{count}}/{{total}})",
+			"almostThere": "เกือบแล้ว",
+			"keepPracticing": "ฝึกต่อไป!",
+			"hearCorrect": "ฟังคำตอบที่ถูก",
+			"myRecording": "การบันทึกของฉัน",
+			"continue": "ต่อไป",
+			"correctAnswer": "คำตอบที่ถูกต้อง",
+			"youSaid": "คุณพูดว่า"
 		}
 	}
 }

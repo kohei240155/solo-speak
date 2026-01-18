@@ -33,6 +33,16 @@
 			"error": "アカウントの削除に失敗しました。しばらくしてから再度お試しください。",
 			"emailNotFound": "登録されたメールアドレスが見つかりません",
 			"emailMismatch": "入力されたメールアドレスが登録されたメールアドレスと一致しません"
+		},
+		"phraseMode": {
+			"title": "フレーズ練習モード",
+			"description": "フレーズの練習方法を選択してください。",
+			"practiceMode": "最新モード（推奨）",
+			"speakQuizMode": "旧モード"
+		},
+		"practiceIncludeExisting": {
+			"title": "既存のフレーズを練習で出題する",
+			"description": "有効にすると、最新モード選択前に登録したフレーズも練習に出題されます。"
 		}
 	},
 	"confirm": {
@@ -293,6 +303,30 @@
 			"warningMessage": "この操作は取り消すことができません。"
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "練習モード選択",
+			"selectLanguage": "学習言語",
+			"chooseLanguage": "言語を選択",
+			"languageDescription": "練習する言語を選択します。",
+			"selectMode": "モード",
+			"modeDescription": "通常モードは未習得フレーズ、復習モードは習得済みフレーズを出題します。",
+			"normalMode": "通常",
+			"normalModeDesc": "まだマスターしていないフレーズを練習する",
+			"reviewMode": "復習",
+			"reviewModeDesc": "マスターしたフレーズを再度練習する",
+			"selectQuestionCount": "出題数",
+			"questionCountDescription": "1セッションで出題するフレーズ数を設定します。",
+			"questionCount": "{{count}}問",
+			"allQuestions": "全て",
+			"start": "練習を始める"
+		},
+		"messages": {
+			"noPhrasesAvailable": "練習できるフレーズがありません。まずフレーズを追加してください。",
+			"languageNotFound": "選択した言語が見つかりません。",
+			"startError": "練習の開始に失敗しました。もう一度お試しください。"
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "タイトルは50文字以内で入力してください",
@@ -368,6 +402,36 @@
 			"B": "スクリプトの一部を見れば流暢に話せる",
 			"C": "スクリプトを見れば流暢に話せる",
 			"D": "まだ復習をしていない"
+		},
+		"practice": {
+			"speechUnavailable": "音声認識が利用できません",
+			"useChromeOrEdge": "ChromeまたはEdgeをご利用ください。",
+			"progress": "{{current}} / {{total}}",
+			"correctCount": "{{count}}/{{total}} 正解",
+			"toMaster": "習得まであと{{remaining}}回",
+			"correctCountLabel": "正解回数: {{count}}",
+			"translatePrompt": "学習言語に翻訳してください",
+			"processing": "処理中...",
+			"checkingAnswer": "回答を確認中...",
+			"listening": "タップして終了",
+			"tapToSpeak": "タップして学習言語で話す",
+			"finishSession": "セッションを終了",
+			"skipPhrase": "このフレーズをスキップ",
+			"noSpeechDetected": "音声が検出されませんでした。マイクをタップして再度お試しください。",
+			"mastered": "マスターしました！",
+			"correct": "正解！",
+			"passed": "合格！",
+			"phraseMastered": "フレーズをマスター ({{count}}/{{total}})",
+			"almostThere": "もう少し！",
+			"keepGoing": "頑張ろう！",
+			"letsPractice": "練習しよう！",
+			"keepPracticing": "練習を続けましょう！",
+			"passRequirement": "90%以上のマッチ率で合格です",
+			"hearCorrect": "正解を聞く",
+			"myRecording": "自分の録音",
+			"continue": "続ける",
+			"correctAnswer": "正解",
+			"youSaid": "あなたの発話"
 		}
 	}
 }

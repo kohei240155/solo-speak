@@ -33,6 +33,16 @@
 			"error": "Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.",
 			"emailNotFound": "Registrierte E-Mail-Adresse nicht gefunden",
 			"emailMismatch": "Die eingegebene E-Mail-Adresse stimmt nicht mit der registrierten E-Mail-Adresse überein"
+		},
+		"phraseMode": {
+			"title": "Phrasenübungsmodus",
+			"description": "Wählen Sie, wie Sie Ihre Phrasen üben möchten.",
+			"practiceMode": "Neuester Modus (Empfohlen)",
+			"speakQuizMode": "Alter Modus"
+		},
+		"practiceIncludeExisting": {
+			"title": "Bestehende Phrasen in die Übung einbeziehen",
+			"description": "Wenn aktiviert, werden auch Phrasen, die vor der Auswahl des neuesten Modus registriert wurden, in die Übung einbezogen."
 		}
 	},
 	"confirm": {
@@ -292,6 +302,27 @@
 			"warningMessage": "Diese Aktion kann nicht rückgängig gemacht werden."
 		}
 	},
+	"practice": {
+		"modal": {
+			"title": "Übungseinstellungen",
+			"selectLanguage": "Lernsprache",
+			"chooseLanguage": "Sprache auswählen",
+			"selectMode": "Modus",
+			"normalMode": "Normal",
+			"normalModeDesc": "Übe Sätze, die noch nicht gemeistert wurden",
+			"reviewMode": "Wiederholung",
+			"reviewModeDesc": "Übe gemeisterte Sätze erneut",
+			"selectQuestionCount": "Fragenanzahl",
+			"questionCount": "{{count}} Fragen",
+			"allQuestions": "Alle",
+			"start": "Übung starten"
+		},
+		"messages": {
+			"noPhrasesAvailable": "Keine Sätze zum Üben verfügbar. Bitte fügen Sie zuerst einige Sätze hinzu.",
+			"languageNotFound": "Ausgewählte Sprache nicht gefunden.",
+			"startError": "Übung konnte nicht gestartet werden. Bitte versuchen Sie es erneut."
+		}
+	},
 	"speech": {
 		"validation": {
 			"titleMaxLength": "Der Titel muss innerhalb von 50 Zeichen liegen",
@@ -367,6 +398,32 @@
 			"B": "Kann fließend sprechen, indem man Teile des Skripts ansieht",
 			"C": "Kann fließend sprechen, indem man das Skript ansieht",
 			"D": "Noch nicht überprüft"
+		},
+		"practice": {
+			"speechUnavailable": "Spracherkennung nicht verfügbar",
+			"useChromeOrEdge": "Bitte nutzen Sie Chrome oder Edge für die beste Erfahrung.",
+			"progress": "{{current}} von {{total}}",
+			"correctCount": "{{count}}/{{total}} richtig",
+			"toMaster": "Noch {{remaining}} zum Erlernen",
+			"correctCountLabel": "Richtige Antworten: {{count}}",
+			"translatePrompt": "Übersetzen Sie in die Lernsprache",
+			"processing": "Wird verarbeitet...",
+			"checkingAnswer": "Antwort wird überprüft...",
+			"listening": "Tippen zum Beenden",
+			"tapToSpeak": "Tippen, um in der Lernsprache zu sprechen",
+			"finishSession": "Sitzung beenden",
+			"skipPhrase": "Diese Phrase überspringen",
+			"noSpeechDetected": "Keine Sprache erkannt. Tippen Sie auf das Mikrofon und versuchen Sie es erneut.",
+			"mastered": "Gemeistert!",
+			"correct": "Richtig!",
+			"phraseMastered": "Phrase gemeistert ({{count}}/{{total}})",
+			"almostThere": "Fast geschafft",
+			"keepPracticing": "Weiter üben!",
+			"hearCorrect": "Richtige Antwort hören",
+			"myRecording": "Meine Aufnahme",
+			"continue": "Weiter",
+			"correctAnswer": "RICHTIGE ANTWORT",
+			"youSaid": "SIE SAGTEN"
 		}
 	}
 }
