@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: errorMessage }, { status: 400 });
 		}
 
-		const { phraseId, transcript, mode } = parseResult.data;
+		const { phraseId, transcript } = parseResult.data;
 
 		// フレーズ取得（言語情報を含める）
 		const phrase = await prisma.phrase.findUnique({

@@ -114,10 +114,12 @@ export default function PhrasePracticePage() {
 
 			const languageId = params.get("languageId") || learningLanguageId;
 			const mode = (params.get("mode") as "normal" | "review") || "normal";
+			const questionCountParam = params.get("questionCount");
 
 			const config: PracticeConfig = {
 				languageId,
 				mode,
+				...(questionCountParam && { questionCount: parseInt(questionCountParam, 10) }),
 			};
 			handlePracticeStart(config);
 		}
