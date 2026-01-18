@@ -306,6 +306,7 @@
 	"practice": {
 		"modal": {
 			"title": "Select Practice Mode",
+			"description": "Practice your saved phrases by speaking aloud",
 			"selectLanguage": "Learning Language",
 			"chooseLanguage": "Select language",
 			"languageDescription": "Select the language you want to practice.",
@@ -320,6 +321,21 @@
 			"questionCount": "{{count}} questions",
 			"allQuestions": "All",
 			"start": "Start"
+		},
+		"help": {
+			"title": "Practice Mode Rules",
+			"dailyLimit": {
+				"title": "Once per Day",
+				"description": "Each phrase's count increases only once per day. Practice consistently every day."
+			},
+			"clearCondition": {
+				"title": "Pass Requirement",
+				"description": "Achieve 90% or higher match rate to pass."
+			},
+			"masterCondition": {
+				"title": "Mastery Requirement",
+				"description": "Pass 5 times to change the phrase to mastered status."
+			}
 		},
 		"messages": {
 			"noPhrasesAvailable": "No phrases available for practice. Please add some phrases first.",

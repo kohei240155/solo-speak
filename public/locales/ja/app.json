@@ -306,6 +306,7 @@
 	"practice": {
 		"modal": {
 			"title": "練習モード選択",
+			"description": "登録したフレーズを声に出して練習しよう",
 			"selectLanguage": "学習言語",
 			"chooseLanguage": "言語を選択",
 			"languageDescription": "練習する言語を選択します。",
@@ -320,6 +321,21 @@
 			"questionCount": "{{count}}問",
 			"allQuestions": "全て",
 			"start": "練習を始める"
+		},
+		"help": {
+			"title": "練習モードのルール",
+			"dailyLimit": {
+				"title": "1日1回",
+				"description": "各フレーズのカウントは1日に1回だけ上がります。毎日コツコツ練習しましょう。"
+			},
+			"clearCondition": {
+				"title": "合格条件",
+				"description": "90%以上のマッチ率で合格です。"
+			},
+			"masterCondition": {
+				"title": "習得条件",
+				"description": "5回合格するとそのフレーズは習得ステータスになります。"
+			}
 		},
 		"messages": {
 			"noPhrasesAvailable": "練習できるフレーズがありません。まずフレーズを追加してください。",
@@ -414,7 +430,7 @@
 			"processing": "処理中...",
 			"checkingAnswer": "回答を確認中...",
 			"listening": "タップして終了",
-			"tapToSpeak": "タップして学習言語で話す",
+			"tapToSpeak": "タップして話す",
 			"finishSession": "セッションを終了",
 			"skipPhrase": "このフレーズをスキップ",
 			"noSpeechDetected": "音声が検出されませんでした。マイクをタップして再度お試しください。",
