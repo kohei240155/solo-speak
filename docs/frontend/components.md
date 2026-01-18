@@ -704,6 +704,54 @@ interface DiffHighlightProps {
 
 ---
 
+### StarProgress
+
+**ファイル**: `src/components/practice/StarProgress.tsx`
+
+Practice正解回数を星で表示するコンポーネント。通常モードでは星を5個並べ、復習モードでは「★×数字」形式で表示。
+
+```typescript
+import StarProgress from "@/components/practice/StarProgress";
+
+interface StarProgressProps {
+  current: number;        // 現在の正解回数
+  total: number;          // 最大値（通常5）
+  mode: PracticeMode;     // "normal" | "review"
+  className?: string;
+}
+
+// 通常モード: ★★★☆☆ のように表示
+<StarProgress current={3} total={5} mode="normal" />
+
+// 復習モード: ★×7 のように表示
+<StarProgress current={7} total={5} mode="review" />
+```
+
+---
+
+### PracticeHelpModal
+
+**ファイル**: `src/components/practice/PracticeHelpModal.tsx`
+
+Practiceのルール説明モーダル。1日1回ルール、90%クリア条件、5回マスター条件を説明。
+
+```typescript
+import PracticeHelpModal from "@/components/practice/PracticeHelpModal";
+
+interface PracticeHelpModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// 使用例
+<PracticeHelpModal
+  isOpen={showHelpModal}
+  onClose={() => setShowHelpModal(false)}
+/>
+```
+
+---
+
 ## スピーキングコンポーネント (speak/)
 
 ### SpeakPractice
@@ -894,6 +942,40 @@ export default function Component({ data, onAction, isLoading = false }: Compone
   );
 }
 ```
+
+---
+
+### FadeIn
+
+**ファイル**: `src/components/common/FadeIn.tsx`
+
+コンテンツをふわっとフェードインさせるアニメーションコンポーネント。ページ遷移やタブ切り替え時に使用。
+
+```typescript
+import FadeIn from "@/components/common/FadeIn";
+
+interface FadeInProps {
+  children: ReactNode;
+  className?: string;
+}
+
+// 基本使用
+<FadeIn>
+  <div>コンテンツがふわっと表示されます</div>
+</FadeIn>
+
+// クラス名指定
+<FadeIn className="bg-white rounded-lg p-4">
+  <div>背景付きでフェードイン</div>
+</FadeIn>
+
+// タブ切り替え時のアニメーション（keyでリマウント）
+<FadeIn key={activeTab}>
+  <TabContent />
+</FadeIn>
+```
+
+**動作**: マウント時に opacity: 0 → 1、translateY: 8px → 0 のアニメーションを0.3秒で実行。
 
 ---
 
