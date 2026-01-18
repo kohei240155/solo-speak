@@ -112,6 +112,9 @@ export default function PhrasePracticePage() {
 				return;
 			}
 
+			// トークンを消費（単一使用）：URLコピーによる再アクセスを防止
+			sessionStorage.removeItem("practiceSessionToken");
+
 			const languageId = params.get("languageId") || learningLanguageId;
 			const mode = (params.get("mode") as "normal" | "review") || "normal";
 			const questionCountParam = params.get("questionCount");
