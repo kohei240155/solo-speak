@@ -16,6 +16,7 @@ import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
 import PracticeModeModal from "@/components/practice/PracticeModeModal";
 import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
+import FadeIn from "@/components/common/FadeIn";
 import type { PracticeConfig } from "@/types/practice";
 
 export default function PhraseAddPage() {
@@ -157,7 +158,7 @@ export default function PhraseAddPage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+				<FadeIn className="bg-white rounded-2xl shadow-md p-4 sm:p-6">
 					{isInitializing ? (
 						<div
 							className="flex items-center justify-center"
@@ -200,7 +201,7 @@ export default function PhraseAddPage() {
 							onSaveRandomPhrase={handleSaveRandomPhrase}
 						/>
 					)}
-				</div>
+				</FadeIn>
 			</div>
 
 			{/* Speak Mode モーダル */}

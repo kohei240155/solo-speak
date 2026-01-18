@@ -14,6 +14,7 @@ import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
 import PracticeModeModal from "@/components/practice/PracticeModeModal";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import FadeIn from "@/components/common/FadeIn";
 import type { PracticeConfig } from "@/types/practice";
 
 export default function PhraseListPage() {
@@ -125,16 +126,18 @@ export default function PhraseListPage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<PhraseList
-					savedPhrases={savedPhrases}
-					isLoadingPhrases={isLoadingPhrases}
-					isLoadingMore={isLoadingMore}
-					languages={languages}
-					nativeLanguage={nativeLanguage}
-					learningLanguage={learningLanguage}
-					onRefreshPhrases={refreshPhrases}
-					phraseMode={phraseMode}
-				/>
+				<FadeIn>
+					<PhraseList
+						savedPhrases={savedPhrases}
+						isLoadingPhrases={isLoadingPhrases}
+						isLoadingMore={isLoadingMore}
+						languages={languages}
+						nativeLanguage={nativeLanguage}
+						learningLanguage={learningLanguage}
+						onRefreshPhrases={refreshPhrases}
+						phraseMode={phraseMode}
+					/>
+				</FadeIn>
 			</div>
 
 			{/* Speak Mode モーダル */}

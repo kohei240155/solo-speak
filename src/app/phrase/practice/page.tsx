@@ -11,6 +11,7 @@ import PracticeModeModal from "@/components/practice/PracticeModeModal";
 import PracticePractice from "@/components/practice/PracticePractice";
 import AllDoneScreen from "@/components/common/AllDoneScreen";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import FadeIn from "@/components/common/FadeIn";
 import { usePhraseSettings } from "@/hooks/phrase/usePhraseSettings";
 import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
@@ -257,7 +258,7 @@ export default function PhrasePracticePage() {
 				/>
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+				<FadeIn className="bg-white rounded-2xl shadow-md p-4 sm:p-6">
 					{isPracticeCompleted ? (
 						<AllDoneScreen
 							onFinish={handleFinish}
@@ -282,7 +283,7 @@ export default function PhrasePracticePage() {
 							minHeight="400px"
 						/>
 					)}
-				</div>
+				</FadeIn>
 			</div>
 
 			{/* Speak Mode モーダル */}
