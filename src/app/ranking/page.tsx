@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Image from "next/image";
 import LanguageSelector from "@/components/common/LanguageSelector";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import FadeIn from "@/components/common/FadeIn";
 import { useRankingData } from "@/hooks/data/useRankingData";
 import { useTranslation } from "@/hooks/ui/useTranslation";
 import { useShareStreak } from "@/hooks/ui/useShareStreak";
@@ -131,14 +132,14 @@ export default function RankingPage() {
 							onClick={() => {
 								handleRankingTypeChange(tab.key);
 							}}
-							className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
+							className={`flex-1 py-2.5 text-base md:text-lg border border-gray-300 ${
 								index === 0 ? "rounded-l-[20px]" : ""
 							} ${index === arr.length - 1 ? "rounded-r-[20px]" : ""} ${
 								index > 0 ? "border-l-0" : ""
 							} ${
 								tab.key === activeRankingType
-									? "bg-gray-200 text-gray-700 font-bold cursor-default"
-									: "bg-white text-gray-700 font-normal cursor-pointer hover:bg-gray-50"
+									? "bg-gray-200 text-gray-800 font-bold cursor-default"
+									: "bg-white text-gray-700 font-medium cursor-pointer hover:bg-gray-50"
 							}`}
 						>
 							{tab.label}
@@ -147,7 +148,7 @@ export default function RankingPage() {
 				</div>
 
 				{/* コンテンツエリア */}
-				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
+				<FadeIn key={activeRankingType} className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
 					{/* Daily/Weekly/Totalタブメニュー */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
@@ -392,7 +393,7 @@ export default function RankingPage() {
 							</div>
 						)}
 					</div>
-				</div>
+				</FadeIn>
 			</div>
 		</div>
 	);
