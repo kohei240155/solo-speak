@@ -4,9 +4,12 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
 import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
+import type { PracticeConfig } from "@/types/practice";
 import ExplanationModal from "@/components/phrase/ExplanationModal";
 import SpeakPractice from "@/components/speak/SpeakPractice";
 import AllDoneScreen from "@/components/common/AllDoneScreen";
@@ -23,10 +26,14 @@ import { Toaster } from "react-hot-toast";
 
 function PhraseSpeakPage() {
 	const { loading: authLoading } = useAuthGuard();
+	const { userSettings } = useAuth();
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const { learningLanguage, languages } = usePhraseSettings();
 	const { t } = useTranslation("app");
+
+	// ユーザー設定からphraseModeを取得（デフォルトはpractice）
+	const phraseMode = (userSettings?.phraseMode as "speak" | "quiz" | "practice") || "practice";
 
 	const {
 		sessionState,
@@ -89,6 +96,30 @@ function PhraseSpeakPage() {
 	const modalManager = useModalManager({
 		handleSpeakStart: handleStart,
 	});
+
+	// Practice Modal
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	// 学習言語IDを取得
+	const learningLanguageId = languages.find(
+		(l) => l.code === learningLanguage
+	)?.id;
+
+	const openPracticeModal = () => setShowPracticeModal(true);
+	const closePracticeModal = () => setShowPracticeModal(false);
+
+	const handlePracticeStart = (config: PracticeConfig) => {
+		// セッショントークンを生成してsessionStorageに保存
+		const sessionToken = crypto.randomUUID();
+		sessionStorage.setItem("practiceSessionToken", sessionToken);
+
+		const params = new URLSearchParams({
+			languageId: config.languageId,
+			mode: config.mode,
+			sessionToken,
+		});
+		router.push(`/phrase/practice?${params.toString()}`);
+	};
 
 	// All Done画面管理
 	const allDoneScreen = useAllDoneScreen({
@@ -153,7 +184,9 @@ function PhraseSpeakPage() {
 						sessionState.active ? undefined : modalManager.openSpeakModal
 					}
 					onQuizModalOpen={modalManager.openQuizModal}
+					onPracticeModalOpen={openPracticeModal}
 					onCacheInvalidate={refetchPhraseList}
+					phraseMode={phraseMode}
 				/>
 
 				{/* コンテンツエリア */}
@@ -249,6 +282,15 @@ function PhraseSpeakPage() {
 					isOpen={showExplanation}
 					phrase={getCurrentPhrase() as { explanation?: string } | null}
 					onClose={handleExplanationClose}
+				/>
+
+				{/* Practice Mode モーダル */}
+				<PracticeModeModal
+					isOpen={showPracticeModal}
+					onClose={closePracticeModal}
+					onStart={handlePracticeStart}
+					languages={languages}
+					defaultLanguageId={learningLanguageId}
 				/>
 			</div>
 

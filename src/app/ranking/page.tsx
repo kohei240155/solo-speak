@@ -106,14 +106,26 @@ export default function RankingPage() {
 					/>
 				</div>
 
-				{/* Phrase、Speak、Quiz、Speechタブメニュー */}
+				{/* Phrase、Speak、Quiz、Speech、Practiceタブメニュー */}
 				<div className="flex mb-[18px]">
-					{[
-						{ key: "phrase" as const, label: "Phrase" },
-						{ key: "speak" as const, label: "Speak" },
-						{ key: "quiz" as const, label: "Quiz" },
-						{ key: "speech" as const, label: "Speech" },
-					].map((tab, index) => (
+					{(() => {
+						const phraseMode = userSettings?.phraseMode || "practice";
+						// Practiceモードの場合はPhrase、Practice、Speechのみ
+						if (phraseMode === "practice") {
+							return [
+								{ key: "phrase" as const, label: "Phrase" },
+								{ key: "practice" as const, label: "Practice" },
+								{ key: "speech" as const, label: "Speech" },
+							];
+						}
+						// それ以外（Speak/Quizモード）はPhrase、Speak、Quiz、Speechを表示
+						return [
+							{ key: "phrase" as const, label: "Phrase" },
+							{ key: "speak" as const, label: "Speak" },
+							{ key: "quiz" as const, label: "Quiz" },
+							{ key: "speech" as const, label: "Speech" },
+						];
+					})().map((tab, index, arr) => (
 						<button
 							key={tab.key}
 							onClick={() => {
@@ -121,7 +133,7 @@ export default function RankingPage() {
 							}}
 							className={`flex-1 py-2 text-sm md:text-base border border-gray-300 ${
 								index === 0 ? "rounded-l-[20px]" : ""
-							} ${index === 3 ? "rounded-r-[20px]" : ""} ${
+							} ${index === arr.length - 1 ? "rounded-r-[20px]" : ""} ${
 								index > 0 ? "border-l-0" : ""
 							} ${
 								tab.key === activeRankingType
@@ -136,7 +148,7 @@ export default function RankingPage() {
 
 				{/* コンテンツエリア */}
 				<div className="bg-white rounded-lg shadow-md pt-4 pb-8 px-3 sm:px-6 md:px-8">
-					{/* Daily/Weekly/Totalタブメニュー（Phraseの場合とSpeechのAdd時はTotalタブのみ表示、SpeechのReview時はDaily/Totalを表示） */}
+					{/* Daily/Weekly/Totalタブメニュー */}
 					{activeRankingType === "phrase" || activeRankingType === "speech" ? (
 						<div className="mb-4 border-b border-gray-200">
 							<nav className="flex space-x-0 items-center">
@@ -184,6 +196,26 @@ export default function RankingPage() {
 										</button>
 									</div>
 								)}
+							</nav>
+						</div>
+					) : activeRankingType === "practice" ? (
+						<div className="mb-4 border-b border-gray-200">
+							<nav className="flex space-x-0 items-center">
+								<div className="flex space-x-0">
+									{["Daily", "Weekly", "Total"].map((tab) => (
+										<button
+											key={tab}
+											onClick={() => handleTabChange(tab)}
+											className={`px-3 sm:px-6 py-2 text-sm sm:text-base md:text-lg font-bold border-b-2 transition-colors duration-200 ${
+												activeTab === tab
+													? "border-gray-900 text-gray-900"
+													: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+											}`}
+										>
+											{tab}
+										</button>
+									))}
+								</div>
 							</nav>
 						</div>
 					) : (

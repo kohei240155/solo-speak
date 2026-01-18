@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/hooks/auth/useAuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
 import { usePhraseManager } from "@/hooks/phrase/usePhraseManager";
 import { useSpeakModal } from "@/hooks/speak/useSpeakModal";
 import { useQuizModal } from "@/hooks/quiz/useQuizModal";
@@ -12,11 +14,18 @@ import PhraseTabNavigation from "@/components/navigation/PhraseTabNavigation";
 import PhraseAdd from "@/components/phrase/PhraseAdd";
 import SpeakModeModal from "@/components/modals/SpeakModeModal";
 import QuizModeModal from "@/components/modals/QuizModeModal";
+import PracticeModeModal from "@/components/practice/PracticeModeModal";
 import AddToHomeScreenModal from "@/components/modals/AddToHomeScreenModal";
+import type { PracticeConfig } from "@/types/practice";
 
 export default function PhraseAddPage() {
 	const { t } = useTranslation("app");
 	const { loading: authLoading } = useAuthGuard();
+	const { userSettings } = useAuth();
+	const router = useRouter();
+
+	// ユーザー設定からphraseModeを取得（デフォルトはpractice）
+	const phraseMode = (userSettings?.phraseMode as "speak" | "quiz" | "practice") || "practice";
 
 	const {
 		// State - ページレベルで使用
@@ -72,6 +81,30 @@ export default function PhraseAddPage() {
 	const { showQuizModal, openQuizModal, closeQuizModal, handleQuizStart } =
 		useQuizModal();
 
+	// Practice Modal
+	const [showPracticeModal, setShowPracticeModal] = useState(false);
+
+	// 学習言語IDを取得
+	const learningLanguageId = languages.find(
+		(l) => l.code === learningLanguage
+	)?.id;
+
+	const openPracticeModal = () => setShowPracticeModal(true);
+	const closePracticeModal = () => setShowPracticeModal(false);
+
+	const handlePracticeStart = (config: PracticeConfig) => {
+		// セッショントークンを生成してsessionStorageに保存
+		const sessionToken = crypto.randomUUID();
+		sessionStorage.setItem("practiceSessionToken", sessionToken);
+
+		const params = new URLSearchParams({
+			languageId: config.languageId,
+			mode: config.mode,
+			sessionToken,
+		});
+		router.push(`/phrase/practice?${params.toString()}`);
+	};
+
 	// ページ離脱時の警告処理をオーバーライド
 	useEffect(() => {
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -118,7 +151,9 @@ export default function PhraseAddPage() {
 					checkUnsavedChanges={checkUnsavedChanges}
 					onSpeakModalOpen={openSpeakModal}
 					onQuizModalOpen={openQuizModal}
+					onPracticeModalOpen={openPracticeModal}
 					onCacheInvalidate={refetchPhraseList}
+					phraseMode={phraseMode}
 				/>
 
 				{/* コンテンツエリア */}
@@ -184,6 +219,15 @@ export default function PhraseAddPage() {
 				onStart={handleQuizStart}
 				languages={languages}
 				defaultLearningLanguage={learningLanguage}
+			/>
+
+			{/* Practice Mode モーダル */}
+			<PracticeModeModal
+				isOpen={showPracticeModal}
+				onClose={closePracticeModal}
+				onStart={handlePracticeStart}
+				languages={languages}
+				defaultLanguageId={learningLanguageId}
 			/>
 
 			{/* ホーム画面追加モーダル */}
