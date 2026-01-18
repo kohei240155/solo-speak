@@ -11,6 +11,9 @@ export const userSetupSchema = z.object({
 		.min(1, "Default Learning Language is required"),
 	email: z.string().email("Please enter a valid email address"),
 	timezone: z.string().optional(),
+	// Practice関連
+	phraseMode: z.enum(["speak", "quiz", "practice"]).optional(),
+	practiceIncludeExisting: z.boolean().optional(),
 });
 
 export type UserSetupFormData = z.infer<typeof userSetupSchema>;
@@ -28,6 +31,10 @@ export interface UserSettingsResponse {
 	defaultLearningLanguage?: { id: string; name: string; code: string } | null;
 	email?: string | null;
 	timezone?: string | null;
+	// Practice関連
+	phraseMode?: string | null;
+	practiceIncludeExisting?: boolean | null;
+	practiceStartDate?: string | null;
 }
 
 // ユーザー設定更新リクエスト型
@@ -38,6 +45,9 @@ export interface UserSettingsUpdateRequest {
 	defaultLearningLanguageId?: string;
 	email?: string;
 	timezone?: string;
+	// Practice関連
+	phraseMode?: string;
+	practiceIncludeExisting?: boolean;
 }
 
 // ユーザー設定作成リクエスト型

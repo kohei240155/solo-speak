@@ -18,6 +18,7 @@ export interface SavedPhrase {
 	createdAt: string;
 	practiceCount: number;
 	correctAnswers: number;
+	practiceCorrectCount: number; // Practice正解回数（0-5）
 	language: {
 		name: string;
 		code: string;
@@ -30,7 +31,7 @@ export const typeLabels = {
 	casual: "Casual",
 };
 
-export type TabType = "List" | "Add" | "Speak" | "Quiz";
+export type TabType = "List" | "Add" | "Speak" | "Quiz" | "Practice";
 
 // === フレーズ生成API関連の型定義 ===
 
@@ -71,6 +72,7 @@ export interface PhraseData {
 	createdAt: string;
 	practiceCount: number;
 	correctAnswers: number;
+	practiceCorrectCount: number; // Practice正解回数（0-5）
 	language: {
 		name: string;
 		code: string;
